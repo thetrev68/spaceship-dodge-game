@@ -1,7 +1,7 @@
 /*
     main.js
     Created: 2025-05-28
-    Author: ChatGPT + [Your Name Here]
+    Author: ChatGPT + Trevor Clark
 
     Notes:
     Entry point for Spaceship Dodge. Sets up the game canvas, handles resize events,

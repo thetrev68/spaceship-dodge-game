@@ -1,7 +1,7 @@
 /*
     state.js
     Created: 2025-05-28
-    Author: ChatGPT + [Your Name Here]
+    Author: ChatGPT + Trevor Clark
 
     Notes:
     Central store for game state and shared objects.

@@ -1,7 +1,7 @@
 /*
     bullet.js
     Created: 2025-05-28
-    Author: ChatGPT + [Your Name Here]
+    Author: ChatGPT + Trevor Clark
 
     Notes:
     Handles bullet creation, updates, and rendering.

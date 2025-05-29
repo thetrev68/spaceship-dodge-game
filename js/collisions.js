@@ -1,7 +1,7 @@
 /*
     collisions.js
     Created: 2025-05-28
-    Author: ChatGPT + [Your Name Here]
+    Author: ChatGPT + Trevor Clark
 
     Notes:
     Collision detection for bullets vs. asteroids and player vs. asteroids.

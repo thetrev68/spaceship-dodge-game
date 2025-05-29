@@ -1,7 +1,7 @@
 /*
     asteroid.js
     Created: 2025-05-28
-    Author: ChatGPT + [Your Name Here]
+    Author: ChatGPT + Trevor Clark
 
     Notes:
     Handles asteroid creation, updates, rendering, and splitting upon bullet impact.

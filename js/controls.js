@@ -1,7 +1,7 @@
 /*
     controls.js
     Created: 2025-05-28
-    Author: ChatGPT + [Your Name Here]
+    Author: ChatGPT + Trevor Clark
 
     Notes:
     Handles keyboard input for player movement and firing.
