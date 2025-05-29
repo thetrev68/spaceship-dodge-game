@@ -18,6 +18,8 @@ import {
 } from './state.js';
 
 let obstacleMinSpeed = BASE_OBSTACLE_MIN_SPEED;
+let nextAsteroidId = 1;
+export const fragmentTracker = {};
 let obstacleMaxSpeed = BASE_OBSTACLE_MAX_SPEED;
 
 export function updateDifficulty(level) {
@@ -39,18 +41,35 @@ export function generateAsteroidShape(radius, numPoints) {
     return points;
 }
 
-export function createObstacle(x, y, levelIndex, initialDx = 0, initialDy = 0) {
+export function createObstacle(x, y, levelIndex, initialDx = 0, initialDy = 0, parentId = null) {
     const radius = ASTEROID_LEVEL_SIZES[levelIndex];
     const scoreValue = ASTEROID_SCORE_VALUES[levelIndex];
     const numPoints = Math.floor(Math.random() * 6) + 5;
     const shape = generateAsteroidShape(radius, numPoints);
 
+    const id = nextAsteroidId++;
+    if (parentId === null) {
+        fragmentTracker[id] = 0;
+    }
+    const assignedParentId = parentId ?? id;
+    if (typeof fragmentTracker[assignedParentId] === 'undefined') {
+        fragmentTracker[assignedParentId] = 0;
+    }
+    if (levelIndex === ASTEROID_LEVEL_SIZES.length - 1) {
+        fragmentTracker[assignedParentId]++;
+    }
     obstacles.push({
-        x, y, radius, scoreValue, shape,
+        x: x,
+        y: y,
+        radius: radius,
+        speed: Math.random() * (obstacleMaxSpeed - obstacleMinSpeed) + obstacleMinSpeed,
         dx: initialDx,
         dy: initialDy,
-        speed: Math.random() * (obstacleMaxSpeed - obstacleMinSpeed) + obstacleMinSpeed,
-        level: levelIndex
+        shape: shape,
+        level: levelIndex,
+        scoreValue: scoreValue,
+        id: id,
+        parentId: parentId ?? id
     });
 }
 
