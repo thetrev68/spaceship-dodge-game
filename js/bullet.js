@@ -11,14 +11,14 @@ import { bullets, bulletSpeed, bulletRadius, lastShotTime, player } from './stat
 
 export function fireBullet() {
     const currentTime = Date.now();
-    if (currentTime - lastShotTime > 100) { // fireRate hardcoded for now
+    if (currentTime - lastShotTime.value > 100) { // fireRate
         bullets.push({
             x: player.x + player.width / 2,
             y: player.y,
             radius: bulletRadius,
             speed: bulletSpeed
         });
-        lastShotTime = currentTime;
+        lastShotTime.value = currentTime;
     }
 }
 

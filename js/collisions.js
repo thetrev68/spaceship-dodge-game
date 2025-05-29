@@ -7,10 +7,8 @@
     Collision detection for bullets vs. asteroids and player vs. asteroids.
 */
 
-import { bullets, obstacles, ASTEROID_LEVEL_SIZES } from './state.js';
+import { bullets, obstacles, ASTEROID_LEVEL_SIZES, player, score } from './state.js';
 import { createObstacle } from './asteroid.js';
-import { player } from './state.js';
-import { gameState } from './state.js';
 import { endGame } from './loop.js';
 
 export function checkPlayerObstacleCollisions() {
@@ -31,7 +29,7 @@ export function checkPlayerObstacleCollisions() {
     });
 }
 
-export function checkBulletObstacleCollisions(scoreRef) {
+export function checkBulletObstacleCollisions(scoreRef = score) {
     for (let i = bullets.length - 1; i >= 0; i--) {
         const bullet = bullets[i];
         for (let j = obstacles.length - 1; j >= 0; j--) {
