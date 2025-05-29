@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spaceship Dodge</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Basic styling for the body and canvas */
+        body {
+            margin: 0;
+            overflow: hidden; /* Hide scrollbars */
+            background-color: #000000; /* Black background for space */
+            font-family: 'Inter', sans-serif; /* Modern font */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh; /* Ensure body takes full viewport height */
+            color: #ffffff; /* Default text color */
+        }
+
+        canvas {
+            display: block; /* Remove extra space below canvas */
+            background-color: #0d1117; /* Darker background for the game area */
+            border-radius: 10px; /* Rounded corners for the canvas */
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.5); /* Glowing effect */
+        }
+
+        /* Styling for game overlay messages */
+        .game-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent overlay */
+            z-index: 10; /* Ensure it's on top of the canvas */
+            border-radius: 10px; /* Match canvas border-radius */
+        }
+
+        .game-overlay h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #00ffff; /* Cyan for titles */
+            text-shadow: 0 0 10px #00ffff;
+        }
+
+        .game-overlay p {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            color: #ffffff;
+        }
+
+        .game-overlay button {
+            padding: 0.75rem 2rem;
+            font-size: 1.25rem;
+            background-color: #007bff; /* Blue button */
+            color: white;
+            border: none;
+            border-radius: 8px; /* Rounded button corners */
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+            box-shadow: 0 4px 15px rgba(0, 123, 255, 0.4);
+        }
+
+        .game-overlay button:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        .game-overlay button:active {
+            transform: translateY(0);
+        }
+
+        /* Score display */
+        .score-display {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 1.5rem;
+            color: #ffffff;
+            z-index: 5;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+        }
+
+        /* Hidden utility class */
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas"></canvas>
+
+    <div id="startOverlay" class="game-overlay">
+        <h1>Spaceship Dodge</h1>
+        <p>Dodge the incoming asteroids!</p>
+        <p>Use W, A, S, D or Arrow Keys to move.</p>
+        <p>Press SPACE to fire!</p>
+        <button id="startButton">Start Game</button>
+    </div>
+
+    <div id="levelTransitionOverlay" class="game-overlay hidden">
+        <h1 id="levelUpMessage">LEVEL UP!</h1>
+        <p id="currentLevelInfo">Level 1</p>
+        <p id="currentScoreInfo">Score: 0</p>
+        <button id="continueButton">Continue</button>
+    </div>
+
+    <div id="gameOverOverlay" class="game-overlay hidden">
+        <h1>GAME OVER!</h1>
+        <p id="finalScore">Final Score: 0</p>
+        <button id="restartButton">Play Again</button>
+    </div>
+
+    <script>
+        // Get the canvas element and its 2D rendering context
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // --- Core Game State Variables ---
+        let animationId; // Stores the requestAnimationFrame ID for stopping the game loop
+        let gameState = 'START'; // Can be 'START', 'PLAYING', 'LEVEL_TRANSITION', 'GAME_OVER'
+        let score = 0;
+        let gameLevel = 0; // Current game level (0-indexed)
+        let lastObstacleSpawnTime = 0;
+        let lastShotTime = 0; // To control firing rate
+
+        // Player (Spaceship) properties
+        const player = {
+            x: 0, // Initial X position (will be set in setCanvasSize)
+            y: 0, // Initial Y position (will be set in setCanvasSize)
+            width: 40, // Width of the spaceship
+            height: 40, // Height of the spaceship
+            speed: 7, // Movement speed in pixels per frame
+            dx: 0, // Delta X (horizontal movement)
+            dy: 0  // Delta Y (vertical movement)
+        };
+
+        // Obstacles array and Bullet array
+        const obstacles = []; // All active asteroids/obstacles
+        const bullets = [];   // All active bullets/projectiles
+
+        // Asteroid size levels (radius values)
+        // Level 0: Large, Level 1: Medium, Level 2: Small
+        const ASTEROID_LEVEL_SIZES = [35, 22, 12]; // Radii for different asteroid sizes
+        const ASTEROID_SCORE_VALUES = [100, 50, 20]; // Score for destroying asteroids of each level
+
+        // Difficulty progression parameters
+        const BASE_OBSTACLE_MIN_SPEED = 0.8; // Even Slower Level 1
+        const BASE_OBSTACLE_MAX_SPEED = 2.5; // Even Slower Level 1
+        const SPEED_INCREASE_PER_LEVEL = 0.5; // How much speed increases per level
+        const BASE_SPAWN_INTERVAL = 1500; // Initial time in milliseconds between obstacle spawns (even slower)
+        const SPAWN_INTERVAL_DECREASE_PER_LEVEL = 70; // How much spawn interval decreases per level
+        const LEVEL_UP_SCORE_THRESHOLD = 2000; // Score needed to advance to the next level (Increased)
+
+        // Obstacle properties (will be dynamically updated based on level)
+        let obstacleMinSpeed = BASE_OBSTACLE_MIN_SPEED;
+        let obstacleMaxSpeed = BASE_OBSTACLE_MAX_SPEED;
+        let obstacleSpawnInterval = BASE_SPAWN_INTERVAL;
+
+        // Projectile (Bullet) properties
+        const bulletSpeed = 10; // Speed of bullets
+        const bulletRadius = 3; // Radius of bullets
+        const fireRate = 100; // Milliseconds between shots (increased rapid fire)
+
+        // Get game overlay elements (these are DOM elements)
+        const startOverlay = document.getElementById('startOverlay');
+        const startButton = document.getElementById('startButton');
+        const gameOverOverlay = document.getElementById('gameOverOverlay');
+        const restartButton = document.getElementById('restartButton');
+        const finalScoreDisplay = document.getElementById('finalScore');
+        const levelTransitionOverlay = document.getElementById('levelTransitionOverlay');
+        const levelUpMessage = document.getElementById('levelUpMessage');
+        const currentLevelInfo = document.getElementById('currentLevelInfo');
+        const currentScoreInfo = document.getElementById('currentScoreInfo');
+        const continueButton = document.getElementById('continueButton');
+
+
+        // --- Game Initialization and Setup ---
+
+        // Function to set canvas dimensions to full window size and adjust player position
+        function setCanvasSize() {
+            canvas.width = window.innerWidth * 0.9; // 90% of window width
+            canvas.height = window.innerHeight * 0.8; // 80% of window height
+
+            // Adjust player position to stay within new bounds
+            // Player starts near the bottom-center, pointing upwards
+            player.x = canvas.width / 2 - player.width / 2;
+            player.y = canvas.height - player.height - 50; // 50px from bottom
+
+            // Adjust overlay positions to match canvas
+            const canvasRect = canvas.getBoundingClientRect();
+            [startOverlay, gameOverOverlay, levelTransitionOverlay].forEach(overlay => {
+                overlay.style.width = canvasRect.width + 'px';
+                overlay.style.height = canvasRect.height + 'px';
+                overlay.style.left = canvasRect.left + 'px';
+                overlay.style.top = canvasRect.top + 'px';
+            });
+        }
+
+        // Event listener for window resize to make the canvas responsive
+        window.addEventListener('resize', setCanvasSize);
+
+        // Initial canvas size setup
+        setCanvasSize();
+
+        // --- Drawing Functions ---
+
+        // Draws the spaceship as an upward-pointing triangle (Asteroids aesthetic)
+        function drawPlayer() {
+            ctx.strokeStyle = '#00ffff'; // Cyan color for spaceship outline
+            ctx.lineWidth = 2; // Line width for vector graphics
+            ctx.beginPath();
+            // Points for an upward-pointing triangle
+            ctx.moveTo(player.x + player.width / 2, player.y); // Top point (nose)
+            ctx.lineTo(player.x, player.y + player.height); // Bottom-left point
+            ctx.lineTo(player.x + player.width, player.y + player.height); // Bottom-right point
+            ctx.closePath();
+            ctx.stroke(); // Draw the outline
+        }
+
+        // Generates an irregular polygon shape for an asteroid
+        function generateAsteroidShape(radius, numPoints) {
+            const points = [];
+            const angleIncrement = (Math.PI * 2) / numPoints;
+            for (let i = 0; i < numPoints; i++) {
+                const angle = i * angleIncrement;
+                // Randomize radius slightly to create jaggedness
+                const r = radius * (0.8 + Math.random() * 0.4); // Between 80% and 120% of base radius
+                points.push({
+                    x: r * Math.cos(angle),
+                    y: r * Math.sin(angle)
+                });
+            }
+            return points;
+        }
+
+        // Draws all active obstacles as irregular polygons (vector style asteroids)
+        function drawObstacles() {
+            obstacles.forEach(obstacle => {
+                ctx.strokeStyle = '#ff4500'; // Orange-red color for obstacle outline
+                ctx.lineWidth = 2; // Line width for vector graphics
+
+                ctx.beginPath();
+                // Move to the first point of the asteroid shape, offset by its position and radius
+                ctx.moveTo(obstacle.x + obstacle.radius + obstacle.shape[0].x, obstacle.y + obstacle.radius + obstacle.shape[0].y);
+                for (let i = 1; i < obstacle.shape.length; i++) {
+                    // Draw lines to subsequent points
+                    ctx.lineTo(obstacle.x + obstacle.radius + obstacle.shape[i].x, obstacle.y + obstacle.radius + obstacle.shape[i].y);
+                }
+                ctx.closePath(); // Close the path to form a complete polygon
+                ctx.stroke(); // Draw the outline
+            });
+        }
+
+        // Draws all active bullets as small circles
+        function drawBullets() {
+            ctx.fillStyle = '#00ff00'; // Green color for bullets
+            bullets.forEach(bullet => {
+                ctx.beginPath();
+                ctx.arc(bullet.x, bullet.y, bullet.radius, 0, Math.PI * 2);
+                ctx.fill();
+            });
+        }
+
+        // Draws the current score and level on the canvas
+        function drawScore() {
+            ctx.fillStyle = '#ffffff'; // White color for text
+            ctx.font = '24px "Inter", sans-serif';
+            ctx.textAlign = 'left';
+            ctx.fillText(`Score: ${score}`, 20, 40);
+            ctx.fillText(`Level: ${gameLevel + 1}`, 20, 70); // Display level starting from 1
+        }
+
+        // --- Update Functions ---
+
+        // Updates the player's position based on dx and dy, and keeps it within bounds
+        function updatePlayer() {
+            player.x += player.dx;
+            player.y += player.dy;
+
+            // Prevent player from going out of canvas bounds
+            if (player.x < 0) player.x = 0;
+            if (player.x + player.width > canvas.width) player.x = canvas.width - player.width;
+            if (player.y < 0) player.y = 0;
+            if (player.y + player.height > canvas.height) player.y = canvas.height - player.height;
+        }
+
+        // Creates a new obstacle (asteroid) and adds it to the obstacles array
+        // levelIndex: 0 for large, 1 for medium, 2 for small
+        function createObstacle(x, y, levelIndex, initialDx = 0, initialDy = 0) {
+            const radius = ASTEROID_LEVEL_SIZES[levelIndex];
+            const scoreValue = ASTEROID_SCORE_VALUES[levelIndex];
+            const numPoints = Math.floor(Math.random() * 6) + 5; // 5 to 10 points for asteroid shape
+            const shape = generateAsteroidShape(radius, numPoints);
+
+            obstacles.push({
+                x: x,
+                y: y,
+                radius: radius, // Used for bounding box collision
+                speed: Math.random() * (obstacleMaxSpeed - obstacleMinSpeed) + obstacleMinSpeed, // Use current level speeds
+                dx: initialDx, // Initial horizontal velocity
+                dy: initialDy, // Initial vertical velocity
+                shape: shape, // The generated irregular polygon points
+                level: levelIndex, // Store the level of the asteroid
+                scoreValue: scoreValue
+            });
+        }
+
+        // Updates positions of all obstacles and removes off-screen ones
+        function updateObstacles() {
+            for (let i = 0; i < obstacles.length; i++) {
+                obstacles[i].y += obstacles[i].speed + obstacles[i].dy; // Move obstacle downwards, plus its own dy
+                obstacles[i].x += obstacles[i].dx; // Move obstacle horizontally
+
+                // Remove obstacle if it goes off-screen
+                if (obstacles[i].y > canvas.height || obstacles[i].x + obstacles[i].radius * 2 < 0 || obstacles[i].x > canvas.width) {
+                    obstacles.splice(i, 1);
+                    i--; // Decrement index to account for removed element
+                    // No score for obstacles that simply pass by, only for destroyed ones
+                }
+            }
+
+            // Spawn new obstacles periodically
+            const currentTime = Date.now();
+            if (currentTime - lastObstacleSpawnTime > obstacleSpawnInterval) {
+                // Spawn new large asteroids from the top (level 0)
+                createObstacle(Math.random() * (canvas.width - ASTEROID_LEVEL_SIZES[0] * 2), -ASTEROID_LEVEL_SIZES[0] * 2, 0);
+                lastObstacleSpawnTime = currentTime;
+            }
+        }
+
+        // Creates a new bullet at the player's position
+        function fireBullet() {
+            const currentTime = Date.now();
+            if (currentTime - lastShotTime > fireRate) {
+                bullets.push({
+                    x: player.x + player.width / 2, // Center of spaceship
+                    y: player.y, // Top of spaceship
+                    radius: bulletRadius,
+                    speed: bulletSpeed
+                });
+                lastShotTime = currentTime;
+            }
+        }
+
+        // Updates positions of all bullets and removes off-screen ones
+        function updateBullets() {
+            for (let i = 0; i < bullets.length; i++) {
+                bullets[i].y -= bullets[i].speed; // Move bullet upwards
+
+                // Remove bullet if it goes off-screen to the top
+                if (bullets[i].y + bullets[i].radius < 0) {
+                    bullets.splice(i, 1);
+                    i--; // Decrement index
+                }
+            }
+        }
+
+        // Checks for collisions between the player and any obstacle
+        function checkPlayerObstacleCollisions() {
+            obstacles.forEach(obstacle => {
+                const obstacleLeft = obstacle.x;
+                const obstacleRight = obstacle.x + obstacle.radius * 2;
+                const obstacleTop = obstacle.y;
+                const obstacleBottom = obstacle.y + obstacle.radius * 2;
+
+                if (
+                    player.x < obstacleRight &&
+                    player.x + player.width > obstacleLeft &&
+                    player.y < obstacleBottom &&
+                    player.y + player.height > obstacleTop
+                ) {
+                    // Collision detected! End the game.
+                    endGame();
+                }
+            });
+        }
+
+        // Checks for collisions between bullets and obstacles
+        function checkBulletObstacleCollisions() {
+            for (let i = bullets.length - 1; i >= 0; i--) {
+                const bullet = bullets[i];
+                for (let j = obstacles.length - 1; j >= 0; j--) {
+                    const obstacle = obstacles[j];
+
+                    // Simple circle-rectangle collision for bullet-asteroid
+                    // Bullet is a circle, asteroid bounding box is a rectangle
+                    const distX = Math.abs(bullet.x - (obstacle.x + obstacle.radius));
+                    const distY = Math.abs(bullet.y - (obstacle.y + obstacle.radius));
+
+                    if (distX > (obstacle.radius + bullet.radius)) continue;
+                    if (distY > (obstacle.radius + bullet.radius)) continue;
+
+                    if (distX <= (obstacle.radius) || distY <= (obstacle.radius)) {
+                        // Collision!
+                        bullets.splice(i, 1); // Remove bullet
+                        
+                        // Asteroid breakup logic
+                        if (obstacle.level < ASTEROID_LEVEL_SIZES.length - 1) { // If not the smallest level
+                            const nextLevel = obstacle.level + 1;
+                            const numNewAsteroids = Math.floor(Math.random() * 2) + 2; // 2 or 3 new asteroids
+                            for (let k = 0; k < numNewAsteroids; k++) {
+                                // Scatter further: random angle and *reduced* speed for new pieces
+                                const angle = Math.random() * Math.PI * 2; // Full 360 degrees
+                                const scatterSpeed = (Math.random() * 1.5) + 0.5; // Even more reduced random speed for scattering (0.5-2.0)
+                                const initialDx = Math.cos(angle) * scatterSpeed;
+                                const initialDy = Math.sin(angle) * scatterSpeed;
+                                // Spawn new asteroids at the old asteroid's center with random offsets
+                                createObstacle(obstacle.x + obstacle.radius, obstacle.y + obstacle.radius, nextLevel, initialDx, initialDy);
+                            }
+                        }
+                        obstacles.splice(j, 1); // Remove old asteroid
+                        score += obstacle.scoreValue; // Add score for destroying this piece
+                        break; // Break inner loop as bullet is gone
+                    }
+                }
+            }
+        }
+
+        // --- Game Control Functions ---
+
+        // Function to update game difficulty based on level
+        function updateDifficulty() {
+            obstacleMinSpeed = BASE_OBSTACLE_MIN_SPEED + (gameLevel * SPEED_INCREASE_PER_LEVEL);
+            obstacleMaxSpeed = BASE_OBSTACLE_MAX_SPEED + (gameLevel * SPEED_INCREASE_PER_LEVEL);
+            obstacleSpawnInterval = Math.max(100, BASE_SPAWN_INTERVAL - (gameLevel * SPAWN_INTERVAL_DECREASE_PER_LEVEL)); // Cap at 100ms
+        }
+
+        // Main game loop
+        function gameLoop() {
+            // Only run game logic if in 'PLAYING' state
+            if (gameState !== 'PLAYING') {
+                animationId = requestAnimationFrame(gameLoop); // Keep requesting to check state
+                return;
+            }
+
+            // Check for level up
+            const newLevel = Math.floor(score / LEVEL_UP_SCORE_THRESHOLD);
+            if (newLevel > gameLevel) {
+                gameLevel = newLevel;
+                updateDifficulty(); // Update speeds and spawn rate
+                // Transition to level up screen
+                gameState = 'LEVEL_TRANSITION';
+                cancelAnimationFrame(animationId); // Stop current game loop
+                obstacles.length = 0; // Clear all asteroids
+                bullets.length = 0; // Clear all bullets
+                showLevelTransitionScreen();
+                return; // Stop processing this frame
+            }
+
+            // Clear the entire canvas for the next frame
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Update game elements
+            updatePlayer();
+            updateObstacles();
+            updateBullets();
+
+            // Draw game elements
+            drawPlayer();
+            drawObstacles();
+            drawBullets(); // Draw bullets after obstacles so they appear on top
+            drawScore();
+
+            // Check for collisions
+            checkPlayerObstacleCollisions();
+            checkBulletObstacleCollisions();
+
+            // Request the next animation frame if the game is still running
+            animationId = requestAnimationFrame(gameLoop);
+        }
+
+        // Shows the appropriate overlay based on game state
+        function showOverlay(state) {
+            startOverlay.classList.add('hidden');
+            gameOverOverlay.classList.add('hidden');
+            levelTransitionOverlay.classList.add('hidden');
+
+            if (state === 'START') {
+                startOverlay.classList.remove('hidden');
+            } else if (state === 'GAME_OVER') {
+                finalScoreDisplay.textContent = `Final Score: ${score} (Level ${gameLevel + 1})`;
+                gameOverOverlay.classList.remove('hidden');
+            } else if (state === 'LEVEL_TRANSITION') {
+                levelUpMessage.textContent = `LEVEL ${gameLevel + 1} !`;
+                currentLevelInfo.textContent = `Get Ready!`;
+                currentScoreInfo.textContent = `Score: ${score}`;
+                levelTransitionOverlay.classList.remove('hidden');
+            }
+        }
+
+        // Starts the game (or continues after level up)
+        function startGame() {
+            gameState = 'PLAYING';
+            score = 0; // Reset score only on initial start
+            gameLevel = 0; // Reset level only on initial start
+            updateDifficulty(); // Set initial difficulty
+            obstacles.length = 0; // Clear existing obstacles
+            bullets.length = 0; // Clear existing bullets
+            // Reset player position to bottom-center
+            player.x = canvas.width / 2 - player.width / 2;
+            player.y = canvas.height - player.height - 50;
+            player.dx = 0;
+            player.dy = 0;
+            lastObstacleSpawnTime = Date.now(); // Reset spawn timer
+            lastShotTime = 0; // Reset shot timer
+
+            showOverlay('PLAYING'); // Hide all overlays
+            // Start the game loop
+            animationId = requestAnimationFrame(gameLoop);
+        }
+
+        // Continues the game after a level transition
+        function continueGame() {
+            gameState = 'PLAYING';
+            lastObstacleSpawnTime = Date.now(); // Reset spawn timer for new level
+            showOverlay('PLAYING'); // Hide level transition overlay
+            animationId = requestAnimationFrame(gameLoop); // Resume game loop
+        }
+
+        // Ends the game
+        function endGame() {
+            gameState = 'GAME_OVER';
+            cancelAnimationFrame(animationId); // Stop the animation loop
+            showOverlay('GAME_OVER'); // Show game over overlay
+        }
+
+        // Shows the level transition screen
+        function showLevelTransitionScreen() {
+            showOverlay('LEVEL_TRANSITION');
+        }
+
+        // --- Event Listeners ---
+
+        // Keyboard input for player movement and firing
+        document.addEventListener('keydown', (e) => {
+            if (gameState !== 'PLAYING') return; // Only allow input if game is playing
+
+            switch (e.key) {
+                case 'ArrowUp':
+                case 'w':
+                    player.dy = -player.speed;
+                    break;
+                case 'ArrowDown':
+                case 's':
+                    player.dy = player.speed;
+                    break;
+                case 'ArrowLeft':
+                case 'a':
+                    player.dx = -player.speed;
+                    break;
+                case 'ArrowRight':
+                case 'd':
+                    player.dx = player.speed;
+                    break;
+                case ' ': // Spacebar
+                    fireBullet();
+                    break;
+            }
+        });
+
+        // Stop player movement when key is released
+        document.addEventListener('keyup', (e) => {
+            if (gameState !== 'PLAYING') return;
+
+            switch (e.key) {
+                case 'ArrowUp':
+                case 'w':
+                case 'ArrowDown':
+                case 's':
+                    player.dy = 0; // Stop vertical movement
+                    break;
+                case 'ArrowLeft':
+                case 'a':
+                case 'ArrowRight':
+                case 'd':
+                    player.dx = 0; // Stop horizontal movement
+                    break;
+            }
+        });
+
+        // Start game button click listener
+        startButton.addEventListener('click', startGame);
+
+        // Restart game button click listener
+        restartButton.addEventListener('click', startGame);
+
+        // Continue button click listener for level transition
+        continueButton.addEventListener('click', continueGame);
+
+        // Initial call to set canvas size and show start screen
+        window.onload = function() {
+            setCanvasSize();
+            showOverlay('START'); // Ensure start overlay is visible on load
+        };
+
+    </script>
+</body>
+</html>

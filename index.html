@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spaceship Dodge</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+    <canvas id="gameCanvas"></canvas>
+
+    <div id="startOverlay" class="game-overlay">
+        <h1>Spaceship Dodge</h1>
+        <p>Dodge the incoming asteroids!</p>
+        <p>Use W, A, S, D or Arrow Keys to move.</p>
+        <p>Press SPACE to fire!</p>
+        <button id="startButton">Start Game</button>
+    </div>
+
+    <div id="levelTransitionOverlay" class="game-overlay hidden">
+        <h1 id="levelUpMessage">LEVEL UP!</h1>
+        <p id="currentLevelInfo">Level 1</p>
+        <p id="currentScoreInfo">Score: 0</p>
+        <button id="continueButton">Continue</button>
+    </div>
+
+    <div id="gameOverOverlay" class="game-overlay hidden">
+        <h1>GAME OVER!</h1>
+        <p id="finalScore">Final Score: 0</p>
+        <button id="restartButton">Play Again</button>
+    </div>
+
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>
