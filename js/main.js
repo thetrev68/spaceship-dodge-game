@@ -31,7 +31,7 @@ function init() {
 
     startButton.addEventListener('click', () => startGame(canvas));
     restartButton.addEventListener('click', () => startGame(canvas));
-    continueButton.addEventListener('click', continueGame);
+    continueButton.addEventListener('click', () => continueGame(canvas));
 
     // Show start overlay on load
     window.onload = () => {

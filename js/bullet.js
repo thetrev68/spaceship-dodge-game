@@ -8,6 +8,7 @@
 */
 
 import { bullets, bulletSpeed, bulletRadius, lastShotTime, player } from './state.js';
+import { playSound } from './soundManager.js';
 
 export function fireBullet() {
     const currentTime = Date.now();
@@ -19,6 +20,7 @@ export function fireBullet() {
             speed: bulletSpeed
         });
         lastShotTime.value = currentTime;
+        playSound('fire');
     }
 }
 

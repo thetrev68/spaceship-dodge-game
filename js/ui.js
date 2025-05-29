@@ -13,12 +13,14 @@ const startOverlay = document.getElementById('startOverlay');
 const gameOverOverlay = document.getElementById('gameOverOverlay');
 const finalScoreDisplay = document.getElementById('finalScore');
 const levelTransitionOverlay = document.getElementById('levelTransitionOverlay');
+const pauseOverlay = document.getElementById('pauseOverlay');
 const levelUpMessage = document.getElementById('levelUpMessage');
 const currentLevelInfo = document.getElementById('currentLevelInfo');
 const currentScoreInfo = document.getElementById('currentScoreInfo');
 
 export function showOverlay(state, score = 0, level = 0) {
     startOverlay.classList.add('hidden');
+    pauseOverlay.classList.add('hidden');
     gameOverOverlay.classList.add('hidden');
     levelTransitionOverlay.classList.add('hidden');
 
@@ -27,6 +29,7 @@ export function showOverlay(state, score = 0, level = 0) {
             startOverlay.classList.remove('hidden');
             break;
         case 'GAME_OVER':
+            import('./soundManager.js').then(m => m.stopMusic());
             finalScoreDisplay.textContent = `Final Score: ${score} (Level ${level + 1})`;
             gameOverOverlay.classList.remove('hidden');
             break;
@@ -36,7 +39,16 @@ export function showOverlay(state, score = 0, level = 0) {
             currentScoreInfo.textContent = `Score: ${score}`;
             levelTransitionOverlay.classList.remove('hidden');
             break;
-    }
+        case 'PAUSED':
+            import('./soundManager.js').then(m => m.stopMusic());
+            pauseOverlay.classList.remove('hidden');
+            break;
+        case 'PLAYING':
+            import('./soundManager.js').then(m => m.startMusic());
+            break;
+        default:
+            break;
+        }
 }
 
 export function initializeCanvas(canvas) {
@@ -46,7 +58,7 @@ export function initializeCanvas(canvas) {
 
 export function setOverlayDimensions(canvas) {
     const canvasRect = canvas.getBoundingClientRect();
-    [startOverlay, gameOverOverlay, levelTransitionOverlay].forEach(overlay => {
+    [startOverlay, gameOverOverlay, levelTransitionOverlay, pauseOverlay].forEach(overlay => {
         overlay.style.width = canvasRect.width + 'px';
         overlay.style.height = canvasRect.height + 'px';
         overlay.style.left = canvasRect.left + 'px';

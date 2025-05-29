@@ -10,8 +10,8 @@
 export const gameState = { value: 'START' }; // 'START', 'PLAYING', 'LEVEL_TRANSITION', 'GAME_OVER'
 export const score = { value: 0 };
 export const gameLevel = { value: 0 };
-export let lastObstacleSpawnTime = 0;
-export let lastShotTime = 0;
+export const lastObstacleSpawnTime = { value: 0 };
+export const lastShotTime = { value: 0 };
 
 export const player = {
     x: 0,

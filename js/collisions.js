@@ -10,6 +10,7 @@
 import { bullets, obstacles, ASTEROID_LEVEL_SIZES, player, score } from './state.js';
 import { createObstacle } from './asteroid.js';
 import { endGame } from './loop.js';
+import { playSound } from './soundManager.js';
 
 export function checkPlayerObstacleCollisions() {
     obstacles.forEach(obstacle => {
@@ -24,6 +25,7 @@ export function checkPlayerObstacleCollisions() {
             player.y < bottom &&
             player.y + player.height > top
         ) {
+            playSound('gameover');
             endGame();
         }
     });
@@ -42,6 +44,7 @@ export function checkBulletObstacleCollisions(scoreRef = score) {
 
             if (distX <= obstacle.radius || distY <= obstacle.radius) {
                 bullets.splice(i, 1);
+                playSound('break');
                 if (obstacle.level < ASTEROID_LEVEL_SIZES.length - 1) {
                     const nextLevel = obstacle.level + 1;
                     const numNew = Math.floor(Math.random() * 2) + 2;

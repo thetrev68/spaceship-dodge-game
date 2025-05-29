@@ -12,6 +12,14 @@ import { gameState, player } from './state.js';
 
 export function setupInput() {
     document.addEventListener('keydown', (e) => {
+        // Allow pause toggle even when not PLAYING
+        if (e.key === 'p') {
+            if (gameState.value !== 'PLAYING' && gameState.value !== 'PAUSED') return;
+            const nextState = gameState.value === 'PLAYING' ? 'PAUSED' : 'PLAYING';
+            gameState.value = nextState;
+            import('./ui.js').then(m => m.showOverlay(nextState));
+            return;
+        }
         if (gameState.value !== 'PLAYING') return;
 
         switch (e.key) {
