@@ -1,7 +1,7 @@
 /*
     soundManager.js
     Created: 2025-05-28
-    Author: ChatGPT + [Your Name Here]
+    Author: ChatGPT + Trevor Clark
 
     Notes:
     Modular audio manager for game sound effects and music.
@@ -15,20 +15,21 @@ const sounds = {
     levelup: new Audio('assets/sounds/levelup.wav')
 };
 
-// Loop background music
+let currentVolume = 0.4;
+
 sounds.bgm.loop = true;
+sounds.bgm.volume = currentVolume;
 
 export function playSound(name) {
     if (sounds[name]) {
-        // Clone sound if it needs to play overlapping instances
         const s = sounds[name].cloneNode();
-        s.volume = 0.7; // You can adjust individual volumes
+        s.volume = currentVolume;
         s.play();
     }
 }
 
 export function startMusic() {
-    sounds.bgm.volume = 0.4;
+    sounds.bgm.volume = currentVolume;
     sounds.bgm.play();
 }
 
@@ -43,4 +44,9 @@ export function muteAll() {
 
 export function unmuteAll() {
     Object.values(sounds).forEach(audio => audio.muted = false);
+}
+
+export function setVolume(val) {
+    currentVolume = val;
+    sounds.bgm.volume = val;
 }

@@ -34,7 +34,7 @@ export function createAudioControls() {
     volumeSlider.value = '0.4';
     volumeSlider.oninput = (e) => {
         const val = parseFloat(e.target.value);
-        document.querySelectorAll('audio').forEach(a => a.volume = val);
+        import('./soundManager.js').then(m => m.setVolume(val));
     };
 
     container.appendChild(muteBtn);

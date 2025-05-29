@@ -20,6 +20,7 @@ let animationId;
 let score = scoreVal;
 let gameLevel = levelVal;
 let obstacleSpawnInterval = BASE_SPAWN_INTERVAL;
+let pendingLevelUp = false;
 const scorePopups = [];
 
 let firing = false;
@@ -93,19 +94,20 @@ export function gameLoop(canvas) {
     }
 
     const newLevel = Math.floor(scoreVal.value / LEVEL_UP_SCORE_THRESHOLD);
-    if (newLevel > gameLevel) {
-        gameLevel = newLevel;
-        updateAsteroids(gameLevel);
-        obstacleSpawnInterval = Math.max(100, BASE_SPAWN_INTERVAL - (gameLevel * SPAWN_INTERVAL_DECREASE_PER_LEVEL));
+    if (newLevel > gameLevel.value && !pendingLevelUp) {
+        pendingLevelUp = true;
+    }
+
+    if (pendingLevelUp && obstacles.length === 0) {
+        gameLevel.value = newLevel;
         gameState.value = 'LEVEL_TRANSITION';
         firing = false;
         cancelAnimationFrame(animationId);
-    firing = false;
-    import('./soundManager.js').then(m => m.stopMusic());
-    import('./soundManager.js').then(m => m.stopMusic());
+        import('./soundManager.js').then(m => m.playSound('levelup'));
+        import('./soundManager.js').then(m => m.stopMusic());
         bullets.length = 0;
-        obstacles.length = 0;
-        showOverlay('LEVEL_TRANSITION', score.value, gameLevel);
+        pendingLevelUp = false;
+        showOverlay('LEVEL_TRANSITION', score.value, gameLevel.value);
         return;
     }
 
@@ -132,8 +134,9 @@ export function startGame(canvas) {
     setupMouseControls(canvas);
     gameState.value = 'PLAYING';
     score.value = 0;
-    gameLevel = 0;
-    updateAsteroids(gameLevel);
+    gameLevel.value = 0;
+    pendingLevelUp = false;
+    updateAsteroids(gameLevel.value);
     obstacleSpawnInterval = BASE_SPAWN_INTERVAL;
     bullets.length = 0;
     obstacles.length = 0;
@@ -142,6 +145,7 @@ export function startGame(canvas) {
     player.dx = 0;
     player.dy = 0;
     lastObstacleSpawnTime.value = Date.now();
+    pendingLevelUp = false;
 
     showOverlay('PLAYING');
     createAudioControls();
@@ -160,5 +164,5 @@ export function endGame() {
     firing = false;
     gameState.value = 'GAME_OVER';
     cancelAnimationFrame(animationId);
-    showOverlay('GAME_OVER', score.value, gameLevel);
+    showOverlay('GAME_OVER', score.value, gameLevel.value);
 }

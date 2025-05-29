@@ -1,65 +1,64 @@
-# Spaceship Dodge Game
+# 🚀 Spaceship Dodge
 
-A browser-based asteroid dodge and shoot game where you control a spaceship to avoid and destroy falling asteroids. Built using HTML5, Tailwind CSS, and modular JavaScript.
-
-## 🚀 Live Demo
-
-You can play the game at: [https://thetrev68.github.io/spaceship-dodge-game/](https://thetrev68.github.io/spaceship-dodge-game/)
-
-## 🎮 Controls
-
-- Move: `W`, `A`, `S`, `D` or Arrow Keys
-- Shoot: `Spacebar`
-
-## 🧩 Features
-
-- Responsive canvas and overlay UI
-- Level progression with increasing difficulty
-- Asteroid breakup into smaller pieces upon destruction
-- Vector-style graphics with dynamic obstacle generation
-
-## 🗂️ Folder Structure
-
-```
-spaceship-dodge-game/
-│
-├── index.html                # Main HTML entry point
-├── styles/
-│   └── main.css              # All custom styling
-├── js/
-│   ├── main.js               # Entry script: setup and event binding
-│   ├── loop.js               # Game loop and core control functions
-│   ├── ui.js                 # Overlay handling and canvas resizing
-│   ├── controls.js           # Keyboard input handlers
-│   ├── asteroid.js           # Asteroid logic and rendering
-│   ├── bullet.js             # Bullet logic and rendering
-│   ├── collisions.js         # Collision detection functions
-│   └── state.js              # Game state and config constants
-├── .nojekyll                 # Disables Jekyll processing on GitHub Pages
-└── README.md                 # Project overview and notes
-```
-
-## 🧭 Roadmap & Expansion Ideas
-
-- Add sound effects and background music
-- Introduce power-ups (shields, rapid fire, etc.)
-- Implement touch controls for mobile
-- Add player lives and high score tracking
-- Improve visuals with animations and particles
-
-## 🛠️ Setup
-
-To run locally:
-```bash
-git clone https://github.com/thetrev68/spaceship-dodge-game.git
-cd spaceship-dodge-game
-# Open index.html in your browser
-```
-
-## 📄 License
-
-MIT License
+A fast-paced arcade-style web game where you pilot a spaceship, dodge and destroy falling asteroids, and level up through escalating challenges. Designed for mouse and keyboard play.
 
 ---
 
-This README helps both you and me manage and extend the game in future sessions. Let me know when you're ready to implement new features!
+## 🎮 Features
+- **Vector-style spaceship** with concave rear and trapezoidal engine
+- **Multiple asteroid sizes** that break apart when hit
+- **Fragment tracking & bonuses** for fully shattering large asteroids
+- **Score popups** that float on each successful hit
+- **Background music and sound effects** with mute and volume control
+- **Pause/Resume** via right-click or `P` key
+- **Mouse + keyboard support** for movement and firing
+- **Level progression** every 2000 points, with transitions between waves
+- **Quit confirmation prompt** to return to the start
+
+---
+
+## 📁 Folder Structure
+```
+spaceship-dodge-game/
+│
+├── index.html               # Main UI and overlays
+├── styles/
+│   └── main.css             # Styling for canvas and overlays
+├── js/
+│   ├── main.js              # Game bootstrap and button listeners
+│   ├── loop.js              # Main game loop and control flow
+│   ├── state.js             # Shared game state and constants
+│   ├── player.js            # Player rendering and logic
+│   ├── asteroid.js          # Obstacle generation, tracking, IDs
+│   ├── bullet.js            # Bullet creation and update
+│   ├── collisions.js        # Collision detection and bonus logic
+│   ├── ui.js                # Overlay rendering, game state prompts
+│   ├── scoreDisplay.js      # HUD score/level drawing
+│   ├── audioControls.js     # Volume slider and mute/unmute
+│   └── soundManager.js      # Global sound handling
+└── assets/
+    └── sounds/              # All .wav and .mp3 sound files
+```
+
+---
+
+## 🐞 Known Issues
+- `gameLevel.value` displays correctly, but level HUD may not reflect real-time progress
+- Level-up detection waits for obstacle clear but may trigger oddly if fragments stall
+- Rapid fire sound continues briefly after pause without cleanup
+- Rare race condition with multiple bullets hitting same asteroid simultaneously
+
+---
+
+## 🌟 Future Enhancements
+- ⭐ **Rotating asteroids** with canvas transforms
+- ✨ **Animated starfield background**
+- 🚀 **Spaceship redesign** with thrust animation and color trails
+- 🧠 AI-based or pattern-based asteroid swarms
+- 📈 High score leaderboard (local or Firebase-based)
+- 🕹️ Touch support for mobile play
+
+---
+
+## ✅ Status
+This is a complete vertical slice ready for expansion. Core mechanics, audio/visuals, and game flow are all functional and modular. Great job, Captain! 🛸
