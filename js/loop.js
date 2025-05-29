@@ -7,15 +7,13 @@
     Main game loop and control functions (start, continue, end).
 */
 
-import { player, gameState, score as scoreVal, gameLevel as levelVal, lastObstacleSpawnTime, bullets, obstacles, BASE_SPAWN_INTERVAL, SPAWN_INTERVAL_DECREASE_PER_LEVEL, LEVEL_UP_SCORE_THRESHOLD } from './state.js';
+import { player, gameState, score, gameLevel, lastObstacleSpawnTime, bullets, obstacles, BASE_SPAWN_INTERVAL, SPAWN_INTERVAL_DECREASE_PER_LEVEL, LEVEL_UP_SCORE_THRESHOLD } from './state.js';
 import { updateBullets, drawBullets } from './bullet.js';
 import { updateObstacles, drawObstacles, updateDifficulty as updateAsteroids } from './asteroid.js';
 import { checkBulletObstacleCollisions, checkPlayerObstacleCollisions } from './collisions.js';
 import { showOverlay } from './ui.js';
 
 let animationId;
-let score = { value: scoreVal };
-let gameLevel = levelVal;
 let obstacleSpawnInterval = BASE_SPAWN_INTERVAL;
 
 function drawScore(ctx) {
@@ -23,7 +21,7 @@ function drawScore(ctx) {
     ctx.font = '24px "Inter", sans-serif';
     ctx.textAlign = 'left';
     ctx.fillText(`Score: ${score.value}`, 20, 40);
-    ctx.fillText(`Level: ${gameLevel + 1}`, 20, 70);
+    ctx.fillText(`Level: ${gameLevel.value + 1}`, 20, 70);
 }
 
 export function gameLoop(canvas) {
@@ -35,15 +33,15 @@ export function gameLoop(canvas) {
     }
 
     const newLevel = Math.floor(score.value / LEVEL_UP_SCORE_THRESHOLD);
-    if (newLevel > gameLevel) {
-        gameLevel = newLevel;
-        updateAsteroids(gameLevel);
-        obstacleSpawnInterval = Math.max(100, BASE_SPAWN_INTERVAL - (gameLevel * SPAWN_INTERVAL_DECREASE_PER_LEVEL));
+    if (newLevel > gameLevel.value) {
+        gameLevel.value = newLevel;
+        updateAsteroids(gameLevel.value);
+        obstacleSpawnInterval = Math.max(100, BASE_SPAWN_INTERVAL - (gameLevel.value * SPAWN_INTERVAL_DECREASE_PER_LEVEL));
         gameState.value = 'LEVEL_TRANSITION';
         cancelAnimationFrame(animationId);
         bullets.length = 0;
         obstacles.length = 0;
-        showOverlay('LEVEL_TRANSITION', score.value, gameLevel);
+        showOverlay('LEVEL_TRANSITION', score.value, gameLevel.value);
         return;
     }
 
@@ -89,8 +87,8 @@ function drawPlayer(ctx) {
 export function startGame(canvas) {
     gameState.value = 'PLAYING';
     score.value = 0;
-    gameLevel = 0;
-    updateAsteroids(gameLevel);
+    gameLevel.value = 0;
+    updateAsteroids(gameLevel.value);
     obstacleSpawnInterval = BASE_SPAWN_INTERVAL;
     bullets.length = 0;
     obstacles.length = 0;
@@ -114,5 +112,5 @@ export function continueGame(canvas) {
 export function endGame() {
     gameState.value = 'GAME_OVER';
     cancelAnimationFrame(animationId);
-    showOverlay('GAME_OVER', score.value, gameLevel);
+    showOverlay('GAME_OVER', score.value, gameLevel.value);
 }
