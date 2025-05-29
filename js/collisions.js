@@ -1,16 +1,17 @@
 /*
     collisions.js
     Created: 2025-05-28
-    Author: ChatGPT + Trevor Clark
+    Author: ChatGPT + [Your Name Here]
 
     Notes:
     Collision detection for bullets vs. asteroids and player vs. asteroids.
 */
 
-import { bullets, obstacles, ASTEROID_LEVEL_SIZES, player, score } from './state.js';
+import { bullets, obstacles, ASTEROID_LEVEL_SIZES } from './state.js';
 import { createObstacle } from './asteroid.js';
-import { endGame } from './loop.js';
-import { playSound } from './soundManager.js';
+import { player } from './state.js';
+import { gameState } from './state.js';
+import { endGame, addScorePopup } from './loop.js';
 
 export function checkPlayerObstacleCollisions() {
     obstacles.forEach(obstacle => {
@@ -25,13 +26,12 @@ export function checkPlayerObstacleCollisions() {
             player.y < bottom &&
             player.y + player.height > top
         ) {
-            playSound('gameover');
             endGame();
         }
     });
 }
 
-export function checkBulletObstacleCollisions(scoreRef = score) {
+export function checkBulletObstacleCollisions(scoreRef) {
     for (let i = bullets.length - 1; i >= 0; i--) {
         const bullet = bullets[i];
         for (let j = obstacles.length - 1; j >= 0; j--) {
@@ -44,7 +44,6 @@ export function checkBulletObstacleCollisions(scoreRef = score) {
 
             if (distX <= obstacle.radius || distY <= obstacle.radius) {
                 bullets.splice(i, 1);
-                playSound('break');
                 if (obstacle.level < ASTEROID_LEVEL_SIZES.length - 1) {
                     const nextLevel = obstacle.level + 1;
                     const numNew = Math.floor(Math.random() * 2) + 2;
@@ -57,6 +56,7 @@ export function checkBulletObstacleCollisions(scoreRef = score) {
                     }
                 }
                 scoreRef.value += obstacle.scoreValue;
+                addScorePopup(`+${obstacle.scoreValue}`, obstacle.x + obstacle.radius, obstacle.y);
                 obstacles.splice(j, 1);
                 break;
             }

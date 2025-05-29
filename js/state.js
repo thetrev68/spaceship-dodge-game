@@ -28,13 +28,13 @@ export const bullets = [];
 
 // Constants
 export const ASTEROID_LEVEL_SIZES = [35, 22, 12];
-export const ASTEROID_SCORE_VALUES = [100, 50, 20];
+export const ASTEROID_SCORE_VALUES = [20, 50, 100];
 export const BASE_OBSTACLE_MIN_SPEED = 0.8;
 export const BASE_OBSTACLE_MAX_SPEED = 2.5;
 export const SPEED_INCREASE_PER_LEVEL = 0.5;
 export const BASE_SPAWN_INTERVAL = 1500;
 export const SPAWN_INTERVAL_DECREASE_PER_LEVEL = 70;
-export const LEVEL_UP_SCORE_THRESHOLD = 2000;
+export const LEVEL_UP_SCORE_THRESHOLD = 5000;
 export const bulletSpeed = 10;
 export const bulletRadius = 3;
 export const fireRate = 100;

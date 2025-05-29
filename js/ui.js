@@ -56,6 +56,21 @@ export function initializeCanvas(canvas) {
     canvas.height = window.innerHeight * 0.8;
 }
 
+export function quitGame() {
+    const confirmed = confirm('Are you sure you want to quit the game?');
+    if (!confirmed) return;
+
+    import('./soundManager.js').then(m => m.stopMusic());
+    import('./state.js').then(state => {
+        state.gameState.value = 'START';
+        state.score.value = 0;
+        state.gameLevel.value = 0;
+        state.bullets.length = 0;
+        state.obstacles.length = 0;
+    });
+    showOverlay('START');
+}
+
 export function setOverlayDimensions(canvas) {
     const canvasRect = canvas.getBoundingClientRect();
     [startOverlay, gameOverOverlay, levelTransitionOverlay, pauseOverlay].forEach(overlay => {

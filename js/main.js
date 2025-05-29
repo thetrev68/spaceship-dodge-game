@@ -10,15 +10,14 @@
 
 import { initializeCanvas, setOverlayDimensions } from './ui.js';
 import { setupInput } from './controls.js';
-import { gameLoop, startGame, continueGame, endGame } from './loop.js';
+import { startGame, continueGame } from './loop.js';
 
-// DOM elements
 const canvas = document.getElementById('gameCanvas');
 const startButton = document.getElementById('startButton');
 const restartButton = document.getElementById('restartButton');
 const continueButton = document.getElementById('continueButton');
+const quitButton = document.getElementById('quitButton');
 
-// Initialize canvas and overlays
 function init() {
     initializeCanvas(canvas);
     setOverlayDimensions(canvas);
@@ -33,7 +32,10 @@ function init() {
     restartButton.addEventListener('click', () => startGame(canvas));
     continueButton.addEventListener('click', () => continueGame(canvas));
 
-    // Show start overlay on load
+    if (quitButton) {
+        quitButton.addEventListener('click', () => import('./ui.js').then(m => m.quitGame()));
+    }
+
     window.onload = () => {
         import('./ui.js').then(module => {
             module.showOverlay('START');
