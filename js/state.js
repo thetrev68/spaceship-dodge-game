@@ -3,6 +3,9 @@
     Created: 2025-05-28
     Author: ChatGPT + Trevor Clark
 
+    Updates:
+        2025-06-01: Added allowSpawning flag to coordinate asteroid generation across modules.
+
     Notes:
     Central store for game state and shared objects.
 */
@@ -12,6 +15,8 @@ export const score = { value: 0 };
 export const gameLevel = { value: 0 };
 export const lastObstacleSpawnTime = { value: 0 };
 export const lastShotTime = { value: 0 };
+export const levelStartTime = { value: 0 };
+export const allowSpawning = { value: true }; // Used to control asteroid spawning
 
 export const player = {
     x: 0,

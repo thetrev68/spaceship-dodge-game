@@ -3,6 +3,9 @@
     Created: 2025-05-28
     Author: ChatGPT + Trevor Clark
 
+    Updates:
+        2025-06-01: Added support for conditional spawning using `allowSpawning` flag.
+
     Notes:
     Handles asteroid creation, updates, rendering, and splitting upon bullet impact.
 */
@@ -73,8 +76,9 @@ export function createObstacle(x, y, levelIndex, initialDx = 0, initialDy = 0, p
     });
 }
 
-export function updateObstacles(canvasWidth, canvasHeight, spawnInterval, lastSpawnTimeRef) {
+export function updateObstacles(canvasWidth, canvasHeight, spawnInterval, lastSpawnTimeRef, allowSpawning = true) {
     const now = Date.now();
+
     for (let i = 0; i < obstacles.length; i++) {
         const o = obstacles[i];
         o.y += o.speed + o.dy;
@@ -85,8 +89,12 @@ export function updateObstacles(canvasWidth, canvasHeight, spawnInterval, lastSp
         }
     }
 
-    if (now - lastSpawnTimeRef.value > spawnInterval) {
-        createObstacle(Math.random() * (canvasWidth - ASTEROID_LEVEL_SIZES[0] * 2), -ASTEROID_LEVEL_SIZES[0] * 2, 0);
+    if (allowSpawning && now - lastSpawnTimeRef.value > spawnInterval) {
+        createObstacle(
+            Math.random() * (canvasWidth - ASTEROID_LEVEL_SIZES[0] * 2),
+            -ASTEROID_LEVEL_SIZES[0] * 2,
+            0
+        );
         lastSpawnTimeRef.value = now;
     }
 }
