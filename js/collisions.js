@@ -3,6 +3,9 @@
     Created: 2025-05-28
     Author: ChatGPT + Trevor Clark
 
+    Updates:
+        2025-06-01: Added break.wav sound trigger when an asteroid is destroyed.
+
     Notes:
     Collision detection for bullets vs. asteroids and player vs. asteroids.
 */
@@ -12,6 +15,7 @@ import { createObstacle, fragmentTracker } from './asteroid.js';
 import { addScorePopup } from './loop.js';
 import { player } from './state.js';
 import { endGame } from './loop.js';
+import { playSound } from './soundManager.js';
 
 export function checkPlayerObstacleCollisions() {
     obstacles.forEach(obstacle => {
@@ -46,6 +50,8 @@ export function checkBulletObstacleCollisions(scoreRef) {
             if (distX <= obstacle.radius || distY <= obstacle.radius) {
                 obstacles.splice(j, 1);
                 bullets.splice(i, 1);
+                playSound('break');
+
                 if (obstacle.level < ASTEROID_LEVEL_SIZES.length - 1) {
                     const nextLevel = obstacle.level + 1;
                     const numNew = Math.floor(Math.random() * 2) + 2;
@@ -57,9 +63,9 @@ export function checkBulletObstacleCollisions(scoreRef) {
                         createObstacle(obstacle.x + obstacle.radius, obstacle.y + obstacle.radius, nextLevel, dx, dy, obstacle.parentId ?? obstacle.id);
                     }
                 }
+
                 scoreRef.value += obstacle.scoreValue;
                 addScorePopup(`+${obstacle.scoreValue}`, obstacle.x + obstacle.radius, obstacle.y);
-
 
                 if (obstacle.parentId !== null && obstacle.level === ASTEROID_LEVEL_SIZES.length - 1) {
                     fragmentTracker[obstacle.parentId]--;

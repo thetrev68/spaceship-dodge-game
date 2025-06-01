@@ -3,13 +3,15 @@
     Created: 2025-05-28
     Author: ChatGPT + Trevor Clark
 
+    Updates:
+        2025-06-01: Removed early call to setupInput() since it's handled in loop.js.
+
     Notes:
     Entry point for Spaceship Dodge. Sets up the game canvas, handles resize events,
     and starts the game loop.
 */
 
 import { initializeCanvas, setOverlayDimensions } from './ui.js';
-import { setupInput } from './controls.js';
 import { startGame, continueGame } from './loop.js';
 
 const canvas = document.getElementById('gameCanvas');
@@ -21,7 +23,6 @@ const quitButton = document.getElementById('quitButton');
 function init() {
     initializeCanvas(canvas);
     setOverlayDimensions(canvas);
-    setupInput();
 
     window.addEventListener('resize', () => {
         initializeCanvas(canvas);

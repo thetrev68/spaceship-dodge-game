@@ -3,21 +3,28 @@
     Created: 2025-05-28
     Author: ChatGPT + Trevor Clark
 
+    Updates:
+        2025-06-01: Merged mouse and keyboard controls from loop.js for unified input handling.
+        2025-06-01: Fixed firing sound persisting after game state changes.
+
     Notes:
-    Handles keyboard input for player movement and firing.
+    Handles keyboard and mouse input for player control and firing.
 */
 
 import { fireBullet } from './bullet.js';
 import { gameState, player } from './state.js';
+import { showOverlay } from './ui.js';
 
-export function setupInput() {
+let firing = false;
+
+export function setupInput(canvas) {
+    // Keyboard input
     document.addEventListener('keydown', (e) => {
-        // Allow pause toggle even when not PLAYING
         if (e.key === 'p') {
             if (gameState.value !== 'PLAYING' && gameState.value !== 'PAUSED') return;
             const nextState = gameState.value === 'PLAYING' ? 'PAUSED' : 'PLAYING';
             gameState.value = nextState;
-            import('./ui.js').then(m => m.showOverlay(nextState));
+            showOverlay(nextState);
             return;
         }
         if (gameState.value !== 'PLAYING') return;
@@ -61,6 +68,41 @@ export function setupInput() {
             case 'd':
                 player.dx = 0;
                 break;
+        }
+    });
+
+    // Mouse input
+    canvas.addEventListener('mousemove', (e) => {
+        if (gameState.value !== 'PLAYING') return;
+        const rect = canvas.getBoundingClientRect();
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
+        player.x = mouseX - player.width / 2;
+        player.y = mouseY - player.height / 2;
+    });
+
+    canvas.addEventListener('mousedown', (e) => {
+        if (gameState.value !== 'PLAYING' || e.button !== 0) return;
+        firing = true;
+        const fire = () => {
+            if (!firing || gameState.value !== 'PLAYING') return;
+            fireBullet();
+            setTimeout(fire, 100);
+        };
+        fire();
+    });
+
+    canvas.addEventListener('mouseup', (e) => {
+        if (e.button === 0) firing = false;
+    });
+
+    canvas.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+        if (gameState.value === 'PLAYING' || gameState.value === 'PAUSED') {
+            const nextState = gameState.value === 'PLAYING' ? 'PAUSED' : 'PLAYING';
+            gameState.value = nextState;
+            showOverlay(nextState);
+            if (nextState === 'PAUSED') firing = false;
         }
     });
 }
