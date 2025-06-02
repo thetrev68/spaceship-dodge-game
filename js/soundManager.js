@@ -29,8 +29,10 @@ sounds.bgm.volume = currentVolume;
 export function unlockAudio() {
     if (isAudioUnlocked) return;
     Object.values(sounds).forEach(audio => {
-        audio.play().then(() => audio.pause()).catch(() => {});
-        audio.currentTime = 0;
+        audio.play().then(() => {
+            audio.pause();
+            audio.currentTime = 0;
+        }).catch(() => {});
     });
     isAudioUnlocked = true;
     console.log('Audio context unlocked');
@@ -46,8 +48,9 @@ export function playSound(name) {
 
 export function startMusic() {
     if (!isAudioUnlocked) unlockAudio();
-    sounds.bgm.volume = currentVolume;
-    sounds.bgm.play().catch((e) => console.error('Error playing bgm:', e));
+    setTimeout(() => {
+        sounds.bgm.play().catch((e) => console.error('Error playing bgm:', e));
+    }, 100); // Delay to avoid AbortError
 }
 
 export function stopMusic() {

@@ -2,12 +2,11 @@
     asteroid.js
     Created: 2025-05-28
     Author: ChatGPT + Trevor Clark
-
     Updates:
         2025-06-01: Added support for conditional spawning using `allowSpawning` flag.
-
+        2025-06-02: Added console.log in createObstacle and drawObstacles.
     Notes:
-    Handles asteroid creation, updates, rendering, and splitting upon bullet impact.
+        Handles asteroid creation, updates, rendering, and splitting upon bullet impact.
 */
 
 import {
@@ -74,6 +73,7 @@ export function createObstacle(x, y, levelIndex, initialDx = 0, initialDy = 0, p
         id: id,
         parentId: parentId ?? id
     });
+    console.log('Created asteroid at:', x, y);
 }
 
 export function updateObstacles(canvasWidth, canvasHeight, spawnInterval, lastSpawnTimeRef, allowSpawning = true) {
@@ -110,5 +110,6 @@ export function drawObstacles(ctx) {
         }
         ctx.closePath();
         ctx.stroke();
+        console.log('Drawing asteroid at:', o.x, o.y);
     });
 }

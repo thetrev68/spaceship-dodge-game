@@ -11,6 +11,7 @@
         2025-06-01: Removed mouse controls and migrated to unified input system in controls.js.
         2025-06-01: Extracted score popup logic to scorePopups.js.
         2025-06-01: Extracted level flow logic to flowManager.js.
+        2025-06-02: Reduced obstacleSpawnInterval to BASE_SPAWN_INTERVAL / 2 (750ms). Added console.log for canvas size.
 
     Notes:
     Main game loop and control functions (start, continue, end).
@@ -31,15 +32,16 @@ import { canSpawnAsteroids, resetLevelFlow, updateLevelFlow } from './flowManage
 let animationId;
 let score = scoreVal;
 let gameLevel = levelVal;
-let obstacleSpawnInterval = BASE_SPAWN_INTERVAL;
+let obstacleSpawnInterval = BASE_SPAWN_INTERVAL / 2; // Reduced to 750ms
 
 export { addScorePopup };
 
 export function gameLoop(canvas) {
     const ctx = canvas.getContext('2d');
+    console.log('Game loop running, canvas size:', canvas.width, canvas.height);
 
     if (gameState.value !== 'PLAYING') {
-            animationId = requestAnimationFrame(() => gameLoop(canvas));
+        animationId = requestAnimationFrame(() => gameLoop(canvas));
         return;
     }
 
@@ -72,8 +74,8 @@ export function startGame(canvas) {
     gameState.value = 'PLAYING';
     score.value = 0;
     gameLevel.value = 0;
-    updateAsteroids(0); // Reset asteroid difficulty to level 0
-    obstacleSpawnInterval = BASE_SPAWN_INTERVAL;
+    updateAsteroids(0);
+    obstacleSpawnInterval = BASE_SPAWN_INTERVAL / 2; // 750ms
     bullets.length = 0;
     obstacles.length = 0;
     player.x = canvas.width / 2 - player.width / 2;
@@ -91,7 +93,7 @@ export function startGame(canvas) {
 export function continueGame(canvas) {
     setupInput(canvas);
     gameState.value = 'PLAYING';
-    updateAsteroids(gameLevel.value); // Ensure correct difficulty on resume
+    updateAsteroids(gameLevel.value);
     lastObstacleSpawnTime.value = Date.now();
     resetLevelFlow();
     showOverlay('PLAYING');

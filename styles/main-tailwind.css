@@ -9,14 +9,14 @@
 */
 
 body {
-    @apply bg-black font-sans text-white flex justify-center items-center min-h-screen m-0 overflow-hidden;
+    @apply relative bg-black font-sans text-white flex justify-center items-center min-h-screen m-0 overflow-hidden;
 }
 
 canvas {
     @apply absolute z-[1] bg-gray-900 rounded-xl shadow-[0_0_20px_rgba(0,255,255,0.5)];
     pointer-events: auto !important;
     touch-action: auto !important;
-    cursor: none; /* Not available in Tailwind */
+    cursor: none;
 }
 
 .game-overlay {
@@ -25,7 +25,7 @@ canvas {
 
 .game-overlay h1 {
     @apply text-5xl mb-4 text-cyan-500;
-    text-shadow: 0 0 10px #00ffff; /* Not available in Tailwind */
+    text-shadow: 0 0 10px #00ffff;
 }
 
 .game-overlay p {
@@ -34,7 +34,7 @@ canvas {
 
 .game-overlay button {
     @apply px-8 py-3 text-xl bg-blue-600 text-white border-none rounded-lg cursor-pointer transition-all duration-300 shadow-[0_4px_15px_rgba(0,123,255,0.4)];
-    touch-action: manipulation; /* Not available in Tailwind */
+    touch-action: manipulation;
 }
 
 .game-overlay button:hover {
@@ -47,9 +47,9 @@ canvas {
 
 .score-display {
     @apply absolute top-5 left-5 text-2xl text-white z-10;
-    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5); /* Not available in Tailwind */
+    text-shadow: z 0 0 5px rgba(0,0,0,0.5);
 }
 
 .hidden {
-    @apply hidden !important;
+    display: none !important; /* Replace @apply hidden */
 }

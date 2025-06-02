@@ -2,13 +2,16 @@
     ui.js
     Created: 2025-05-28
     Author: ChatGPT + Trevor Clark
+    Updates: 
+        2025-06-02: Set fixed canvas.width = 800, canvas.height = 600. Removed duplicate startButton listener. Removed debug touchstart listeners.
 
     Notes:
     Handles UI overlays for start, level transition, and game over screens.
     Also adjusts overlay dimensions to match the canvas.
 */
 
-// Cached DOM elements
+import { gameState } from './state.js';
+
 const startOverlay = document.getElementById('startOverlay');
 const gameOverOverlay = document.getElementById('gameOverOverlay');
 const finalScoreDisplay = document.getElementById('finalScore');
@@ -56,19 +59,9 @@ export function showOverlay(state, score = 0, level = 0) {
 }
 
 export function initializeCanvas(canvas) {
-    canvas.addEventListener('touchstart', (e) => {
-        if (gameState.value !== 'PLAYING') return; // Only handle canvas touches during PLAYING
-        canvas.style.backgroundColor = 'red';
-        setTimeout(() => canvas.style.backgroundColor = '', 300);
-    }, { passive: false });
-    document.body.addEventListener('touchstart', (e) => {
-        if (e.target.closest('#startOverlay')) return; // Skip startOverlay touches
-        canvas.style.backgroundColor = 'blue';
-        setTimeout(() => canvas.style.backgroundColor = '', 300);
-    });
-
-    canvas.width = window.innerWidth * 0.9;
-    canvas.height = window.innerHeight * 0.8;
+    canvas.width = 800; // Fixed width
+    canvas.height = 600; // Fixed height
+    console.log('Canvas initialized:', canvas.width, canvas.height);
 }
 
 export function quitGame() {
@@ -93,22 +86,5 @@ export function setOverlayDimensions(canvas) {
         overlay.style.height = canvasRect.height + 'px';
         overlay.style.left = canvasRect.left + 'px';
         overlay.style.top = canvasRect.top + 'px';
-    });
-}
-
-// Initialize start button (add this to your main script or ui.js)
-import { gameState } from './state.js';
-const startButton = document.getElementById('startButton');
-if (startButton) {
-    startButton.addEventListener('touchstart', (e) => {
-        e.preventDefault();
-        console.log('Touchstart on start button, coords:', e.touches[0].clientX, e.touches[0].clientY);
-        gameState.value = 'PLAYING';
-        showOverlay('PLAYING');
-    }, { passive: false });
-    startButton.addEventListener('click', () => {
-        console.log('Start button clicked, gameState:', gameState.value);
-        gameState.value = 'PLAYING';
-        showOverlay('PLAYING');
     });
 }

@@ -2,6 +2,8 @@
     player.js
     Created: 2025-05-28
     Author: ChatGPT + Trevor Clark
+    Updates:
+        2025-06-02: Replaced innerWidth * 0.9 with canvas.width for bounds. Added console.log in drawPlayer.
 
     Notes:
     Handles player update and draw functions.
@@ -15,56 +17,42 @@ export function updatePlayer() {
     player.x += player.dx;
     player.y += player.dy;
 
-    // Keep player within defined screen bounds (0.9 width, 0.8 height)
-    if (player.x < 0) player.x = 0;
-    if (player.x + player.width > innerWidth * 0.9) player.x = innerWidth * 0.9 - player.width;
-    if (player.y < 0) player.y = 0;
-    if (player.y + player.height > innerHeight * 0.8) player.y = innerHeight * 0.8 - player.height;
+    // Keep player within canvas bounds
+    const canvas = document.getElementById('gameCanvas');
+    player.x = Math.max(0, Math.min(player.x, canvas.width - player.width));
+    player.y = Math.max(0, Math.min(player.y, canvas.height - player.height));
 }
 
 export function drawPlayer(ctx) {
     if (gameState.value !== 'PLAYING') return;
 
-    // Set drawing style for the spaceship
-    ctx.strokeStyle = '#00ffff'; // Cyan outline
-    ctx.lineWidth = 2;           // Line thickness
+    console.log('Drawing player at:', player.x, player.y);
 
-    // Get player dimensions and position for drawing calculations
+    ctx.strokeStyle = '#00ffff';
+    ctx.lineWidth = 2;
+
     const w = player.width;
     const h = player.height;
     const x = player.x;
     const y = player.y;
-    const cx = x + w / 2; // Center X coordinate of the player
+    const cx = x + w / 2;
 
-    // --- Main Ship Body (Triangle with a concave/notched rear) ---
+    // Main Ship Body
     ctx.beginPath();
-    ctx.moveTo(cx, y); // Top tip of the spaceship (nose)
-
-    // Left "wing" point
+    ctx.moveTo(cx, y);
     ctx.lineTo(x, y + h * 0.8);
-
-    // Inner left point of the concave rear (where the engine will sit)
     ctx.lineTo(cx - w * 0.15, y + h * 0.75);
-
-    // Inner right point of the concave rear
     ctx.lineTo(cx + w * 0.15, y + h * 0.75);
-
-    // Right "wing" point
     ctx.lineTo(x + w, y + h * 0.8);
+    ctx.closePath();
+    ctx.stroke();
 
-    ctx.closePath(); // Connects the last point back to the first
-    ctx.stroke();    // Draws the outline of the main body
-
-    // --- Engine Block (Narrower and Longer Trapezoidal shape) ---
-    const engineTopWidth = w * 0.3;   // Engine top width, slightly wider than the inner concave points for a snug fit
-    const engineBottomWidth = w * 0.1; // Engine bottom width, making it narrower at the base
-    const engineHeight = h * 0.3;     // Engine height, making it longer
-
-    // Engine starts vertically at the concave point of the main body
+    // Engine Block
+    const engineTopWidth = w * 0.3;
+    const engineBottomWidth = w * 0.1;
+    const engineHeight = h * 0.3;
     const engineY = y + h * 0.75;
     const engineBottomY = engineY + engineHeight;
-
-    // Calculate engine corner coordinates
     const engineTopLeftX = cx - engineTopWidth / 2;
     const engineTopRightX = cx + engineTopWidth / 2;
     const engineBottomLeftX = cx - engineBottomWidth / 2;
@@ -78,18 +66,13 @@ export function drawPlayer(ctx) {
     ctx.closePath();
     ctx.stroke();
 
-    // --- Exhaust Detail Lines (inside the engine block) ---
+    // Exhaust Detail Lines
     ctx.beginPath();
-    // Center exhaust line
-    ctx.moveTo(cx, engineY + engineHeight * 0.2); // Start 20% down from engine top
-    ctx.lineTo(cx, engineY + engineHeight * 0.8); // End 80% down from engine top
-
-    // Left exhaust line, slightly offset from center
-    ctx.moveTo(cx - engineBottomWidth * 0.8, engineY + engineHeight * 0.3); // Start 30% down, relative to bottom width
-    ctx.lineTo(cx - engineBottomWidth * 0.8, engineY + engineHeight * 0.7); // End 70% down
-
-    // Right exhaust line, symmetrical to the left
-    ctx.moveTo(cx + engineBottomWidth * 0.8, engineY + engineHeight * 0.3); // Start 30% down
-    ctx.lineTo(cx + engineBottomWidth * 0.8, engineY + engineHeight * 0.7); // End 70% down
-    ctx.stroke(); // Draws all the exhaust lines
+    ctx.moveTo(cx, engineY + engineHeight * 0.2);
+    ctx.lineTo(cx, engineY + engineHeight * 0.8);
+    ctx.moveTo(cx - engineBottomWidth * 0.8, engineY + engineHeight * 0.3);
+    ctx.lineTo(cx - engineBottomWidth * 0.8, engineY + engineHeight * 0.7);
+    ctx.moveTo(cx + engineBottomWidth * 0.8, engineY + engineHeight * 0.3);
+    ctx.lineTo(cx + engineBottomWidth * 0.8, engineY + engineHeight * 0.7);
+    ctx.stroke();
 }

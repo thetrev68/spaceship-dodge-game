@@ -12,8 +12,9 @@
     and starts the game loop.
 */
 
-import { initializeCanvas, setOverlayDimensions } from './ui.js';
+import { initializeCanvas, setOverlayDimensions, showOverlay, quitGame } from './ui.js';
 import { startGame, continueGame } from './loop.js';
+import { gameState } from './state.js';
 
 const canvas = document.getElementById('gameCanvas');
 const startButton = document.getElementById('startButton');
@@ -30,18 +31,23 @@ function init() {
         setOverlayDimensions(canvas);
     });
 
+    let isStarting = false; // Prevent double-tap
     startButton.addEventListener('touchstart', (e) => {
         e.preventDefault();
-        if (gameState.value !== 'START') return; // Ignore if not in START state
+        if (gameState.value !== 'START' || isStarting) return;
+        isStarting = true;
         console.log('Touchstart on start button, coords:', e.touches[0].clientX, e.touches[0].clientY);
-        startButton.disabled = true; // Disable button
-        import('./soundManager.js').then(m => m.unlockAudio()); // Unlock audio
+        import('./soundManager.js').then(m => m.unlockAudio());
         startGame(canvas);
-        setTimeout(() => startButton.disabled = false, 1000); // Re-enable after 1s
-}, { passive: false });
+        setTimeout(() => isStarting = false, 1000);
+    }, { passive: false });
     startButton.addEventListener('click', () => {
+        if (gameState.value !== 'START' || isStarting) return;
+        isStarting = true;
         console.log('Start button clicked');
+        import('./soundManager.js').then(m => m.unlockAudio());
         startGame(canvas);
+        setTimeout(() => isStarting = false, 1000);
     });
 
     restartButton.addEventListener('touchstart', (e) => {
@@ -62,15 +68,13 @@ function init() {
         quitButton.addEventListener('touchstart', (e) => {
             e.preventDefault();
             console.log('Touchstart on quit button');
-            import('./ui.js').then(m => m.quitGame());
+            quitGame();
         }, { passive: false });
-        quitButton.addEventListener('click', () => import('./ui.js').then(m => m.quitGame()));
+        quitButton.addEventListener('click', () => quitGame());
     }
 
     window.onload = () => {
-        import('./ui.js').then(module => {
-            module.showOverlay('START');
-        });
+        showOverlay('START');
     };
 }
 
