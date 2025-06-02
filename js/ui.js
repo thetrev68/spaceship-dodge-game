@@ -19,6 +19,7 @@ const currentLevelInfo = document.getElementById('currentLevelInfo');
 const currentScoreInfo = document.getElementById('currentScoreInfo');
 
 export function showOverlay(state, score = 0, level = 0) {
+    console.log(`Showing overlay for: ${state}, current gameState: ${gameState.value}`);
     startOverlay.classList.add('hidden');
     pauseOverlay.classList.add('hidden');
     gameOverOverlay.classList.add('hidden');
@@ -27,6 +28,7 @@ export function showOverlay(state, score = 0, level = 0) {
     switch (state) {
         case 'START':
             startOverlay.classList.remove('hidden');
+            startOverlay.style.display = 'block';
             break;
         case 'GAME_OVER':
             import('./soundManager.js').then(m => m.stopMusic());
@@ -44,14 +46,27 @@ export function showOverlay(state, score = 0, level = 0) {
             pauseOverlay.classList.remove('hidden');
             break;
         case 'PLAYING':
+            startOverlay.style.display = 'none';
+            console.log('Force hiding start overlay, new gameState: ${gameState.value}');
             import('./soundManager.js').then(m => m.startMusic());
             break;
         default:
             break;
-        }
+    }
 }
 
 export function initializeCanvas(canvas) {
+    canvas.addEventListener('touchstart', (e) => {
+        if (gameState.value !== 'PLAYING') return; // Only handle canvas touches during PLAYING
+        canvas.style.backgroundColor = 'red';
+        setTimeout(() => canvas.style.backgroundColor = '', 300);
+    }, { passive: false });
+    document.body.addEventListener('touchstart', (e) => {
+        if (e.target.closest('#startOverlay')) return; // Skip startOverlay touches
+        canvas.style.backgroundColor = 'blue';
+        setTimeout(() => canvas.style.backgroundColor = '', 300);
+    });
+
     canvas.width = window.innerWidth * 0.9;
     canvas.height = window.innerHeight * 0.8;
 }
@@ -78,5 +93,22 @@ export function setOverlayDimensions(canvas) {
         overlay.style.height = canvasRect.height + 'px';
         overlay.style.left = canvasRect.left + 'px';
         overlay.style.top = canvasRect.top + 'px';
+    });
+}
+
+// Initialize start button (add this to your main script or ui.js)
+import { gameState } from './state.js';
+const startButton = document.getElementById('startButton');
+if (startButton) {
+    startButton.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        console.log('Touchstart on start button, coords:', e.touches[0].clientX, e.touches[0].clientY);
+        gameState.value = 'PLAYING';
+        showOverlay('PLAYING');
+    }, { passive: false });
+    startButton.addEventListener('click', () => {
+        console.log('Start button clicked, gameState:', gameState.value);
+        gameState.value = 'PLAYING';
+        showOverlay('PLAYING');
     });
 }

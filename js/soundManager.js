@@ -3,6 +3,10 @@
     Created: 2025-05-28
     Author: ChatGPT + Trevor Clark
 
+    Updates:
+        2025-06-01: Added error logging for audio playback.
+        2025-06-01: Added unlockAudio to handle iOS audio restrictions.
+
     Notes:
     Modular audio manager for game sound effects and music.
 */
@@ -16,21 +20,34 @@ const sounds = {
 };
 
 let currentVolume = 0.4;
+let isAudioUnlocked = false;
 
 sounds.bgm.loop = true;
 sounds.bgm.volume = currentVolume;
 
+// Unlock audio context for iOS
+export function unlockAudio() {
+    if (isAudioUnlocked) return;
+    Object.values(sounds).forEach(audio => {
+        audio.play().then(() => audio.pause()).catch(() => {});
+        audio.currentTime = 0;
+    });
+    isAudioUnlocked = true;
+    console.log('Audio context unlocked');
+}
+
 export function playSound(name) {
-    if (sounds[name]) {
-        const s = sounds[name].cloneNode();
-        s.volume = currentVolume;
-        s.play();
-    }
+    if (!sounds[name]) return;
+    if (!isAudioUnlocked) unlockAudio();
+    const s = sounds[name].cloneNode();
+    s.volume = currentVolume;
+    s.play().catch((e) => console.error(`Error playing sound ${name}:`, e));
 }
 
 export function startMusic() {
+    if (!isAudioUnlocked) unlockAudio();
     sounds.bgm.volume = currentVolume;
-    sounds.bgm.play();
+    sounds.bgm.play().catch((e) => console.error('Error playing bgm:', e));
 }
 
 export function stopMusic() {

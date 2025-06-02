@@ -4,7 +4,7 @@
     Author: ChatGPT + Trevor Clark
 
     Updates:
-        2025-06-01: Added allowSpawning flag to coordinate asteroid generation across modules.
+        2025-06-01: Added isMobile flag and conditional BASE_SPAWN_INTERVAL for mobile tuning.
 
     Notes:
     Central store for game state and shared objects.
@@ -16,7 +16,7 @@ export const gameLevel = { value: 0 };
 export const lastObstacleSpawnTime = { value: 0 };
 export const lastShotTime = { value: 0 };
 export const levelStartTime = { value: 0 };
-export const allowSpawning = { value: true }; // Used to control asteroid spawning
+export const allowSpawning = { value: true };
 
 export const player = {
     x: 0,
@@ -37,9 +37,10 @@ export const ASTEROID_SCORE_VALUES = [20, 50, 100];
 export const BASE_OBSTACLE_MIN_SPEED = 0.8;
 export const BASE_OBSTACLE_MAX_SPEED = 2.5;
 export const SPEED_INCREASE_PER_LEVEL = 0.5;
-export const BASE_SPAWN_INTERVAL = 1500;
+
+export const isMobile = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+export const BASE_SPAWN_INTERVAL = isMobile ? 2400 : 1500;
 export const SPAWN_INTERVAL_DECREASE_PER_LEVEL = 70;
-export const LEVEL_UP_SCORE_THRESHOLD = 5000;
 export const bulletSpeed = 10;
 export const bulletRadius = 3;
 export const fireRate = 100;

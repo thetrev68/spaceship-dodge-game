@@ -1,0 +1,55 @@
+/*
+    main-tailwind.css
+    Created: 2025-06-01
+    Author: Grok + Trevor Clark
+
+    Notes:
+    Tailwind-based replacement for main.css for Spaceship Dodge.
+    Uses Tailwind utility classes to replicate original styles.
+*/
+
+body {
+    @apply bg-black font-sans text-white flex justify-center items-center min-h-screen m-0 overflow-hidden;
+}
+
+canvas {
+    @apply absolute z-[1] bg-gray-900 rounded-xl shadow-[0_0_20px_rgba(0,255,255,0.5)];
+    pointer-events: auto !important;
+    touch-action: auto !important;
+    cursor: none; /* Not available in Tailwind */
+}
+
+.game-overlay {
+    @apply absolute inset-0 z-10 flex flex-col justify-center items-center bg-black/70 rounded-xl;
+}
+
+.game-overlay h1 {
+    @apply text-5xl mb-4 text-cyan-500;
+    text-shadow: 0 0 10px #00ffff; /* Not available in Tailwind */
+}
+
+.game-overlay p {
+    @apply text-2xl mb-8 text-white;
+}
+
+.game-overlay button {
+    @apply px-8 py-3 text-xl bg-blue-600 text-white border-none rounded-lg cursor-pointer transition-all duration-300 shadow-[0_4px_15px_rgba(0,123,255,0.4)];
+    touch-action: manipulation; /* Not available in Tailwind */
+}
+
+.game-overlay button:hover {
+    @apply bg-blue-700 translate-y-[-2px];
+}
+
+.game-overlay button:active {
+    @apply translate-y-0;
+}
+
+.score-display {
+    @apply absolute top-5 left-5 text-2xl text-white z-10;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5); /* Not available in Tailwind */
+}
+
+.hidden {
+    @apply hidden !important;
+}

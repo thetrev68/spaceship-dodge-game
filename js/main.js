@@ -5,6 +5,7 @@
 
     Updates:
         2025-06-01: Removed early call to setupInput() since it's handled in loop.js.
+        2025-06-01: Added touchstart listeners for buttons to support iOS.
 
     Notes:
     Entry point for Spaceship Dodge. Sets up the game canvas, handles resize events,
@@ -29,11 +30,40 @@ function init() {
         setOverlayDimensions(canvas);
     });
 
-    startButton.addEventListener('click', () => startGame(canvas));
+    startButton.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        if (gameState.value !== 'START') return; // Ignore if not in START state
+        console.log('Touchstart on start button, coords:', e.touches[0].clientX, e.touches[0].clientY);
+        startButton.disabled = true; // Disable button
+        import('./soundManager.js').then(m => m.unlockAudio()); // Unlock audio
+        startGame(canvas);
+        setTimeout(() => startButton.disabled = false, 1000); // Re-enable after 1s
+}, { passive: false });
+    startButton.addEventListener('click', () => {
+        console.log('Start button clicked');
+        startGame(canvas);
+    });
+
+    restartButton.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        console.log('Touchstart on restart button');
+        startGame(canvas);
+    }, { passive: false });
     restartButton.addEventListener('click', () => startGame(canvas));
+
+    continueButton.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        console.log('Touchstart on continue button');
+        continueGame(canvas);
+    }, { passive: false });
     continueButton.addEventListener('click', () => continueGame(canvas));
 
     if (quitButton) {
+        quitButton.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            console.log('Touchstart on quit button');
+            import('./ui.js').then(m => m.quitGame());
+        }, { passive: false });
         quitButton.addEventListener('click', () => import('./ui.js').then(m => m.quitGame()));
     }
 

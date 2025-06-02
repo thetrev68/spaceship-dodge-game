@@ -3,6 +3,9 @@
     Created: 2025-05-28
     Author: ChatGPT + Trevor Clark
 
+    Updates:
+        2025-06-01: Added touchstart listeners for mute/unmute buttons for iOS compatibility.
+
     Notes:
     Creates and manages mute/unmute and volume slider UI.
 */
@@ -20,11 +23,21 @@ export function createAudioControls() {
 
     const muteBtn = document.createElement('button');
     muteBtn.textContent = '🔇';
-    muteBtn.onclick = () => muteAll();
+    muteBtn.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        console.log('Touchstart on mute button');
+        muteAll();
+    }, { passive: false });
+    muteBtn.addEventListener('click', () => muteAll());
 
     const unmuteBtn = document.createElement('button');
     unmuteBtn.textContent = '🔊';
-    unmuteBtn.onclick = () => unmuteAll();
+    unmuteBtn.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        console.log('Touchstart on unmute button');
+        unmuteAll();
+    }, { passive: false });
+    unmuteBtn.addEventListener('click', () => unmuteAll());
 
     const volumeSlider = document.createElement('input');
     volumeSlider.type = 'range';
