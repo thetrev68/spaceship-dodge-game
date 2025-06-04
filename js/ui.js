@@ -73,9 +73,18 @@ export function showOverlay(state, score = 0, level = 0) {
 }
 
 export function initializeCanvas(canvas) {
-    // Keep your existing canvas sizing logic here or update as needed
-    canvas.width = 800;
-    canvas.height = 600;
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+
+  if (vw < 600) {
+    // Mobile: nearly full height and width
+    canvas.height = vh * 0.95;
+    canvas.width = vw;
+  } else {
+    // Desktop: 90% width and height of viewport
+    canvas.width = vw * 0.9;
+    canvas.height = vh * 0.9;
+  }
 }
 
 export function quitGame() {

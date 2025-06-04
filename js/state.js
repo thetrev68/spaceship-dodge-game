@@ -15,6 +15,7 @@ export const playerLives = { value: 3 };
 export const lastObstacleSpawnTime = { value: 0 };
 export const bullets = [];
 export const obstacles = [];
+export const levelStartTime = { value: 0 };
 
 export const ASTEROID_LEVEL_SIZES = [35, 22, 12];
 export const ASTEROID_SCORE_VALUES = [20, 50, 100];

@@ -26,8 +26,8 @@ import * as soundManager from './soundManager.js';
 const TARGET_FPS = isMobile ? 30 : 60;
 const FRAME_DURATION = 1000 / TARGET_FPS;
 
-const MAX_BULLETS_MOBILE = 10;
-const MAX_OBSTACLES_MOBILE = 15;
+const MAX_BULLETS_MOBILE = 8;
+const MAX_OBSTACLES_MOBILE = 10;
 
 let lastFrameTime = 0;
 let animationId;

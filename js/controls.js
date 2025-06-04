@@ -4,8 +4,8 @@
     Author: ChatGPT + Trevor Clark
 
     Updates:
-        Removed mobile touch input (moved to mobileControls.js).
-        Handles desktop keyboard and mouse controls only.
+        Added firing cooldown to prevent sound overlap and excessive firing.
+        Handles desktop keyboard and mouse input with pause toggle lock.
 */
 
 import { fireBullet } from './bullet.js';
@@ -15,12 +15,18 @@ import * as soundManager from './soundManager.js';
 import { restartGameLoop } from './loop.js';
 
 let firing = false;
+let pauseLocked = false;
+let lastFireTime = 0;
+const FIRE_COOLDOWN_MS = 100; // milliseconds between shots
 
 export function setupInput(canvas) {
-  // Keyboard input
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'p') {
-      if (gameState.value !== 'PLAYING' && gameState.value !== 'PAUSED') return;
+    if (e.key === 'p' && !pauseLocked) {
+      pauseLocked = true;
+      if (gameState.value !== 'PLAYING' && gameState.value !== 'PAUSED') {
+        pauseLocked = false;
+        return;
+      }
       const nextState = gameState.value === 'PLAYING' ? 'PAUSED' : 'PLAYING';
       gameState.value = nextState;
       showOverlay(nextState);
@@ -32,6 +38,7 @@ export function setupInput(canvas) {
         soundManager.unmuteAll();
         restartGameLoop();
       }
+      setTimeout(() => pauseLocked = false, 300);
       return;
     }
     if (gameState.value !== 'PLAYING') return;
@@ -54,7 +61,11 @@ export function setupInput(canvas) {
         player.dx = player.speed;
         break;
       case ' ':
-        fireBullet();
+        const now = Date.now();
+        if (now - lastFireTime > FIRE_COOLDOWN_MS) {
+          fireBullet();
+          lastFireTime = now;
+        }
         break;
     }
   });
@@ -78,7 +89,6 @@ export function setupInput(canvas) {
     }
   });
 
-  // Mouse input
   canvas.addEventListener('mousemove', (e) => {
     if (gameState.value !== 'PLAYING') return;
     const rect = canvas.getBoundingClientRect();
@@ -91,22 +101,29 @@ export function setupInput(canvas) {
   canvas.addEventListener('mousedown', (e) => {
     if (gameState.value !== 'PLAYING' || e.button !== 0) return;
     firing = true;
-    const fire = () => {
+
+    function fireLoop() {
       if (!firing || gameState.value !== 'PLAYING') return;
-      fireBullet();
-      setTimeout(fire, 100);
-    };
-    fire();
+      const now = Date.now();
+      if (now - lastFireTime > FIRE_COOLDOWN_MS) {
+        fireBullet();
+        lastFireTime = now;
+      }
+      setTimeout(fireLoop, 50);
+    }
+
+    fireLoop();
   });
 
   canvas.addEventListener('mouseup', (e) => {
     if (e.button === 0) firing = false;
   });
 
-  // Right-click pause toggle
   canvas.addEventListener('contextmenu', (e) => {
     e.preventDefault();
+    if (pauseLocked) return;
     if (gameState.value === 'PLAYING' || gameState.value === 'PAUSED') {
+      pauseLocked = true;
       const nextState = gameState.value === 'PLAYING' ? 'PAUSED' : 'PLAYING';
       gameState.value = nextState;
       showOverlay(nextState);
@@ -118,6 +135,7 @@ export function setupInput(canvas) {
         soundManager.unmuteAll();
         restartGameLoop();
       }
+      setTimeout(() => pauseLocked = false, 300);
     }
   });
 }

@@ -3,8 +3,9 @@
     Created: 2025-06-04
     Author: ChatGPT + Trevor Clark
 
-    Notes:
-    Handles mobile-specific input and UI, including floating pause button.
+    Updates:
+        Added pause toggle lock to prevent flickering on mobile.
+        Handles touch input and floating pause button.
 */
 
 import { gameState, player } from './state.js';
@@ -16,6 +17,7 @@ import { restartGameLoop } from './loop.js';
 const mobilePauseBtn = document.getElementById('mobilePauseBtn');
 let mobileTouching = false;
 let firing = false;
+let pauseLocked = false;
 
 export function setupMobileInput(canvas) {
   let lastTouchFire = 0;
@@ -62,6 +64,8 @@ export function setupMobileInput(canvas) {
   }
 
   mobilePauseBtn.addEventListener('click', () => {
+    if (pauseLocked) return;
+    pauseLocked = true;
     if (gameState.value === 'PLAYING') {
       gameState.value = 'PAUSED';
       showOverlay('PAUSED');
@@ -74,6 +78,7 @@ export function setupMobileInput(canvas) {
       restartGameLoop();
     }
     updatePauseButtonVisibility();
+    setTimeout(() => pauseLocked = false, 300);
   });
 
   document.addEventListener('gameStateChange', updatePauseButtonVisibility);
