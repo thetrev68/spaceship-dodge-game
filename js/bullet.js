@@ -35,7 +35,7 @@ export function updateBullets(canvasHeight) {
 }
 
 export function drawBullets(ctx) {
-  ctx.fillStyle = '#00ffff';
+  ctx.fillStyle = '#ffff88'; // Light yellow color for bullets
   bullets.forEach(b => {
     ctx.beginPath();
     ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
