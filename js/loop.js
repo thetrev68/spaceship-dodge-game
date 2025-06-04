@@ -1,15 +1,10 @@
 /*
     loop.js
-    Created: 2025-05-28
-    Author: ChatGPT + Trevor Clark
-
-    Updates:
-        Added smooth obstacle speed scaling with cap.
-        Added pause-friendly game loop control.
+    Updated for player lives system.
 */
 
 import { 
-  player, gameState, score, gameLevel,
+  player, gameState, score, gameLevel, playerLives,
   lastObstacleSpawnTime, bullets, obstacles,
   BASE_SPAWN_INTERVAL, SPAWN_INTERVAL_DECREASE_PER_LEVEL
 } from './state.js';
@@ -24,6 +19,7 @@ import { drawScore } from './scoreDisplay.js';
 import { setupInput } from './controls.js';
 import { addScorePopup, updateScorePopups, drawScorePopups } from './scorePopups.js';
 import { canSpawnAsteroids, resetLevelFlow, updateLevelFlow } from './flowManager.js';
+import * as soundManager from './soundManager.js';
 
 let animationId;
 let gameCanvas;
@@ -84,7 +80,31 @@ export function gameLoop(canvas) {
   drawScore(ctx);
   drawScorePopups(ctx);
 
-  checkPlayerObstacleCollisions();
+  // Check collisions and handle lives
+  const playerHit = checkPlayerObstacleCollisions();
+  if (playerHit) {
+    playerLives.value -= 1;
+
+    import('./soundManager.js').then(m => m.playSound('gameover'));
+
+    if (playerLives.value <= 0) {
+      gameState.value = 'GAME_OVER';
+      cancelAnimationFrame(animationId);
+      soundManager.stopMusic();
+      showOverlay('GAME_OVER', score.value, gameLevel.value);
+      return;
+    } else {
+      gameState.value = 'LEVEL_TRANSITION';
+      player.x = canvas.width / 2 - player.width / 2;
+      player.y = canvas.height - player.height - 50;
+      bullets.length = 0;
+      obstacles.length = 0;
+      resetLevelFlow();
+      showOverlay('LEVEL_TRANSITION', score.value, gameLevel.value);
+      return;
+    }
+  }
+
   checkBulletObstacleCollisions(score);
 
   animationId = requestAnimationFrame(() => gameLoop(canvas));
@@ -96,6 +116,7 @@ export function startGame(canvas) {
   gameState.value = 'PLAYING';
   score.value = 0;
   gameLevel.value = 0;
+  playerLives.value = 3;
   updateAsteroids(0);
   obstacleSpawnInterval = getSpawnInterval(0);
   bullets.length = 0;
@@ -121,15 +142,15 @@ export function continueGame(canvas) {
   lastObstacleSpawnTime.value = Date.now();
   resetLevelFlow();
   showOverlay('PLAYING');
+  import('./soundManager.js').then(m => m.startMusic());
   animationId = requestAnimationFrame(() => gameLoop(canvas));
 }
 
 export function endGame() {
+  // Deprecated by lives logic - keep for safety
   gameState.value = 'GAME_OVER';
   cancelAnimationFrame(animationId);
-  import('./soundManager.js').then(m => {
-    m.stopMusic();          // Stop BGM first
-    m.playSound('gameover'); // Then play gameover sound
-  });
+  soundManager.stopMusic();
+  soundManager.playSound('gameover');
   showOverlay('GAME_OVER', score.value, gameLevel.value);
 }

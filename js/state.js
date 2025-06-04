@@ -17,6 +17,7 @@ export const lastObstacleSpawnTime = { value: 0 };
 export const lastShotTime = { value: 0 };
 export const levelStartTime = { value: 0 };
 export const allowSpawning = { value: true };
+export const playerLives = { value: 3 };
 
 export const player = {
     x: 380,

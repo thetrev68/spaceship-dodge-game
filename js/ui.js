@@ -10,6 +10,7 @@
     Also adjusts overlay dimensions to match the canvas.
 */
 
+import { playerLives } from './state.js';
 import { gameState } from './state.js';
 
 const startOverlay = document.getElementById('startOverlay');
@@ -20,6 +21,9 @@ const pauseOverlay = document.getElementById('pauseOverlay');
 const levelUpMessage = document.getElementById('levelUpMessage');
 const currentLevelInfo = document.getElementById('currentLevelInfo');
 const currentScoreInfo = document.getElementById('currentScoreInfo');
+const livesInfoStart = document.getElementById('livesInfoStart');
+const livesInfoLevel = document.getElementById('livesInfoLevel');
+const livesInfoPause = document.getElementById('livesInfoPause');
 
 export function showOverlay(state, score = 0, level = 0) {
     const overlays = [startOverlay, pauseOverlay, gameOverOverlay, levelTransitionOverlay];
@@ -29,6 +33,11 @@ export function showOverlay(state, score = 0, level = 0) {
         overlay.classList.add('hidden');
         overlay.classList.remove('flex');
     });
+
+    // Update lives display
+    if (livesInfoStart) livesInfoStart.textContent = `Lives: ${playerLives.value}`;
+    if (livesInfoLevel) livesInfoLevel.textContent = `Lives: ${playerLives.value}`;
+    if (livesInfoPause) livesInfoPause.textContent = `Lives: ${playerLives.value}`;
 
     // Show the overlay for current state
     switch (state) {
@@ -43,6 +52,7 @@ export function showOverlay(state, score = 0, level = 0) {
             gameOverOverlay.classList.add('flex');
             break;
         case 'LEVEL_TRANSITION':
+            import('./soundManager.js').then(m => m.stopMusic()); // stop music on level transition
             levelUpMessage.textContent = `LEVEL ${level + 1} !`;
             currentLevelInfo.textContent = `Get Ready!`;
             currentScoreInfo.textContent = `Score: ${score}`;
@@ -64,19 +74,18 @@ export function showOverlay(state, score = 0, level = 0) {
 }
 
 export function initializeCanvas(canvas) {
-  const maxWidth = window.innerWidth * 0.9;  // 90% viewport width
-  const maxHeight = window.innerHeight * 0.9; // 90% viewport height
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
 
-  let width = maxWidth;
-  let height = (width * 3) / 4;
-
-  if (height > maxHeight) {
-    height = maxHeight;
-    width = (height * 4) / 3;
+  if (vw < 600) {
+    // Mobile: full height and width
+    canvas.height = vh * 0.95;
+    canvas.width = vw;
+  } else {
+    // Desktop: max 90% width and height
+    canvas.width = vw * 0.9;
+    canvas.height = vh * 0.9;
   }
-
-  canvas.width = width;
-  canvas.height = height;
 }
 
 export function quitGame() {

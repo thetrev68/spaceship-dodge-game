@@ -4,22 +4,26 @@
     Author: ChatGPT + Trevor Clark
 
     Updates:
-        Added pause toggle with restart of game loop.
+        Added pause toggle lock to prevent flickering.
+        Mute/unmute tied to pause state.
 */
 
 import { fireBullet } from './bullet.js';
 import { gameState, player } from './state.js';
 import { showOverlay } from './ui.js';
+import * as soundManager from './soundManager.js';
 import { restartGameLoop } from './loop.js';
 
 let firing = false;
 let mobileTouching = false;
 const isMobile = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
+let pauseLocked = false;
+
 export function setupInput(canvas) {
   if (isMobile) {
     let lastTouchFire = 0;
-    let fireCooldown = 300;
+    let fireCooldown = 200; // faster fire rate on mobile
     function touchFireLoop() {
       const now = Date.now();
       if (gameState.value === 'PLAYING' && mobileTouching && now - lastTouchFire > fireCooldown) {
@@ -43,14 +47,25 @@ export function setupInput(canvas) {
     document.addEventListener('touchcancel', () => { mobileTouching = false; });
   } else {
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'p') {
-        if (gameState.value !== 'PLAYING' && gameState.value !== 'PAUSED') return;
+      if (e.key === 'p' && !pauseLocked) {
+        pauseLocked = true;
+        if (gameState.value !== 'PLAYING' && gameState.value !== 'PAUSED') {
+          pauseLocked = false;
+          return;
+        }
         const nextState = gameState.value === 'PLAYING' ? 'PAUSED' : 'PLAYING';
         gameState.value = nextState;
         showOverlay(nextState);
-        if (nextState === 'PLAYING') {
+
+        if (nextState === 'PAUSED') {
+          soundManager.muteAll();
+          firing = false;
+        } else if (nextState === 'PLAYING') {
+          soundManager.unmuteAll();
           restartGameLoop();
         }
+
+        setTimeout(() => pauseLocked = false, 300); // debounce toggle
         return;
       }
       if (gameState.value !== 'PLAYING') return;
@@ -124,13 +139,21 @@ export function setupInput(canvas) {
     canvas.addEventListener('contextmenu', (e) => {
       e.preventDefault();
       if (gameState.value === 'PLAYING' || gameState.value === 'PAUSED') {
+        if (pauseLocked) return;
+        pauseLocked = true;
         const nextState = gameState.value === 'PLAYING' ? 'PAUSED' : 'PLAYING';
         gameState.value = nextState;
         showOverlay(nextState);
-        if (nextState === 'PLAYING') {
+
+        if (nextState === 'PAUSED') {
+          soundManager.muteAll();
+          firing = false;
+        } else if (nextState === 'PLAYING') {
+          soundManager.unmuteAll();
           restartGameLoop();
         }
-        if (nextState === 'PAUSED') firing = false;
+
+        setTimeout(() => pauseLocked = false, 300);
       }
     });
   }

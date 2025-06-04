@@ -11,27 +11,34 @@
   <div id="app"></div>
   <canvas id="gameCanvas" class="block mx-auto bg-black"></canvas>
 
+  <!-- Start Overlay -->
   <div id="startOverlay" class="game-overlay fixed inset-0 hidden flex-col items-center justify-center bg-black bg-opacity-80 p-6 rounded-lg shadow-lg text-white z-50">
     <h1 class="text-4xl font-bold mb-4">Spaceship Dodge</h1>
     <p class="mb-2">Dodge the incoming asteroids!</p>
     <p class="mb-2">Use W, A, S, D or Arrow Keys to move.</p>
     <p class="mb-4">Press SPACE to fire!</p>
+    <p id="livesInfoStart" class="mb-4 text-lg">Lives: 3</p>
     <button id="startButton" class="px-6 py-3 bg-blue-600 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400">Start Game</button>
   </div>
 
+  <!-- Level Transition Overlay -->
   <div id="levelTransitionOverlay" class="game-overlay fixed inset-0 hidden flex-col items-center justify-center bg-black bg-opacity-80 p-6 rounded-lg shadow-lg text-white z-50">
     <h1 id="levelUpMessage" class="text-4xl font-bold mb-4">LEVEL UP!</h1>
     <p id="currentLevelInfo" class="mb-2">Level 1</p>
     <p id="currentScoreInfo" class="mb-4">Score: 0</p>
+    <p id="livesInfoLevel" class="mb-4 text-lg"></p>
     <button id="continueButton" class="px-6 py-3 bg-green-600 rounded hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-400">Continue</button>
   </div>
 
+  <!-- Pause Overlay -->
   <div id="pauseOverlay" class="game-overlay fixed inset-0 hidden flex-col items-center justify-center bg-black bg-opacity-80 p-6 rounded-lg shadow-lg text-white z-50">
     <h1 class="text-4xl font-bold mb-4">PAUSED</h1>
+    <p id="livesInfoPause" class="mb-4 text-lg"></p>
     <button id="quitButton" class="px-6 py-3 bg-red-600 rounded hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-400 mb-4">Quit Game</button>
     <p>Press P to Resume</p>
   </div>
 
+  <!-- Game Over Overlay -->
   <div id="gameOverOverlay" class="game-overlay fixed inset-0 hidden flex-col items-center justify-center bg-black bg-opacity-80 p-6 rounded-lg shadow-lg text-white z-50">
     <h1 class="text-4xl font-bold mb-4">GAME OVER!</h1>
     <p id="finalScore" class="mb-4">Final Score: 0</p>

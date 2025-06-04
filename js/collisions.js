@@ -18,7 +18,7 @@ import { endGame } from './loop.js';
 import { playSound } from './soundManager.js';
 
 export function checkPlayerObstacleCollisions() {
-    obstacles.forEach(obstacle => {
+    for (const obstacle of obstacles) {
         const left = obstacle.x;
         const right = obstacle.x + obstacle.radius * 2;
         const top = obstacle.y;
@@ -30,9 +30,10 @@ export function checkPlayerObstacleCollisions() {
             player.y < bottom &&
             player.y + player.height > top
         ) {
-            endGame();
+            return true;  // Collision detected
         }
-    });
+    }
+    return false;  // No collision
 }
 
 export function checkBulletObstacleCollisions(scoreRef) {
@@ -57,7 +58,10 @@ export function checkBulletObstacleCollisions(scoreRef) {
                     const numNew = Math.floor(Math.random() * 2) + 2;
                     for (let k = 0; k < numNew; k++) {
                         const angle = Math.random() * Math.PI * 2;
-                        const scatterSpeed = (Math.random() * 1.5) + 0.5;
+                        // 80% chance slow speed, 20% chance faster speed
+                        const scatterSpeed = Math.random() < 0.8
+                        ? (Math.random() * 0.7) + 0.3   // mostly slow (0.3 - 1.0)
+                        : (Math.random() * 1.5) + 1.0;  // few faster (1.0 - 2.5)
                         const dx = Math.cos(angle) * scatterSpeed;
                         const dy = Math.sin(angle) * scatterSpeed;
                         createObstacle(obstacle.x + obstacle.radius, obstacle.y + obstacle.radius, nextLevel, dx, dy, obstacle.parentId ?? obstacle.id);
