@@ -4,8 +4,8 @@
     Author: ChatGPT + Trevor Clark
 
     Updates:
-        Added firing cooldown to prevent sound overlap and excessive firing.
-        Handles desktop keyboard and mouse input with pause toggle lock.
+        Added pause toggle lock to prevent flickering.
+        Mute/unmute tied to pause state.
 */
 
 import { fireBullet } from './bullet.js';
@@ -16,8 +16,6 @@ import { restartGameLoop } from './loop.js';
 
 let firing = false;
 let pauseLocked = false;
-let lastFireTime = 0;
-const FIRE_COOLDOWN_MS = 100; // milliseconds between shots
 
 export function setupInput(canvas) {
   document.addEventListener('keydown', (e) => {
@@ -61,11 +59,7 @@ export function setupInput(canvas) {
         player.dx = player.speed;
         break;
       case ' ':
-        const now = Date.now();
-        if (now - lastFireTime > FIRE_COOLDOWN_MS) {
-          fireBullet();
-          lastFireTime = now;
-        }
+        fireBullet();
         break;
     }
   });
@@ -101,18 +95,12 @@ export function setupInput(canvas) {
   canvas.addEventListener('mousedown', (e) => {
     if (gameState.value !== 'PLAYING' || e.button !== 0) return;
     firing = true;
-
-    function fireLoop() {
+    const fire = () => {
       if (!firing || gameState.value !== 'PLAYING') return;
-      const now = Date.now();
-      if (now - lastFireTime > FIRE_COOLDOWN_MS) {
-        fireBullet();
-        lastFireTime = now;
-      }
-      setTimeout(fireLoop, 50);
-    }
-
-    fireLoop();
+      fireBullet();
+      setTimeout(fire, 100);
+    };
+    fire();
   });
 
   canvas.addEventListener('mouseup', (e) => {
