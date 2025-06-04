@@ -4,10 +4,8 @@
     Author: ChatGPT + Trevor Clark
 
     Updates:
-        2025-06-01: Added 1.5s delay before level transition for smoother flow.
-
-    Notes:
-    Extracted level progression and game flow control logic from loop.js.
+        Added max wait time to avoid infinite level-up delay.
+        Maintains smooth level flow with spawn gating.
 */
 
 import { gameLevel, gameState, levelStartTime, bullets, obstacles } from './state.js';
@@ -15,6 +13,8 @@ import { gameLevel, gameState, levelStartTime, bullets, obstacles } from './stat
 let allowSpawning = true;
 let pendingLevelUp = false;
 let levelClearTime = null;
+
+const MAX_WAIT = 5000; // Max wait 5 seconds before forcing level-up
 
 export function resetLevelFlow() {
     allowSpawning = true;
@@ -34,7 +34,8 @@ export function updateLevelFlow(onLevelUpCallback) {
         levelClearTime = now;
     }
 
-    if (pendingLevelUp && levelClearTime && now - levelClearTime >= 1500) {
+    if (pendingLevelUp && levelClearTime && 
+        (now - levelClearTime >= 1500 || now - levelStartTime.value >= MAX_WAIT)) {
         gameLevel.value++;
         gameState.value = 'LEVEL_TRANSITION';
         bullets.length = 0;

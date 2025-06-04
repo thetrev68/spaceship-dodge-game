@@ -80,4 +80,5 @@ export function unlockAudio() {
         }).catch(() => {});
     });
     isAudioUnlocked = true;
+    console.log('Audio context unlocked');
 }

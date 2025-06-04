@@ -4,17 +4,15 @@
     Author: ChatGPT + Trevor Clark
 
     Updates:
-        2025-06-01: Added break.wav sound trigger when an asteroid is destroyed.
-
-    Notes:
-    Collision detection for bullets vs. asteroids and player vs. asteroids.
+        Adjusted player collision to return a boolean.
+        Removed direct endGame call for lives handling in loop.js.
+        Added skewed fragment speeds.
 */
 
 import { bullets, obstacles, ASTEROID_LEVEL_SIZES } from './state.js';
 import { createObstacle, fragmentTracker } from './asteroid.js';
 import { addScorePopup } from './loop.js';
 import { player } from './state.js';
-import { endGame } from './loop.js';
 import { playSound } from './soundManager.js';
 
 export function checkPlayerObstacleCollisions() {
@@ -58,10 +56,9 @@ export function checkBulletObstacleCollisions(scoreRef) {
                     const numNew = Math.floor(Math.random() * 2) + 2;
                     for (let k = 0; k < numNew; k++) {
                         const angle = Math.random() * Math.PI * 2;
-                        // 80% chance slow speed, 20% chance faster speed
                         const scatterSpeed = Math.random() < 0.8
-                        ? (Math.random() * 0.7) + 0.3   // mostly slow (0.3 - 1.0)
-                        : (Math.random() * 1.5) + 1.0;  // few faster (1.0 - 2.5)
+                          ? (Math.random() * 0.7) + 0.3   // mostly slow
+                          : (Math.random() * 1.5) + 1.0;  // some faster
                         const dx = Math.cos(angle) * scatterSpeed;
                         const dy = Math.sin(angle) * scatterSpeed;
                         createObstacle(obstacle.x + obstacle.radius, obstacle.y + obstacle.radius, nextLevel, dx, dy, obstacle.parentId ?? obstacle.id);

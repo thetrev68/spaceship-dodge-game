@@ -1,14 +1,7 @@
-/*
-    player.js
-    Created: 2025-05-28
-    Author: ChatGPT + Trevor Clark
-    Updates:
-        2025-06-04: Added pulsing thruster effect.
-    Notes:
-    Handles player update and draw functions.
-*/
-
 import { player, gameState } from './state.js';
+
+const canvas = document.getElementById('gameCanvas');
+const BOUNDARY_MARGIN = 2;
 
 export function updatePlayer() {
     if (gameState.value !== 'PLAYING') return;
@@ -16,10 +9,9 @@ export function updatePlayer() {
     player.x += player.dx;
     player.y += player.dy;
 
-    // Keep player within canvas bounds
-    const canvas = document.getElementById('gameCanvas');
-    player.x = Math.max(0, Math.min(player.x, canvas.width - player.width));
-    player.y = Math.max(0, Math.min(player.y, canvas.height - player.height));
+    // Keep player within canvas bounds with margin
+    player.x = Math.max(BOUNDARY_MARGIN, Math.min(player.x, canvas.width - player.width - BOUNDARY_MARGIN));
+    player.y = Math.max(BOUNDARY_MARGIN, Math.min(player.y, canvas.height - player.height - BOUNDARY_MARGIN));
 }
 
 export function drawPlayer(ctx) {
@@ -33,7 +25,7 @@ export function drawPlayer(ctx) {
     const x = player.x;
     const y = player.y;
     const cx = x + w / 2;
-    const narrowFactor = 0.3; // Increase this to narrow the ship
+    const narrowFactor = 0.3; // Adjust to narrow the ship
 
     // Main Ship Body
     ctx.beginPath();

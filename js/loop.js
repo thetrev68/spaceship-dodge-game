@@ -1,12 +1,13 @@
 /*
     loop.js
-    Updated for player lives system.
+    Updated to conditionally setup mobile or desktop input.
 */
 
 import { 
   player, gameState, score, gameLevel, playerLives,
   lastObstacleSpawnTime, bullets, obstacles,
-  BASE_SPAWN_INTERVAL, SPAWN_INTERVAL_DECREASE_PER_LEVEL
+  BASE_SPAWN_INTERVAL, SPAWN_INTERVAL_DECREASE_PER_LEVEL,
+  isMobile
 } from './state.js';
 
 import { updateBullets, drawBullets } from './bullet.js';
@@ -16,16 +17,23 @@ import { showOverlay } from './ui.js';
 import { updatePlayer, drawPlayer } from './player.js';
 import { createAudioControls } from './audioControls.js';
 import { drawScore } from './scoreDisplay.js';
-import { setupInput } from './controls.js';
+import { setupInput } from './controls.js';           // desktop input
+import { setupMobileInput } from './mobileControls.js'; // mobile input
 import { addScorePopup, updateScorePopups, drawScorePopups } from './scorePopups.js';
 import { canSpawnAsteroids, resetLevelFlow, updateLevelFlow } from './flowManager.js';
 import * as soundManager from './soundManager.js';
 
+const TARGET_FPS = isMobile ? 30 : 60;
+const FRAME_DURATION = 1000 / TARGET_FPS;
+
+const MAX_BULLETS_MOBILE = 10;
+const MAX_OBSTACLES_MOBILE = 15;
+
+let lastFrameTime = 0;
 let animationId;
 let gameCanvas;
 
 const MIN_SPAWN_INTERVAL = 300;
-const MAX_OBSTACLE_SPEED = 3;
 
 export function setCanvas(canvas) {
   gameCanvas = canvas;
@@ -33,7 +41,7 @@ export function setCanvas(canvas) {
 
 export function restartGameLoop() {
   if (gameCanvas) {
-    animationId = requestAnimationFrame(() => gameLoop(gameCanvas));
+    animationId = requestAnimationFrame((t) => gameLoop(gameCanvas, t));
   }
 }
 
@@ -46,16 +54,22 @@ let obstacleSpawnInterval = getSpawnInterval(0);
 
 export { addScorePopup };
 
-export function gameLoop(canvas) {
+export function gameLoop(canvas, timestamp = 0) {
+  if (timestamp - lastFrameTime < FRAME_DURATION) {
+    animationId = requestAnimationFrame((t) => gameLoop(canvas, t));
+    return;
+  }
+  lastFrameTime = timestamp;
+
   const ctx = canvas.getContext('2d');
 
   if (gameState.value === 'PAUSED') {
-    animationId = requestAnimationFrame(() => gameLoop(canvas));
+    animationId = requestAnimationFrame((t) => gameLoop(canvas, t));
     return;
   }
 
   if (gameState.value !== 'PLAYING') {
-    animationId = requestAnimationFrame(() => gameLoop(canvas));
+    animationId = requestAnimationFrame((t) => gameLoop(canvas, t));
     return;
   }
 
@@ -66,6 +80,15 @@ export function gameLoop(canvas) {
     cancelAnimationFrame(animationId);
     showOverlay('LEVEL_TRANSITION', score.value, gameLevel.value);
   });
+
+  if (isMobile) {
+    if (bullets.length > MAX_BULLETS_MOBILE) {
+      bullets.splice(0, bullets.length - MAX_BULLETS_MOBILE);
+    }
+    if (obstacles.length > MAX_OBSTACLES_MOBILE) {
+      obstacles.splice(0, obstacles.length - MAX_OBSTACLES_MOBILE);
+    }
+  }
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -80,7 +103,6 @@ export function gameLoop(canvas) {
   drawScore(ctx);
   drawScorePopups(ctx);
 
-  // Check collisions and handle lives
   const playerHit = checkPlayerObstacleCollisions();
   if (playerHit) {
     playerLives.value -= 1;
@@ -107,12 +129,17 @@ export function gameLoop(canvas) {
 
   checkBulletObstacleCollisions(score);
 
-  animationId = requestAnimationFrame(() => gameLoop(canvas));
+  animationId = requestAnimationFrame((t) => gameLoop(canvas, t));
 }
 
 export function startGame(canvas) {
   setCanvas(canvas);
-  setupInput(canvas);
+  if (isMobile) {
+    setupMobileInput(canvas);
+  } else {
+    setupInput(canvas);
+  }
+
   gameState.value = 'PLAYING';
   score.value = 0;
   gameLevel.value = 0;
@@ -130,12 +157,17 @@ export function startGame(canvas) {
 
   showOverlay('PLAYING');
   createAudioControls();
-  animationId = requestAnimationFrame(() => gameLoop(canvas));
+  animationId = requestAnimationFrame((t) => gameLoop(canvas, t));
 }
 
 export function continueGame(canvas) {
   setCanvas(canvas);
-  setupInput(canvas);
+  if (isMobile) {
+    setupMobileInput(canvas);
+  } else {
+    setupInput(canvas);
+  }
+
   gameState.value = 'PLAYING';
   updateAsteroids(gameLevel.value);
   obstacleSpawnInterval = getSpawnInterval(gameLevel.value);
@@ -143,11 +175,10 @@ export function continueGame(canvas) {
   resetLevelFlow();
   showOverlay('PLAYING');
   import('./soundManager.js').then(m => m.startMusic());
-  animationId = requestAnimationFrame(() => gameLoop(canvas));
+  animationId = requestAnimationFrame((t) => gameLoop(canvas, t));
 }
 
 export function endGame() {
-  // Deprecated by lives logic - keep for safety
   gameState.value = 'GAME_OVER';
   cancelAnimationFrame(animationId);
   soundManager.stopMusic();

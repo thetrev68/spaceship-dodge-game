@@ -3,44 +3,42 @@
     Created: 2025-05-28
     Author: ChatGPT + Trevor Clark
 
-    Updates:
-        2025-06-01: Capped active bullets to reduce mobile performance impact.
-        2025-06-02: Update placeholders to ensure compatibility.
-
     Notes:
-    Handles bullet creation, updates, and rendering.
+    Handles bullet creation, updating position, drawing, and firing sound.
 */
-import { bullets, bulletSpeed, bulletRadius, player, lastShotTime, fireRate } from './state.js';
+
+import { bullets, bulletSpeed, bulletRadius, player, gameState } from './state.js';
 import { playSound } from './soundManager.js';
 
 export function fireBullet() {
-    const now = Date.now();
-    if (now - lastShotTime.value < fireRate) return;
-    bullets.push({
-        x: player.x + player.width / 2,
-        y: player.y,
-        radius: bulletRadius
-    });
-    lastShotTime.value = now;
-    playSound('fire');
+  if (gameState.value !== 'PLAYING') return;
+
+  bullets.push({
+    x: player.x + player.width / 2,
+    y: player.y,
+    radius: bulletRadius,
+    dy: -bulletSpeed,
+  });
+
+  playSound('fire');
 }
 
 export function updateBullets(canvasHeight) {
-    bullets.forEach((bullet) => {
-        bullet.y -= bulletSpeed;
-    });
-    for (let i = bullets.length - 1; i >= 0; i--) {
-        if (bullets[i].y < 0) {
-            bullets.splice(i, 1);
-        }
+  for (let i = bullets.length - 1; i >= 0; i--) {
+    const b = bullets[i];
+    b.y += b.dy;
+
+    if (b.y + b.radius < 0) {
+      bullets.splice(i, 1); // Remove bullet off screen
     }
+  }
 }
 
 export function drawBullets(ctx) {
-    ctx.fillStyle = 'red';
-    bullets.forEach((bullet) => {
-        ctx.beginPath();
-        ctx.arc(bullet.x, bullet.y, bulletRadius, 0, Math.PI * 2);
-        ctx.fill();
-    });
+  ctx.fillStyle = '#00ffff';
+  bullets.forEach(b => {
+    ctx.beginPath();
+    ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
+    ctx.fill();
+  });
 }

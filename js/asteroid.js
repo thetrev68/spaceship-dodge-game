@@ -7,6 +7,8 @@
         Eased speed scaling for levels 0-5 with cubic easing.
         Logarithmic speed scaling for levels above 5.
         Fragment speeds scaled down.
+        Off-screen margin and lifetime cleanup added.
+        Simplified asteroid shapes on mobile.
 */
 
 import {
@@ -16,7 +18,7 @@ import {
     BASE_OBSTACLE_MIN_SPEED,
     BASE_OBSTACLE_MAX_SPEED,
     SPEED_INCREASE_PER_LEVEL,
-    gameLevel
+    isMobile, gameLevel
 } from './state.js';
 
 let obstacleMinSpeed = BASE_OBSTACLE_MIN_SPEED;
@@ -60,7 +62,9 @@ export function generateAsteroidShape(radius, numPoints) {
 export function createObstacle(x, y, levelIndex, initialDx = 0, initialDy = 0, parentId = null) {
   const radius = ASTEROID_LEVEL_SIZES[levelIndex];
   const scoreValue = ASTEROID_SCORE_VALUES[levelIndex];
-  const numPoints = Math.floor(Math.random() * 6) + 5;
+  const basePoints = Math.floor(Math.random() * 6) + 5;
+  const numPoints = isMobile ? Math.min(basePoints, 5) : basePoints;
+
   const shape = generateAsteroidShape(radius, numPoints);
 
   const id = nextAsteroidId++;
@@ -76,7 +80,7 @@ export function createObstacle(x, y, levelIndex, initialDx = 0, initialDy = 0, p
   }
 
   const baseSpeed = Math.random() * (obstacleMaxSpeed - obstacleMinSpeed) + obstacleMinSpeed;
-  const speed = parentId === null ? baseSpeed : baseSpeed * 0.5;
+  const speed = parentId === null ? baseSpeed : baseSpeed * 0.3; // Fragments slower, adjusted multiplier
 
   obstacles.push({
     x,
@@ -101,7 +105,6 @@ export function updateObstacles(canvasWidth, canvasHeight, spawnInterval, lastSp
   for (let i = 0; i < obstacles.length; i++) {
     const o = obstacles[i];
 
-    // Initialize creationTime for lifetime tracking
     if (!o.creationTime) {
       o.creationTime = now;
     }

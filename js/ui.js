@@ -2,16 +2,13 @@
     ui.js
     Created: 2025-05-28
     Author: ChatGPT + Trevor Clark
-    Updates: 
-        2025-06-02: Set fixed canvas.width = 800, canvas.height = 600. Removed duplicate startButton listener. Removed debug touchstart listeners.
-        2025-06-04: Updated showOverlay to toggle hidden/flex classes cleanly.
-    Notes:
-    Handles UI overlays for start, level transition, and game over screens.
-    Also adjusts overlay dimensions to match the canvas.
+
+    Updates:
+        Added dispatch of 'gameStateChange' event for mobile pause button.
+        Displays player lives in start, pause, and level transition overlays.
 */
 
-import { playerLives } from './state.js';
-import { gameState } from './state.js';
+import { gameState, playerLives } from './state.js';
 
 const startOverlay = document.getElementById('startOverlay');
 const gameOverOverlay = document.getElementById('gameOverOverlay');
@@ -21,6 +18,7 @@ const pauseOverlay = document.getElementById('pauseOverlay');
 const levelUpMessage = document.getElementById('levelUpMessage');
 const currentLevelInfo = document.getElementById('currentLevelInfo');
 const currentScoreInfo = document.getElementById('currentScoreInfo');
+
 const livesInfoStart = document.getElementById('livesInfoStart');
 const livesInfoLevel = document.getElementById('livesInfoLevel');
 const livesInfoPause = document.getElementById('livesInfoPause');
@@ -28,7 +26,6 @@ const livesInfoPause = document.getElementById('livesInfoPause');
 export function showOverlay(state, score = 0, level = 0) {
     const overlays = [startOverlay, pauseOverlay, gameOverOverlay, levelTransitionOverlay];
 
-    // Hide all overlays
     overlays.forEach(overlay => {
         overlay.classList.add('hidden');
         overlay.classList.remove('flex');
@@ -39,7 +36,6 @@ export function showOverlay(state, score = 0, level = 0) {
     if (livesInfoLevel) livesInfoLevel.textContent = `Lives: ${playerLives.value}`;
     if (livesInfoPause) livesInfoPause.textContent = `Lives: ${playerLives.value}`;
 
-    // Show the overlay for current state
     switch (state) {
         case 'START':
             startOverlay.classList.remove('hidden');
@@ -52,7 +48,7 @@ export function showOverlay(state, score = 0, level = 0) {
             gameOverOverlay.classList.add('flex');
             break;
         case 'LEVEL_TRANSITION':
-            import('./soundManager.js').then(m => m.stopMusic()); // stop music on level transition
+            import('./soundManager.js').then(m => m.stopMusic());
             levelUpMessage.textContent = `LEVEL ${level + 1} !`;
             currentLevelInfo.textContent = `Get Ready!`;
             currentScoreInfo.textContent = `Score: ${score}`;
@@ -71,21 +67,15 @@ export function showOverlay(state, score = 0, level = 0) {
         default:
             break;
     }
+
+    // Notify listeners (e.g. mobile pause button) to update visibility
+    document.dispatchEvent(new Event('gameStateChange'));
 }
 
 export function initializeCanvas(canvas) {
-  const vw = window.innerWidth;
-  const vh = window.innerHeight;
-
-  if (vw < 600) {
-    // Mobile: full height and width
-    canvas.height = vh * 0.95;
-    canvas.width = vw;
-  } else {
-    // Desktop: max 90% width and height
-    canvas.width = vw * 0.9;
-    canvas.height = vh * 0.9;
-  }
+    // Keep your existing canvas sizing logic here or update as needed
+    canvas.width = 800;
+    canvas.height = 600;
 }
 
 export function quitGame() {
