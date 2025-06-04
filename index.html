@@ -1,38 +1,40 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="bg-black text-white"> <!-- add Tailwind body styles here for base -->
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <link rel="icon" type="image/svg+xml" href="/vite.svg">
-    <title>Spaceship Dodge</title>
-    <link rel="stylesheet" href="/styles/tailwind.css">
-    <link rel="stylesheet" href="/styles/main-tailwind.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <link rel="icon" href="data:," /> <!-- inline empty favicon -->
+  <title>Spaceship Dodge</title>
+  <!-- REMOVE these CSS links, as Tailwind is imported via JS -->
+  <!-- <link rel="stylesheet" href="/styles/tailwind.css" /> -->
+  <link rel="stylesheet" href="/styles/main-tailwind.css" />
 </head>
 <body>
-    <canvas id="gameCanvas"></canvas>
-    <div id="startOverlay" class="game-overlay">
-        <h1>Spaceship Dodge</h1>
-        <p>Dodge the incoming asteroids!</p>
-        <p>Use W, A, S, D or Arrow Keys to move.</p>
-        <p>Press SPACE to fire!</p>
-        <button id="startButton">Start Game</button>
-    </div>
-    <div id="levelTransitionOverlay" class="game-overlay hidden">
-        <h1 id="levelUpMessage">LEVEL UP!</h1>
-        <p id="currentLevelInfo">Level 1</p>
-        <p id="currentScoreInfo">Score: 0</p>
-        <button id="continueButton">Continue</button>
-    </div>
-    <div id="pauseOverlay" class="game-overlay hidden">
-        <h1>PAUSED</h1>
-        <button id="quitButton">Quit Game</button>
-        <p>Press P to Resume</p>
-    </div>
-    <div id="gameOverOverlay" class="game-overlay hidden">
-        <h1>GAME OVER!</h1>
-        <p id="finalScore">Final Score: 0</p>
-        <button id="restartButton">Play Again</button>
-    </div>
-    <script type="module" src="/js/main.js"></script>
+  <div id="app"></div>
+  <canvas id="gameCanvas"></canvas>
+  <div id="startOverlay" class="game-overlay">
+    <h1>Spaceship Dodge</h1>
+    <p>Dodge the incoming asteroids!</p>
+    <p>Use W, A, S, D or Arrow Keys to move.</p>
+    <p>Press SPACE to fire!</p>
+    <button id="startButton">Start Game</button>
+  </div>
+  <div id="levelTransitionOverlay" class="game-overlay hidden">
+    <h1 id="levelUpMessage">LEVEL UP!</h1>
+    <p id="currentLevelInfo">Level 1</p>
+    <p id="currentScoreInfo">Score: 0</p>
+    <button id="continueButton">Continue</button>
+  </div>
+  <div id="pauseOverlay" class="game-overlay hidden">
+    <h1>PAUSED</h1>
+    <button id="quitButton">Quit Game</button>
+    <p>Press P to Resume</p>
+  </div>
+  <div id="gameOverOverlay" class="game-overlay hidden">
+    <h1>GAME OVER!</h1>
+    <p id="finalScore">Final Score: 0</p>
+    <button id="restartButton">Play Again</button>
+  </div>
+  <script type="module" src="/js/main.js"></script>
 </body>
 </html>
