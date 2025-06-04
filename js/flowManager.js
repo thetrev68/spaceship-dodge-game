@@ -30,13 +30,11 @@ export function updateLevelFlow(onLevelUpCallback) {
     if (elapsed >= 15) allowSpawning = false;
 
     if (!allowSpawning && !pendingLevelUp && obstacles.length === 0) {
-        console.log('All obstacles cleared, beginning level-up delay');
         pendingLevelUp = true;
         levelClearTime = now;
     }
 
     if (pendingLevelUp && levelClearTime && now - levelClearTime >= 1500) {
-        console.log('Level-up delay complete, transitioning levels');
         gameLevel.value++;
         gameState.value = 'LEVEL_TRANSITION';
         bullets.length = 0;

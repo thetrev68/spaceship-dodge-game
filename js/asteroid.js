@@ -4,7 +4,6 @@
     Author: ChatGPT + Trevor Clark
     Updates:
         2025-06-01: Added support for conditional spawning using `allowSpawning` flag.
-        2025-06-02: Added console.log in createObstacle and drawObstacles.
     Notes:
         Handles asteroid creation, updates, rendering, and splitting upon bullet impact.
 */
@@ -24,9 +23,11 @@ let nextAsteroidId = 1;
 export const fragmentTracker = {};
 let obstacleMaxSpeed = BASE_OBSTACLE_MAX_SPEED;
 
+const MAX_OBSTACLE_SPEED = 3;
+
 export function updateDifficulty(level) {
-    obstacleMinSpeed = BASE_OBSTACLE_MIN_SPEED + (level * SPEED_INCREASE_PER_LEVEL);
-    obstacleMaxSpeed = BASE_OBSTACLE_MAX_SPEED + (level * SPEED_INCREASE_PER_LEVEL);
+  obstacleMinSpeed = BASE_OBSTACLE_MIN_SPEED + level * (SPEED_INCREASE_PER_LEVEL / 2);
+  obstacleMaxSpeed = Math.min(BASE_OBSTACLE_MAX_SPEED + level * SPEED_INCREASE_PER_LEVEL, MAX_OBSTACLE_SPEED);
 }
 
 export function generateAsteroidShape(radius, numPoints) {
@@ -73,7 +74,6 @@ export function createObstacle(x, y, levelIndex, initialDx = 0, initialDy = 0, p
         id: id,
         parentId: parentId ?? id
     });
-    console.log('Created asteroid at:', x, y);
 }
 
 export function updateObstacles(canvasWidth, canvasHeight, spawnInterval, lastSpawnTimeRef, allowSpawning = true) {
@@ -110,6 +110,5 @@ export function drawObstacles(ctx) {
         }
         ctx.closePath();
         ctx.stroke();
-        console.log('Drawing asteroid at:', o.x, o.y);
     });
 }

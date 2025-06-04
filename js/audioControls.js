@@ -4,13 +4,10 @@
     Author: ChatGPT + Trevor Clark
 
     Updates:
-        2025-06-01: Added touchstart listeners for mute/unmute buttons for iOS compatibility.
-
-    Notes:
-    Creates and manages mute/unmute and volume slider UI.
+        Uses exported currentVolume for slider initial value.
 */
 
-import { muteAll, unmuteAll } from './soundManager.js';
+import * as soundManager from './soundManager.js';
 
 export function createAudioControls() {
     const container = document.createElement('div');
@@ -25,29 +22,27 @@ export function createAudioControls() {
     muteBtn.textContent = '🔇';
     muteBtn.addEventListener('touchstart', (e) => {
         e.preventDefault();
-        console.log('Touchstart on mute button');
-        muteAll();
+        soundManager.muteAll();
     }, { passive: false });
-    muteBtn.addEventListener('click', () => muteAll());
+    muteBtn.addEventListener('click', () => soundManager.muteAll());
 
     const unmuteBtn = document.createElement('button');
     unmuteBtn.textContent = '🔊';
     unmuteBtn.addEventListener('touchstart', (e) => {
         e.preventDefault();
-        console.log('Touchstart on unmute button');
-        unmuteAll();
+        soundManager.unmuteAll();
     }, { passive: false });
-    unmuteBtn.addEventListener('click', () => unmuteAll());
+    unmuteBtn.addEventListener('click', () => soundManager.unmuteAll());
 
     const volumeSlider = document.createElement('input');
     volumeSlider.type = 'range';
     volumeSlider.min = '0';
     volumeSlider.max = '1';
     volumeSlider.step = '0.05';
-    volumeSlider.value = '0.4';
+    volumeSlider.value = soundManager.currentVolume.toString();
     volumeSlider.oninput = (e) => {
         const val = parseFloat(e.target.value);
-        import('./soundManager.js').then(m => m.setVolume(val));
+        soundManager.setVolume(val);
     };
 
     container.appendChild(muteBtn);

@@ -19,10 +19,10 @@ export const levelStartTime = { value: 0 };
 export const allowSpawning = { value: true };
 
 export const player = {
-    x: 380, // Center of 800px canvas
-    y: 500, // Near bottom of 600px canvas
-    width: 40,
-    height: 40,
+    x: 380,
+    y: 500,
+    width: 30,  // narrower
+    height: 45, // slightly taller
     speed: 7,
     dx: 0,
     dy: 0

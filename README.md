@@ -1,64 +1,74 @@
+Here’s an updated README reflecting your current project state and improvements:
+
+```markdown
 # 🚀 Spaceship Dodge
 
-A fast-paced arcade-style web game where you pilot a spaceship, dodge and destroy falling asteroids, and level up through escalating challenges. Designed for mouse and keyboard play.
+A fast-paced arcade-style web game where you pilot a vector-style spaceship, dodge and destroy falling asteroids, and level up through escalating challenges. Supports mouse, keyboard, and touch controls with full audio management.
 
 ---
 
 ## 🎮 Features
-- **Vector-style spaceship** with concave rear and trapezoidal engine
-- **Multiple asteroid sizes** that break apart when hit
-- **Fragment tracking & bonuses** for fully shattering large asteroids
-- **Score popups** that float on each successful hit
-- **Background music and sound effects** with mute and volume control
-- **Pause/Resume** via right-click or `P` key
-- **Mouse + keyboard support** for movement and firing
-- **Level progression** every 2000 points, with transitions between waves
-- **Quit confirmation prompt** to return to the start
+- **Vector-style spaceship** with pulsing thruster flame and sleek shape
+- **Multiple asteroid sizes** that break apart and fragment tracking with bonuses
+- **Dynamic difficulty scaling** with smooth asteroid speed and spawn rate progression
+- **Score popups** with animated floating text on hits
+- **Full audio management**: background music, sound effects, mute/unmute, and volume slider that control all sounds uniformly
+- **Pause/Resume** functionality via right-click or `P` key, with proper loop handling
+- **Responsive canvas**: scales to fill most of the screen while maintaining aspect ratio
+- **Level progression** every 15 seconds with smooth transitions and spawn gating
+- **Mouse, keyboard, and touch input** for movement and firing
+- **Quit confirmation** prompt to safely exit game
 
 ---
 
 ## 📁 Folder Structure
 ```
+
 spaceship-dodge-game/
 │
-├── index.html               # Main UI and overlays
+├── index.html               # Main UI and overlays with Tailwind CSS
 ├── styles/
-│   └── main.css             # Styling for canvas and overlays
+│   └── main-tailwind.css    # Compiled Tailwind CSS for styling
 ├── js/
-│   ├── main.js              # Game bootstrap and button listeners
-│   ├── loop.js              # Main game loop and control flow
+│   ├── main.js              # Game bootstrap and event listeners
+│   ├── loop.js              # Main game loop, state management, and difficulty scaling
 │   ├── state.js             # Shared game state and constants
-│   ├── player.js            # Player rendering and logic
-│   ├── asteroid.js          # Obstacle generation, tracking, IDs
-│   ├── bullet.js            # Bullet creation and update
-│   ├── collisions.js        # Collision detection and bonus logic
-│   ├── ui.js                # Overlay rendering, game state prompts
-│   ├── scoreDisplay.js      # HUD score/level drawing
-│   ├── audioControls.js     # Volume slider and mute/unmute
-│   └── soundManager.js      # Global sound handling
+│   ├── player.js            # Player rendering and update logic with thruster animation
+│   ├── asteroid.js          # Asteroid generation, shape, movement, and speed scaling
+│   ├── bullet.js            # Bullet creation, update, and rendering
+│   ├── collisions.js        # Collision detection and scoring logic
+│   ├── ui.js                # UI overlays, canvas sizing, and game state prompts
+│   ├── scoreDisplay.js      # HUD rendering for score and level
+│   ├── audioControls.js     # Audio controls UI and event handlers
+│   └── soundManager.js      # Unified sound playback, volume, and mute control
 └── assets/
-    └── sounds/              # All .wav and .mp3 sound files
+└── sounds/              # All game sound assets (.wav, .mp3)
+
 ```
 
 ---
 
 ## 🐞 Known Issues
-- `gameLevel.value` displays correctly, but level HUD may not reflect real-time progress
-- Level-up detection waits for obstacle clear but may trigger oddly if fragments stall
-- Rapid fire sound continues briefly after pause without cleanup
-- Rare race condition with multiple bullets hitting same asteroid simultaneously
+- Level HUD may lag behind actual `gameLevel.value` updates occasionally
+- Level-up triggers only after clearing obstacles; fragments lingering may delay progression
+- Sound effects sometimes linger briefly after pausing due to race conditions
+- Rare bullet-asteroid simultaneous collision glitches
 
 ---
 
 ## 🌟 Future Enhancements
-- ⭐ **Rotating asteroids** with canvas transforms
-- ✨ **Animated starfield background**
-- 🚀 **Spaceship redesign** with thrust animation and color trails
-- 🧠 AI-based or pattern-based asteroid swarms
-- 📈 High score leaderboard (local or Firebase-based)
-- 🕹️ Touch support for mobile play
+- Rotating and animated asteroids with canvas transforms
+- Starfield and other animated backgrounds for immersion
+- Spaceship glow trails and enhanced thrust effects
+- Pattern-based asteroid swarms or AI-controlled enemies
+- Persistent high score leaderboard (localStorage or cloud sync)
+- Full mobile optimization and touch controls refinement
 
 ---
 
 ## ✅ Status
-This is a complete vertical slice ready for expansion. Core mechanics, audio/visuals, and game flow are all functional and modular. Great job, Captain! 🛸
+Complete core gameplay with responsive design, sound management, and polished visuals. Modular architecture for easy expansion and maintenance. Ready for deployment or further feature development.
+
+Fly safe, Captain! 🛸
+```
+

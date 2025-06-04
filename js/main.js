@@ -36,7 +36,6 @@ function init() {
         e.preventDefault();
         if (gameState.value !== 'START' || isStarting) return;
         isStarting = true;
-        console.log('Touchstart on start button, coords:', e.touches[0].clientX, e.touches[0].clientY);
         import('./soundManager.js').then(m => m.unlockAudio());
         startGame(canvas);
         setTimeout(() => isStarting = false, 1000);
@@ -44,7 +43,6 @@ function init() {
     startButton.addEventListener('click', () => {
         if (gameState.value !== 'START' || isStarting) return;
         isStarting = true;
-        console.log('Start button clicked');
         import('./soundManager.js').then(m => m.unlockAudio());
         startGame(canvas);
         setTimeout(() => isStarting = false, 1000);
@@ -52,14 +50,12 @@ function init() {
 
     restartButton.addEventListener('touchstart', (e) => {
         e.preventDefault();
-        console.log('Touchstart on restart button');
         startGame(canvas);
     }, { passive: false });
     restartButton.addEventListener('click', () => startGame(canvas));
 
     continueButton.addEventListener('touchstart', (e) => {
         e.preventDefault();
-        console.log('Touchstart on continue button');
         continueGame(canvas);
     }, { passive: false });
     continueButton.addEventListener('click', () => continueGame(canvas));
@@ -67,7 +63,6 @@ function init() {
     if (quitButton) {
         quitButton.addEventListener('touchstart', (e) => {
             e.preventDefault();
-            console.log('Touchstart on quit button');
             quitGame();
         }, { passive: false });
         quitButton.addEventListener('click', () => quitGame());

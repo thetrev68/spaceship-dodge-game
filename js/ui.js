@@ -4,7 +4,7 @@
     Author: ChatGPT + Trevor Clark
     Updates: 
         2025-06-02: Set fixed canvas.width = 800, canvas.height = 600. Removed duplicate startButton listener. Removed debug touchstart listeners.
-
+        2025-06-04: Updated showOverlay to toggle hidden/flex classes cleanly.
     Notes:
     Handles UI overlays for start, level transition, and game over screens.
     Also adjusts overlay dimensions to match the canvas.
@@ -22,35 +22,40 @@ const currentLevelInfo = document.getElementById('currentLevelInfo');
 const currentScoreInfo = document.getElementById('currentScoreInfo');
 
 export function showOverlay(state, score = 0, level = 0) {
-    console.log(`Showing overlay for: ${state}, current gameState: ${gameState.value}`);
-    startOverlay.classList.add('hidden');
-    pauseOverlay.classList.add('hidden');
-    gameOverOverlay.classList.add('hidden');
-    levelTransitionOverlay.classList.add('hidden');
+    const overlays = [startOverlay, pauseOverlay, gameOverOverlay, levelTransitionOverlay];
 
+    // Hide all overlays
+    overlays.forEach(overlay => {
+        overlay.classList.add('hidden');
+        overlay.classList.remove('flex');
+    });
+
+    // Show the overlay for current state
     switch (state) {
         case 'START':
             startOverlay.classList.remove('hidden');
-            startOverlay.style.display = 'block';
+            startOverlay.classList.add('flex');
             break;
         case 'GAME_OVER':
             import('./soundManager.js').then(m => m.stopMusic());
             finalScoreDisplay.textContent = `Final Score: ${score} (Level ${level + 1})`;
             gameOverOverlay.classList.remove('hidden');
+            gameOverOverlay.classList.add('flex');
             break;
         case 'LEVEL_TRANSITION':
             levelUpMessage.textContent = `LEVEL ${level + 1} !`;
             currentLevelInfo.textContent = `Get Ready!`;
             currentScoreInfo.textContent = `Score: ${score}`;
             levelTransitionOverlay.classList.remove('hidden');
+            levelTransitionOverlay.classList.add('flex');
             break;
         case 'PAUSED':
             import('./soundManager.js').then(m => m.stopMusic());
             pauseOverlay.classList.remove('hidden');
+            pauseOverlay.classList.add('flex');
             break;
         case 'PLAYING':
             startOverlay.style.display = 'none';
-            console.log('Force hiding start overlay, new gameState: ${gameState.value}');
             import('./soundManager.js').then(m => m.startMusic());
             break;
         default:
@@ -59,9 +64,19 @@ export function showOverlay(state, score = 0, level = 0) {
 }
 
 export function initializeCanvas(canvas) {
-    canvas.width = 800; // Fixed width
-    canvas.height = 600; // Fixed height
-    console.log('Canvas initialized:', canvas.width, canvas.height);
+  const maxWidth = window.innerWidth * 0.9;  // 90% viewport width
+  const maxHeight = window.innerHeight * 0.9; // 90% viewport height
+
+  let width = maxWidth;
+  let height = (width * 3) / 4;
+
+  if (height > maxHeight) {
+    height = maxHeight;
+    width = (height * 4) / 3;
+  }
+
+  canvas.width = width;
+  canvas.height = height;
 }
 
 export function quitGame() {
