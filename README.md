@@ -24,6 +24,7 @@ A fast-paced arcade-style web game where you pilot a vector-style spaceship, dod
 
 ## 📁 Folder Structure
 ```
+Github Repo: https://github.com/thetrev68/spaceship-dodge-game.git
 
 spaceship-dodge-game/
 │

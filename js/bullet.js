@@ -1,21 +1,16 @@
-/*
-    bullet.js
-    Created: 2025-05-28
-    Author: ChatGPT + Trevor Clark
+// js/bullet.js
+// Bullet management module 
 
-    Notes:
-    Handles bullet creation, updating position, drawing, and firing sound.
-*/
-
-import { bullets, bulletSpeed, bulletRadius, player, gameState } from './state.js';
+import { bullets, bulletSpeed, bulletRadius, gameState } from './state.js';
 import { playSound } from './soundManager.js';
 
-export function fireBullet() {
+// Accept x,y parameters for bullet spawn position
+export function fireBullet(x, y) {
   if (gameState.value !== 'PLAYING') return;
 
   bullets.push({
-    x: player.x + player.width / 2,
-    y: player.y,
+    x,
+    y,
     radius: bulletRadius,
     dy: -bulletSpeed,
   });

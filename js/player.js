@@ -5,6 +5,7 @@
     Updates:
         Added pulsing thruster effect.
         Added double blaster firing support.
+        Added shield visual effect.
 */
 
 import { player, gameState, powerUps } from './state.js';
@@ -24,6 +25,22 @@ export function updatePlayer() {
 
 export function drawPlayer(ctx) {
     if (gameState.value !== 'PLAYING') return;
+
+    // Draw shield glow if active
+    if (powerUps.shield.active) {
+        ctx.save();
+        ctx.shadowColor = '#0ff';
+        ctx.shadowBlur = 20;
+        ctx.strokeStyle = '#00ffff';
+        ctx.lineWidth = 4;
+        const cx = player.x + player.width / 2;
+        const cy = player.y + player.height / 2;
+        const radius = Math.max(player.width, player.height) * 0.7;
+        ctx.beginPath();
+        ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.restore();
+    }
 
     ctx.strokeStyle = '#00ffff';
     ctx.lineWidth = 2;
