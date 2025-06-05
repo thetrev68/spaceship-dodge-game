@@ -4,11 +4,12 @@
     Author: ChatGPT + Trevor Clark
 
     Updates:
-        Added asteroidsSpawned count for level progression.
-        Other existing asteroid logic preserved.
+        Track newAsteroidsSpawned only for base-level asteroids (level 0).
+        Preserve existing functionality.
 */
 
 import {
+    allowSpawning,
     obstacles,
     ASTEROID_LEVEL_SIZES,
     ASTEROID_SCORE_VALUES,
@@ -28,8 +29,8 @@ let obstacleMaxSpeed = BASE_OBSTACLE_MAX_SPEED;
 
 const MAX_OBSTACLE_SPEED = 3;
 
-// NEW: Count total asteroids spawned this level
-export let asteroidsSpawned = 0;
+// Counts only newly spawned base-level asteroids (level 0)
+export let newAsteroidsSpawned = 0;
 
 function easeInCubic(t) {
   return t * t * t;
@@ -106,7 +107,9 @@ export function createObstacle(x, y, levelIndex, initialDx = 0, initialDy = 0, p
     creationTime: now,
   });
 
-  asteroidsSpawned++; // Increment spawn count
+  if (levelIndex === 0) {
+    newAsteroidsSpawned++; // Increment only for base-level asteroids
+  }
 }
 
 export function updateObstacles(canvasWidth, canvasHeight, spawnInterval, lastSpawnTimeRef, allowSpawning = true) {

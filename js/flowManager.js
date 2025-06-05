@@ -4,23 +4,22 @@
     Author: ChatGPT + Trevor Clark
 
     Updates:
-        Level progression based on asteroidsSpawned count.
+        Level progression based on newAsteroidsSpawned count.
         Maintains max wait time and spawn gating.
         Added debug logs to troubleshoot level progression.
 */
 
-import { gameLevel, gameState, levelStartTime, bullets, obstacles } from './state.js';
-import { asteroidsSpawned } from './asteroid.js';
+import { allowSpawning, gameLevel, gameState, levelStartTime, bullets, obstacles } from './state.js';
+import { newAsteroidsSpawned } from './asteroid.js';
 
-let allowSpawning = true;
 let pendingLevelUp = false;
 let levelClearTime = null;
 
 const MAX_WAIT = 5000; // 5 seconds max wait before forcing level-up
-const ASTEROIDS_PER_LEVEL = 50; // threshold per level
+const ASTEROIDS_PER_LEVEL = 20; // threshold per level
 
 export function resetLevelFlow() {
-    allowSpawning = true;
+    allowSpawning.value = true;
     pendingLevelUp = false;
     levelClearTime = null;
     levelStartTime.value = Date.now();
@@ -32,19 +31,19 @@ export function updateLevelFlow(onLevelUpCallback) {
     const elapsed = (now - levelStartTime.value) / 1000;
 
     console.log('[FlowManager] elapsed:', elapsed.toFixed(2), 'allowSpawning:', allowSpawning);
-    console.log('[FlowManager] asteroidsSpawned:', asteroidsSpawned);
+    console.log('[FlowManager] newAsteroidsSpawned:', newAsteroidsSpawned);
     console.log('[FlowManager] gameLevel:', gameLevel.value);
     console.log('[FlowManager] obstacles:', obstacles.length);
     console.log('[FlowManager] pendingLevelUp:', pendingLevelUp);
 
-    if (elapsed >= 15) {
-        allowSpawning = false;
-        console.log('[FlowManager] Stopped spawning due to elapsed time');
+    if (newAsteroidsSpawned >= (gameLevel.value + 1) * ASTEROIDS_PER_LEVEL) {
+        allowSpawning.value = false;
     }
 
-    if (asteroidsSpawned >= (gameLevel.value + 1) * ASTEROIDS_PER_LEVEL) {
-        allowSpawning = false;
-        console.log('[FlowManager] Stopped spawning due to asteroids spawned threshold');
+    if (elapsed >= 15) allowSpawning.value = false;
+
+    if (newAsteroidsSpawned >= (gameLevel.value + 1) * ASTEROIDS_PER_LEVEL) {
+      allowSpawning.value = false;
     }
 
     if (!allowSpawning && !pendingLevelUp && obstacles.length === 0) {
@@ -59,15 +58,14 @@ export function updateLevelFlow(onLevelUpCallback) {
         gameLevel.value++;
         gameState.value = 'LEVEL_TRANSITION';
         bullets.length = 0;
-        allowSpawning = true;
+        allowSpawning.value = true;
         pendingLevelUp = false;
         levelClearTime = null;
 
         import('./soundManager.js').then(m => m.playSound('levelup'));
         import('./soundManager.js').then(m => m.stopMusic());
 
-        // Reset spawn count for next level
-        asteroidsSpawned = 0;
+        newAsteroidsSpawned = 0;
 
         onLevelUpCallback();
     }

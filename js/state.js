@@ -27,6 +27,7 @@ export const isMobile = 'ontouchstart' in window || navigator.maxTouchPoints > 0
 
 export const BASE_SPAWN_INTERVAL = isMobile ? 2400 : 1500;
 export const SPAWN_INTERVAL_DECREASE_PER_LEVEL = 70;
+export const allowSpawning = { value: true };
 
 export const bulletSpeed = 10;
 export const bulletRadius = 3;

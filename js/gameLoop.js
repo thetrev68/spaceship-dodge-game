@@ -12,14 +12,14 @@ import {
   gameLevel 
 } from './state.js';
 
-import { asteroidsSpawned } from './asteroid.js';
+import { newAsteroidsSpawned } from './asteroid.js';
 import { updatePlayer } from './player.js';
 import { updateObstacles } from './asteroid.js';
 import { updateBullets } from './bullet.js';
 import { updatePowerups, spawnPowerup } from './powerups.js';
 import { updateScorePopups } from './scorePopups.js';
 import { checkCollisions } from './collisionHandler.js';
-import { updateLevelFlow } from './flowManager.js'; // updated import
+import { updateLevelFlow, resetLevelFlow } from './flowManager.js';
 import { renderAll } from './renderManager.js';
 
 const TARGET_FPS = 60;
@@ -85,8 +85,9 @@ export function gameLoop(canvas, timestamp = 0) {
   renderAll(ctx);
 
   updateLevelFlow(() => {
-    // Reset asteroidsSpawned when level advances
-    asteroidsSpawned = 0;
+    console.log('Level up! Current level:', gameLevel.value);
+    newAsteroidsSpawned = 0; // reset on level up
+    resetLevelFlow();
   });
 
   animationId = requestAnimationFrame((t) => gameLoop(canvas, t));
