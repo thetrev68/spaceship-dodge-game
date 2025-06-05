@@ -49,6 +49,7 @@ export function unmuteAll() {
 }
 
 export function playSound(name) {
+    if (isMuted) return;
     if (!sounds[name]) return;
     if (!isAudioUnlocked) unlockAudio();
     const s = sounds[name].cloneNode();
@@ -58,6 +59,7 @@ export function playSound(name) {
 }
 
 export function startMusic() {
+    if (isMuted) return;
     if (!isAudioUnlocked) unlockAudio();
     setTimeout(() => {
         sounds.bgm.volume = isMuted ? 0 : currentVolume;
@@ -72,13 +74,14 @@ export function stopMusic() {
 }
 
 export function unlockAudio() {
-    if (isAudioUnlocked) return;
-    Object.values(sounds).forEach(audio => {
-        audio.play().then(() => {
-            audio.pause();
-            audio.currentTime = 0;
-        }).catch(() => {});
-    });
+  if (isAudioUnlocked) return;
+  Promise.all(Object.values(sounds).map(audio => {
+    return audio.play().then(() => {
+      audio.pause();
+      audio.currentTime = 0;
+    }).catch(() => {});
+  })).then(() => {
     isAudioUnlocked = true;
     console.log('Audio context unlocked');
+  });
 }

@@ -8,6 +8,8 @@ import { gameState, playerLives, player, bullets, obstacles, score, gameLevel, p
 import { resetLevelFlow } from './flowManager.js';
 import { showOverlay } from './ui.js';
 import * as soundManager from './soundManager.js';
+import { unmuteAll } from './soundManager.js';
+import { createAudioControls } from './audioControls.js';
 
 export function handlePlayerHit() {
   playerLives.value -= 1;
@@ -40,12 +42,35 @@ export function startGame(canvas) {
   score.value = 0;
   gameLevel.value = 0;
   playerLives.value = 3;
+
+  // Reset powerups
   powerUps.shield.active = false;
   powerUps.shield.timer = 0;
   powerUps.doubleBlaster.active = false;
   powerUps.doubleBlaster.timer = 0;
-  resetForNextLevel();
+
+  // Clear arrays
+  bullets.length = 0;
+  obstacles.length = 0;
+
+  // Reset player position and movement
+  player.x = canvas.width / 2 - player.width / 2;
+  player.y = canvas.height - player.height - 50;
+  player.dx = 0;
+  player.dy = 0;
+
+  resetLevelFlow();
+
   showOverlay('PLAYING');
+
+  createAudioControls();
+
+  unmuteAll();       // Unmute audio
+  import('./soundManager.js').then(m => m.startMusic());
+
+  // Clear the canvas explicitly
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
 
 export function continueGame() {

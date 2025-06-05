@@ -88,18 +88,30 @@ export function initializeCanvas(canvas) {
 }
 
 export function quitGame() {
-    const confirmed = confirm('Are you sure you want to quit the game?');
-    if (!confirmed) return;
+  const confirmed = confirm('Are you sure you want to quit the game?');
+  if (!confirmed) return;
 
-    import('./soundManager.js').then(m => m.stopMusic());
-    import('./state.js').then(state => {
-        state.gameState.value = 'START';
-        state.score.value = 0;
-        state.gameLevel.value = 0;
-        state.bullets.length = 0;
-        state.obstacles.length = 0;
+  Promise.all([
+    import('./soundManager.js'),
+    import('./state.js'),
+    import('./ui.js')
+  ]).then(([soundManager, state, ui]) => {
+    soundManager.stopMusic();
+    state.gameState.value = 'GAME_OVER';
+    // state.score.value = 0;         // Reset if desired; or keep final score
+    // state.gameLevel.value = 0;
+    state.bullets.length = 0;
+    state.obstacles.length = 0;
+
+    // Reset powerups
+    Object.keys(state.powerUps).forEach(key => {
+      state.powerUps[key].active = false;
+      state.powerUps[key].timer = 0;
     });
-    showOverlay('START');
+
+    soundManager.playSound('gameover');
+    ui.showOverlay('GAME_OVER', state.score.value, state.gameLevel.value);
+  });
 }
 
 export function setOverlayDimensions(canvas) {

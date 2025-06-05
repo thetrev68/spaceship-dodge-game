@@ -32,6 +32,11 @@ const MAX_OBSTACLE_SPEED = 3;
 // Counts only newly spawned base-level asteroids (level 0)
 export let newAsteroidsSpawned = 0;
 
+
+export function resetNewAsteroidsSpawned() {
+  newAsteroidsSpawned = 0;
+}
+
 function easeInCubic(t) {
   return t * t * t;
 }

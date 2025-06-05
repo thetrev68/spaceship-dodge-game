@@ -1,7 +1,7 @@
 // gameLoop.js
 /*
-  Complete game loop with spawn-count-based leveling integration,
-  canvas sizing, and centralized rendering.
+  Complete game loop module with proper obstacle spawn timing,
+  canvas sizing, and update/draw orchestration using renderManager.
 */
 
 import { 
@@ -9,18 +9,20 @@ import {
   lastObstacleSpawnTime, 
   BASE_SPAWN_INTERVAL, 
   SPAWN_INTERVAL_DECREASE_PER_LEVEL, 
-  gameLevel 
+  gameLevel,
+  allowSpawning
 } from './state.js';
 
-import { newAsteroidsSpawned } from './asteroid.js';
 import { updatePlayer } from './player.js';
 import { updateObstacles } from './asteroid.js';
+import * as asteroid from './asteroid.js';
 import { updateBullets } from './bullet.js';
 import { updatePowerups, spawnPowerup } from './powerups.js';
 import { updateScorePopups } from './scorePopups.js';
 import { checkCollisions } from './collisionHandler.js';
 import { updateLevelFlow, resetLevelFlow } from './flowManager.js';
 import { renderAll } from './renderManager.js';
+import { score } from './state.js';
 
 const TARGET_FPS = 60;
 const FRAME_DURATION = 1000 / TARGET_FPS;
@@ -30,7 +32,7 @@ let animationId;
 let gameCanvas;
 let ctx;
 let lastPowerupSpawnTime = 0;
-const POWERUP_SPAWN_INTERVAL = 10000;
+const POWERUP_SPAWN_INTERVAL = 10000; // 10 seconds
 const MIN_SPAWN_INTERVAL = 300;
 
 function getSpawnInterval(level) {
@@ -75,7 +77,8 @@ export function gameLoop(canvas, timestamp = 0) {
   }
 
   updatePlayer();
-  updateObstacles(canvas.width, canvas.height, obstacleSpawnInterval, lastObstacleSpawnTime, true);
+  // Pass reactive allowSpawning.value here to gate spawning
+  updateObstacles(canvas.width, canvas.height, obstacleSpawnInterval, lastObstacleSpawnTime, allowSpawning.value);
   updateBullets(canvas.height);
   updatePowerups(canvas.height);
   updateScorePopups();
@@ -85,9 +88,13 @@ export function gameLoop(canvas, timestamp = 0) {
   renderAll(ctx);
 
   updateLevelFlow(() => {
-    console.log('Level up! Current level:', gameLevel.value);
-    newAsteroidsSpawned = 0; // reset on level up
+    // Reset spawn count and level flow on level up
+    asteroid.resetNewAsteroidsSpawned();
     resetLevelFlow();
+
+    import('./ui.js').then(ui => {
+      ui.showOverlay('LEVEL_TRANSITION', score.value, gameLevel.value);
+    });
   });
 
   animationId = requestAnimationFrame((t) => gameLoop(canvas, t));

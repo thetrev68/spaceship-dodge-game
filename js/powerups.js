@@ -3,7 +3,7 @@
     Created: 2025-06-05
     Author: ChatGPT + Trevor Clark
 
-    Handles power-up spawning, activation, timers, and collision.
+    Handles power-up spawning, activation, timers, and collision with swapped colors.
 */
 
 import { powerUps, player } from './state.js';
@@ -15,7 +15,7 @@ export const POWERUP_TYPES = {
   SHIELD: 'shield',
 };
 
-const powerupSize = 30; // 50% bigger
+const powerupSize = 50; 
 
 const powerups = []; // active power-ups on screen
 
@@ -83,14 +83,14 @@ export function drawPowerups(ctx) {
     ctx.translate(-cx, -cy);
 
     if (p.type === POWERUP_TYPES.DOUBLE_BLASTER) {
-      // Draw glowing star (same as before)
+      // Yellow glowing star
       const spikes = 5;
       const outerRadius = maxRadius * 0.8;
       const innerRadius = outerRadius / 2.5;
 
-      ctx.shadowColor = '#0ff';
+      ctx.shadowColor = '#f9d71c';
       ctx.shadowBlur = 15 * pulse;
-      ctx.fillStyle = '#0ff';
+      ctx.fillStyle = '#f9d71c';
 
       ctx.beginPath();
       for (let i = 0; i < spikes; i++) {
@@ -106,19 +106,19 @@ export function drawPowerups(ctx) {
       ctx.closePath();
       ctx.fill();
     } else if (p.type === POWERUP_TYPES.SHIELD) {
-      // Draw glowing pulsing circle (same as before)
+      // Blue glowing pulsing circle
       const radius = maxRadius * (0.75 + 0.25 * pulse);
       const gradient = ctx.createRadialGradient(cx, cy, radius * 0.1, cx, cy, radius);
 
-      gradient.addColorStop(0, `rgba(255, 165, 0, ${0.8 * pulse})`);
-      gradient.addColorStop(1, 'rgba(255, 165, 0, 0)');
+      gradient.addColorStop(0, `rgba(0, 255, 255, ${0.8 * pulse})`); // blue glow
+      gradient.addColorStop(1, 'rgba(0, 255, 255, 0)');
 
       ctx.fillStyle = gradient;
       ctx.beginPath();
       ctx.arc(cx, cy, radius, 0, Math.PI * 2);
       ctx.fill();
 
-      ctx.fillStyle = '#f90';
+      ctx.fillStyle = '#0ff';
       ctx.beginPath();
       ctx.arc(cx, cy, radius * 0.6, 0, Math.PI * 2);
       ctx.fill();
@@ -130,5 +130,5 @@ export function drawPowerups(ctx) {
 
 export function activatePowerup(type) {
   powerUps[type].active = true;
-  powerUps[type].timer = 600; // 10 seconds at 60fps
+  powerUps[type].timer = 600; // lasts for 10 seconds at 60fps
 }

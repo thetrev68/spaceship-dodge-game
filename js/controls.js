@@ -13,7 +13,7 @@ let firing = false;
 let fireTimeoutId = null;
 let pauseLocked = false;
 let lastFireTime = 0;
-const FIRE_COOLDOWN_MS = 150;
+const FIRE_COOLDOWN_MS = 75;
 
 export function setupInput(canvas) {
   document.addEventListener('keydown', (e) => {
