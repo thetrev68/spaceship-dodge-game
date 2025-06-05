@@ -4,11 +4,9 @@
     Author: ChatGPT + Trevor Clark
 
     Updates:
-        Eased speed scaling for levels 0-5 with cubic easing.
-        Logarithmic speed scaling for levels above 5.
-        Fragment speeds scaled down.
-        Off-screen margin and lifetime cleanup added.
-        Simplified asteroid shapes on mobile.
+        Added spinning rotation to asteroids.
+        Maintains off-screen margin and lifetime cleanup to prevent stuck asteroids.
+        Eased speed scaling with fragment speed adjustment.
 */
 
 import {
@@ -18,7 +16,7 @@ import {
     BASE_OBSTACLE_MIN_SPEED,
     BASE_OBSTACLE_MAX_SPEED,
     SPEED_INCREASE_PER_LEVEL,
-    isMobile, gameLevel
+    isMobile
 } from './state.js';
 
 let obstacleMinSpeed = BASE_OBSTACLE_MIN_SPEED;
@@ -80,7 +78,11 @@ export function createObstacle(x, y, levelIndex, initialDx = 0, initialDy = 0, p
   }
 
   const baseSpeed = Math.random() * (obstacleMaxSpeed - obstacleMinSpeed) + obstacleMinSpeed;
-  const speed = parentId === null ? baseSpeed : baseSpeed * 0.3; // Fragments slower, adjusted multiplier
+  const speed = parentId === null ? baseSpeed : baseSpeed * 0.3;
+
+  const rotation = Math.random() * 2 * Math.PI;
+  const rotationSpeed = (Math.random() * 0.01) - 0.05; // Faster spin: -0.05 to +0.05 radians/frame
+  const now = Date.now();
 
   obstacles.push({
     x,
@@ -93,13 +95,16 @@ export function createObstacle(x, y, levelIndex, initialDx = 0, initialDy = 0, p
     level: levelIndex,
     scoreValue,
     id,
-    parentId: assignedParentId
+    parentId: assignedParentId,
+    rotation,
+    rotationSpeed,
+    creationTime: now,  // Added creationTime here
   });
 }
 
 export function updateObstacles(canvasWidth, canvasHeight, spawnInterval, lastSpawnTimeRef, allowSpawning = true) {
   const now = Date.now();
-  const margin = 50;         // Margin beyond canvas for removal
+  const margin = 100;         // Margin beyond canvas for removal
   const maxLifetime = 30000; // 30 seconds max lifetime
 
   for (let i = 0; i < obstacles.length; i++) {
@@ -111,6 +116,9 @@ export function updateObstacles(canvasWidth, canvasHeight, spawnInterval, lastSp
 
     o.y += o.speed + o.dy;
     o.x += o.dx;
+
+    // Update rotation for spinning
+    o.rotation = (o.rotation + o.rotationSpeed) % (2 * Math.PI);
 
     const outOfBounds =
       o.y > canvasHeight + margin ||
@@ -139,12 +147,16 @@ export function drawObstacles(ctx) {
   ctx.strokeStyle = '#ff4500';
   ctx.lineWidth = 2;
   obstacles.forEach(o => {
+    ctx.save();
+    ctx.translate(o.x + o.radius, o.y + o.radius);
+    ctx.rotate(o.rotation);
     ctx.beginPath();
-    ctx.moveTo(o.x + o.radius + o.shape[0].x, o.y + o.radius + o.shape[0].y);
+    ctx.moveTo(o.shape[0].x, o.shape[0].y);
     for (let i = 1; i < o.shape.length; i++) {
-      ctx.lineTo(o.x + o.radius + o.shape[i].x, o.y + o.radius + o.shape[i].y);
+      ctx.lineTo(o.shape[i].x, o.shape[i].y);
     }
     ctx.closePath();
     ctx.stroke();
+    ctx.restore();
   });
 }

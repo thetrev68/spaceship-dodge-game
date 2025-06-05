@@ -4,8 +4,8 @@
     Author: ChatGPT + Trevor Clark
 
     Updates:
-        Added pause toggle lock to prevent flickering.
-        Mute/unmute tied to pause state.
+        Fixed mouse firing loop to clear queued shots properly.
+        Maintained pause toggle lock and keyboard controls.
 */
 
 import { fireBullet } from './bullet.js';
@@ -15,6 +15,7 @@ import * as soundManager from './soundManager.js';
 import { restartGameLoop } from './loop.js';
 
 let firing = false;
+let fireTimeoutId = null;
 let pauseLocked = false;
 
 export function setupInput(canvas) {
@@ -31,7 +32,7 @@ export function setupInput(canvas) {
 
       if (nextState === 'PAUSED') {
         soundManager.muteAll();
-        firing = false;
+        stopFiring();
       } else if (nextState === 'PLAYING') {
         soundManager.unmuteAll();
         restartGameLoop();
@@ -94,17 +95,20 @@ export function setupInput(canvas) {
 
   canvas.addEventListener('mousedown', (e) => {
     if (gameState.value !== 'PLAYING' || e.button !== 0) return;
+    if (firing) return; // prevent multiple loops
     firing = true;
-    const fire = () => {
+
+    function fireLoop() {
       if (!firing || gameState.value !== 'PLAYING') return;
       fireBullet();
-      setTimeout(fire, 100);
-    };
-    fire();
+      fireTimeoutId = setTimeout(fireLoop, 100);
+    }
+
+    fireLoop();
   });
 
   canvas.addEventListener('mouseup', (e) => {
-    if (e.button === 0) firing = false;
+    if (e.button === 0) stopFiring();
   });
 
   canvas.addEventListener('contextmenu', (e) => {
@@ -118,7 +122,7 @@ export function setupInput(canvas) {
 
       if (nextState === 'PAUSED') {
         soundManager.muteAll();
-        firing = false;
+        stopFiring();
       } else if (nextState === 'PLAYING') {
         soundManager.unmuteAll();
         restartGameLoop();
@@ -126,4 +130,12 @@ export function setupInput(canvas) {
       setTimeout(() => pauseLocked = false, 300);
     }
   });
+}
+
+function stopFiring() {
+  firing = false;
+  if (fireTimeoutId) {
+    clearTimeout(fireTimeoutId);
+    fireTimeoutId = null;
+  }
 }

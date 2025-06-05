@@ -3,9 +3,8 @@
     Created: 2025-06-04
     Author: ChatGPT + Trevor Clark
 
-    Updates:
-        Added pause toggle lock to prevent flickering on mobile.
-        Handles touch input and floating pause button.
+    Notes:
+    Handles mobile-specific input and UI, including floating pause button.
 */
 
 import { gameState, player } from './state.js';
@@ -17,11 +16,12 @@ import { restartGameLoop } from './loop.js';
 const mobilePauseBtn = document.getElementById('mobilePauseBtn');
 let mobileTouching = false;
 let firing = false;
+let fireTimeoutId = null;
 let pauseLocked = false;
 
 export function setupMobileInput(canvas) {
   let lastTouchFire = 0;
-  const fireCooldown = 200; // Adjust as needed
+  const fireCooldown = 200; // ms between shots
 
   function touchFireLoop() {
     const now = Date.now();
@@ -43,16 +43,24 @@ export function setupMobileInput(canvas) {
 
   canvas.addEventListener('touchend', () => {
     mobileTouching = false;
+    stopFiring();
   }, { passive: false });
 
   canvas.addEventListener('touchcancel', () => {
     mobileTouching = false;
+    stopFiring();
   }, { passive: false });
 
-  document.addEventListener('touchend', () => { mobileTouching = false; });
-  document.addEventListener('touchcancel', () => { mobileTouching = false; });
+  document.addEventListener('touchend', () => {
+    mobileTouching = false;
+    stopFiring();
+  });
+  document.addEventListener('touchcancel', () => {
+    mobileTouching = false;
+    stopFiring();
+  });
 
-  // Pause button logic
+  // Pause button visibility control
   function updatePauseButtonVisibility() {
     const playing = gameState.value === 'PLAYING';
     const overlaysVisible = document.querySelectorAll('.game-overlay:not(.hidden)').length > 0;
@@ -70,7 +78,7 @@ export function setupMobileInput(canvas) {
       gameState.value = 'PAUSED';
       showOverlay('PAUSED');
       soundManager.muteAll();
-      firing = false;
+      stopFiring();
     } else if (gameState.value === 'PAUSED') {
       gameState.value = 'PLAYING';
       showOverlay('PLAYING');
@@ -93,4 +101,12 @@ function handleTouch(e) {
   const y = touch.clientY - rect.top;
   player.x = x - player.width / 2;
   player.y = y - player.height / 2;
+}
+
+function stopFiring() {
+  firing = false;
+  if (fireTimeoutId) {
+    clearTimeout(fireTimeoutId);
+    fireTimeoutId = null;
+  }
 }

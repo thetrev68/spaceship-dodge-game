@@ -17,18 +17,18 @@ import { setupStarfield } from './starfield.js';
 import { startGame, continueGame } from './loop.js';
 import { gameState, isMobile } from './state.js';
 
-const canvas = document.getElementById('gameCanvas');
-const startButton = document.getElementById('startButton');
-const restartButton = document.getElementById('restartButton');
-const continueButton = document.getElementById('continueButton');
-const quitButton = document.getElementById('quitButton');
-const starfieldCanvas = document.getElementById('starfieldCanvas');
-
-if (!isMobile && starfieldCanvas) {
-  setupStarfield(starfieldCanvas);
-}
-
 function init() {
+    const canvas = document.getElementById('gameCanvas');
+    const startButton = document.getElementById('startButton');
+    const restartButton = document.getElementById('restartButton');
+    const continueButton = document.getElementById('continueButton');
+    const quitButton = document.getElementById('quitButton');
+    const starfieldCanvas = document.getElementById('starfieldCanvas');
+
+    if (!isMobile && starfieldCanvas) {
+        setupStarfield(starfieldCanvas);
+    }
+
     initializeCanvas(canvas);
     setOverlayDimensions(canvas);
 
@@ -74,9 +74,7 @@ function init() {
         quitButton.addEventListener('click', () => quitGame());
     }
 
-    window.onload = () => {
-        showOverlay('START');
-    };
+    showOverlay('START');
 }
 
-init();
+window.addEventListener('DOMContentLoaded', init);
