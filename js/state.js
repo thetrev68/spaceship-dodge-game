@@ -32,6 +32,11 @@ export const bulletSpeed = 10;
 export const bulletRadius = 3;
 export const fireRate = 100;
 
+export const powerUps = {
+  doubleBlaster: { active: false, timer: 0 },
+  shield: { active: false, timer: 0 },
+};
+
 export const player = {
   x: 380,
   y: 500,

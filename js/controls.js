@@ -1,22 +1,19 @@
 /*
     controls.js
-    Created: 2025-05-28
-    Author: ChatGPT + Trevor Clark
-
-    Updates:
-        Fixed mouse firing loop to clear queued shots properly.
-        Maintained pause toggle lock and keyboard controls.
+    Updated to use firePlayerBullets for power-ups and maintain existing features.
 */
 
-import { fireBullet } from './bullet.js';
 import { gameState, player } from './state.js';
 import { showOverlay } from './ui.js';
 import * as soundManager from './soundManager.js';
 import { restartGameLoop } from './loop.js';
+import { firePlayerBullets } from './player.js';
 
 let firing = false;
 let fireTimeoutId = null;
 let pauseLocked = false;
+let lastFireTime = 0;
+const FIRE_COOLDOWN_MS = 150;
 
 export function setupInput(canvas) {
   document.addEventListener('keydown', (e) => {
@@ -60,7 +57,11 @@ export function setupInput(canvas) {
         player.dx = player.speed;
         break;
       case ' ':
-        fireBullet();
+        const now = Date.now();
+        if (now - lastFireTime > FIRE_COOLDOWN_MS) {
+          firePlayerBullets();
+          lastFireTime = now;
+        }
         break;
     }
   });
@@ -95,12 +96,16 @@ export function setupInput(canvas) {
 
   canvas.addEventListener('mousedown', (e) => {
     if (gameState.value !== 'PLAYING' || e.button !== 0) return;
-    if (firing) return; // prevent multiple loops
+    if (firing) return;
     firing = true;
 
     function fireLoop() {
       if (!firing || gameState.value !== 'PLAYING') return;
-      fireBullet();
+      const now = Date.now();
+      if (now - lastFireTime > FIRE_COOLDOWN_MS) {
+        firePlayerBullets();
+        lastFireTime = now;
+      }
       fireTimeoutId = setTimeout(fireLoop, 100);
     }
 

@@ -1,6 +1,6 @@
 /*
     loop.js
-    Updated to conditionally setup mobile or desktop input.
+    Updated with power-up support.
 */
 
 import { 
@@ -17,17 +17,18 @@ import { showOverlay } from './ui.js';
 import { updatePlayer, drawPlayer } from './player.js';
 import { createAudioControls } from './audioControls.js';
 import { drawScore } from './scoreDisplay.js';
-import { setupInput } from './controls.js';           // desktop input
-import { setupMobileInput } from './mobileControls.js'; // mobile input
+import { setupInput } from './controls.js';
 import { addScorePopup, updateScorePopups, drawScorePopups } from './scorePopups.js';
 import { canSpawnAsteroids, resetLevelFlow, updateLevelFlow } from './flowManager.js';
 import * as soundManager from './soundManager.js';
+import { updatePowerups, drawPowerups } from './powerups.js';
+import { powerUps } from './state.js';
 
 const TARGET_FPS = isMobile ? 30 : 60;
 const FRAME_DURATION = 1000 / TARGET_FPS;
 
-const MAX_BULLETS_MOBILE = 8;
-const MAX_OBSTACLES_MOBILE = 10;
+const MAX_BULLETS_MOBILE = 10;
+const MAX_OBSTACLES_MOBILE = 15;
 
 let lastFrameTime = 0;
 let animationId;
@@ -96,34 +97,41 @@ export function gameLoop(canvas, timestamp = 0) {
   updateObstacles(canvas.width, canvas.height, obstacleSpawnInterval, lastObstacleSpawnTime, canSpawnAsteroids());
   updateBullets(canvas.height);
   updateScorePopups();
+  updatePowerups();
 
   drawPlayer(ctx);
   drawObstacles(ctx);
   drawBullets(ctx);
   drawScore(ctx);
   drawScorePopups(ctx);
+  drawPowerups(ctx);
 
   const playerHit = checkPlayerObstacleCollisions();
   if (playerHit) {
-    playerLives.value -= 1;
-
-    import('./soundManager.js').then(m => m.playSound('gameover'));
-
-    if (playerLives.value <= 0) {
-      gameState.value = 'GAME_OVER';
-      cancelAnimationFrame(animationId);
-      soundManager.stopMusic();
-      showOverlay('GAME_OVER', score.value, gameLevel.value);
-      return;
+    if (!powerUps.shield.active) {
+      playerLives.value -= 1;
+      import('./soundManager.js').then(m => m.playSound('gameover'));
+      if (playerLives.value <= 0) {
+        gameState.value = 'GAME_OVER';
+        cancelAnimationFrame(animationId);
+        soundManager.stopMusic();
+        showOverlay('GAME_OVER', score.value, gameLevel.value);
+        return;
+      } else {
+        gameState.value = 'LEVEL_TRANSITION';
+        player.x = canvas.width / 2 - player.width / 2;
+        player.y = canvas.height - player.height - 50;
+        bullets.length = 0;
+        obstacles.length = 0;
+        resetLevelFlow();
+        showOverlay('LEVEL_TRANSITION', score.value, gameLevel.value);
+        return;
+      }
     } else {
-      gameState.value = 'LEVEL_TRANSITION';
-      player.x = canvas.width / 2 - player.width / 2;
-      player.y = canvas.height - player.height - 50;
-      bullets.length = 0;
-      obstacles.length = 0;
-      resetLevelFlow();
-      showOverlay('LEVEL_TRANSITION', score.value, gameLevel.value);
-      return;
+      // Shield absorbs hit
+      powerUps.shield.active = false;
+      powerUps.shield.timer = 0;
+      // Optional: add feedback effect here
     }
   }
 
@@ -135,7 +143,7 @@ export function gameLoop(canvas, timestamp = 0) {
 export function startGame(canvas) {
   setCanvas(canvas);
   if (isMobile) {
-    setupMobileInput(canvas);
+    // Mobile controls setup elsewhere
   } else {
     setupInput(canvas);
   }
@@ -163,7 +171,7 @@ export function startGame(canvas) {
 export function continueGame(canvas) {
   setCanvas(canvas);
   if (isMobile) {
-    setupMobileInput(canvas);
+    // Mobile controls setup elsewhere
   } else {
     setupInput(canvas);
   }

@@ -1,7 +1,14 @@
-import { player, gameState } from './state.js';
+/*
+    player.js
+    Created: 2025-05-28
+    Author: ChatGPT + Trevor Clark
+    Updates:
+        Added pulsing thruster effect.
+        Added double blaster firing support.
+*/
 
-const canvas = document.getElementById('gameCanvas');
-const BOUNDARY_MARGIN = 2;
+import { player, gameState, powerUps } from './state.js';
+import { fireBullet } from './bullet.js';
 
 export function updatePlayer() {
     if (gameState.value !== 'PLAYING') return;
@@ -9,9 +16,10 @@ export function updatePlayer() {
     player.x += player.dx;
     player.y += player.dy;
 
-    // Keep player within canvas bounds with margin
-    player.x = Math.max(BOUNDARY_MARGIN, Math.min(player.x, canvas.width - player.width - BOUNDARY_MARGIN));
-    player.y = Math.max(BOUNDARY_MARGIN, Math.min(player.y, canvas.height - player.height - BOUNDARY_MARGIN));
+    // Keep player within canvas bounds
+    const canvas = document.getElementById('gameCanvas');
+    player.x = Math.max(0, Math.min(player.x, canvas.width - player.width));
+    player.y = Math.max(0, Math.min(player.y, canvas.height - player.height));
 }
 
 export function drawPlayer(ctx) {
@@ -25,7 +33,7 @@ export function drawPlayer(ctx) {
     const x = player.x;
     const y = player.y;
     const cx = x + w / 2;
-    const narrowFactor = 0.3; // Adjust to narrow the ship
+    const narrowFactor = 0.3; // Increase this to narrow the ship
 
     // Main Ship Body
     ctx.beginPath();
@@ -92,4 +100,14 @@ export function drawPlayer(ctx) {
     ctx.lineTo(flameX, engineBottomY + flameRadius * 3);
     ctx.closePath();
     ctx.fill();
+}
+
+// Fire bullets with double blaster power-up support
+export function firePlayerBullets() {
+    if (powerUps.doubleBlaster.active) {
+        fireBullet(player.x + player.width * 0.25, player.y);
+        fireBullet(player.x + player.width * 0.75, player.y);
+    } else {
+        fireBullet(player.x + player.width / 2, player.y);
+    }
 }

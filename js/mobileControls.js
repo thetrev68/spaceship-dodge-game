@@ -3,12 +3,14 @@
     Created: 2025-06-04
     Author: ChatGPT + Trevor Clark
 
-    Notes:
-    Handles mobile-specific input and UI, including floating pause button.
+    Updates:
+        Updated firing loop to use power-up aware firePlayerBullets.
+        Fixed firing queue with proper loop management.
+        Maintains pause toggle lock and pause button visibility.
 */
 
 import { gameState, player } from './state.js';
-import { fireBullet } from './bullet.js';
+import { firePlayerBullets } from './player.js';
 import { showOverlay } from './ui.js';
 import * as soundManager from './soundManager.js';
 import { restartGameLoop } from './loop.js';
@@ -26,7 +28,7 @@ export function setupMobileInput(canvas) {
   function touchFireLoop() {
     const now = Date.now();
     if (gameState.value === 'PLAYING' && mobileTouching && now - lastTouchFire > fireCooldown) {
-      fireBullet();
+      firePlayerBullets();
       lastTouchFire = now;
     }
     requestAnimationFrame(touchFireLoop);
@@ -60,7 +62,7 @@ export function setupMobileInput(canvas) {
     stopFiring();
   });
 
-  // Pause button visibility control
+  // Pause button logic
   function updatePauseButtonVisibility() {
     const playing = gameState.value === 'PLAYING';
     const overlaysVisible = document.querySelectorAll('.game-overlay:not(.hidden)').length > 0;
