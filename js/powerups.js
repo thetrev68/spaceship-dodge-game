@@ -7,7 +7,7 @@
 */
 
 import { powerUps, player } from './state.js';
-import { addScorePopup } from './loop.js';
+import { addScorePopup } from './scorePopups.js';
 
 // Power-up types
 export const POWERUP_TYPES = {
@@ -15,15 +15,14 @@ export const POWERUP_TYPES = {
   SHIELD: 'shield',
 };
 
-const powerupSize = 20;
+const powerupSize = 30; // 50% bigger
+
 const powerups = []; // active power-ups on screen
 
-// Spawn a powerup at random horizontal position, above the screen
 export function spawnPowerup(canvasWidth) {
   const x = Math.random() * (canvasWidth - powerupSize);
-  const y = -powerupSize; // spawn just above screen
+  const y = -powerupSize;
 
-  // 50/50 chance for either powerup type
   const type = Math.random() < 0.5 ? POWERUP_TYPES.DOUBLE_BLASTER : POWERUP_TYPES.SHIELD;
 
   powerups.push({
@@ -31,23 +30,20 @@ export function spawnPowerup(canvasWidth) {
     y,
     size: powerupSize,
     type,
-    dy: 1.5, // falling speed
+    dy: 1.5,
   });
 }
 
-// Update powerups positions, handle collision and timers
 export function updatePowerups(canvasHeight) {
   for (let i = powerups.length - 1; i >= 0; i--) {
     const p = powerups[i];
     p.y += p.dy;
 
-    // Remove if off screen
     if (p.y > canvasHeight) {
       powerups.splice(i, 1);
       continue;
     }
 
-    // Simple AABB collision with player
     if (
       player.x < p.x + p.size &&
       player.x + player.width > p.x &&
@@ -60,7 +56,7 @@ export function updatePowerups(canvasHeight) {
     }
   }
 
-  // Update timers, deactivate expired powerups in global state
+  // Update timers, deactivate expired powerups
   Object.keys(powerUps).forEach(key => {
     if (powerUps[key].active) {
       powerUps[key].timer--;
@@ -71,22 +67,27 @@ export function updatePowerups(canvasHeight) {
   });
 }
 
-// Draw powerups on canvas with star for double-blaster and glowing circle for shield
 export function drawPowerups(ctx) {
   powerups.forEach(p => {
-    const cx = p.x + p.size / 2;
-    const cy = p.y + p.size / 2;
-    const maxRadius = p.size / 2;
-    const time = performance.now() / 500;
-    const pulse = (Math.sin(time) + 1) / 2;
+    const cx = p.x + powerupSize / 2;
+    const cy = p.y + powerupSize / 2;
+    const maxRadius = powerupSize / 2;
+
+    const time = performance.now() / 600;
+    const pulse = (Math.sin(time) + 1) / 2; // 0 to 1
+    const scale = 0.75 + 0.5 * pulse;
+
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.scale(scale, scale);
+    ctx.translate(-cx, -cy);
 
     if (p.type === POWERUP_TYPES.DOUBLE_BLASTER) {
-      // Draw glowing star
+      // Draw glowing star (same as before)
       const spikes = 5;
       const outerRadius = maxRadius * 0.8;
       const innerRadius = outerRadius / 2.5;
 
-      ctx.save();
       ctx.shadowColor = '#0ff';
       ctx.shadowBlur = 15 * pulse;
       ctx.fillStyle = '#0ff';
@@ -104,9 +105,8 @@ export function drawPowerups(ctx) {
       }
       ctx.closePath();
       ctx.fill();
-      ctx.restore();
     } else if (p.type === POWERUP_TYPES.SHIELD) {
-      // Draw glowing pulsing circle
+      // Draw glowing pulsing circle (same as before)
       const radius = maxRadius * (0.75 + 0.25 * pulse);
       const gradient = ctx.createRadialGradient(cx, cy, radius * 0.1, cx, cy, radius);
 
@@ -123,11 +123,12 @@ export function drawPowerups(ctx) {
       ctx.arc(cx, cy, radius * 0.6, 0, Math.PI * 2);
       ctx.fill();
     }
+
+    ctx.restore();
   });
 }
 
-// Activate powerup effect on player state
 export function activatePowerup(type) {
   powerUps[type].active = true;
-  powerUps[type].timer = 600; // lasts for 10 seconds at 60fps
+  powerUps[type].timer = 600; // 10 seconds at 60fps
 }

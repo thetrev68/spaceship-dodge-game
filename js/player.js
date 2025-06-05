@@ -25,7 +25,7 @@ export function updatePlayer() {
 
 export function drawPlayer(ctx) {
     if (gameState.value !== 'PLAYING') return;
-
+    
     // Draw shield glow if active
     if (powerUps.shield.active) {
         ctx.save();

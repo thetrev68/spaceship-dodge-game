@@ -10,7 +10,7 @@
 
 import { bullets, obstacles, ASTEROID_LEVEL_SIZES, player } from './state.js';
 import { createObstacle, fragmentTracker } from './asteroid.js';
-import { addScorePopup } from './loop.js';
+import { addScorePopup } from './scorePopups.js';
 import { playSound } from './soundManager.js';
 
 // Helper: Circle-rectangle collision test

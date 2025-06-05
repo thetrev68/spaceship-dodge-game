@@ -1,6 +1,7 @@
+// inputManager.js
 /*
-    controls.js
-    Updated to use firePlayerBullets for power-ups and maintain existing features.
+  Sets up keyboard and mouse/touch input handlers.
+  Calls player movement and firing functions.
 */
 
 import { gameState, player } from './state.js';

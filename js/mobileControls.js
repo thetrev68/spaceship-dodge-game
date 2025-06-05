@@ -13,7 +13,7 @@ import { gameState, player } from './state.js';
 import { firePlayerBullets } from './player.js';
 import { showOverlay } from './ui.js';
 import * as soundManager from './soundManager.js';
-import { restartGameLoop } from './loop.js';
+import { restartGameLoop } from './gameLoop.js';
 
 const mobilePauseBtn = document.getElementById('mobilePauseBtn');
 let mobileTouching = false;

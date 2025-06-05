@@ -1,6 +1,14 @@
+// main.js
+/*
+  Entry point: sets up canvas, UI buttons, starfield, and game start/continue logic
+  Updated to use modular gameLoop, gameStateManager, and inputManager.
+*/
+
 import { initializeCanvas, setOverlayDimensions, showOverlay, quitGame } from './ui.js';
 import { setupStarfield } from './starfield.js';
-import { startGame, continueGame } from './loop.js';
+import { setCanvas, restartGameLoop } from './gameLoop.js';
+import { startGame, continueGame } from './gameStateManager.js';
+import { setupInput } from './inputManager.js';
 import { gameState, isMobile } from './state.js';
 
 function init() {
@@ -17,6 +25,8 @@ function init() {
 
   initializeCanvas(canvas);
   setOverlayDimensions(canvas);
+  setCanvas(canvas);         // NEW: provide canvas to gameLoop
+  setupInput(canvas);        // NEW: setup controls on canvas
 
   window.addEventListener('resize', () => {
     initializeCanvas(canvas);
@@ -30,7 +40,8 @@ function init() {
     if (gameState.value !== 'START' || isStarting) return;
     isStarting = true;
     import('./soundManager.js').then(m => m.unlockAudio());
-    startGame(canvas);
+    startGame(canvas);        // start game logic
+    restartGameLoop();        // start game loop animation
     setTimeout(() => isStarting = false, 1000);
   }, { passive: false });
 
@@ -39,20 +50,29 @@ function init() {
     isStarting = true;
     import('./soundManager.js').then(m => m.unlockAudio());
     startGame(canvas);
+    restartGameLoop();
     setTimeout(() => isStarting = false, 1000);
   });
 
   restartButton.addEventListener('touchstart', (e) => {
     e.preventDefault();
     startGame(canvas);
+    restartGameLoop();
   }, { passive: false });
-  restartButton.addEventListener('click', () => startGame(canvas));
+  restartButton.addEventListener('click', () => {
+    startGame(canvas);
+    restartGameLoop();
+  });
 
   continueButton.addEventListener('touchstart', (e) => {
     e.preventDefault();
-    continueGame(canvas);
+    continueGame();
+    restartGameLoop();
   }, { passive: false });
-  continueButton.addEventListener('click', () => continueGame(canvas));
+  continueButton.addEventListener('click', () => {
+    continueGame();
+    restartGameLoop();
+  });
 
   if (quitButton) {
     quitButton.addEventListener('touchstart', (e) => {
