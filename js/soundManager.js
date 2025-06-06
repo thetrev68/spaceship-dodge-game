@@ -7,12 +7,16 @@
         Unified mute and volume handling for all sounds and effects.
 */
 
+// js/soundManager.js
+const BASE_URL = import.meta.env.BASE_URL; // Get the base path from Vite config
+
 const sounds = {
-    bgm: new Audio('assets/sounds/bg-music.mp3'),
-    fire: new Audio('assets/sounds/fire.wav'),
-    break: new Audio('assets/sounds/break.wav'),
-    gameover: new Audio('assets/sounds/gameover.wav'),
-    levelup: new Audio('assets/sounds/levelup.wav')
+    // Prepend BASE_URL to the path, then reference the path relative to the public folder's root
+    bgm: new Audio(`${BASE_URL}sounds/bg-music.mp3`),
+    fire: new Audio(`${BASE_URL}sounds/fire.mp3`),
+    break: new Audio(`${BASE_URL}sounds/break.mp3`),
+    gameover: new Audio(`${BASE_URL}sounds/gameover.mp3`),
+    levelup: new Audio(`${BASE_URL}sounds/levelup.mp3`)
 };
 
 export let currentVolume = 0.4;

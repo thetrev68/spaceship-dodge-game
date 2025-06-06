@@ -13,7 +13,11 @@ export default defineConfig({
       overlay: false, // Disable error overlay for cleaner debugging
     },
   },
-  base: '/',
+  base: '/spaceship-dodge-game/',
+  build: {
+    outDir: 'dist', // Ensure this is the output directory for your build
+    assetsDir: 'assets', // Ensure your assets are correctly referenced
+  },
   css: {
     postcss: './postcss.config.js',
   },
