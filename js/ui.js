@@ -66,7 +66,10 @@ export function showOverlay(state, score = 0, level = 0) {
       break;
 
     case 'PLAYING':
-      startOverlay.style.display = 'none';
+      document.querySelectorAll('.game-overlay').forEach(ov => {
+        ov.classList.add('hidden');
+        ov.classList.remove('flex');
+      });
       import('./soundManager.js').then(m => m.startMusic());
       break;
 

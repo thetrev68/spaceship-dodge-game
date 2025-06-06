@@ -41,7 +41,7 @@ export function setupMobileInput(canvas) {
 
   // Touch start: begin or resume game
   canvas.addEventListener('touchstart', (e) => {
-    e.preventDefault();
+    e.preventDefault(); // ✅ critical!
     const t = e.touches[0];
     if (!t) return;
 
