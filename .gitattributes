@@ -1,0 +1,16 @@
+# Set default behavior to normalize line endings
+* text=auto
+
+# Explicitly declare text files you want normalized
+*.js     text
+*.css    text
+*.html   text
+*.json   text
+*.md     text
+
+# Binary files - do not alter line endings
+*.png    binary
+*.jpg    binary
+*.gif    binary
+*.wav    binary
+*.mp3    binary
