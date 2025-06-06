@@ -1,12 +1,12 @@
 /*
   main.js
-  Entry point for Spaceship Dodge
-  Cleaned to defer game startup until explicit user action (touch or click)
+  Clean separation of desktop and mobile logic.
+  Prevents inputManager from clashing with mobileControls.
 */
 
 import { initializeCanvas, setOverlayDimensions, showOverlay, quitGame } from './ui.js';
 import { setupStarfield } from './starfield.js';
-import { setCanvas } from './gameLoop.js';
+import { setCanvas, restartGameLoop } from './gameLoop.js';
 import { startGame, continueGame } from './gameStateManager.js';
 import { setupInput } from './inputManager.js';
 import { setupMobileInput } from './mobileControls.js';
@@ -20,19 +20,24 @@ function init() {
   const quitButton = document.getElementById('quitButton');
   const starfieldCanvas = document.getElementById('starfieldCanvas');
 
+  // Desktop-only starfield
   if (!isMobile && starfieldCanvas) {
     setupStarfield(starfieldCanvas);
   }
 
+  // Core canvas setup
   initializeCanvas(canvas);
   setOverlayDimensions(canvas);
-  setCanvas(canvas);               // Pass canvas to game loop
-  setupInput(canvas);              // Desktop input
+  setCanvas(canvas);
 
+  // Platform-specific input
   if (isMobile) {
-    setupMobileInput(canvas);      // Mobile touch-hold input
+    setupMobileInput(canvas); // ✅ mobile-only touch setup
+  } else {
+    setupInput(canvas);       // ✅ desktop keyboard/mouse
   }
 
+  // Resizing
   window.addEventListener('resize', () => {
     initializeCanvas(canvas);
     setOverlayDimensions(canvas);
@@ -40,45 +45,53 @@ function init() {
 
   let isStarting = false;
 
-  // START button - desktop use
-  startButton.addEventListener('touchstart', (e) => {
-    e.preventDefault();
-    if (gameState.value !== 'START' || isStarting) return;
-    isStarting = true;
-    import('./soundManager.js').then(m => m.unlockAudio());
-    startGame(canvas);
-    setTimeout(() => isStarting = false, 1000);
-  }, { passive: false });
+  // Desktop-only: Start Game button
+  if (!isMobile) {
+    startButton.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      if (gameState.value !== 'START' || isStarting) return;
+      isStarting = true;
+      import('./soundManager.js').then(m => m.unlockAudio());
+      startGame(canvas);
+      restartGameLoop();
+      setTimeout(() => isStarting = false, 1000);
+    }, { passive: false });
 
-  startButton.addEventListener('click', () => {
-    if (gameState.value !== 'START' || isStarting) return;
-    isStarting = true;
-    import('./soundManager.js').then(m => m.unlockAudio());
-    startGame(canvas);
-    setTimeout(() => isStarting = false, 1000);
-  });
+    startButton.addEventListener('click', () => {
+      if (gameState.value !== 'START' || isStarting) return;
+      isStarting = true;
+      import('./soundManager.js').then(m => m.unlockAudio());
+      startGame(canvas);
+      restartGameLoop();
+      setTimeout(() => isStarting = false, 1000);
+    });
+  }
 
-  // RESTART after Game Over
+  // Restart after game over
   restartButton.addEventListener('touchstart', (e) => {
     e.preventDefault();
     startGame(canvas);
+    restartGameLoop();
   }, { passive: false });
 
   restartButton.addEventListener('click', () => {
     startGame(canvas);
+    restartGameLoop();
   });
 
-  // Continue after level up
+  // Continue after level-up
   continueButton.addEventListener('touchstart', (e) => {
     e.preventDefault();
     continueGame();
+    restartGameLoop();
   }, { passive: false });
 
   continueButton.addEventListener('click', () => {
     continueGame();
+    restartGameLoop();
   });
 
-  // Quit game
+  // Quit
   if (quitButton) {
     quitButton.addEventListener('touchstart', (e) => {
       e.preventDefault();
@@ -88,7 +101,7 @@ function init() {
     quitButton.addEventListener('click', () => quitGame());
   }
 
-  // Initial UI
+  // Show initial overlay
   showOverlay('START');
 }
 

@@ -38,16 +38,17 @@
   <canvas id="starfieldCanvas"></canvas>
   <canvas id="gameCanvas"></canvas>
 
-  <!-- Start Overlay -->
+  <!-- START OVERLAY -->
   <div id="startOverlay" class="game-overlay fixed inset-0 hidden flex-col items-center justify-center bg-black bg-opacity-80 p-6 rounded-lg shadow-lg text-white z-50">
     <h1 class="text-4xl font-bold mb-4">Spaceship Dodge</h1>
     <p class="mb-2">Dodge or Shoot the incoming asteroids!</p>
     <p class="mb-2">Use WASD, Arrow Keys, or Mouse to move.</p>
-    <p id="startHint" class="mb-4 text-lg">Touch and Hold the Screen to Begin</p>
+    <p id="startHint" class="mb-4 text-lg">Press SPACE or Left Mouse Click to fire!</p>
     <p id="livesInfoStart" class="mb-4 text-lg">Lives: 3</p>
     <button id="startButton" class="px-6 py-3 bg-blue-600 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400">Start Game</button>
   </div>
 
+  <!-- LEVEL TRANSITION OVERLAY -->
   <div id="levelTransitionOverlay" class="game-overlay fixed inset-0 hidden flex-col items-center justify-center bg-black bg-opacity-80 p-6 rounded-lg shadow-lg text-white z-50">
     <h1 id="levelUpMessage" class="text-4xl font-bold mb-4">LEVEL UP!</h1>
     <p id="currentLevelInfo" class="mb-2">Level 1</p>
@@ -56,7 +57,7 @@
     <button id="continueButton" class="px-6 py-3 bg-green-600 rounded hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-400">Continue</button>
   </div>
 
-  <!-- Pause Overlay -->
+  <!-- PAUSE OVERLAY -->
   <div id="pauseOverlay" class="game-overlay fixed inset-0 hidden flex-col items-center justify-center bg-black bg-opacity-80 p-6 rounded-lg shadow-lg text-white z-50">
     <h1 class="text-4xl font-bold mb-4">PAUSED</h1>
     <p id="livesInfoPause" class="mb-4 text-lg"></p>
@@ -64,13 +65,12 @@
     <p id="pauseResumeMessage">Press P to Resume</p>
   </div>
 
+  <!-- GAME OVER OVERLAY -->
   <div id="gameOverOverlay" class="game-overlay fixed inset-0 hidden flex-col items-center justify-center bg-black bg-opacity-80 p-6 rounded-lg shadow-lg text-white z-50">
     <h1 class="text-4xl font-bold mb-4">GAME OVER!</h1>
     <p id="finalScore" class="mb-4">Final Score: 0</p>
     <button id="restartButton" class="px-6 py-3 bg-blue-600 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400">Play Again</button>
   </div>
-
-  <button id="mobilePauseBtn" class="fixed top-4 left-4 z-50 p-2 bg-black bg-opacity-50 rounded text-white hidden">|| Pause</button>
 
   <script type="module" src="/js/main.js"></script>
 </body>

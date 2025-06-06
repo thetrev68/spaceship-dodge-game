@@ -1,6 +1,6 @@
 // js/mobileControls.js
 
-import { startGame } from './gameStateManager.js'; // ✅ at top
+import { startGame } from './gameStateManager.js';
 import { gameState, player } from './state.js';
 import { firePlayerBullets } from './player.js';
 import { showOverlay } from './ui.js';
@@ -22,7 +22,7 @@ export function setupMobileInput(canvas) {
     console.log('[DEBUG] gameState:', gameState.value);
   }, 1000);
 
-  // Main touch loop
+  // Main mobile control loop
   function mobileLoop() {
     console.log('[DEBUG] mobileLoop tick:', {
       active: touchActive,
@@ -39,13 +39,13 @@ export function setupMobileInput(canvas) {
 
   requestAnimationFrame(mobileLoop);
 
-  // Handle touch start
+  // Touch start: begin or resume game
   canvas.addEventListener('touchstart', (e) => {
     e.preventDefault();
     const t = e.touches[0];
     if (!t) return;
 
-    const rect = canvas.getBoundingClientRect();
+    const rect = canvasEl.getBoundingClientRect();
     touchX = t.clientX - rect.left;
     touchY = t.clientY - rect.top;
     touchActive = true;
@@ -54,23 +54,23 @@ export function setupMobileInput(canvas) {
 
     if (gameState.value === 'START' || gameState.value === 'PAUSED') {
       console.log('[DEBUG] Starting game from touch');
-      startGame(canvas); // ✅ fix: use correct reference
+      startGame(canvasEl);         // ✅ use correct stored canvas reference
       restartGameLoop();
     }
   }, { passive: false });
 
-  // Handle touch move
+  // Track finger movement
   canvas.addEventListener('touchmove', (e) => {
     e.preventDefault();
     const t = e.touches[0];
     if (!t) return;
 
-    const rect = canvas.getBoundingClientRect();
+    const rect = canvasEl.getBoundingClientRect();
     touchX = t.clientX - rect.left;
     touchY = t.clientY - rect.top;
   }, { passive: false });
 
-  // Handle touch end
+  // Touch end: pause game
   const stopTouch = () => {
     console.log('[DEBUG] TOUCH END');
     touchActive = false;

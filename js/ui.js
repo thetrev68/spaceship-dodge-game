@@ -1,13 +1,3 @@
-/*
-    ui.js
-    Created: 2025-05-28
-    Author: ChatGPT + Trevor Clark
-
-    Updates:
-        Mobile-aware overlay messages for start and pause.
-        Displays player lives in all overlays.
-*/
-
 import { gameState, playerLives, isMobile } from './state.js';
 
 const startOverlay = document.getElementById('startOverlay');
@@ -23,8 +13,8 @@ const livesInfoStart = document.getElementById('livesInfoStart');
 const livesInfoLevel = document.getElementById('livesInfoLevel');
 const livesInfoPause = document.getElementById('livesInfoPause');
 
-const pauseText = pauseOverlay?.querySelector('p:last-of-type');
-const startText = startOverlay?.querySelector('p:last-of-type');
+const pauseText = document.getElementById('pauseResumeMessage');
+const startText = document.getElementById('startHint');
 
 export function showOverlay(state, score = 0, level = 0) {
   const overlays = [startOverlay, pauseOverlay, gameOverOverlay, levelTransitionOverlay];

@@ -1,4 +1,3 @@
-// inputManager.js
 /*
   Sets up keyboard and mouse/touch input handlers.
   Calls player movement and firing functions.
