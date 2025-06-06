@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-  <link rel="icon" href="data:," />
   <title>Spaceship Dodge</title>
   <style>
     html, body {
@@ -11,6 +10,11 @@
       padding: 0;
       height: 100%;
       background-color: black;
+      overscroll-behavior-y: contain;
+      touch-action: manipulation;
+    }
+    canvas {
+      touch-action: none;
     }
     #starfieldCanvas {
       pointer-events: none;
@@ -30,12 +34,10 @@
       background-color: transparent !important;
     }
   </style>
-  <script type="module" crossorigin src="/spaceship-dodge-game/assets/index-CJCsPVtV.js"></script>
+  <script type="module" crossorigin src="/spaceship-dodge-game/assets/index-t2RjOi5Y.js"></script>
   <link rel="stylesheet" crossorigin href="/spaceship-dodge-game/assets/index-QWZYCT00.css">
 </head>
 <body>
-  <div id="app"></div>
-
   <canvas id="starfieldCanvas"></canvas>
   <canvas id="gameCanvas"></canvas>
 
@@ -44,7 +46,7 @@
     <h1 class="text-4xl font-bold mb-4">Spaceship Dodge</h1>
     <p class="mb-2">Dodge or Shoot the incoming asteroids!</p>
     <p class="mb-2">Use WASD, Arrow Keys, or Mouse to move.</p>
-    <p id="startHint" class="mb-4 text-lg">Press SPACE or Left Mouse Click to fire!</p>
+    <p id="startHint" class="mb-4 text-lg">Touch and Hold the Screen to Begin</p>
     <p id="livesInfoStart" class="mb-4 text-lg">Lives: 3</p>
     <button id="startButton" class="px-6 py-3 bg-blue-600 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400">Start Game</button>
   </div>
