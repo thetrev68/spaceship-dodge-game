@@ -1,6 +1,13 @@
-// starfield.js
+// starfield.js (Mobile disabled version)
+
+import { isMobile } from './state.js';
 
 export function setupStarfield(canvas) {
+  if (isMobile) {
+    canvas.style.display = 'none'; // Hide the background canvas entirely
+    return;
+  }
+
   const ctx = canvas.getContext('2d');
   const stars = [];
   const starCount = 100;
@@ -8,6 +15,9 @@ export function setupStarfield(canvas) {
   function resize() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
+    canvas.style.width = '100vw';
+    canvas.style.height = '100vh';
+    canvas.style.objectFit = 'cover';
   }
 
   resize();

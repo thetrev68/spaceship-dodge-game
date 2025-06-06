@@ -1,37 +1,25 @@
 /*
     powerups.js
-    Created: 2025-06-05
-    Author: ChatGPT + Trevor Clark
-
-    Handles power-up spawning, activation, timers, and collision with swapped colors.
+    Optimized: performance-aware power-up visuals and updates
 */
 
-import { powerUps, player } from './state.js';
+import { powerUps, player, isMobile } from './state.js';
 import { addScorePopup } from './scorePopups.js';
 
-// Power-up types
 export const POWERUP_TYPES = {
   DOUBLE_BLASTER: 'doubleBlaster',
   SHIELD: 'shield',
 };
 
-const powerupSize = 50; 
-
-const powerups = []; // active power-ups on screen
+const powerupSize = 50;
+const powerups = [];
 
 export function spawnPowerup(canvasWidth) {
   const x = Math.random() * (canvasWidth - powerupSize);
   const y = -powerupSize;
-
   const type = Math.random() < 0.5 ? POWERUP_TYPES.DOUBLE_BLASTER : POWERUP_TYPES.SHIELD;
 
-  powerups.push({
-    x,
-    y,
-    size: powerupSize,
-    type,
-    dy: 1.5,
-  });
+  powerups.push({ x, y, size: powerupSize, type, dy: 1.5 });
 }
 
 export function updatePowerups(canvasHeight) {
@@ -56,7 +44,6 @@ export function updatePowerups(canvasHeight) {
     }
   }
 
-  // Update timers, deactivate expired powerups
   Object.keys(powerUps).forEach(key => {
     if (powerUps[key].active) {
       powerUps[key].timer--;
@@ -68,14 +55,15 @@ export function updatePowerups(canvasHeight) {
 }
 
 export function drawPowerups(ctx) {
+  const now = performance.now();
+  const time = now / 600;
+  const pulse = isMobile ? 0.85 : (Math.sin(time) + 1) / 2;
+  const scale = 0.75 + 0.5 * pulse;
+
   powerups.forEach(p => {
     const cx = p.x + powerupSize / 2;
     const cy = p.y + powerupSize / 2;
     const maxRadius = powerupSize / 2;
-
-    const time = performance.now() / 600;
-    const pulse = (Math.sin(time) + 1) / 2; // 0 to 1
-    const scale = 0.75 + 0.5 * pulse;
 
     ctx.save();
     ctx.translate(cx, cy);
@@ -83,15 +71,16 @@ export function drawPowerups(ctx) {
     ctx.translate(-cx, -cy);
 
     if (p.type === POWERUP_TYPES.DOUBLE_BLASTER) {
-      // Yellow glowing star
       const spikes = 5;
       const outerRadius = maxRadius * 0.8;
       const innerRadius = outerRadius / 2.5;
 
-      ctx.shadowColor = '#f9d71c';
-      ctx.shadowBlur = 15 * pulse;
-      ctx.fillStyle = '#f9d71c';
+      if (!isMobile) {
+        ctx.shadowColor = '#f9d71c';
+        ctx.shadowBlur = 15 * pulse;
+      }
 
+      ctx.fillStyle = '#f9d71c';
       ctx.beginPath();
       for (let i = 0; i < spikes; i++) {
         const rot = Math.PI / 2 * 3 + (i * Math.PI * 2) / spikes;
@@ -106,17 +95,17 @@ export function drawPowerups(ctx) {
       ctx.closePath();
       ctx.fill();
     } else if (p.type === POWERUP_TYPES.SHIELD) {
-      // Blue glowing pulsing circle
       const radius = maxRadius * (0.75 + 0.25 * pulse);
-      const gradient = ctx.createRadialGradient(cx, cy, radius * 0.1, cx, cy, radius);
 
-      gradient.addColorStop(0, `rgba(0, 255, 255, ${0.8 * pulse})`); // blue glow
-      gradient.addColorStop(1, 'rgba(0, 255, 255, 0)');
-
-      ctx.fillStyle = gradient;
-      ctx.beginPath();
-      ctx.arc(cx, cy, radius, 0, Math.PI * 2);
-      ctx.fill();
+      if (!isMobile) {
+        const gradient = ctx.createRadialGradient(cx, cy, radius * 0.1, cx, cy, radius);
+        gradient.addColorStop(0, `rgba(0, 255, 255, ${0.8 * pulse})`);
+        gradient.addColorStop(1, 'rgba(0, 255, 255, 0)');
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+        ctx.fill();
+      }
 
       ctx.fillStyle = '#0ff';
       ctx.beginPath();
@@ -130,5 +119,5 @@ export function drawPowerups(ctx) {
 
 export function activatePowerup(type) {
   powerUps[type].active = true;
-  powerUps[type].timer = 600; // lasts for 10 seconds at 60fps
+  powerUps[type].timer = 600;
 }

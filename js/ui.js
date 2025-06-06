@@ -4,11 +4,11 @@
     Author: ChatGPT + Trevor Clark
 
     Updates:
-        Added dispatch of 'gameStateChange' event for mobile pause button.
-        Displays player lives in start, pause, and level transition overlays.
+        Mobile-aware overlay messages for start and pause.
+        Displays player lives in all overlays.
 */
 
-import { gameState, playerLives } from './state.js';
+import { gameState, playerLives, isMobile } from './state.js';
 
 const startOverlay = document.getElementById('startOverlay');
 const gameOverOverlay = document.getElementById('gameOverOverlay');
@@ -23,53 +23,68 @@ const livesInfoStart = document.getElementById('livesInfoStart');
 const livesInfoLevel = document.getElementById('livesInfoLevel');
 const livesInfoPause = document.getElementById('livesInfoPause');
 
+const pauseText = pauseOverlay?.querySelector('p:last-of-type');
+const startText = startOverlay?.querySelector('p:last-of-type');
+
 export function showOverlay(state, score = 0, level = 0) {
-    const overlays = [startOverlay, pauseOverlay, gameOverOverlay, levelTransitionOverlay];
+  const overlays = [startOverlay, pauseOverlay, gameOverOverlay, levelTransitionOverlay];
+  overlays.forEach(overlay => {
+    overlay.classList.add('hidden');
+    overlay.classList.remove('flex');
+  });
 
-    overlays.forEach(overlay => {
-        overlay.classList.add('hidden');
-        overlay.classList.remove('flex');
-    });
+  if (livesInfoStart) livesInfoStart.textContent = `Lives: ${playerLives.value}`;
+  if (livesInfoLevel) livesInfoLevel.textContent = `Lives: ${playerLives.value}`;
+  if (livesInfoPause) livesInfoPause.textContent = `Lives: ${playerLives.value}`;
 
-    // Update lives display
-    if (livesInfoStart) livesInfoStart.textContent = `Lives: ${playerLives.value}`;
-    if (livesInfoLevel) livesInfoLevel.textContent = `Lives: ${playerLives.value}`;
-    if (livesInfoPause) livesInfoPause.textContent = `Lives: ${playerLives.value}`;
+  switch (state) {
+    case 'START':
+      if (startText) {
+        startText.textContent = isMobile
+          ? 'Touch and Hold the Screen to Begin'
+          : 'Press SPACE or Left Mouse Click to fire!';
+      }
+      startOverlay.classList.remove('hidden');
+      startOverlay.classList.add('flex');
+      break;
 
-    switch (state) {
-        case 'START':
-            startOverlay.classList.remove('hidden');
-            startOverlay.classList.add('flex');
-            break;
-        case 'GAME_OVER':
-            import('./soundManager.js').then(m => m.stopMusic());
-            finalScoreDisplay.textContent = `Final Score: ${score} (Level ${level + 1})`;
-            gameOverOverlay.classList.remove('hidden');
-            gameOverOverlay.classList.add('flex');
-            break;
-        case 'LEVEL_TRANSITION':
-            import('./soundManager.js').then(m => m.stopMusic());
-            levelUpMessage.textContent = `LEVEL ${level + 1} !`;
-            currentLevelInfo.textContent = `Get Ready!`;
-            currentScoreInfo.textContent = `Score: ${score}`;
-            levelTransitionOverlay.classList.remove('hidden');
-            levelTransitionOverlay.classList.add('flex');
-            break;
-        case 'PAUSED':
-            import('./soundManager.js').then(m => m.stopMusic());
-            pauseOverlay.classList.remove('hidden');
-            pauseOverlay.classList.add('flex');
-            break;
-        case 'PLAYING':
-            startOverlay.style.display = 'none';
-            import('./soundManager.js').then(m => m.startMusic());
-            break;
-        default:
-            break;
-    }
+    case 'GAME_OVER':
+      import('./soundManager.js').then(m => m.stopMusic());
+      finalScoreDisplay.textContent = `Final Score: ${score} (Level ${level + 1})`;
+      gameOverOverlay.classList.remove('hidden');
+      gameOverOverlay.classList.add('flex');
+      break;
 
-    // Notify listeners (e.g. mobile pause button) to update visibility
-    document.dispatchEvent(new Event('gameStateChange'));
+    case 'LEVEL_TRANSITION':
+      import('./soundManager.js').then(m => m.stopMusic());
+      levelUpMessage.textContent = `LEVEL ${level + 1} !`;
+      currentLevelInfo.textContent = `Get Ready!`;
+      currentScoreInfo.textContent = `Score: ${score}`;
+      levelTransitionOverlay.classList.remove('hidden');
+      levelTransitionOverlay.classList.add('flex');
+      break;
+
+    case 'PAUSED':
+      import('./soundManager.js').then(m => m.stopMusic());
+      if (pauseText) {
+        pauseText.textContent = isMobile
+          ? 'Touch and Hold to Resume'
+          : 'Press P to Resume';
+      }
+      pauseOverlay.classList.remove('hidden');
+      pauseOverlay.classList.add('flex');
+      break;
+
+    case 'PLAYING':
+      startOverlay.style.display = 'none';
+      import('./soundManager.js').then(m => m.startMusic());
+      break;
+
+    default:
+      break;
+  }
+
+  document.dispatchEvent(new Event('gameStateChange'));
 }
 
 export function initializeCanvas(canvas) {
@@ -77,13 +92,20 @@ export function initializeCanvas(canvas) {
   const vh = window.innerHeight;
 
   if (vw < 600) {
-    // Mobile: nearly full height and width
-    canvas.height = vh * 0.95;
-    canvas.width = vw;
+    canvas.width = 480;
+    canvas.height = 854;
+    canvas.style.width = '100vw';
+    canvas.style.height = '100vh';
+    canvas.style.objectFit = 'contain';
+    canvas.style.display = 'block';
+    canvas.style.backgroundColor = 'black';
   } else {
-    // Desktop: 90% width and height of viewport
     canvas.width = vw * 0.9;
     canvas.height = vh * 0.9;
+    canvas.style.width = '';
+    canvas.style.height = '';
+    canvas.style.objectFit = '';
+    canvas.style.backgroundColor = '';
   }
 }
 
@@ -98,12 +120,9 @@ export function quitGame() {
   ]).then(([soundManager, state, ui]) => {
     soundManager.stopMusic();
     state.gameState.value = 'GAME_OVER';
-    // state.score.value = 0;         // Reset if desired; or keep final score
-    // state.gameLevel.value = 0;
     state.bullets.length = 0;
     state.obstacles.length = 0;
 
-    // Reset powerups
     Object.keys(state.powerUps).forEach(key => {
       state.powerUps[key].active = false;
       state.powerUps[key].timer = 0;
@@ -115,11 +134,11 @@ export function quitGame() {
 }
 
 export function setOverlayDimensions(canvas) {
-    const canvasRect = canvas.getBoundingClientRect();
-    [startOverlay, gameOverOverlay, levelTransitionOverlay, pauseOverlay].forEach(overlay => {
-        overlay.style.width = canvasRect.width + 'px';
-        overlay.style.height = canvasRect.height + 'px';
-        overlay.style.left = canvasRect.left + 'px';
-        overlay.style.top = canvasRect.top + 'px';
-    });
+  const canvasRect = canvas.getBoundingClientRect();
+  [startOverlay, gameOverOverlay, levelTransitionOverlay, pauseOverlay].forEach(overlay => {
+    overlay.style.width = canvasRect.width + 'px';
+    overlay.style.height = canvasRect.height + 'px';
+    overlay.style.left = canvasRect.left + 'px';
+    overlay.style.top = canvasRect.top + 'px';
+  });
 }

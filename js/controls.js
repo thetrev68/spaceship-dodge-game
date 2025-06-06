@@ -32,6 +32,7 @@ export function setupInput(canvas) {
         stopFiring();
       } else if (nextState === 'PLAYING') {
         soundManager.unmuteAll();
+        soundManager.startMusic(); // ✅ resume music
         restartGameLoop();
       }
       setTimeout(() => pauseLocked = false, 300);
@@ -130,6 +131,7 @@ export function setupInput(canvas) {
         stopFiring();
       } else if (nextState === 'PLAYING') {
         soundManager.unmuteAll();
+        soundManager.startMusic(); // ✅ resume music
         restartGameLoop();
       }
       setTimeout(() => pauseLocked = false, 300);

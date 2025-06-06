@@ -1,114 +1,96 @@
-/*
-    mobileControls.js
-    Created: 2025-06-04
-    Author: ChatGPT + Trevor Clark
+// js/mobileControls.js
 
-    Updates:
-        Updated firing loop to use power-up aware firePlayerBullets.
-        Fixed firing queue with proper loop management.
-        Maintains pause toggle lock and pause button visibility.
-*/
-
+import { startGame } from './gameStateManager.js'; // ✅ at top
 import { gameState, player } from './state.js';
 import { firePlayerBullets } from './player.js';
 import { showOverlay } from './ui.js';
 import * as soundManager from './soundManager.js';
-import { restartGameLoop } from './gameLoop.js';
+import { restartGameLoop, stopGameLoop } from './gameLoop.js';
 
-const mobilePauseBtn = document.getElementById('mobilePauseBtn');
-let mobileTouching = false;
-let firing = false;
-let fireTimeoutId = null;
-let pauseLocked = false;
+let touchActive = false;
+let touchX = 0;
+let touchY = 0;
+let canvasEl = null;
 
 export function setupMobileInput(canvas) {
-  let lastTouchFire = 0;
-  const fireCooldown = 200; // ms between shots
+  canvasEl = canvas;
 
-  function touchFireLoop() {
-    const now = Date.now();
-    if (gameState.value === 'PLAYING' && mobileTouching && now - lastTouchFire > fireCooldown) {
+  console.log('[DEBUG] setupMobileInput called');
+
+  // Log game state every second
+  setInterval(() => {
+    console.log('[DEBUG] gameState:', gameState.value);
+  }, 1000);
+
+  // Main touch loop
+  function mobileLoop() {
+    console.log('[DEBUG] mobileLoop tick:', {
+      active: touchActive,
+      state: gameState.value
+    });
+
+    if (touchActive && gameState.value === 'PLAYING') {
+      updatePlayerToTouch();
       firePlayerBullets();
-      lastTouchFire = now;
     }
-    requestAnimationFrame(touchFireLoop);
-  }
-  requestAnimationFrame(touchFireLoop);
 
+    requestAnimationFrame(mobileLoop);
+  }
+
+  requestAnimationFrame(mobileLoop);
+
+  // Handle touch start
   canvas.addEventListener('touchstart', (e) => {
     e.preventDefault();
-    mobileTouching = true;
-    handleTouch(e);
-  }, { passive: false });
+    const t = e.touches[0];
+    if (!t) return;
 
-  canvas.addEventListener('touchmove', handleTouch, { passive: false });
+    const rect = canvas.getBoundingClientRect();
+    touchX = t.clientX - rect.left;
+    touchY = t.clientY - rect.top;
+    touchActive = true;
 
-  canvas.addEventListener('touchend', () => {
-    mobileTouching = false;
-    stopFiring();
-  }, { passive: false });
+    console.log('[DEBUG] TOUCH START');
 
-  canvas.addEventListener('touchcancel', () => {
-    mobileTouching = false;
-    stopFiring();
-  }, { passive: false });
-
-  document.addEventListener('touchend', () => {
-    mobileTouching = false;
-    stopFiring();
-  });
-  document.addEventListener('touchcancel', () => {
-    mobileTouching = false;
-    stopFiring();
-  });
-
-  // Pause button logic
-  function updatePauseButtonVisibility() {
-    const playing = gameState.value === 'PLAYING';
-    const overlaysVisible = document.querySelectorAll('.game-overlay:not(.hidden)').length > 0;
-    if (playing && !overlaysVisible) {
-      mobilePauseBtn.classList.remove('hidden');
-    } else {
-      mobilePauseBtn.classList.add('hidden');
+    if (gameState.value === 'START' || gameState.value === 'PAUSED') {
+      console.log('[DEBUG] Starting game from touch');
+      startGame(canvas); // ✅ fix: use correct reference
+      restartGameLoop();
     }
-  }
+  }, { passive: false });
 
-  mobilePauseBtn.addEventListener('click', () => {
-    if (pauseLocked) return;
-    pauseLocked = true;
+  // Handle touch move
+  canvas.addEventListener('touchmove', (e) => {
+    e.preventDefault();
+    const t = e.touches[0];
+    if (!t) return;
+
+    const rect = canvas.getBoundingClientRect();
+    touchX = t.clientX - rect.left;
+    touchY = t.clientY - rect.top;
+  }, { passive: false });
+
+  // Handle touch end
+  const stopTouch = () => {
+    console.log('[DEBUG] TOUCH END');
+    touchActive = false;
+
     if (gameState.value === 'PLAYING') {
+      console.log('[DEBUG] Switching state to PAUSED');
       gameState.value = 'PAUSED';
       showOverlay('PAUSED');
       soundManager.muteAll();
-      stopFiring();
-    } else if (gameState.value === 'PAUSED') {
-      gameState.value = 'PLAYING';
-      showOverlay('PLAYING');
-      soundManager.unmuteAll();
-      restartGameLoop();
+      stopGameLoop();
     }
-    updatePauseButtonVisibility();
-    setTimeout(() => pauseLocked = false, 300);
-  });
+  };
 
-  document.addEventListener('gameStateChange', updatePauseButtonVisibility);
-  document.addEventListener('DOMContentLoaded', updatePauseButtonVisibility);
+  canvas.addEventListener('touchend', stopTouch, { passive: false });
+  canvas.addEventListener('touchcancel', stopTouch, { passive: false });
+  document.addEventListener('touchend', stopTouch);
+  document.addEventListener('touchcancel', stopTouch);
 }
 
-function handleTouch(e) {
-  if (gameState.value !== 'PLAYING') return;
-  const rect = e.target.getBoundingClientRect();
-  const touch = e.touches[0];
-  const x = touch.clientX - rect.left;
-  const y = touch.clientY - rect.top;
-  player.x = x - player.width / 2;
-  player.y = y - player.height / 2;
-}
-
-function stopFiring() {
-  firing = false;
-  if (fireTimeoutId) {
-    clearTimeout(fireTimeoutId);
-    fireTimeoutId = null;
-  }
+function updatePlayerToTouch() {
+  player.x = touchX - player.width / 2;
+  player.y = touchY - player.height / 2;
 }

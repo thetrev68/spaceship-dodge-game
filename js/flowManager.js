@@ -26,7 +26,7 @@ export function resetLevelFlow() {
     pendingLevelUp = false;      // Not yet moving to next level
     levelClearTime = null;       // Reset clear timer
     levelStartTime.value = Date.now(); // Remember when this level started
-    console.log('[FlowManager] Level flow reset');
+    // console.log('[FlowManager] Level flow reset');
 }
 
 // This is called every frame (or frequently) to check if conditions are met to advance level

@@ -63,7 +63,7 @@ export function gameLoop(canvas, timestamp = 0) {
   lastFrameTime = timestamp;
 
   if (gameState.value !== 'PLAYING') {
-    animationId = requestAnimationFrame((t) => gameLoop(canvas, t));
+    stopGameLoop(); // fully pause game loop
     return;
   }
 

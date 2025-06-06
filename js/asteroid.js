@@ -1,11 +1,9 @@
 /*
     asteroid.js
-    Created: 2025-05-28
+    Updated: 2025-06-06
     Author: ChatGPT + Trevor Clark
 
-    Updates:
-        Track newAsteroidsSpawned only for base-level asteroids (level 0).
-        Preserve existing functionality.
+    Adds object pooling to optimize asteroid memory reuse.
 */
 
 import {
@@ -28,10 +26,9 @@ export const fragmentTracker = {};
 let obstacleMaxSpeed = BASE_OBSTACLE_MAX_SPEED;
 
 const MAX_OBSTACLE_SPEED = 3;
+const obstaclePool = []; // ♻️ Object pool
 
-// Counts only newly spawned base-level asteroids (level 0)
 export let newAsteroidsSpawned = 0;
-
 
 export function resetNewAsteroidsSpawned() {
   newAsteroidsSpawned = 0;
@@ -73,7 +70,6 @@ export function createObstacle(x, y, levelIndex, initialDx = 0, initialDy = 0, p
   const scoreValue = ASTEROID_SCORE_VALUES[levelIndex];
   const basePoints = Math.floor(Math.random() * 6) + 5;
   const numPoints = isMobile ? Math.min(basePoints, 5) : basePoints;
-
   const shape = generateAsteroidShape(radius, numPoints);
 
   const id = nextAsteroidId++;
@@ -90,12 +86,13 @@ export function createObstacle(x, y, levelIndex, initialDx = 0, initialDy = 0, p
 
   const baseSpeed = Math.random() * (obstacleMaxSpeed - obstacleMinSpeed) + obstacleMinSpeed;
   const speed = parentId === null ? baseSpeed : baseSpeed * 0.3;
-
   const rotation = Math.random() * 2 * Math.PI;
   const rotationSpeed = (Math.random() * 0.01) - 0.05;
   const now = Date.now();
 
-  obstacles.push({
+  const obstacle = obstaclePool.length > 0 ? obstaclePool.pop() : {};
+
+  Object.assign(obstacle, {
     x,
     y,
     radius,
@@ -112,8 +109,10 @@ export function createObstacle(x, y, levelIndex, initialDx = 0, initialDy = 0, p
     creationTime: now,
   });
 
+  obstacles.push(obstacle);
+
   if (levelIndex === 0) {
-    newAsteroidsSpawned++; // Increment only for base-level asteroids
+    newAsteroidsSpawned++;
   }
 }
 
@@ -125,13 +124,10 @@ export function updateObstacles(canvasWidth, canvasHeight, spawnInterval, lastSp
   for (let i = 0; i < obstacles.length; i++) {
     const o = obstacles[i];
 
-    if (!o.creationTime) {
-      o.creationTime = now;
-    }
+    if (!o.creationTime) o.creationTime = now;
 
     o.y += o.speed + o.dy;
     o.x += o.dx;
-
     o.rotation = (o.rotation + o.rotationSpeed) % (2 * Math.PI);
 
     const outOfBounds =
@@ -142,7 +138,8 @@ export function updateObstacles(canvasWidth, canvasHeight, spawnInterval, lastSp
     const tooOld = now - o.creationTime > maxLifetime;
 
     if (outOfBounds || tooOld) {
-      obstacles.splice(i, 1);
+      const [removed] = obstacles.splice(i, 1);
+      obstaclePool.push(removed); // ♻️ Return to pool
       i--;
     }
   }
@@ -175,12 +172,12 @@ export function drawObstacles(ctx) {
   });
 }
 
-// Newly added modular function for obstacle destruction and fragmentation
 export function destroyObstacle(obstacle, scoreRef) {
   const idx = obstacles.indexOf(obstacle);
   if (idx === -1) return;
 
   obstacles.splice(idx, 1);
+  obstaclePool.push(obstacle); // ♻️ Return to pool
   playSound('break');
 
   if (obstacle.level < ASTEROID_LEVEL_SIZES.length - 1) {

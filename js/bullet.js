@@ -1,21 +1,48 @@
 // js/bullet.js
-// Bullet management module 
+// Optimized for mobile: pooling, sound throttling, pre-rendered sprite
 
-import { bullets, bulletSpeed, bulletRadius, gameState } from './state.js';
+import { bullets, bulletSpeed, bulletRadius, gameState, isMobile } from './state.js';
 import { playSound } from './soundManager.js';
 
-// Accept x,y parameters for bullet spawn position
+const bulletPool = [];
+let lastFireSoundTime = 0;
+
+// Pre-rendered bullet sprite canvas
+const bulletSprite = document.createElement('canvas');
+bulletSprite.width = bulletRadius * 2;
+bulletSprite.height = bulletRadius * 2;
+const bctx = bulletSprite.getContext('2d');
+bctx.fillStyle = '#ffff88';
+bctx.beginPath();
+bctx.arc(bulletRadius, bulletRadius, bulletRadius, 0, 2 * Math.PI);
+bctx.fill();
+
+function getBullet(x, y) {
+  const bullet = bulletPool.length > 0 ? bulletPool.pop() : {};
+  bullet.x = x;
+  bullet.y = y;
+  bullet.radius = bulletRadius;
+  bullet.dy = -bulletSpeed;
+  return bullet;
+}
+
+function releaseBullet(bullet) {
+  bulletPool.push(bullet);
+}
+
 export function fireBullet(x, y) {
   if (gameState.value !== 'PLAYING') return;
 
-  bullets.push({
-    x,
-    y,
-    radius: bulletRadius,
-    dy: -bulletSpeed,
-  });
+  const bullet = getBullet(x, y);
+  bullets.push(bullet);
 
-  playSound('fire');
+  // Throttle fire sound on mobile
+  const now = Date.now();
+  const delay = isMobile ? 120 : 30;
+  if (now - lastFireSoundTime > delay) {
+    playSound('fire');
+    lastFireSoundTime = now;
+  }
 }
 
 export function updateBullets(canvasHeight) {
@@ -24,16 +51,14 @@ export function updateBullets(canvasHeight) {
     b.y += b.dy;
 
     if (b.y + b.radius < 0) {
-      bullets.splice(i, 1); // Remove bullet off screen
+      bullets.splice(i, 1);
+      releaseBullet(b);
     }
   }
 }
 
 export function drawBullets(ctx) {
-  ctx.fillStyle = '#ffff88'; // Light yellow color for bullets
   bullets.forEach(b => {
-    ctx.beginPath();
-    ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
-    ctx.fill();
+    ctx.drawImage(bulletSprite, b.x - bulletRadius, b.y - bulletRadius);
   });
 }
