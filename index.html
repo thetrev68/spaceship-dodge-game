@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <title>Spaceship Dodge</title>
+  <link rel="icon" href="data:;base64,iVBORw0KGgo=">
   <style>
     html, body {
       margin: 0;
@@ -11,30 +12,36 @@
       height: 100%;
       background-color: black;
       overscroll-behavior-y: contain;
-      touch-action: manipulation;
+      touch-action: none; /* Prevent browser scrolling/panning */
     }
-    canvas {
+    #gameCanvas, #starfieldCanvas {
       touch-action: none;
-    }
-    #starfieldCanvas {
-      pointer-events: none;
-      position: fixed;
-      top: 0; left: 0;
+      pointer-events: auto;
+      position: absolute;
+      top: 0;
+      left: 0;
       width: 100vw;
       height: 100vh;
-      z-index: 0;
-    }
-    #gameCanvas {
-      width: 100vw;
-      height: 100vh;
-      position: relative;
-      z-index: 10;
       display: block;
       margin: 0 auto;
+    }
+    #gameCanvas {
+      z-index: 1;
       background-color: transparent !important;
     }
+    #starfieldCanvas {
+      z-index: 0;
+      pointer-events: none; /* Prevent starfield from capturing touches */
+    }
+    .game-overlay, .game-overlay button {
+      pointer-events: auto;
+      z-index: 50; /* Above canvases */
+    }
+    .game-overlay.hidden {
+      pointer-events: none; /* Disable touches when hidden */
+    }
   </style>
-  <script type="module" crossorigin src="/spaceship-dodge-game/assets/index-t2RjOi5Y.js"></script>
+  <script type="module" crossorigin src="/spaceship-dodge-game/assets/index-ChUJseHN.js"></script>
   <link rel="stylesheet" crossorigin href="/spaceship-dodge-game/assets/index-QWZYCT00.css">
 </head>
 <body>
@@ -61,11 +68,11 @@
   </div>
 
   <!-- PAUSE OVERLAY -->
-  <div id="pauseOverlay" class="game-overlay fixed inset-0 hidden flex-col items-center justify-center bg-black bg-opacity-80 p-6 rounded-lg shadow-lg text-white z-50">
+  <div id="pauseOverlay" class="game-overlay fixed inset-0 hidden flex-col items-center justify-center bg-black bg-opacity-80 p-6 rounded-lg shadow-lg">
     <h1 class="text-4xl font-bold mb-4">PAUSED</h1>
-    <p id="livesInfoPause" class="mb-4 text-lg"></p>
-    <button id="quitButton" class="px-6 py-3 bg-red-600 rounded hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-400 mb-4">Quit Game</button>
-    <p id="pauseResumeMessage">Press P to Resume</p>
+    <p id="livesInfo" class="mb-4 text-lg"></p>
+    <button id="quitButton" class="px-6 py-3 bg-blue-600 rounded hover:bg-blue-700 focus:outline-none focus:ring-blue-400">Continue Game</button>
+    <p id="pauseResumeMessage">Tap to Resume</p>
   </div>
 
   <!-- GAME OVER OVERLAY -->
