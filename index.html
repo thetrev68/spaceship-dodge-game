@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en" class="bg-black text-white">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>Spaceship Dodge</title>
+  <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: black;
+      overscroll-behavior-y: contain;
+      touch-action: none;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #gameCanvas, #starfieldCanvas {
+      touch-action: none;
+      pointer-events: auto;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      display: block;
+    }
+
+    #gameCanvas {
+      z-index: 1;
+      background-color: transparent !important;
+    }
+
+    #starfieldCanvas {
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .game-overlay {
+      z-index: 50;
+      background-color: rgba(0, 0, 0, 0.8);
+      padding: 1.5rem;
+      border-radius: 0.5rem;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.6);
+      color: white;
+
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+
+      max-width: 90%;
+      max-height: 90%;
+    }
+
+    .game-overlay.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+  </style>
+  <script type="module" crossorigin src="/spaceship-dodge-game/assets/index-CZI8FkLE.js"></script>
+  <link rel="stylesheet" crossorigin href="/spaceship-dodge-game/assets/index-QWZYCT00.css">
+</head>
+<body>
+  <canvas id="starfieldCanvas"></canvas>
+  <canvas id="gameCanvas"></canvas>
+
+  <div id="startOverlay" class="game-overlay visible">
+    <h1 class="text-4xl font-bold mb-4">Spaceship Dodge</h1>
+    <p class="mb-2">Dodge or Shoot the incoming asteroids!</p>
+    <p id="desktopControlHint" class="mb-2">Use WASD, Arrow Keys, or Mouse to move.</p>
+    <p id="startHint" class="mb-4 text-lg">Touch and Hold the Screen to Begin</p>
+    <p id="livesInfoStart" class="mb-4 text-lg">Lives: 3</p>
+    <button id="startButton" class="px-6 py-3 bg-blue-600 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400">Start Game</button>
+  </div>
+
+  <div id="levelTransitionOverlay" class="game-overlay">
+    <h1 id="levelUpMessage" class="text-4xl font-bold mb-4">LEVEL UP!</h1>
+    <p id="currentLevelInfo" class="mb-2">Level 1</p>
+    <p id="currentScoreInfo" class="mb-4">Score: 0</p>
+    <p id="livesInfoLevel" class="mb-4 text-lg"></p>
+    <p id="tapToContinueMobile" class="text-lg mt-4 hidden">Tap Anywhere to Continue</p>
+    <button id="continueButton" class="px-6 py-3 bg-green-600 rounded hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-400">Continue</button>
+  </div>
+
+  <div id="pauseOverlay" class="game-overlay">
+    <h1 class="text-4xl font-bold mb-4">PAUSED</h1>
+    <p id="livesInfoPause" class="mb-4 text-lg"></p>
+    <button id="quitButton" class="px-6 py-3 bg-blue-600 rounded hover:bg-blue-700 focus:outline-none focus:ring-blue-400 hidden">Continue Game</button>
+    <p id="pauseResumeMessage">Tap to Resume</p>
+  </div>
+
+  <div id="gameOverOverlay" class="game-overlay">
+    <h1 class="text-4xl font-bold mb-4">GAME OVER!</h1>
+    <p id="finalScore" class="mb-4">Final Score: 0</p>
+    <button id="restartButton" class="px-6 py-3 bg-blue-600 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400">Play Again</button>
+  </div>
+
+</body>
+</html>
