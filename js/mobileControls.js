@@ -1,6 +1,3 @@
-// js/mobileControls.js
-
-import { startGame } from './gameStateManager.js';
 import { gameState, player } from './state.js';
 import { firePlayerBullets } from './player.js';
 import { showOverlay } from './ui.js';
@@ -11,11 +8,13 @@ let touchActive = false;
 let touchX = 0;
 let touchY = 0;
 let canvasEl = null;
+let lastFireTime = 0;
+const fireCooldown = 250; // ms, increased for balance
 
 export function setupMobileInput(canvas) {
   canvasEl = canvas;
 
-  console.log('[DEBUG] setupMobileInput called');
+  console.log('[DEBUG] setupMobileInput called', { canvasId: canvas.id });
 
   // Log game state every second
   setInterval(() => {
@@ -24,14 +23,13 @@ export function setupMobileInput(canvas) {
 
   // Main mobile control loop
   function mobileLoop() {
-    console.log('[DEBUG] mobileLoop tick:', {
-      active: touchActive,
-      state: gameState.value
-    });
-
     if (touchActive && gameState.value === 'PLAYING') {
       updatePlayerToTouch();
-      firePlayerBullets();
+      const now = performance.now();
+      if (now - lastFireTime >= fireCooldown) {
+        firePlayerBullets();
+        lastFireTime = now;
+      }
     }
 
     requestAnimationFrame(mobileLoop);
@@ -39,9 +37,13 @@ export function setupMobileInput(canvas) {
 
   requestAnimationFrame(mobileLoop);
 
-  // Touch start: begin or resume game
-  canvas.addEventListener('touchstart', (e) => {
-    e.preventDefault(); // ✅ critical!
+  // Touch start: Handle gameplay movement and firing
+  function handleTouchStart(e) {
+    e.preventDefault();
+    console.log('[DEBUG] handleTouchStart triggered', { targetId: e.target.id, touches: e.touches.length });
+    // Skip if target is an overlay or button
+    if (e.target.closest('.game-overlay') || e.target.tagName === 'BUTTON') return;
+
     const t = e.touches[0];
     if (!t) return;
 
@@ -50,16 +52,11 @@ export function setupMobileInput(canvas) {
     touchY = t.clientY - rect.top;
     touchActive = true;
 
-    console.log('[DEBUG] TOUCH START');
+    console.log('[DEBUG] TOUCH START', { touchX, touchY, state: gameState.value });
+  }
 
-    if (gameState.value === 'START' || gameState.value === 'PAUSED') {
-      console.log('[DEBUG] Starting game from touch');
-      startGame(canvasEl);         // ✅ use correct stored canvas reference
-      restartGameLoop();
-    }
-  }, { passive: false });
-
-  // Track finger movement
+  // Canvas listeners
+  canvas.addEventListener('touchstart', handleTouchStart, { passive: false });
   canvas.addEventListener('touchmove', (e) => {
     e.preventDefault();
     const t = e.touches[0];
@@ -68,9 +65,39 @@ export function setupMobileInput(canvas) {
     const rect = canvasEl.getBoundingClientRect();
     touchX = t.clientX - rect.left;
     touchY = t.clientY - rect.top;
+    console.log('[DEBUG] TOUCH MOVE', { touchX, touchY });
   }, { passive: false });
 
-  // Touch end: pause game
+  // Document fallbacks with debug
+  document.addEventListener('touchstart', (e) => {
+    console.log('[DEBUG] Document touchstart raw', { target: e.target.id || e.target.tagName });
+    const t = e.touches[0];
+    if (!t) return;
+    const rect = canvasEl.getBoundingClientRect();
+    const x = t.clientX;
+    const y = t.clientY;
+    if (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom) {
+      console.log('[DEBUG] Document touchstart fallback triggered', { x, y });
+      handleTouchStart(e);
+    }
+  }, { passive: false });
+
+  document.addEventListener('touchmove', (e) => {
+    e.preventDefault();
+    console.log('[DEBUG] Document touchmove raw', { target: e.target.id || e.target.tagName });
+    const t = e.touches[0];
+    if (!t) return;
+    const rect = canvasEl.getBoundingClientRect();
+    const x = t.clientX;
+    const y = t.clientY;
+    if (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom) {
+      touchX = t.clientX - rect.left;
+      touchY = t.clientY - rect.top;
+      console.log('[DEBUG] Document touchmove fallback', { touchX, touchY });
+    }
+  }, { passive: false });
+
+  // Touch end: Pause game if playing
   const stopTouch = () => {
     console.log('[DEBUG] TOUCH END');
     touchActive = false;
@@ -93,4 +120,8 @@ export function setupMobileInput(canvas) {
 function updatePlayerToTouch() {
   player.x = touchX - player.width / 2;
   player.y = touchY - player.height / 2;
+  // Reset dx, dy to prevent updatePlayer() interference
+  player.dx = 0;
+  player.dy = 0;
+  console.log('[DEBUG] Player updated to', { x: player.x, y: player.y });
 }

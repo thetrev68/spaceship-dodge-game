@@ -12,6 +12,8 @@ function init() {
   const restartButton = document.getElementById('restartButton');
   const continueButton = document.getElementById('continueButton');
   const quitButton = document.getElementById('quitButton');
+  const startOverlay = document.getElementById('startOverlay');
+  const pauseOverlay = document.getElementById('pauseOverlay');
   const starfieldCanvas = document.getElementById('starfieldCanvas');
 
   if (!isMobile && starfieldCanvas) {
@@ -23,21 +25,42 @@ function init() {
   setCanvas(canvas);
 
   if (isMobile) {
-    setupMobileInput(canvas); // ✅ mobile-only
+    setupMobileInput(canvas);
+    // Mobile start: Tap anywhere on start overlay
+    startOverlay?.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      if (gameState.value !== 'START') return;
+      console.log('[DEBUG] Starting game from overlay touch');
+      import('./soundManager.js').then(m => {
+        m.unlockAudio();
+        m.startMusic();
+      });
+      startGame(canvas);
+      restartGameLoop();
+    }, { passive: false });
+
+    // Mobile resume: Tap anywhere on pause overlay
+    pauseOverlay?.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      if (gameState.value !== 'PAUSED') return;
+      console.log('[DEBUG] Resuming game from overlay touch');
+      gameState.value = 'PLAYING';
+      showOverlay('PLAYING');
+      import('./soundManager.js').then(m => m.unmuteAll());
+      restartGameLoop();
+    }, { passive: false });
   } else {
-    setupInput(canvas);       // ✅ desktop only
+    setupInput(canvas);
   }
 
-  window.addEventListener('resize', () => {
-    initializeCanvas(canvas);
-    setOverlayDimensions(canvas);
-  });
-
-  // Desktop start only
+  // Desktop start: Click to begin
   if (!isMobile) {
     startButton?.addEventListener('click', () => {
       if (gameState.value !== 'START') return;
-      import('./soundManager.js').then(m => m.unlockAudio());
+      import('./soundManager.js').then(m => {
+        m.unlockAudio();
+        m.startMusic();
+      });
       startGame(canvas);
       restartGameLoop();
     });

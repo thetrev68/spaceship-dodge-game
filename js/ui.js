@@ -31,7 +31,7 @@ export function showOverlay(state, score = 0, level = 0) {
     case 'START':
       if (startText) {
         startText.textContent = isMobile
-          ? 'Touch and Hold the Screen to Begin'
+          ? 'Tap the Screen to Begin'
           : 'Press SPACE or Left Mouse Click to fire!';
       }
       startOverlay.classList.remove('hidden');
@@ -58,7 +58,7 @@ export function showOverlay(state, score = 0, level = 0) {
       import('./soundManager.js').then(m => m.stopMusic());
       if (pauseText) {
         pauseText.textContent = isMobile
-          ? 'Touch and Hold to Resume'
+          ? 'Tap to Resume'
           : 'Press P to Resume';
       }
       pauseOverlay.classList.remove('hidden');

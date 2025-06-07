@@ -1,6 +1,3 @@
-// js/bullet.js
-// Optimized for mobile: pooling, sound throttling, pre-rendered sprite
-
 import { bullets, bulletSpeed, bulletRadius, gameState, isMobile } from './state.js';
 import { playSound } from './soundManager.js';
 
@@ -36,9 +33,9 @@ export function fireBullet(x, y) {
   const bullet = getBullet(x, y);
   bullets.push(bullet);
 
-  // Throttle fire sound on mobile
+  // Throttle fire sound to match mobileControls.js
   const now = Date.now();
-  const delay = isMobile ? 120 : 30;
+  const delay = isMobile ? 250 : 30; // 250ms on mobile to match fireCooldown
   if (now - lastFireSoundTime > delay) {
     playSound('fire');
     lastFireSoundTime = now;
