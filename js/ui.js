@@ -15,17 +15,32 @@ const livesInfoPause = document.getElementById('livesInfoPause');
 
 const pauseText = document.getElementById('pauseResumeMessage');
 const startText = document.getElementById('startHint');
+const tapToContinueMobile = document.getElementById('tapToContinueMobile');
+const continueButton = document.getElementById('continueButton');
+const startButton = document.getElementById('startButton');
+const quitButton = document.getElementById('quitButton');
+
+function hideAllOverlays() {
+  document.querySelectorAll('.game-overlay').forEach(ov => {
+    ov.classList.remove('visible');
+  });
+}
+
+function show(overlay) {
+  overlay.classList.add('visible');
+}
 
 export function showOverlay(state, score = 0, level = 0) {
-  const overlays = [startOverlay, pauseOverlay, gameOverOverlay, levelTransitionOverlay];
-  overlays.forEach(overlay => {
-    overlay.classList.add('hidden');
-    overlay.classList.remove('flex');
-  });
+  hideAllOverlays();
 
   if (livesInfoStart) livesInfoStart.textContent = `Lives: ${playerLives.value}`;
   if (livesInfoLevel) livesInfoLevel.textContent = `Lives: ${playerLives.value}`;
   if (livesInfoPause) livesInfoPause.textContent = `Lives: ${playerLives.value}`;
+
+  if (startButton) startButton.style.display = isMobile ? 'none' : 'block';
+  if (continueButton) continueButton.style.display = isMobile ? 'none' : 'block';
+  if (quitButton) quitButton.style.display = isMobile ? 'none' : 'block';
+  if (tapToContinueMobile) tapToContinueMobile.style.display = isMobile ? 'block' : 'none';
 
   switch (state) {
     case 'START':
@@ -34,15 +49,13 @@ export function showOverlay(state, score = 0, level = 0) {
           ? 'Tap the Screen to Begin'
           : 'Press SPACE or Left Mouse Click to fire!';
       }
-      startOverlay.classList.remove('hidden');
-      startOverlay.classList.add('flex');
+      show(startOverlay);
       break;
 
     case 'GAME_OVER':
       import('./soundManager.js').then(m => m.stopMusic());
       finalScoreDisplay.textContent = `Final Score: ${score} (Level ${level + 1})`;
-      gameOverOverlay.classList.remove('hidden');
-      gameOverOverlay.classList.add('flex');
+      show(gameOverOverlay);
       break;
 
     case 'LEVEL_TRANSITION':
@@ -50,8 +63,7 @@ export function showOverlay(state, score = 0, level = 0) {
       levelUpMessage.textContent = `LEVEL ${level + 1} !`;
       currentLevelInfo.textContent = `Get Ready!`;
       currentScoreInfo.textContent = `Score: ${score}`;
-      levelTransitionOverlay.classList.remove('hidden');
-      levelTransitionOverlay.classList.add('flex');
+      show(levelTransitionOverlay);
       break;
 
     case 'PAUSED':
@@ -61,19 +73,11 @@ export function showOverlay(state, score = 0, level = 0) {
           ? 'Tap to Resume'
           : 'Press P to Resume';
       }
-      pauseOverlay.classList.remove('hidden');
-      pauseOverlay.classList.add('flex');
+      show(pauseOverlay);
       break;
 
     case 'PLAYING':
-      document.querySelectorAll('.game-overlay').forEach(ov => {
-        ov.classList.add('hidden');
-        ov.classList.remove('flex');
-      });
       import('./soundManager.js').then(m => m.startMusic());
-      break;
-
-    default:
       break;
   }
 

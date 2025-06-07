@@ -12,10 +12,16 @@ import { player, gameState, powerUps } from './state.js';
 import { fireBullet } from './bullet.js';
 
 export function updatePlayer() {
-    if (gameState.value !== 'PLAYING') return;
+  if (gameState.value !== 'PLAYING') return;
 
+  if (player.overridePosition) {
+    player.x = player.overridePosition.x;
+    player.y = player.overridePosition.y;
+    player.overridePosition = null;
+  } else {
     player.x += player.dx;
     player.y += player.dy;
+  }
 
     // Keep player within canvas bounds
     const canvas = document.getElementById('gameCanvas');

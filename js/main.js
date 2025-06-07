@@ -14,6 +14,7 @@ function init() {
   const quitButton = document.getElementById('quitButton');
   const startOverlay = document.getElementById('startOverlay');
   const pauseOverlay = document.getElementById('pauseOverlay');
+  const levelTransitionOverlay = document.getElementById('levelTransitionOverlay');
   const starfieldCanvas = document.getElementById('starfieldCanvas');
 
   if (!isMobile && starfieldCanvas) {
@@ -26,58 +27,70 @@ function init() {
 
   if (isMobile) {
     setupMobileInput(canvas);
-    // Mobile start: Tap anywhere on start overlay
-    startOverlay?.addEventListener('touchstart', (e) => {
+
+    startOverlay?.addEventListener('touchstart', async (e) => {
       e.preventDefault();
       if (gameState.value !== 'START') return;
       console.log('[DEBUG] Starting game from overlay touch');
-      import('./soundManager.js').then(m => {
-        m.unlockAudio();
+
+      const m = await import('./soundManager.js');
+      try {
+        await m.unlockAudio();
         m.startMusic();
-      });
-      startGame(canvas);
+      } catch (err) {
+        console.warn('[WARN] Audio unlock failed on first try', err);
+      }
+
+      const stateManager = await import('./gameStateManager.js');
+      stateManager.startGame(canvas);
       restartGameLoop();
     }, { passive: false });
 
-    // Mobile resume: Tap anywhere on pause overlay
     pauseOverlay?.addEventListener('touchstart', (e) => {
       e.preventDefault();
       if (gameState.value !== 'PAUSED') return;
       console.log('[DEBUG] Resuming game from overlay touch');
+
       gameState.value = 'PLAYING';
       showOverlay('PLAYING');
       import('./soundManager.js').then(m => m.unmuteAll());
       restartGameLoop();
     }, { passive: false });
+
+    levelTransitionOverlay?.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      if (gameState.value !== 'LEVEL_TRANSITION') return;
+      console.log('[DEBUG] Resuming from level transition overlay');
+      continueGame();
+      restartGameLoop();
+    }, { passive: false });
   } else {
     setupInput(canvas);
-  }
 
-  // Desktop start: Click to begin
-  if (!isMobile) {
     startButton?.addEventListener('click', () => {
       if (gameState.value !== 'START') return;
       import('./soundManager.js').then(m => {
-        m.unlockAudio();
-        m.startMusic();
+        m.unlockAudio().then(() => {
+          m.startMusic();
+          startGame(canvas);
+          restartGameLoop();
+        });
       });
-      startGame(canvas);
+    });
+
+    continueButton?.addEventListener('click', () => {
+      continueGame();
       restartGameLoop();
+    });
+
+    quitButton?.addEventListener('click', () => {
+      quitGame();
     });
   }
 
   restartButton?.addEventListener('click', () => {
     startGame(canvas);
     restartGameLoop();
-  });
-
-  continueButton?.addEventListener('click', () => {
-    continueGame();
-    restartGameLoop();
-  });
-
-  quitButton?.addEventListener('click', () => {
-    quitGame();
   });
 
   showOverlay('START');

@@ -1,3 +1,5 @@
+// js/bullet.js
+
 import { bullets, bulletSpeed, bulletRadius, gameState, isMobile } from './state.js';
 import { playSound } from './soundManager.js';
 

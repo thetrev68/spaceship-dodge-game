@@ -1,6 +1,6 @@
 /*
     loop.js
-    Updated with power-up support and shield breaking asteroids.
+   refactored. You can delete this file whenever.
 */
 
 import { 

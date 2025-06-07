@@ -10,11 +10,18 @@
     html, body {
       margin: 0;
       padding: 0;
-      height: 100%;
+      width: 100vw;
+      height: 100vh;
       background-color: black;
       overscroll-behavior-y: contain;
-      touch-action: none; /* Prevent browser scrolling/panning */
+      touch-action: none;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
+
     #gameCanvas, #starfieldCanvas {
       touch-action: none;
       pointer-events: auto;
@@ -24,22 +31,42 @@
       width: 100vw;
       height: 100vh;
       display: block;
-      margin: 0 auto;
     }
+
     #gameCanvas {
       z-index: 1;
       background-color: transparent !important;
     }
+
     #starfieldCanvas {
       z-index: 0;
-      pointer-events: none; /* Prevent starfield from capturing touches */
+      pointer-events: none;
     }
-    .game-overlay, .game-overlay button {
+
+    .game-overlay {
+      z-index: 50;
+      background-color: rgba(0, 0, 0, 0.8);
+      padding: 1.5rem;
+      border-radius: 0.5rem;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.6);
+      color: white;
+
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+
+      max-width: 90%;
+      max-height: 90%;
+    }
+
+    .game-overlay.visible {
+      opacity: 1;
       pointer-events: auto;
-      z-index: 50; /* Above canvases */
-    }
-    .game-overlay.hidden {
-      pointer-events: none; /* Disable touches when hidden */
     }
   </style>
 </head>
@@ -47,35 +74,32 @@
   <canvas id="starfieldCanvas"></canvas>
   <canvas id="gameCanvas"></canvas>
 
-  <!-- START OVERLAY -->
-  <div id="startOverlay" class="game-overlay fixed inset-0 hidden flex-col items-center justify-center bg-black bg-opacity-80 p-6 rounded-lg shadow-lg text-white z-50">
+  <div id="startOverlay" class="game-overlay visible">
     <h1 class="text-4xl font-bold mb-4">Spaceship Dodge</h1>
     <p class="mb-2">Dodge or Shoot the incoming asteroids!</p>
-    <p class="mb-2">Use WASD, Arrow Keys, or Mouse to move.</p>
+    <p id="desktopControlHint" class="mb-2">Use WASD, Arrow Keys, or Mouse to move.</p>
     <p id="startHint" class="mb-4 text-lg">Touch and Hold the Screen to Begin</p>
     <p id="livesInfoStart" class="mb-4 text-lg">Lives: 3</p>
     <button id="startButton" class="px-6 py-3 bg-blue-600 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400">Start Game</button>
   </div>
 
-  <!-- LEVEL TRANSITION OVERLAY -->
-  <div id="levelTransitionOverlay" class="game-overlay fixed inset-0 hidden flex-col items-center justify-center bg-black bg-opacity-80 p-6 rounded-lg shadow-lg text-white z-50">
+  <div id="levelTransitionOverlay" class="game-overlay">
     <h1 id="levelUpMessage" class="text-4xl font-bold mb-4">LEVEL UP!</h1>
     <p id="currentLevelInfo" class="mb-2">Level 1</p>
     <p id="currentScoreInfo" class="mb-4">Score: 0</p>
     <p id="livesInfoLevel" class="mb-4 text-lg"></p>
+    <p id="tapToContinueMobile" class="text-lg mt-4 hidden">Tap Anywhere to Continue</p>
     <button id="continueButton" class="px-6 py-3 bg-green-600 rounded hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-400">Continue</button>
   </div>
 
-  <!-- PAUSE OVERLAY -->
-  <div id="pauseOverlay" class="game-overlay fixed inset-0 hidden flex-col items-center justify-center bg-black bg-opacity-80 p-6 rounded-lg shadow-lg">
+  <div id="pauseOverlay" class="game-overlay">
     <h1 class="text-4xl font-bold mb-4">PAUSED</h1>
-    <p id="livesInfo" class="mb-4 text-lg"></p>
-    <button id="quitButton" class="px-6 py-3 bg-blue-600 rounded hover:bg-blue-700 focus:outline-none focus:ring-blue-400">Continue Game</button>
+    <p id="livesInfoPause" class="mb-4 text-lg"></p>
+    <button id="quitButton" class="px-6 py-3 bg-blue-600 rounded hover:bg-blue-700 focus:outline-none focus:ring-blue-400 hidden">Continue Game</button>
     <p id="pauseResumeMessage">Tap to Resume</p>
   </div>
 
-  <!-- GAME OVER OVERLAY -->
-  <div id="gameOverOverlay" class="game-overlay fixed inset-0 hidden flex-col items-center justify-center bg-black bg-opacity-80 p-6 rounded-lg shadow-lg text-white z-50">
+  <div id="gameOverOverlay" class="game-overlay">
     <h1 class="text-4xl font-bold mb-4">GAME OVER!</h1>
     <p id="finalScore" class="mb-4">Final Score: 0</p>
     <button id="restartButton" class="px-6 py-3 bg-blue-600 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400">Play Again</button>
