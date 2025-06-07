@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <title>Spaceship Dodge</title>
   <link rel="icon" href="data:;base64,iVBORw0KGgo=">
-  <link rel="stylesheet" href="/styles/main-tailwind.css" />
+  <link rel="stylesheet" href="styles/main-tailwind.css" />
   <style>
     html, body {
       margin: 0;
@@ -67,6 +67,11 @@
     .game-overlay.visible {
       opacity: 1;
       pointer-events: auto;
+    }
+
+    /* ✅ New: prevent hidden overlays from blocking touch on mobile */
+    .game-overlay:not(.visible) {
+      display: none !important;
     }
   </style>
 </head>

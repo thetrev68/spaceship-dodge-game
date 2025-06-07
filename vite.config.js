@@ -17,7 +17,10 @@ export default defineConfig({
   base: '/spaceship-dodge-game/',
   build: {
     outDir: 'dist',
-    assetsDir: 'assets'
+    assetsDir: 'assets',
+    rollupOptions: {
+      input: path.resolve(__dirname, 'index.html'),
+    },
   },
   css: {
     postcss: './postcss.config.js',

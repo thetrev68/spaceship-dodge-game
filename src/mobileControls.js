@@ -15,7 +15,7 @@ const fireCooldown = 250; // milliseconds
 
 export function setupMobileInput(canvas) {
   canvasEl = canvas;
-  console.log('[DEBUG] setupMobileInput called', { canvasId: canvas.id });
+  // console.log('[DEBUG] setupMobileInput called', { canvasId: canvas.id });
 
   // Mobile-specific input/gameplay loop
   function mobileLoop() {
@@ -25,7 +25,7 @@ export function setupMobileInput(canvas) {
       if (now - lastFireTime >= fireCooldown) {
         firePlayerBullets();
         lastFireTime = now;
-        console.log('[DEBUG] Autofire triggered');
+        // console.log('[DEBUG] Autofire triggered');
       }
     }
     requestAnimationFrame(mobileLoop);
@@ -34,27 +34,36 @@ export function setupMobileInput(canvas) {
   requestAnimationFrame(mobileLoop);
 
   function handleTouchStart(e) {
+    // console.log('[DEBUG] handleTouchStart triggered', e.target);
     e.preventDefault();
-    console.log('[DEBUG] Raw handleTouchStart fired', { target: e.target });
+
+    // Only block the touch if it's inside a currently visible overlay
+    const activeOverlay = document.querySelector('.game-overlay.visible');
+    if (activeOverlay && activeOverlay.contains(e.target)) {
+      // console.log('[DEBUG] Touch blocked — inside active overlay');
+      return;
+    }
 
     const t = e.touches[0];
-    if (!t) return;
+    if (!t) {
+      console.warn('[WARN] No touch object found');
+      return;
+    }
 
     const rect = canvasEl.getBoundingClientRect();
     touchX = t.clientX - rect.left;
     touchY = t.clientY - rect.top;
     touchActive = true;
 
-    console.log('[DEBUG] TOUCH START', { touchX, touchY, state: gameState.value });
-
-    if (e.target.closest('.game-overlay') || e.target.tagName === 'BUTTON') {
-      console.log('[DEBUG] Touch blocked by overlay or button');
-      return;
-    }
+    console.log('[DEBUG] TOUCH START', {
+      touchX,
+      touchY,
+      state: gameState.value
+    });
   }
 
 canvas.addEventListener('touchstart', handleTouchStart, { passive: false });
-console.log('[DEBUG] Bound touchstart to canvas');
+// console.log('[DEBUG] Bound touchstart to canvas');
 
 canvas.addEventListener('touchmove', (e) => {
   e.preventDefault();
@@ -63,18 +72,18 @@ canvas.addEventListener('touchmove', (e) => {
   const rect = canvasEl.getBoundingClientRect();
   touchX = t.clientX - rect.left;
   touchY = t.clientY - rect.top;
-  console.log('[DEBUG] TOUCH MOVE', { touchX, touchY });
+  // console.log('[DEBUG] TOUCH MOVE', { touchX, touchY });
 }, { passive: false });
-console.log('[DEBUG] Bound touchmove to canvas');
+// console.log('[DEBUG] Bound touchmove to canvas');
 
   document.addEventListener('touchend', () => {
-    console.log('[DEBUG] TOUCH END');
+    // console.log('[DEBUG] TOUCH END');
     if (!touchActive) return;
 
     touchActive = false;
 
     if (gameState.value === 'PLAYING') {
-      console.log('[DEBUG] Switching state to PAUSED');
+      // console.log('[DEBUG] Switching state to PAUSED');
       gameState.value = 'PAUSED';
       showOverlay('PAUSED');
       soundManager.muteAll();
@@ -92,5 +101,5 @@ function updatePlayerToTouch() {
   player.dx = 0;
   player.dy = 0;
 
-  console.log('[DEBUG] player.overridePosition set', player.overridePosition);
+  // console.log('[DEBUG] player.overridePosition set', player.overridePosition);
 }
