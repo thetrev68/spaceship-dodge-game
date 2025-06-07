@@ -67,8 +67,13 @@
       opacity: 1;
       pointer-events: auto;
     }
+
+    /* ✅ New: prevent hidden overlays from blocking touch on mobile */
+    .game-overlay:not(.visible) {
+      display: none !important;
+    }
   </style>
-  <script type="module" crossorigin src="/spaceship-dodge-game/assets/index-CNG2WnwY.js"></script>
+  <script type="module" crossorigin src="/spaceship-dodge-game/assets/index-BVNFln4X.js"></script>
   <link rel="stylesheet" crossorigin href="/spaceship-dodge-game/assets/index-QWZYCT00.css">
 </head>
 <body>
