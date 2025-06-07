@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite';
 import fs from 'fs';
+import path from 'path';
 
 export default defineConfig({
   server: {
@@ -10,13 +11,13 @@ export default defineConfig({
       cert: fs.readFileSync('./localhost+2.pem'),
     },
     hmr: {
-      overlay: false, // Disable error overlay for cleaner debugging
+      overlay: false,
     },
   },
   base: '/spaceship-dodge-game/',
   build: {
-    outDir: 'dist', // Ensure this is the output directory for your build
-    assetsDir: 'assets', // Ensure your assets are correctly referenced
+    outDir: 'dist',
+    assetsDir: 'assets'
   },
   css: {
     postcss: './postcss.config.js',

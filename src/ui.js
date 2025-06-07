@@ -89,21 +89,25 @@ export function initializeCanvas(canvas) {
   const vh = window.innerHeight;
 
   if (vw < 600) {
+    // Mobile: fixed resolution
     canvas.width = 480;
     canvas.height = 854;
+
     canvas.style.width = '100vw';
     canvas.style.height = '100vh';
     canvas.style.objectFit = 'contain';
-    canvas.style.display = 'block';
-    canvas.style.backgroundColor = 'black';
   } else {
-    canvas.width = vw * 0.9;
-    canvas.height = vh * 0.9;
-    canvas.style.width = '';
-    canvas.style.height = '';
-    canvas.style.objectFit = '';
-    canvas.style.backgroundColor = '';
+    // Desktop: match screen resolution
+    canvas.width = vw;
+    canvas.height = vh;
+
+    canvas.style.width = vw + 'px';
+    canvas.style.height = vh + 'px';
+    canvas.style.objectFit = 'contain';
   }
+
+  canvas.style.display = 'block';
+  canvas.style.backgroundColor = 'black';
 }
 
 export function quitGame() {
