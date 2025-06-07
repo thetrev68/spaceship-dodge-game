@@ -25,32 +25,33 @@ function init() {
   setOverlayDimensions(canvas);
   setCanvas(canvas);
 
+  const startEvent = 'ontouchstart' in window ? 'touchstart' : 'click';
+
+  startOverlay?.addEventListener(startEvent, async (e) => {
+    e.preventDefault();
+    if (gameState.value !== 'START') return;
+    console.log('[DEBUG] Starting game from overlay');
+
+    const m = await import('./soundManager.js');
+    try {
+      await m.unlockAudio();
+      m.startMusic();
+    } catch (err) {
+      console.warn('[WARN] Audio unlock failed on first try', err);
+    }
+
+    const stateManager = await import('./gameStateManager.js');
+    stateManager.startGame(canvas);
+    restartGameLoop();
+  }, { passive: false });
+
   if (isMobile) {
     setupMobileInput(canvas);
-
-    startOverlay?.addEventListener('touchstart', async (e) => {
-      e.preventDefault();
-      if (gameState.value !== 'START') return;
-      console.log('[DEBUG] Starting game from overlay touch');
-
-      const m = await import('./soundManager.js');
-      try {
-        await m.unlockAudio();
-        m.startMusic();
-      } catch (err) {
-        console.warn('[WARN] Audio unlock failed on first try', err);
-      }
-
-      const stateManager = await import('./gameStateManager.js');
-      stateManager.startGame(canvas);
-      restartGameLoop();
-    }, { passive: false });
 
     pauseOverlay?.addEventListener('touchstart', (e) => {
       e.preventDefault();
       if (gameState.value !== 'PAUSED') return;
       console.log('[DEBUG] Resuming game from overlay touch');
-
       gameState.value = 'PLAYING';
       showOverlay('PLAYING');
       import('./soundManager.js').then(m => m.unmuteAll());
