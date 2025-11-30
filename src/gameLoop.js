@@ -12,11 +12,10 @@ import {
   allowSpawning
 } from './state.js';
 
-import { 
-  GAME_CONFIG, 
-  LEVEL_CONFIG, 
-  POWERUP_CONFIG,
-  DEV_CONFIG 
+import {
+  GAME_CONFIG,
+  LEVEL_CONFIG,
+  POWERUP_CONFIG
 } from './constants.js';
 
 import { updatePlayer } from './player.js';
@@ -29,7 +28,6 @@ import { checkCollisions } from './collisionHandler.js';
 import { updateLevelFlow, resetLevelFlow } from './flowManager.js';
 import { renderAll } from './renderManager.js';
 import { score } from './state.js';
-import { getCanvas } from './domCache.js';
 
 let lastFrameTime = 0;
 let animationId;
@@ -58,6 +56,7 @@ export function restartGameLoop() {
   }
 }
 
+// TODO: Currently exported but only called internally - consider making private
 export function gameLoop(canvas, timestamp = 0) {
   if (timestamp - lastFrameTime < GAME_CONFIG.FRAME_DURATION) {
     animationId = requestAnimationFrame((t) => gameLoop(canvas, t));
@@ -82,7 +81,7 @@ export function gameLoop(canvas, timestamp = 0) {
   updatePlayer();
   // Pass reactive allowSpawning.value here to gate spawning
   updateObstacles(canvas.width, canvas.height, obstacleSpawnInterval, lastObstacleSpawnTime, allowSpawning.value);
-  updateBullets(canvas.height);
+  updateBullets();
   updatePowerups(canvas.height);
   updateScorePopups();
 

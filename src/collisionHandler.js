@@ -7,9 +7,7 @@
 */
 
 import { player, bullets, obstacles, powerUps, score } from './state.js';
-import { destroyObstacle } from './asteroid.js'; // assumes modular export
-import { addScorePopup } from './scorePopups.js';
-import { playSound } from './soundManager.js';
+import { destroyObstacle } from './asteroid.js';
 
 // Circle-rectangle collision helper
 function circleRectCollision(cx, cy, radius, rx, ry, rw, rh) {

@@ -34,18 +34,6 @@ export const allowSpawning = reactive({ value: true });
 export const bullets = [];
 export const obstacles = [];
 
-// 🌠 Asteroid constants
-export const ASTEROID_LEVEL_SIZES = [35, 22, 12];
-export const ASTEROID_SCORE_VALUES = [20, 50, 100];
-export const BASE_OBSTACLE_MIN_SPEED = 0.8;
-export const BASE_OBSTACLE_MAX_SPEED = 2.5;
-export const SPEED_INCREASE_PER_LEVEL = 0.5;
-
-// 🔫 Bullet constants
-export const bulletSpeed = 10;
-export const bulletRadius = 3;
-export const fireRate = 100;
-
 // 💥 Power-up system
 export const powerUps = {
   doubleBlaster: { active: false, timer: 0 },
@@ -62,7 +50,3 @@ export const player = {
   dx: 0,
   dy: 0,
 };
-
-// 🪐 Spawning
-export const BASE_SPAWN_INTERVAL = isMobile ? 2400 : 1500;
-export const SPAWN_INTERVAL_DECREASE_PER_LEVEL = 70;

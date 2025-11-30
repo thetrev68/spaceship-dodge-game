@@ -14,7 +14,6 @@ import {
 } from './constants.js';
 
 import {
-    allowSpawning,
     obstacles,
     isMobile
 } from './state.js';
@@ -24,6 +23,7 @@ import { playSound } from './soundManager.js';
 
 let obstacleMinSpeed = ASTEROID_CONFIG.BASE_MIN_SPEED;
 let nextAsteroidId = 1;
+// TODO: Currently exported but only used internally - consider making private
 export const fragmentTracker = {};
 let obstacleMaxSpeed = ASTEROID_CONFIG.BASE_MAX_SPEED;
 
@@ -39,6 +39,7 @@ function easeInCubic(t) {
   return t * t * t;
 }
 
+// TODO: Currently unused - could be called from flowManager for progressive difficulty
 export function updateDifficulty(level) {
   if (level <= LEVEL_CONFIG.DIFFICULTY_SCALE_THRESHOLD) {
     const normalizedLevel = level / LEVEL_CONFIG.DIFFICULTY_SCALE_THRESHOLD;
@@ -52,6 +53,7 @@ export function updateDifficulty(level) {
   }
 }
 
+// TODO: Currently used internally only - consider making private or exposing for custom shapes
 export function generateAsteroidShape(radius, numPoints) {
   const points = [];
   const angleIncrement = (Math.PI * 2) / numPoints;
@@ -66,6 +68,7 @@ export function generateAsteroidShape(radius, numPoints) {
   return points;
 }
 
+// TODO: Used internally by updateObstacles - consider making private
 export function createObstacle(x, y, levelIndex, initialDx = 0, initialDy = 0, parentId = null) {
   const radius = ASTEROID_CONFIG.LEVEL_SIZES[levelIndex];
   const scoreValue = ASTEROID_CONFIG.SCORE_VALUES[levelIndex];
@@ -81,7 +84,7 @@ export function createObstacle(x, y, levelIndex, initialDx = 0, initialDy = 0, p
   if (typeof fragmentTracker[assignedParentId] === 'undefined') {
     fragmentTracker[assignedParentId] = 0;
   }
-  if (levelIndex === ASTEROID_LEVEL_SIZES.length - 1) {
+  if (levelIndex === ASTEROID_CONFIG.LEVEL_SIZES.length - 1) {
     fragmentTracker[assignedParentId]++;
   }
 

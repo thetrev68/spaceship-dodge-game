@@ -29,7 +29,7 @@ Object.entries(sounds).forEach(([key, audio]) => {
 });
 
 export function forceAudioUnlock() {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     try {
       const silent = new Audio(SILENT_MP3);
       silent.volume = 0;
@@ -115,7 +115,7 @@ export function unmuteAll() {
 
 function applyVolumeAndMute() {
   console.log('[DEBUG] applyVolumeAndMute', { isMuted, currentVolume });
-  Object.entries(sounds).forEach(([key, audio]) => {
+  Object.entries(sounds).forEach(([_key, audio]) => {
     if (!audio) return;
     audio.volume = isMuted ? 0 : currentVolume;
     audio.muted = isMuted;
@@ -145,4 +145,5 @@ export function playSound(name) {
     });
 }
 
+// TODO: Currently unused - exported for potential external sound manipulation
 export { sounds };

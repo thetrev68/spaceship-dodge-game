@@ -6,7 +6,6 @@ import { setupInput } from './inputManager.js';
 import { setupMobileInput } from './mobileControls.js';
 import { gameState, isMobile } from './state.js';
 import * as soundManager from './soundManager.js';
-import { forceAudioUnlock } from './soundManager.js';
 
 let audioUnlockAttempted = false;
 

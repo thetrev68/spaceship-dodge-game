@@ -33,7 +33,6 @@ export function resetLevelFlow() {
 // onLevelUpCallback is a function to call when level actually advances
 export function updateLevelFlow(onLevelUpCallback) {
     const now = Date.now(); // current time in milliseconds
-    const elapsed = (now - levelStartTime.value) / 1000; // how many seconds have passed in this level
 
     // Log key state variables for debugging
     // console.log('[FlowManager] elapsed:', elapsed.toFixed(2), 'seconds');
@@ -90,7 +89,7 @@ export function updateLevelFlow(onLevelUpCallback) {
     }
 }
 
-// Function to check if spawning is currently allowed
+// TODO: Currently unused - spawning check done via allowSpawning.value directly
 export function canSpawnAsteroids() {
     return allowSpawning.value;
 }

@@ -11,6 +11,7 @@ export const GAME_CONFIG = {
 };
 
 // 🚀 Player Configuration
+// TODO: Currently unused - consider using for player initialization or settings UI
 export const PLAYER_CONFIG = {
   WIDTH: 30,
   HEIGHT: 45,
@@ -61,6 +62,7 @@ export const POWERUP_CONFIG = {
 };
 
 // 🎵 Audio Configuration
+// TODO: Currently unused - consider using in soundManager.js for volume/loop settings
 export const AUDIO_CONFIG = {
   BASE_VOLUME: 0.4,
   BGM_LOOP: true,
@@ -68,6 +70,7 @@ export const AUDIO_CONFIG = {
 };
 
 // 🎨 Visual Configuration
+// TODO: Currently unused - consider using in renderManager.js for consistent styling
 export const VISUAL_CONFIG = {
   COLORS: {
     PLAYER: '#00ffff',
@@ -110,6 +113,7 @@ export const MOBILE_CONFIG = {
 };
 
 // 🏆 Scoring Configuration
+// TODO: Currently unused - consider using in scorePopups.js for duration/offset
 export const SCORING_CONFIG = {
   POPUP_DURATION: 2000, // milliseconds
   POPUP_OFFSET_Y: -10,
@@ -126,6 +130,7 @@ export const LEVEL_CONFIG = {
 };
 
 // 🔧 Development Configuration
+// TODO: Currently unused - could be used for debug logging and performance monitoring
 export const DEV_CONFIG = {
   DEBUG_MODE: false, // Set to true for debug output
   CONSOLE_PREFIX: '[Spaceship Dodge]',
