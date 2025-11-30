@@ -103,7 +103,7 @@ function init() {
     startButton?.addEventListener('click', () => {
       if (gameState.value !== 'START') return;
       import('./soundManager.js').then(m => {
-        m.unlockAudio().then(() => {
+        m.forceAudioUnlock().then(() => {
           m.startMusic();
           startGame(canvas);
           restartGameLoop();
