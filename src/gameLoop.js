@@ -43,7 +43,7 @@ function getSpawnInterval(level) {
   return Math.max(interval, LEVEL_CONFIG.MIN_SPAWN_INTERVAL);
 }
 
-let obstacleSpawnInterval = MIN_SPAWN_INTERVAL;
+let obstacleSpawnInterval = LEVEL_CONFIG.MIN_SPAWN_INTERVAL;
 
 export function setCanvas(canvas) {
   gameCanvas = canvas;
@@ -59,7 +59,7 @@ export function restartGameLoop() {
 }
 
 export function gameLoop(canvas, timestamp = 0) {
-  if (timestamp - lastFrameTime < FRAME_DURATION) {
+  if (timestamp - lastFrameTime < GAME_CONFIG.FRAME_DURATION) {
     animationId = requestAnimationFrame((t) => gameLoop(canvas, t));
     return;
   }
@@ -74,7 +74,7 @@ export function gameLoop(canvas, timestamp = 0) {
 
   obstacleSpawnInterval = getSpawnInterval(gameLevel.value);
 
-  if (!lastPowerupSpawnTime || timestamp - lastPowerupSpawnTime > POWERUP_SPAWN_INTERVAL) {
+  if (!lastPowerupSpawnTime || timestamp - lastPowerupSpawnTime > POWERUP_CONFIG.SPAWN_INTERVAL) {
     spawnPowerup(canvas.width);
     lastPowerupSpawnTime = timestamp;
   }
