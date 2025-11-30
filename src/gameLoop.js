@@ -15,7 +15,8 @@ import {
 import {
   GAME_CONFIG,
   LEVEL_CONFIG,
-  POWERUP_CONFIG
+  POWERUP_CONFIG,
+  ASTEROID_CONFIG
 } from './constants.js';
 
 import { updatePlayer } from './player.js';
@@ -38,10 +39,10 @@ let lastPowerupSpawnTime = 0;
 function getSpawnInterval(level) {
   const baseInterval = LEVEL_CONFIG.BASE_SPAWN_INTERVAL_DESKTOP;
   const interval = baseInterval - level * LEVEL_CONFIG.SPAWN_INTERVAL_DECREASE_PER_LEVEL;
-  return Math.max(interval, LEVEL_CONFIG.MIN_SPAWN_INTERVAL);
+  return Math.max(interval, ASTEROID_CONFIG.MIN_SPAWN_INTERVAL);
 }
 
-let obstacleSpawnInterval = LEVEL_CONFIG.MIN_SPAWN_INTERVAL;
+let obstacleSpawnInterval = ASTEROID_CONFIG.MIN_SPAWN_INTERVAL;
 
 export function setCanvas(canvas) {
   gameCanvas = canvas;
