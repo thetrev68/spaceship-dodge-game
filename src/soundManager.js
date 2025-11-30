@@ -34,6 +34,13 @@ export function forceAudioUnlock() {
       const silent = new Audio(SILENT_MP3);
       silent.volume = 0;
 
+      // Add error handling for audio loading
+      silent.addEventListener('error', (err) => {
+        console.warn('[WARN] Silent audio failed to load, but continuing:', err);
+        isAudioUnlocked = true; // Still consider unlocked to allow other audio
+        resolve();
+      }, { once: true });
+
       const play = silent.play();
       if (play && typeof play.then === 'function') {
         play.then(() => {
@@ -43,14 +50,19 @@ export function forceAudioUnlock() {
           console.log('[DEBUG] Silent audio unlocked the audio context');
           resolve();
         }).catch((err) => {
-          console.error('[ERROR] Silent audio unlock failed:', err);
-          reject(err);
+          console.warn('[WARN] Silent audio unlock failed, but continuing:', err);
+          isAudioUnlocked = true; // Still consider unlocked to allow other audio
+          resolve(); // Resolve anyway to prevent blocking
         });
       } else {
-        reject(new Error('Silent audio play() did not return a promise'));
+        console.warn('[WARN] Silent audio play() did not return a promise');
+        isAudioUnlocked = true;
+        resolve();
       }
     } catch (err) {
-      reject(err);
+      console.warn('[WARN] Audio unlock exception, but continuing:', err);
+      isAudioUnlocked = true;
+      resolve(); // Resolve anyway to prevent blocking
     }
   });
 }

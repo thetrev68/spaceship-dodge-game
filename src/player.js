@@ -25,6 +25,10 @@ export function updatePlayer() {
 
     // Keep player within canvas bounds
     const canvas = document.getElementById('gameCanvas');
+    if (!canvas) {
+        console.warn('[WARN] Game canvas not found');
+        return;
+    }
     player.x = Math.max(0, Math.min(player.x, canvas.width - player.width));
     player.y = Math.max(0, Math.min(player.y, canvas.height - player.height));
 }

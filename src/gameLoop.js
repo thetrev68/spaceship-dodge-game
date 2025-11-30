@@ -2,16 +2,22 @@
 /*
   Complete game loop module with proper obstacle spawn timing,
   canvas sizing, and update/draw orchestration using renderManager.
+  Updated: 2025-11-30 for performance improvements and error handling
 */
 
 import { 
   gameState, 
   lastObstacleSpawnTime, 
-  BASE_SPAWN_INTERVAL, 
-  SPAWN_INTERVAL_DECREASE_PER_LEVEL, 
   gameLevel,
   allowSpawning
 } from './state.js';
+
+import { 
+  GAME_CONFIG, 
+  LEVEL_CONFIG, 
+  POWERUP_CONFIG,
+  DEV_CONFIG 
+} from './constants.js';
 
 import { updatePlayer } from './player.js';
 import { updateObstacles } from './asteroid.js';
@@ -23,21 +29,18 @@ import { checkCollisions } from './collisionHandler.js';
 import { updateLevelFlow, resetLevelFlow } from './flowManager.js';
 import { renderAll } from './renderManager.js';
 import { score } from './state.js';
-
-const TARGET_FPS = 60;
-const FRAME_DURATION = 1000 / TARGET_FPS;
+import { getCanvas } from './domCache.js';
 
 let lastFrameTime = 0;
 let animationId;
 let gameCanvas;
 let ctx;
 let lastPowerupSpawnTime = 0;
-const POWERUP_SPAWN_INTERVAL = 10000; // 10 seconds
-const MIN_SPAWN_INTERVAL = 300;
 
 function getSpawnInterval(level) {
-  const interval = BASE_SPAWN_INTERVAL - level * SPAWN_INTERVAL_DECREASE_PER_LEVEL;
-  return Math.max(interval, MIN_SPAWN_INTERVAL);
+  const baseInterval = LEVEL_CONFIG.BASE_SPAWN_INTERVAL_DESKTOP;
+  const interval = baseInterval - level * LEVEL_CONFIG.SPAWN_INTERVAL_DECREASE_PER_LEVEL;
+  return Math.max(interval, LEVEL_CONFIG.MIN_SPAWN_INTERVAL);
 }
 
 let obstacleSpawnInterval = MIN_SPAWN_INTERVAL;
