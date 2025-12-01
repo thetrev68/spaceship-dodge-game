@@ -102,23 +102,32 @@ function checkBulletObstacleCollisions() {
   spatialGrid.clear();
   obstacles.forEach(obstacle => spatialGrid.insertObstacle(obstacle));
 
-  // Use Set to track indices to remove to avoid array mutation issues
+  // Calculate safe search radius based on max obstacle size
+  const maxObstacleRadius = Math.max(...obstacles.map(o => o.radius), 0);
+  const searchRadius = bullets[0]?.radius ? bullets[0].radius + maxObstacleRadius : 100;
+
+  // Track destroyed obstacles by identity to avoid double-processing
+  const destroyedObstacles = new Set();
   const bulletsToRemove = new Set();
-  const obstaclesToRemove = new Set();
 
   for (let i = bullets.length - 1; i >= 0; i--) {
     const bullet = bullets[i];
-    const nearbyObstacles = spatialGrid.getNearbyObstacles(bullet.x, bullet.y, bullet.radius + 50);
-    
+    const nearbyObstacles = spatialGrid.getNearbyObstacles(bullet.x, bullet.y, searchRadius);
+
     for (const obstacle of nearbyObstacles) {
+      // Skip if already destroyed this frame
+      if (destroyedObstacles.has(obstacle)) {
+        continue;
+      }
+
       const dx = bullet.x - (obstacle.x + obstacle.radius);
       const dy = bullet.y - (obstacle.y + obstacle.radius);
       const distance = Math.sqrt(dx * dx + dy * dy);
 
       if (distance < bullet.radius + obstacle.radius) {
         bulletsToRemove.add(i);
-        obstaclesToRemove.add(obstacles.indexOf(obstacle));
-        destroyObstacle(obstacle, score);
+        destroyedObstacles.add(obstacle);
+        destroyObstacle(obstacle, score); // Handles obstacle removal from array
         break; // Exit inner loop to avoid multiple collisions for same bullet
       }
     }
@@ -129,14 +138,6 @@ function checkBulletObstacleCollisions() {
   bulletsArray.forEach(index => {
     if (index >= 0 && index < bullets.length) {
       bullets.splice(index, 1);
-    }
-  });
-
-  // Remove obstacles in reverse order to maintain correct indices
-  const obstaclesArray = Array.from(obstaclesToRemove).sort((a, b) => b - a);
-  obstaclesArray.forEach(index => {
-    if (index >= 0 && index < obstacles.length) {
-      obstacles.splice(index, 1);
     }
   });
 }
