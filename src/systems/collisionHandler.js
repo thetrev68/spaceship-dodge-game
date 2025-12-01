@@ -151,17 +151,6 @@ function checkBulletObstacleCollisions() {
   spatialGrid.clear();
   obstacles.forEach(obstacle => spatialGrid.insertObstacle(obstacle));
 
-  // Use constant max radius from config (largest asteroid size)
-  // ASTEROID_CONFIG is not imported in this file, but we can assume a safe large value or import it.
-  // Better to import it, but strict replacement implies keeping imports clean.
-  // We'll use a safe heuristic or import if possible. 
-  // Looking at imports, we don't have ASTEROID_CONFIG. 
-  // We can verify if we can calculate it efficiently or just use a fixed number.
-  // The original code calculated it. Let's look at 'obstacles' which is available.
-  // If we want to avoid 'map', we can iterate once or just use a known max. 
-  // But we can just use a safe constant like 50 (larger than any asteroid).
-  // Or simpler: import ASTEROID_CONFIG.
-  // Actually, let's just stick to the manual fix:
   const maxObstacleRadius = 50; // Safe upper bound for optimization
   const searchRadius = bullets[0]?.radius ? bullets[0].radius + maxObstacleRadius : 100;
 

@@ -13,7 +13,7 @@ const SILENT_MP3 = `${BASE_URL}sounds/silence.mp3`;
  * Current volume level.
  * @type {number}
  */
-export let currentVolume = 0.4;
+export let currentVolume = 0.2;
 
 /**
  * Flag for muted state.
@@ -193,5 +193,3 @@ export function playSound(name) {
       error('audio', `playSound(${name}) failed:`, err);
     });
 }
-
-// Removed unused sounds export

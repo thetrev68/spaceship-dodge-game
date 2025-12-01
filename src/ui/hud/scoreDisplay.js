@@ -1,9 +1,6 @@
 /**
  * @fileoverview Score and HUD display.
  * Created: 2025-05-28
- * Author: ChatGPT + Trevor Clark
- * Updates:
- *     Added display of player lives.
  */
 
 import { score, gameLevel, playerLives } from '@core/state.js';

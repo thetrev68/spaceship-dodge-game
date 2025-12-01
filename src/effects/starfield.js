@@ -1,10 +1,4 @@
 /**
- * @fileoverview Starfield effect for background animation (disabled on mobile).
- */
-
-import { isMobile } from '@utils/platform.js';
-
-/**
  * @fileoverview Starfield effect for background animation.
  * Optimized for performance with batch rendering and adaptive star counts.
  */
