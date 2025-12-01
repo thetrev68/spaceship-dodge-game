@@ -29,23 +29,6 @@ export default [
         confirm: 'readonly',
       },
     },
-    settings: {
-      // Path aliases for import resolution (ESLint doesn't need these but good for documentation)
-      'import/resolver': {
-        alias: {
-          map: [
-            ['@core', './src/core'],
-            ['@game', './src/game'],
-            ['@entities', './src/entities'],
-            ['@systems', './src/systems'],
-            ['@input', './src/input'],
-            ['@ui', './src/ui'],
-            ['@effects', './src/effects'],
-            ['@utils', './src/utils'],
-          ],
-        },
-      },
-    },
     rules: {
       'no-unused-vars': ['warn', {
         argsIgnorePattern: '^_',
@@ -62,6 +45,7 @@ export default [
   {
     ignores: [
       'node_modules/**',
+      'build/**',
       'dist/**',
       'styles/**',
       '*.config.js',
