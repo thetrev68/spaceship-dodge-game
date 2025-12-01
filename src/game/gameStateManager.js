@@ -1,8 +1,8 @@
-// gameStateManager.js
-/*
-  Manages game start, continue, end, and player hit logic,
-  integrated with updated leveling system.
-*/
+/**
+ * @fileoverview Game state management.
+ * Manages game start, continue, end, and player hit logic,
+ * integrated with updated leveling system.
+ */
 
 import { gameState, playerLives, obstacles, score, gameLevel, powerUps } from '@core/state.js';
 import { resetLevelFlow } from '@game/flowManager.js';
@@ -13,6 +13,9 @@ import { createAudioControls } from '@ui/controls/audioControls.js';
 import { resetPlayer } from '@entities/player.js';
 import { clearAllBullets } from '@entities/bullet.js';
 
+/**
+ * Handles player hit logic.
+ */
 export function handlePlayerHit() {
   playerLives.value -= 1;
   soundManager.playSound('gameover');
@@ -28,6 +31,9 @@ export function handlePlayerHit() {
   }
 }
 
+/**
+ * Resets state for next level.
+ */
 function resetForNextLevel() {
   resetPlayer(window.innerWidth, window.innerHeight);
   clearAllBullets();
@@ -36,6 +42,10 @@ function resetForNextLevel() {
   soundManager.stopMusic();
 }
 
+/**
+ * Starts a new game.
+ * @param {HTMLCanvasElement} canvas - The game canvas.
+ */
 export function startGame(canvas) {
   gameState.value = 'PLAYING';
   score.value = 0;
@@ -61,7 +71,7 @@ export function startGame(canvas) {
 
   createAudioControls();
 
-  unmuteAll();       // Unmute audio
+  unmuteAll();
   soundManager.startMusic();
 
   // Clear the canvas explicitly
@@ -69,6 +79,9 @@ export function startGame(canvas) {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
 
+/**
+ * Continues the game after pause.
+ */
 export function continueGame() {
   gameState.value = 'PLAYING';
   resetLevelFlow();

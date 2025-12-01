@@ -1,7 +1,7 @@
-// renderManager.js
-/*
-  Optimized: Centralizes all draw calls and applies shared ctx styles.
-*/
+/**
+ * @fileoverview Centralized rendering manager.
+ * Optimized: Centralizes all draw calls and applies shared ctx styles.
+ */
 
 import { drawPlayer } from '@entities/player.js';
 import { drawObstacles } from '@entities/asteroid.js';
@@ -12,6 +12,10 @@ import { drawScore } from '@ui/hud/scoreDisplay.js';
 import { gameState } from '@core/state.js';
 import { drawPowerupTimers } from '@ui/hud/powerupHUD.js';
 
+/**
+ * Renders all game elements.
+ * @param {CanvasRenderingContext2D} ctx - Canvas context.
+ */
 export function renderAll(ctx) {
   if (gameState.value !== 'PLAYING') return;
 

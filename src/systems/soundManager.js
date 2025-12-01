@@ -1,4 +1,6 @@
-// soundManager.js
+/**
+ * @fileoverview Audio and sound management system.
+ */
 
 import { debug, info, warn, error } from '@core/logger.js';
 
@@ -7,10 +9,28 @@ debug('audio', 'soundManager BASE_URL', BASE_URL);
 
 const SILENT_MP3 = `${BASE_URL}sounds/silence.mp3`;
 
+/**
+ * Current volume level.
+ * @type {number}
+ */
 export let currentVolume = 0.4;
+
+/**
+ * Flag for muted state.
+ * @type {boolean}
+ */
 let isMuted = false;
+
+/**
+ * Flag for audio unlock state.
+ * @type {boolean}
+ */
 let isAudioUnlocked = false;
 
+/**
+ * Sound effects and music.
+ * @constant {Object<string, Audio|null>}
+ */
 const sounds = {
   bgm: null, // Will be created dynamically
   fire: new Audio(`${BASE_URL}sounds/fire.mp3`),
@@ -30,6 +50,10 @@ Object.entries(sounds).forEach(([key, audio]) => {
   audio.load();
 });
 
+/**
+ * Forces audio unlock by playing a silent sound.
+ * @returns {Promise} Promise that resolves when unlock is attempted.
+ */
 export function forceAudioUnlock() {
   return new Promise((resolve) => {
     try {
@@ -69,6 +93,9 @@ export function forceAudioUnlock() {
   });
 }
 
+/**
+ * Starts background music playback.
+ */
 export function startMusic() {
   debug('audio', 'startMusic called');
 
@@ -96,18 +123,27 @@ export function startMusic() {
     });
 }
 
+/**
+ * Stops background music.
+ */
 export function stopMusic() {
   if (!sounds.bgm) return;
   sounds.bgm.pause();
   sounds.bgm.currentTime = 0;
 }
 
+/**
+ * Mutes all audio.
+ */
 export function muteAll() {
   debug('audio', 'muteAll called');
   isMuted = true;
   applyVolumeAndMute();
 }
 
+/**
+ * Unmutes all audio and starts music.
+ */
 export function unmuteAll() {
   debug('audio', 'unmuteAll called');
   isMuted = false;
@@ -115,6 +151,9 @@ export function unmuteAll() {
   startMusic();
 }
 
+/**
+ * Applies volume and mute settings to all sounds.
+ */
 function applyVolumeAndMute() {
   debug('audio', 'applyVolumeAndMute', { isMuted, currentVolume });
   Object.entries(sounds).forEach(([_key, audio]) => {
@@ -124,12 +163,20 @@ function applyVolumeAndMute() {
   });
 }
 
+/**
+ * Sets the volume level.
+ * @param {number} val - Volume value (0-1).
+ */
 export function setVolume(val) {
   currentVolume = val;
   debug('audio', 'setVolume', { currentVolume: val });
   if (!isMuted) applyVolumeAndMute();
 }
 
+/**
+ * Plays a sound effect.
+ * @param {string} name - Sound name.
+ */
 export function playSound(name) {
   if (!isAudioUnlocked || isMuted || !sounds[name]) return;
 

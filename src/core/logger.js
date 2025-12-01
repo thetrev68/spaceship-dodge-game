@@ -1,10 +1,12 @@
 /**
- * logger.js
- * Centralized debug logging utility with configurable levels and categories
+ * @fileoverview Centralized debug logging utility with configurable levels and categories.
  * Created: 2025-11-30
  */
 
-// Log levels
+/**
+ * Log levels enumeration.
+ * @enum {number}
+ */
 const LogLevel = {
   DEBUG: 0,
   INFO: 1,
@@ -32,7 +34,10 @@ const config = {
   colors: true, // Use console colors (browser-only)
 };
 
-// Color codes for browser console
+/**
+ * Color codes for browser console.
+ * @constant {Object<string, string>}
+ */
 const colors = {
   DEBUG: '#888',
   INFO: '#0af',
@@ -49,7 +54,8 @@ const colors = {
 };
 
 /**
- * Format timestamp for log output
+ * Format timestamp for log output.
+ * @returns {string} Formatted timestamp.
  */
 function getTimestamp() {
   const now = new Date();
@@ -57,7 +63,11 @@ function getTimestamp() {
 }
 
 /**
- * Core logging function
+ * Core logging function.
+ * @param {number} level - Log level.
+ * @param {string} [category] - Log category.
+ * @param {string} message - Log message.
+ * @param {...*} args - Additional arguments.
  */
 function log(level, category, message, ...args) {
   // Check if logging is enabled
@@ -94,43 +104,62 @@ function log(level, category, message, ...args) {
 }
 
 /**
- * Public API - Debug level
+ * Public API - Debug level.
+ * @param {string} category - Log category.
+ * @param {string} message - Log message.
+ * @param {...*} args - Additional arguments.
  */
 export function debug(category, message, ...args) {
   log(LogLevel.DEBUG, category, message, ...args);
 }
 
 /**
- * Public API - Info level
+ * Public API - Info level.
+ * @param {string} category - Log category.
+ * @param {string} message - Log message.
+ * @param {...*} args - Additional arguments.
  */
 export function info(category, message, ...args) {
   log(LogLevel.INFO, category, message, ...args);
 }
 
 /**
- * Public API - Warning level
+ * Public API - Warning level.
+ * @param {string} category - Log category.
+ * @param {string} message - Log message.
+ * @param {...*} args - Additional arguments.
  */
 export function warn(category, message, ...args) {
   log(LogLevel.WARN, category, message, ...args);
 }
 
 /**
- * Public API - Error level
+ * Public API - Error level.
+ * @param {string} category - Log category.
+ * @param {string} message - Log message.
+ * @param {...*} args - Additional arguments.
  */
 export function error(category, message, ...args) {
   log(LogLevel.ERROR, category, message, ...args);
 }
 
 /**
- * Configuration helpers
+ * Configuration helpers.
+ * @namespace
  */
 export const logger = {
-  // Enable/disable logging globally
+  /**
+   * Enable/disable logging globally.
+   * @param {boolean} enabled - Whether to enable logging.
+   */
   setEnabled(enabled) {
     config.enabled = enabled;
   },
 
-  // Set minimum log level
+  /**
+   * Set minimum log level.
+   * @param {number|string} level - Log level (number or string).
+   */
   setLevel(level) {
     if (typeof level === 'string') {
       config.level = LogLevel[level.toUpperCase()] ?? LogLevel.DEBUG;
@@ -139,27 +168,42 @@ export const logger = {
     }
   },
 
-  // Enable/disable specific category
+  /**
+   * Enable/disable specific category.
+   * @param {string} category - Category name.
+   * @param {boolean} enabled - Whether to enable the category.
+   */
   setCategory(category, enabled) {
     config.categories[category] = enabled;
   },
 
-  // Enable/disable timestamps
+  /**
+   * Enable/disable timestamps.
+   * @param {boolean} enabled - Whether to include timestamps.
+   */
   setTimestamps(enabled) {
     config.timestamps = enabled;
   },
 
-  // Enable/disable colors
+  /**
+   * Enable/disable colors.
+   * @param {boolean} enabled - Whether to use colors.
+   */
   setColors(enabled) {
     config.colors = enabled;
   },
 
-  // Get current configuration
+  /**
+   * Get current configuration.
+   * @returns {Object} Current config copy.
+   */
   getConfig() {
     return { ...config };
   },
 
-  // Reset to defaults
+  /**
+   * Reset to defaults.
+   */
   reset() {
     config.level = LogLevel.DEBUG;
     config.enabled = true;
@@ -170,19 +214,22 @@ export const logger = {
     });
   },
 
-  // Expose log levels for external use
+  /**
+   * Log levels for external use.
+   * @constant {Object} LogLevel
+   */
   LogLevel,
 };
 
 /**
- * Quick setup for production
+ * Quick setup for production.
  */
 export function setupProduction() {
   logger.setEnabled(false);
 }
 
 /**
- * Quick setup for development
+ * Quick setup for development.
  */
 export function setupDevelopment() {
   logger.setEnabled(true);
@@ -191,15 +238,23 @@ export function setupDevelopment() {
 }
 
 /**
- * Performance timer utility
+ * Performance timer utility.
  */
 export class Timer {
+  /**
+   * @param {string} category - Log category.
+   * @param {string} label - Timer label.
+   */
   constructor(category, label) {
     this.category = category;
     this.label = label;
     this.startTime = performance.now();
   }
 
+  /**
+   * End the timer and log the duration.
+   * @returns {number} Duration in milliseconds.
+   */
   end() {
     const duration = performance.now() - this.startTime;
     debug(this.category, `${this.label} took ${duration.toFixed(2)}ms`);
@@ -208,7 +263,9 @@ export class Timer {
 }
 
 /**
- * Create a scoped logger for a specific category
+ * Create a scoped logger for a specific category.
+ * @param {string} category - Log category.
+ * @returns {Object} Logger object with debug, info, warn, error, timer methods.
  */
 export function createLogger(category) {
   return {

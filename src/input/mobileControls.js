@@ -1,4 +1,6 @@
-// js/mobileControls.js
+/**
+ * @fileoverview Mobile touch input controls.
+ */
 
 import { gameState } from '@core/state.js';
 import { setPlayerPosition, firePlayerBullets, getPlayerDimensions } from '@entities/player.js';
@@ -7,13 +9,46 @@ import * as soundManager from '@systems/soundManager.js';
 import { stopGameLoop } from '@game/gameLoop.js';
 import { debug, warn } from '@core/logger.js';
 
+/**
+ * Flag for active touch.
+ * @type {boolean}
+ */
 let touchActive = false;
-let touchX = 0;
-let touchY = 0;
-let canvasEl = null;
-let lastFireTime = 0;
-const fireCooldown = 250; // milliseconds
 
+/**
+ * Current touch X position.
+ * @type {number}
+ */
+let touchX = 0;
+
+/**
+ * Current touch Y position.
+ * @type {number}
+ */
+let touchY = 0;
+
+/**
+ * Canvas element reference.
+ * @type {HTMLCanvasElement|null}
+ */
+let canvasEl = null;
+
+/**
+ * Last fire time for cooldown.
+ * @type {number}
+ */
+let lastFireTime = 0;
+
+/**
+ * Fire cooldown in milliseconds.
+ * @const {number}
+ */
+const fireCooldown = 250;
+
+/**
+ * Sets up mobile touch input for the canvas.
+ * @param {HTMLCanvasElement} canvas - The game canvas.
+ */
 export function setupMobileInput(canvas) {
   canvasEl = canvas;
   debug('input', 'setupMobileInput called', { canvasId: canvas.id });
@@ -91,11 +126,13 @@ export function setupMobileInput(canvas) {
   }, { passive: false });
 }
 
+/**
+ * Updates player position to current touch position.
+ */
 function updatePlayerToTouch() {
-  const { width, height } = getPlayerDimensions(); // Get dimensions
+  const { width, height } = getPlayerDimensions();
   setPlayerPosition(
     touchX - width / 2,
     touchY - height / 2
   );
-  // player.dx and player.dy no longer needed here as setPlayerPosition handles position directly
 }
