@@ -1,7 +1,8 @@
 /*
-    asteroid.js
+    entities/asteroid.js
     Updated: 2025-06-06
     Author: ChatGPT + Trevor Clark
+    Refactored: Phase 4 (Entities)
 
     Adds object pooling to optimize asteroid memory reuse.
 */
@@ -13,18 +14,21 @@ import {
 } from '@core/constants';
 
 import { obstacles } from '@core/state';
-import { isMobile } from './utils/platform.js';
-import { randomInt, randomFloat } from './utils/mathUtils.js';
+import { isMobile } from '@utils/platform';
+import { randomInt, randomFloat } from '@utils/mathUtils';
+import { ObjectPool } from '@systems/poolManager';
 
-import { addScorePopup } from './scorePopups.js';
-import { playSound } from './soundManager.js';
+// TODO: Update these imports when modules are moved in Phase 5 & 6
+import { addScorePopup } from '../scorePopups.js';
+import { playSound } from '../soundManager.js';
 
 let obstacleMinSpeed = ASTEROID_CONFIG.BASE_MIN_SPEED;
 let nextAsteroidId = 1;
-const fragmentTracker = {}; // Made private - only used internally
+const fragmentTracker = {};
 let obstacleMaxSpeed = ASTEROID_CONFIG.BASE_MAX_SPEED;
 
-const obstaclePool = []; // ♻️ Object pool
+// Initialize object pool
+const obstaclePool = new ObjectPool(() => ({}));
 
 export let newAsteroidsSpawned = 0;
 
@@ -32,7 +36,7 @@ export function resetNewAsteroidsSpawned() {
   newAsteroidsSpawned = 0;
 }
 
-// Made private - only used internally
+// Private: Generate asteroid shape
 function generateAsteroidShape(radius, numPoints) {
   const points = [];
   const angleIncrement = (Math.PI * 2) / numPoints;
@@ -47,7 +51,7 @@ function generateAsteroidShape(radius, numPoints) {
   return points;
 }
 
-// Made private - only used internally
+// Private: Create and spawn a single obstacle
 function createObstacle(x, y, levelIndex, initialDx = 0, initialDy = 0, parentId = null) {
   const radius = ASTEROID_CONFIG.LEVEL_SIZES[levelIndex];
   const scoreValue = ASTEROID_CONFIG.SCORE_VALUES[levelIndex];
@@ -73,8 +77,10 @@ function createObstacle(x, y, levelIndex, initialDx = 0, initialDy = 0, parentId
   const rotationSpeed = randomFloat(ASTEROID_CONFIG.ROTATION_SPEED_MIN, ASTEROID_CONFIG.ROTATION_SPEED_MAX);
   const now = Date.now();
 
-  const obstacle = obstaclePool.length > 0 ? obstaclePool.pop() : {};
+  // Use the pool manager
+  const obstacle = obstaclePool.acquire();
 
+  // Reset properties
   Object.assign(obstacle, {
     x,
     y,
@@ -120,7 +126,7 @@ export function updateObstacles(canvasWidth, canvasHeight, spawnInterval, lastSp
 
     if (outOfBounds || tooOld) {
       const [removed] = obstacles.splice(i, 1);
-      obstaclePool.push(removed); // ♻️ Return to pool
+      obstaclePool.release(removed);
       i--;
     }
   }
@@ -158,7 +164,7 @@ export function destroyObstacle(obstacle, scoreRef) {
   if (idx === -1) return;
 
   obstacles.splice(idx, 1);
-  obstaclePool.push(obstacle); // ♻️ Return to pool
+  obstaclePool.release(obstacle);
   playSound('break');
 
   if (obstacle.level < ASTEROID_CONFIG.LEVEL_SIZES.length - 1) {

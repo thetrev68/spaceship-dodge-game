@@ -6,37 +6,61 @@
         Added pulsing thruster effect.
         Added double blaster firing support.
         Added shield visual effect.
+        Refactored with public mutation API (Phase 4)
 */
 
 import { player, gameState, powerUps } from '@core/state';
-import { fireBullet } from './bullet.js';
+import { fireBullet } from '@entities/bullet';
 import { warn } from '@core/logger';
 
-export function updatePlayer() {
-  if (gameState.value !== 'PLAYING') return;
-
-  if (player.overridePosition) {
-    player.x = player.overridePosition.x;
-    player.y = player.overridePosition.y;
-    player.overridePosition = null;
-  } else {
-    player.x += player.dx;
-    player.y += player.dy;
-  }
-
-    // Keep player within canvas bounds
+// Private helper: clamp player position to canvas bounds
+function clampToCanvas() {
     const canvas = document.getElementById('gameCanvas');
     if (!canvas) {
-        warn('game', 'Game canvas not found');
+        warn('player', 'Game canvas not found');
         return;
     }
     player.x = Math.max(0, Math.min(player.x, canvas.width - player.width));
     player.y = Math.max(0, Math.min(player.y, canvas.height - player.height));
 }
 
+// Public API: Move player by delta values
+export function movePlayer(dx, dy) {
+    player.x += dx;
+    player.y += dy;
+    clampToCanvas();
+}
+
+// Public API: Set player position directly (for touch controls)
+export function setPlayerPosition(x, y) {
+    player.x = x;
+    player.y = y;
+    clampToCanvas();
+}
+
+// Public API: Reset player to initial position
+export function resetPlayer(canvasWidth, canvasHeight) {
+    player.x = canvasWidth / 2 - player.width / 2;
+    player.y = canvasHeight - player.height - 50;
+    player.dx = 0;
+    player.dy = 0;
+    player.overridePosition = null;
+}
+
+export function updatePlayer() {
+  if (gameState.value !== 'PLAYING') return;
+
+  if (player.overridePosition) {
+    setPlayerPosition(player.overridePosition.x, player.overridePosition.y);
+    player.overridePosition = null;
+  } else {
+    movePlayer(player.dx, player.dy);
+  }
+}
+
 export function drawPlayer(ctx) {
     if (gameState.value !== 'PLAYING') return;
-    
+
     // Draw shield glow if active
     if (powerUps.shield.active) {
         ctx.save();
@@ -128,6 +152,23 @@ export function drawPlayer(ctx) {
     ctx.lineTo(flameX, engineBottomY + flameRadius * 3);
     ctx.closePath();
     ctx.fill();
+}
+
+export function getPlayerDimensions() {
+    return { width: player.width, height: player.height };
+}
+
+export function getPlayerSpeed() {
+    return player.speed;
+}
+
+export function getPlayerVelocity() {
+    return { dx: player.dx, dy: player.dy };
+}
+
+export function setPlayerMovement(dx, dy) {
+    player.dx = dx;
+    player.dy = dy;
 }
 
 // Fire bullets with double blaster power-up support

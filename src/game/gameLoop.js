@@ -19,11 +19,10 @@ import {
   ASTEROID_CONFIG
 } from '@core/constants';
 
-import { updatePlayer } from '../player.js';
-import { updateObstacles } from '../asteroid.js';
-import * as asteroid from '../asteroid.js';
-import { updateBullets } from '../bullet.js';
-import { updatePowerups, spawnPowerup } from '../powerups.js';
+import { updatePlayer } from '@entities/player';
+import { updateObstacles, resetNewAsteroidsSpawned } from '@entities/asteroid';
+import { updateBullets } from '@entities/bullet';
+import { updatePowerups, spawnPowerup } from '@entities/powerup';
 import { updateScorePopups } from '../scorePopups.js';
 import { checkCollisions } from '../collisionHandler.js';
 import { updateLevelFlow, resetLevelFlow } from './flowManager.js';
@@ -93,7 +92,7 @@ export function gameLoop(canvas, timestamp = 0) {
 
   updateLevelFlow(() => {
     // Reset spawn count and level flow on level up
-    asteroid.resetNewAsteroidsSpawned();
+    resetNewAsteroidsSpawned();
     resetLevelFlow();
 
     showOverlay('LEVEL_TRANSITION', score.value, gameLevel.value);

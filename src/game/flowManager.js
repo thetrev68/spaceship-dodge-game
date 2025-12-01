@@ -11,7 +11,7 @@
 */
 
 import { allowSpawning, gameLevel, gameState, levelStartTime, bullets, obstacles } from '@core/state';
-import { newAsteroidsSpawned } from '../asteroid.js';
+import { newAsteroidsSpawned } from '@entities/asteroid';
 import { playSound, stopMusic } from '../soundManager.js';
 
 // Variables to keep track of spawning permission and level up status

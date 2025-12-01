@@ -1,7 +1,7 @@
 // js/mobileControls.js
 
-import { gameState, player } from '@core/state';
-import { firePlayerBullets } from './player.js';
+import { gameState } from '@core/state';
+import { setPlayerPosition, firePlayerBullets, getPlayerDimensions } from '@entities/player';
 import { showOverlay } from './ui.js';
 import * as soundManager from './soundManager.js';
 import { stopGameLoop } from '@game/gameLoop';
@@ -93,13 +93,11 @@ canvas.addEventListener('touchmove', (e) => {
   }
 
 function updatePlayerToTouch() {
-  // Provide override position for main game loop to apply
-  player.overridePosition = {
-    x: touchX - player.width / 2,
-    y: touchY - player.height / 2
-  };
-  player.dx = 0;
-  player.dy = 0;
-
+  const { width, height } = getPlayerDimensions(); // Get dimensions
+  setPlayerPosition(
+    touchX - width / 2,
+    touchY - height / 2
+  );
+  // player.dx and player.dy no longer needed here as setPlayerPosition handles position directly
   // console.log('[DEBUG] player.overridePosition set', player.overridePosition);
 }

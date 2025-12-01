@@ -1,36 +1,51 @@
 /*
-    powerups.js
-    Optimized: performance-aware power-up visuals and updates
+    entities/powerup.js
+    Updated: 2025-06-06
+    Author: ChatGPT + Trevor Clark
+    Refactored: Phase 4 (Entities)
+
+    Adds object pooling to optimize power-up memory reuse.
 */
 
 import { powerUps, player } from '@core/state';
-import { isMobile } from './utils/platform.js';
-import { addScorePopup } from './scorePopups.js';
+import { isMobile } from '@utils/platform';
+import { ObjectPool } from '@systems/poolManager';
 
-// Made private - only used internally
+// TODO: Update these imports when modules are moved in Phase 6
+import { addScorePopup } from '../scorePopups.js';
+
 const POWERUP_TYPES = {
   DOUBLE_BLASTER: 'doubleBlaster',
   SHIELD: 'shield',
 };
 
 const powerupSize = 50;
-const powerups = [];
+const activePowerups = []; // Renamed from 'powerups' to avoid confusion with the pool
+
+// Initialize object pool for powerups
+const powerupPool = new ObjectPool(() => ({
+  x: 0, y: 0, size: powerupSize, type: null, dy: 0
+}));
+
 
 export function spawnPowerup(canvasWidth) {
   const x = Math.random() * (canvasWidth - powerupSize);
   const y = -powerupSize;
   const type = Math.random() < 0.5 ? POWERUP_TYPES.DOUBLE_BLASTER : POWERUP_TYPES.SHIELD;
 
-  powerups.push({ x, y, size: powerupSize, type, dy: 1.5 });
+  const p = powerupPool.acquire();
+  Object.assign(p, { x, y, size: powerupSize, type, dy: 1.5 });
+  activePowerups.push(p);
 }
 
 export function updatePowerups(canvasHeight) {
-  for (let i = powerups.length - 1; i >= 0; i--) {
-    const p = powerups[i];
+  for (let i = activePowerups.length - 1; i >= 0; i--) {
+    const p = activePowerups[i];
     p.y += p.dy;
 
     if (p.y > canvasHeight) {
-      powerups.splice(i, 1);
+      const [removed] = activePowerups.splice(i, 1);
+      powerupPool.release(removed);
       continue;
     }
 
@@ -41,7 +56,8 @@ export function updatePowerups(canvasHeight) {
       player.y + player.height > p.y
     ) {
       activatePowerup(p.type);
-      powerups.splice(i, 1);
+      const [removed] = activePowerups.splice(i, 1);
+      powerupPool.release(removed);
       addScorePopup(`Power-up! ${p.type}`, player.x, player.y - 20, '#00ffff');
     }
   }
@@ -62,7 +78,7 @@ export function drawPowerups(ctx) {
   const pulse = isMobile ? 0.85 : (Math.sin(time) + 1) / 2;
   const scale = 0.75 + 0.5 * pulse;
 
-  powerups.forEach(p => {
+  activePowerups.forEach(p => {
     const cx = p.x + powerupSize / 2;
     const cy = p.y + powerupSize / 2;
     const maxRadius = powerupSize / 2;
@@ -119,7 +135,6 @@ export function drawPowerups(ctx) {
   });
 }
 
-// Made private - only called internally
 function activatePowerup(type) {
   powerUps[type].active = true;
   powerUps[type].timer = 600;

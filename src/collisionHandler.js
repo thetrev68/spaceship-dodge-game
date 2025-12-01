@@ -7,7 +7,7 @@
 */
 
 import { player, bullets, obstacles, powerUps, score } from '@core/state';
-import { destroyObstacle } from './asteroid.js';
+import { destroyObstacle } from '@entities/asteroid';
 import { handlePlayerHit } from '@game/gameStateManager';
 
 // Circle-rectangle collision helper

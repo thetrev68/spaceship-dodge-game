@@ -1,14 +1,24 @@
-// js/bullet.js
+// entities/bullet.js
+/*
+    entities/bullet.js
+    Updated: 2025-06-06
+    Author: ChatGPT + Trevor Clark
+    Refactored: Phase 4 (Entities)
+
+    Adds object pooling to optimize bullet memory reuse.
+*/
 
 import { bullets, gameState } from '@core/state';
-import { isMobile } from './utils/platform.js';
+import { isMobile } from '@utils/platform';
 import { BULLET_CONFIG } from '@core/constants';
-import { playSound } from './soundManager.js';
+import { ObjectPool } from '@systems/poolManager';
+
+// TODO: Update these imports when modules are moved in Phase 5
+import { playSound } from '../soundManager.js';
 
 const bulletSpeed = BULLET_CONFIG.SPEED;
 const bulletRadius = BULLET_CONFIG.RADIUS;
 
-const bulletPool = [];
 let lastFireSoundTime = 0;
 
 // Pre-rendered bullet sprite canvas
@@ -21,23 +31,30 @@ bctx.beginPath();
 bctx.arc(bulletRadius, bulletRadius, bulletRadius, 0, 2 * Math.PI);
 bctx.fill();
 
-function getBullet(x, y) {
-  const bullet = bulletPool.length > 0 ? bulletPool.pop() : {};
-  bullet.x = x;
-  bullet.y = y;
-  bullet.radius = bulletRadius;
-  bullet.dy = -bulletSpeed;
+// Initialize object pool for bullets
+const bulletPool = new ObjectPool(() => ({}));
+
+// Old getBullet function, now using object pool
+function acquireBullet(x, y) {
+  const bullet = bulletPool.acquire();
+  Object.assign(bullet, {
+    x,
+    y,
+    radius: bulletRadius,
+    dy: -bulletSpeed,
+  });
   return bullet;
 }
 
+// Old releaseBullet function, now using object pool
 function releaseBullet(bullet) {
-  bulletPool.push(bullet);
+  bulletPool.release(bullet);
 }
 
 export function fireBullet(x, y) {
   if (gameState.value !== 'PLAYING') return;
 
-  const bullet = getBullet(x, y);
+  const bullet = acquireBullet(x, y);
   bullets.push(bullet);
 
   // Throttle fire sound to match mobileControls.js

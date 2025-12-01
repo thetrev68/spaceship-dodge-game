@@ -5,11 +5,11 @@
   Calls player movement and firing functions.
 */
 
-import { gameState, player } from '@core/state';
+import { gameState } from '@core/state';
 import { showOverlay } from './ui.js';
 import * as soundManager from './soundManager.js';
 import { restartGameLoop } from '@game/gameLoop';
-import { firePlayerBullets } from './player.js';
+import { firePlayerBullets, getPlayerSpeed, setPlayerMovement, setPlayerPosition, getPlayerDimensions, getPlayerVelocity } from '@entities/player';
 
 let firing = false;
 let fireTimeoutId = null;
@@ -44,19 +44,19 @@ export function setupInput(canvas) {
     switch (e.key) {
       case 'ArrowUp':
       case 'w':
-        player.dy = -player.speed;
+        setPlayerMovement(getPlayerVelocity().dx, -getPlayerSpeed());
         break;
       case 'ArrowDown':
       case 's':
-        player.dy = player.speed;
+        setPlayerMovement(getPlayerVelocity().dx, getPlayerSpeed());
         break;
       case 'ArrowLeft':
       case 'a':
-        player.dx = -player.speed;
+        setPlayerMovement(-getPlayerSpeed(), getPlayerVelocity().dy);
         break;
       case 'ArrowRight':
       case 'd':
-        player.dx = player.speed;
+        setPlayerMovement(getPlayerSpeed(), getPlayerVelocity().dy);
         break;
       case ' ':
         const now = Date.now();
@@ -76,13 +76,13 @@ export function setupInput(canvas) {
       case 'w':
       case 'ArrowDown':
       case 's':
-        player.dy = 0;
+        setPlayerMovement(getPlayerVelocity().dx, 0);
         break;
       case 'ArrowLeft':
       case 'a':
       case 'ArrowRight':
       case 'd':
-        player.dx = 0;
+        setPlayerMovement(0, getPlayerVelocity().dy);
         break;
     }
   });
@@ -92,8 +92,8 @@ export function setupInput(canvas) {
     const rect = canvas.getBoundingClientRect();
     const mouseX = e.clientX - rect.left;
     const mouseY = e.clientY - rect.top;
-    player.x = mouseX - player.width / 2;
-    player.y = mouseY - player.height / 2;
+    const { width, height } = getPlayerDimensions();
+    setPlayerPosition(mouseX - width / 2, mouseY - height / 2);
   });
 
   canvas.addEventListener('mousedown', (e) => {
