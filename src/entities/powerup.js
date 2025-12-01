@@ -135,6 +135,12 @@ export function drawPowerups(ctx) {
 }
 
 function activatePowerup(type) {
+  const config = POWERUP_CONFIG[type];
+  if (!config) {
+    console.warn(`Unknown powerup type: ${type}`);
+    return;
+  }
+
   powerUps[type].active = true;
-  powerUps[type].timer = Math.round(POWERUP_CONFIG[type].DURATION / GAME_CONFIG.FRAME_DURATION);
+  powerUps[type].timer = Math.round(config.DURATION / GAME_CONFIG.FRAME_DURATION);
 }

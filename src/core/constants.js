@@ -41,11 +41,12 @@ export const ASTEROID_CONFIG = {
 };
 
 // 💥 Power-up Configuration
+// Keys mirror powerup type strings for direct lookup in entities/powerup.js
 export const POWERUP_CONFIG = {
-  DOUBLE_BLASTER: {
+  doubleBlaster: {
     DURATION: 10000, // 10 seconds
   },
-  SHIELD: {
+  shield: {
     DURATION: 5000, // 5 seconds
   },
   SPAWN_INTERVAL: 10000, // 10 seconds
