@@ -15,7 +15,7 @@
 - **DOM element validation**: Added null checks for canvas and other DOM elements
 
 ### 3. **Performance Optimizations** ✅
-- **Spatial partitioning**: Implemented spatial grid for collision detection, reducing complexity from O(n²) to O(n)
+- **Spatial partitioning**: Implemented spatial grid for collision detection, reducing average-case complexity
 - **DOM caching**: Created `domCache.js` to eliminate repeated `getElementById()` calls
 - **Optimized array operations**: Used Set-based tracking for safe element removal during collision detection
 
