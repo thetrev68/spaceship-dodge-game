@@ -1,0 +1,72 @@
+spaceship-dodge-game/
+├── .nojekyll/
+├── assets/
+├── src/
+│   ├── core/
+│   │   ├── constants.js (65 lines)
+│   │   ├── logger.js (200 lines)
+│   │   ├── main.js (101 lines)
+│   │   └── state.js (42 lines)
+│   ├── effects/
+│   │   └── starfield.js (44 lines)
+│   ├── entities/
+│   │   ├── asteroid.js (172 lines)
+│   │   ├── bullet.js (70 lines)
+│   │   ├── player.js (157 lines)
+│   │   └── powerup.js (118 lines)
+│   ├── game/
+│   │   ├── flowManager.js (76 lines)
+│   │   ├── gameLoop.js (89 lines)
+│   │   └── gameStateManager.js (64 lines)
+│   ├── input/
+│   │   ├── inputManager.js (132 lines)
+│   │   └── mobileControls.js (87 lines)
+│   ├── systems/
+│   │   ├── collisionHandler.js (135 lines)
+│   │   ├── poolManager.js (37 lines)
+│   │   ├── renderManager.js (28 lines)
+│   │   └── soundManager.js (127 lines)
+│   ├── ui/
+│   │   ├── controls/
+│   │   │   └── audioControls.js (46 lines)
+│   │   ├── hud/
+│   │   │   ├── powerupHUD.js (23 lines)
+│   │   │   ├── scoreDisplay.js (16 lines)
+│   │   │   └── scorePopups.js (40 lines)
+│   │   └── overlays/
+│   │       └── overlayManager.js (97 lines)
+│   ├── utils/
+│   │   ├── canvasUtils.js (89 lines)
+│   │   ├── mathUtils.js (52 lines)
+│   │   └── platform.js (35 lines)
+│   └── javascript.svg
+├── styles/
+│   ├── main-tailwind.css (100 lines)
+│   └── main.css (90 lines)
+├── .gitattributes
+├── CLAUDE.md
+├── FOLDER_STRUCTURE.md
+├── Gemini_Rec.md
+├── index.html (101 lines)
+├── jsconfig.json
+├── localhost+2-key.pem
+├── localhost+2.pem
+├── LOGGER_USAGE.md
+├── postcss.config.js (6 lines)
+├── README.md
+├── settings.json
+├── tailwind.config.js (8 lines)
+├── TECHNICAL_DEBT_ASSESSMENT.md
+└── UPGRADE_NOTES.md
+
+==================================================
+DIRECTORY TREE STATISTICS
+==================================================
+Total directories: 15
+Total files: 44
+Files with line counts: 31
+Total lines of code: 2,447
+
+Configuration:
+  Excluded directories: .archive, .claude, .geminiignore, .git, .github, .gitignore, .idea, .kilocode, .pytest_cache, .ruff_cache, .serena, .vite, .vscode, __pycache__, agents.md, backlog.md, build, claude.md, coverage, dist, docs, eslint.config.js, gemini.md, jules-scratch, knip.json, legacy, logs, node_modules, package-lock.json, package.json, playwright-report, public, test-results, tree.txt, tree_scanner.py, venv, vite.config.js
+  Line counting for: .c, .cpp, .css, .dart, .h, .html, .java, .js, .ts, .tsx

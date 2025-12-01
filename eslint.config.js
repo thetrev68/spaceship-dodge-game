@@ -45,6 +45,7 @@ export default [
   {
     ignores: [
       'node_modules/**',
+      'build/**',
       'dist/**',
       'styles/**',
       '*.config.js',
