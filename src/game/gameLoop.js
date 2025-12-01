@@ -29,6 +29,7 @@ import { updateLevelFlow, resetLevelFlow } from '@game/flowManager.js';
 import { renderAll } from '@systems/renderManager.js';
 import { score } from '@core/state.js';
 import { showOverlay } from '@ui/overlays/overlayManager.js';
+import { isMobile } from '@utils/platform.js';
 
 let lastFrameTime = 0;
 let animationId;
@@ -37,7 +38,9 @@ let ctx;
 let lastPowerupSpawnTime = 0;
 
 function getSpawnInterval(level) {
-  const baseInterval = LEVEL_CONFIG.BASE_SPAWN_INTERVAL_DESKTOP;
+  const baseInterval = isMobile
+    ? LEVEL_CONFIG.BASE_SPAWN_INTERVAL_MOBILE
+    : LEVEL_CONFIG.BASE_SPAWN_INTERVAL_DESKTOP;
   const interval = baseInterval - level * LEVEL_CONFIG.SPAWN_INTERVAL_DECREASE_PER_LEVEL;
   return Math.max(interval, ASTEROID_CONFIG.MIN_SPAWN_INTERVAL);
 }
