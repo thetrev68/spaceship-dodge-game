@@ -6,7 +6,6 @@ import { setupInput } from './inputManager.js';
 import { setupMobileInput } from './mobileControls.js';
 import { gameState, isMobile } from './state.js';
 import * as soundManager from './soundManager.js';
-import { forceAudioUnlock } from './soundManager.js';
 
 let audioUnlockAttempted = false;
 
@@ -103,7 +102,7 @@ function init() {
     startButton?.addEventListener('click', () => {
       if (gameState.value !== 'START') return;
       import('./soundManager.js').then(m => {
-        m.unlockAudio().then(() => {
+        m.forceAudioUnlock().then(() => {
           m.startMusic();
           startGame(canvas);
           restartGameLoop();

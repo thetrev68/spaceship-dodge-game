@@ -1,4 +1,4 @@
-import { gameState, playerLives, isMobile } from './state.js';
+import { playerLives, isMobile } from './state.js';
 
 const startOverlay = document.getElementById('startOverlay');
 const gameOverOverlay = document.getElementById('gameOverOverlay');
@@ -61,7 +61,7 @@ export function showOverlay(state, score = 0, level = 0) {
     case 'LEVEL_TRANSITION':
       import('./soundManager.js').then(m => m.stopMusic());
       levelUpMessage.textContent = `LEVEL ${level + 1} !`;
-      currentLevelInfo.textContent = `Get Ready!`;
+      currentLevelInfo.textContent = 'Get Ready!';
       currentScoreInfo.textContent = `Score: ${score}`;
       show(levelTransitionOverlay);
       break;

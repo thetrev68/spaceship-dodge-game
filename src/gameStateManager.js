@@ -80,6 +80,7 @@ export function continueGame() {
   soundManager.startMusic();
 }
 
+// TODO: Currently unused - reserved for future use (e.g., quit button functionality)
 export function endGame() {
   gameState.value = 'GAME_OVER';
   soundManager.stopMusic();
@@ -87,4 +88,5 @@ export function endGame() {
   showOverlay('GAME_OVER', score.value, gameLevel.value);
 }
 
+// TODO: Re-exporting from other modules - consider importing directly where needed
 export { resetLevelFlow, showOverlay };

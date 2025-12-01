@@ -6,26 +6,27 @@
     Adds object pooling to optimize asteroid memory reuse.
 */
 
+import { 
+    GAME_CONFIG,
+    ASTEROID_CONFIG,
+    LEVEL_CONFIG,
+    MOBILE_CONFIG
+} from './constants.js';
+
 import {
-    allowSpawning,
     obstacles,
-    ASTEROID_LEVEL_SIZES,
-    ASTEROID_SCORE_VALUES,
-    BASE_OBSTACLE_MIN_SPEED,
-    BASE_OBSTACLE_MAX_SPEED,
-    SPEED_INCREASE_PER_LEVEL,
     isMobile
 } from './state.js';
 
 import { addScorePopup } from './scorePopups.js';
 import { playSound } from './soundManager.js';
 
-let obstacleMinSpeed = BASE_OBSTACLE_MIN_SPEED;
+let obstacleMinSpeed = ASTEROID_CONFIG.BASE_MIN_SPEED;
 let nextAsteroidId = 1;
+// TODO: Currently exported but only used internally - consider making private
 export const fragmentTracker = {};
-let obstacleMaxSpeed = BASE_OBSTACLE_MAX_SPEED;
+let obstacleMaxSpeed = ASTEROID_CONFIG.BASE_MAX_SPEED;
 
-const MAX_OBSTACLE_SPEED = 3;
 const obstaclePool = []; // ♻️ Object pool
 
 export let newAsteroidsSpawned = 0;
@@ -38,19 +39,21 @@ function easeInCubic(t) {
   return t * t * t;
 }
 
+// TODO: Currently unused - could be called from flowManager for progressive difficulty
 export function updateDifficulty(level) {
-  if (level <= 5) {
-    const normalizedLevel = level / 5;
+  if (level <= LEVEL_CONFIG.DIFFICULTY_SCALE_THRESHOLD) {
+    const normalizedLevel = level / LEVEL_CONFIG.DIFFICULTY_SCALE_THRESHOLD;
     const scale = easeInCubic(normalizedLevel);
-    obstacleMinSpeed = BASE_OBSTACLE_MIN_SPEED + scale * SPEED_INCREASE_PER_LEVEL * 0.5;
-    obstacleMaxSpeed = Math.min(BASE_OBSTACLE_MAX_SPEED + scale * SPEED_INCREASE_PER_LEVEL * 0.5, MAX_OBSTACLE_SPEED);
+    obstacleMinSpeed = ASTEROID_CONFIG.BASE_MIN_SPEED + scale * ASTEROID_CONFIG.SPEED_INCREASE_PER_LEVEL * 0.5;
+    obstacleMaxSpeed = Math.min(ASTEROID_CONFIG.BASE_MAX_SPEED + scale * ASTEROID_CONFIG.SPEED_INCREASE_PER_LEVEL * 0.5, ASTEROID_CONFIG.MAX_SPEED);
   } else {
     const scale = Math.log(level + 1);
-    obstacleMinSpeed = BASE_OBSTACLE_MIN_SPEED + scale * SPEED_INCREASE_PER_LEVEL * 0.7;
-    obstacleMaxSpeed = Math.min(BASE_OBSTACLE_MAX_SPEED + scale * SPEED_INCREASE_PER_LEVEL * 0.7, MAX_OBSTACLE_SPEED);
+    obstacleMinSpeed = ASTEROID_CONFIG.BASE_MIN_SPEED + scale * ASTEROID_CONFIG.SPEED_INCREASE_PER_LEVEL * 0.7;
+    obstacleMaxSpeed = Math.min(ASTEROID_CONFIG.BASE_MAX_SPEED + scale * ASTEROID_CONFIG.SPEED_INCREASE_PER_LEVEL * 0.7, ASTEROID_CONFIG.MAX_SPEED);
   }
 }
 
+// TODO: Currently used internally only - consider making private or exposing for custom shapes
 export function generateAsteroidShape(radius, numPoints) {
   const points = [];
   const angleIncrement = (Math.PI * 2) / numPoints;
@@ -65,11 +68,12 @@ export function generateAsteroidShape(radius, numPoints) {
   return points;
 }
 
+// TODO: Used internally by updateObstacles - consider making private
 export function createObstacle(x, y, levelIndex, initialDx = 0, initialDy = 0, parentId = null) {
-  const radius = ASTEROID_LEVEL_SIZES[levelIndex];
-  const scoreValue = ASTEROID_SCORE_VALUES[levelIndex];
-  const basePoints = Math.floor(Math.random() * 6) + 5;
-  const numPoints = isMobile ? Math.min(basePoints, 5) : basePoints;
+  const radius = ASTEROID_CONFIG.LEVEL_SIZES[levelIndex];
+  const scoreValue = ASTEROID_CONFIG.SCORE_VALUES[levelIndex];
+  const basePoints = Math.floor(Math.random() * (ASTEROID_CONFIG.SHAPE_POINTS_MAX - ASTEROID_CONFIG.SHAPE_POINTS_MIN + 1)) + ASTEROID_CONFIG.SHAPE_POINTS_MIN;
+  const numPoints = isMobile ? Math.min(basePoints, MOBILE_CONFIG.MAX_SHAPE_POINTS) : basePoints;
   const shape = generateAsteroidShape(radius, numPoints);
 
   const id = nextAsteroidId++;
@@ -80,14 +84,14 @@ export function createObstacle(x, y, levelIndex, initialDx = 0, initialDy = 0, p
   if (typeof fragmentTracker[assignedParentId] === 'undefined') {
     fragmentTracker[assignedParentId] = 0;
   }
-  if (levelIndex === ASTEROID_LEVEL_SIZES.length - 1) {
+  if (levelIndex === ASTEROID_CONFIG.LEVEL_SIZES.length - 1) {
     fragmentTracker[assignedParentId]++;
   }
 
   const baseSpeed = Math.random() * (obstacleMaxSpeed - obstacleMinSpeed) + obstacleMinSpeed;
-  const speed = parentId === null ? baseSpeed : baseSpeed * 0.3;
+  const speed = parentId === null ? baseSpeed : baseSpeed * ASTEROID_CONFIG.FRAGMENT_SPEED_MULTIPLIER;
   const rotation = Math.random() * 2 * Math.PI;
-  const rotationSpeed = (Math.random() * 0.01) - 0.05;
+  const rotationSpeed = (Math.random() * (ASTEROID_CONFIG.ROTATION_SPEED_MAX - ASTEROID_CONFIG.ROTATION_SPEED_MIN)) + ASTEROID_CONFIG.ROTATION_SPEED_MIN;
   const now = Date.now();
 
   const obstacle = obstaclePool.length > 0 ? obstaclePool.pop() : {};
@@ -118,8 +122,6 @@ export function createObstacle(x, y, levelIndex, initialDx = 0, initialDy = 0, p
 
 export function updateObstacles(canvasWidth, canvasHeight, spawnInterval, lastSpawnTimeRef, allowSpawning = true) {
   const now = Date.now();
-  const margin = 100;
-  const maxLifetime = 30000;
 
   for (let i = 0; i < obstacles.length; i++) {
     const o = obstacles[i];
@@ -131,11 +133,11 @@ export function updateObstacles(canvasWidth, canvasHeight, spawnInterval, lastSp
     o.rotation = (o.rotation + o.rotationSpeed) % (2 * Math.PI);
 
     const outOfBounds =
-      o.y > canvasHeight + margin ||
-      o.x + o.radius * 2 < -margin ||
-      o.x > canvasWidth + margin;
+      o.y > canvasHeight + GAME_CONFIG.SPAWN_MARGIN ||
+      o.x + o.radius * 2 < -GAME_CONFIG.SPAWN_MARGIN ||
+      o.x > canvasWidth + GAME_CONFIG.SPAWN_MARGIN;
 
-    const tooOld = now - o.creationTime > maxLifetime;
+    const tooOld = now - o.creationTime > GAME_CONFIG.MAX_LIFETIME;
 
     if (outOfBounds || tooOld) {
       const [removed] = obstacles.splice(i, 1);
@@ -146,8 +148,8 @@ export function updateObstacles(canvasWidth, canvasHeight, spawnInterval, lastSp
 
   if (allowSpawning && now - lastSpawnTimeRef.value > spawnInterval) {
     createObstacle(
-      Math.random() * (canvasWidth - ASTEROID_LEVEL_SIZES[0] * 2),
-      -ASTEROID_LEVEL_SIZES[0] * 2,
+      Math.random() * (canvasWidth - ASTEROID_CONFIG.LEVEL_SIZES[0] * 2),
+      -ASTEROID_CONFIG.LEVEL_SIZES[0] * 2,
       0
     );
     lastSpawnTimeRef.value = now;
@@ -180,9 +182,9 @@ export function destroyObstacle(obstacle, scoreRef) {
   obstaclePool.push(obstacle); // ♻️ Return to pool
   playSound('break');
 
-  if (obstacle.level < ASTEROID_LEVEL_SIZES.length - 1) {
+  if (obstacle.level < ASTEROID_CONFIG.LEVEL_SIZES.length - 1) {
     const nextLevel = obstacle.level + 1;
-    const numNew = Math.floor(Math.random() * 2) + 2;
+    const numNew = Math.floor(Math.random() * (ASTEROID_CONFIG.FRAGMENTS_MAX - ASTEROID_CONFIG.FRAGMENTS_MIN + 1)) + ASTEROID_CONFIG.FRAGMENTS_MIN;
     for (let k = 0; k < numNew; k++) {
       const angle = Math.random() * Math.PI * 2;
       const scatterSpeed = Math.random() < 0.8
@@ -204,11 +206,11 @@ export function destroyObstacle(obstacle, scoreRef) {
   scoreRef.value += obstacle.scoreValue;
   addScorePopup(`+${obstacle.scoreValue}`, obstacle.x + obstacle.radius, obstacle.y);
 
-  if (obstacle.parentId !== null && obstacle.level === ASTEROID_LEVEL_SIZES.length - 1) {
+  if (obstacle.parentId !== null && obstacle.level === ASTEROID_CONFIG.LEVEL_SIZES.length - 1) {
     fragmentTracker[obstacle.parentId]--;
     if (fragmentTracker[obstacle.parentId] === 0) {
-      scoreRef.value += 150;
-      addScorePopup('+150 (All Fragments)', obstacle.x, obstacle.y - 10, '#00ff00');
+      scoreRef.value += ASTEROID_CONFIG.FRAGMENT_BONUS;
+      addScorePopup(`+${ASTEROID_CONFIG.FRAGMENT_BONUS} (All Fragments)`, obstacle.x, obstacle.y - 10, '#00ff00');
       delete fragmentTracker[obstacle.parentId];
     }
   }

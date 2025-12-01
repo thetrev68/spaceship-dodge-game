@@ -6,6 +6,7 @@
 import { powerUps, player, isMobile } from './state.js';
 import { addScorePopup } from './scorePopups.js';
 
+// TODO: Currently unused - exported for potential external powerup management
 export const POWERUP_TYPES = {
   DOUBLE_BLASTER: 'doubleBlaster',
   SHIELD: 'shield',
@@ -117,6 +118,7 @@ export function drawPowerups(ctx) {
   });
 }
 
+// TODO: Currently called internally by updatePowerups - consider making private
 export function activatePowerup(type) {
   powerUps[type].active = true;
   powerUps[type].timer = 600;

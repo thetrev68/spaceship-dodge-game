@@ -4,7 +4,7 @@ import { gameState, player } from './state.js';
 import { firePlayerBullets } from './player.js';
 import { showOverlay } from './ui.js';
 import * as soundManager from './soundManager.js';
-import { restartGameLoop, stopGameLoop } from './gameLoop.js';
+import { stopGameLoop } from './gameLoop.js';
 
 let touchActive = false;
 let touchX = 0;

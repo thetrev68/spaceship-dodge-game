@@ -1,7 +1,11 @@
 // js/bullet.js
 
-import { bullets, bulletSpeed, bulletRadius, gameState, isMobile } from './state.js';
+import { bullets, gameState, isMobile } from './state.js';
+import { BULLET_CONFIG } from './constants.js';
 import { playSound } from './soundManager.js';
+
+const bulletSpeed = BULLET_CONFIG.SPEED;
+const bulletRadius = BULLET_CONFIG.RADIUS;
 
 const bulletPool = [];
 let lastFireSoundTime = 0;
@@ -44,7 +48,7 @@ export function fireBullet(x, y) {
   }
 }
 
-export function updateBullets(canvasHeight) {
+export function updateBullets() {
   for (let i = bullets.length - 1; i >= 0; i--) {
     const b = bullets[i];
     b.y += b.dy;

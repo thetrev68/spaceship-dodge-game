@@ -1,0 +1,22 @@
+{
+  "$schema": "https://unpkg.com/knip@latest/schema.json",
+  "entry": [
+    "src/main.js",
+    "index.html"
+  ],
+  "project": [
+    "src/**/*.js"
+  ],
+  "ignore": [
+    "node_modules/**",
+    "dist/**",
+    "styles/**"
+  ],
+  "ignoreDependencies": [
+    "gh-pages",
+    "@tailwindcss/postcss"
+  ],
+  "ignoreBinaries": [
+    "tailwindcss"
+  ]
+}
