@@ -24,7 +24,7 @@ let obstacleMaxSpeed = ASTEROID_CONFIG.BASE_MAX_SPEED;
 const MOBILE_OBSTACLE_CAP = 14;
 
 // Initialize object pool
-const obstaclePool = new ObjectPool(() => /** @type {import('@types/shared.js').AsteroidState} */ ({
+const obstaclePool = new ObjectPool(() => /** @type {import('@types/shared').AsteroidState} */ ({
   x: 0,
   y: 0,
   radius: 0,
@@ -86,7 +86,7 @@ function generateAsteroidShape(radius, numPoints) {
  * @param {number} [initialDx=0]
  * @param {number} [initialDy=0]
  * @param {number|null} [parentId=null]
- * @returns {import('@types/shared.js').AsteroidState}
+ * @returns {import('@types/shared').AsteroidState}
  */
 function createObstacle(x, y, levelIndex, initialDx = 0, initialDy = 0, parentId = null) {
   const radius = ASTEROID_CONFIG.LEVEL_SIZES[levelIndex];

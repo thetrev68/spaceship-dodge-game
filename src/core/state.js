@@ -33,11 +33,12 @@ function reactive(obj) {
 }
 
 /**
- * @typedef {import('@types/shared.js').GameStateValue} GameStateValue
- * @typedef {import('@types/shared.js').PowerUpState} PowerUpState
- * @typedef {import('@types/shared.js').PlayerState} PlayerState
- * @typedef {import('@types/shared.js').BulletState} BulletState
- * @typedef {import('@types/shared.js').AsteroidState} AsteroidState
+ * @typedef {import('@types/shared').GameStateValue} GameStateValue
+ * @typedef {import('@types/shared').PowerUpState} PowerUpState
+ * @typedef {import('@types/shared').PowerUpMap} PowerUpMap
+ * @typedef {import('@types/shared').PlayerState} PlayerState
+ * @typedef {import('@types/shared').BulletState} BulletState
+ * @typedef {import('@types/shared').AsteroidState} AsteroidState
  */
 
 /**
@@ -98,7 +99,7 @@ export const obstacles = [];
 
 /**
  * Power-up states.
- * @constant {{ [key: string]: PowerUpState }}
+ * @constant {PowerUpMap}
  */
 export const powerUps = {
   doubleBlaster: { active: false, timer: 0 },

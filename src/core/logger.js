@@ -8,7 +8,7 @@
  * @typedef {'DEBUG'|'INFO'|'WARN'|'ERROR'|'NONE'} LogLevelKey
  */
 
-/** @type {Record<string, number>} */
+/** @type {{ DEBUG: number; INFO: number; WARN: number; ERROR: number; NONE: number }} */
 const LogLevel = {
   DEBUG: 0,
   INFO: 1,
@@ -71,12 +71,9 @@ function getTimestamp() {
 
 /**
  * Core logging function.
- * @param {number} level - Log level.
- * @param {LogCategory|string} category - Log category.
- * @param {string} message - Log message.
- * @param {...any} args - Additional arguments.
+ * @type {(level: number, category: LogCategory|string, message: string, ...args: any[]) => void}
  */
-function log(level, category, message, ...args) {
+const log = (level, category, message, ...args) => {
   // Check if logging is enabled
   if (!config.enabled) return;
 
@@ -86,7 +83,7 @@ function log(level, category, message, ...args) {
   // Check category filter
   if (category && config.categories[category] === false) return;
 
-  const levelName = /** @type {LogLevelKey} */ (Object.keys(LogLevel).find(key => LogLevel[key] === level) || 'DEBUG');
+  const levelName = /** @type {LogLevelKey} */ (Object.keys(LogLevel).find(key => /** @type {any} */ (LogLevel)[key] === level) || 'DEBUG');
   const timestamp = config.timestamps ? `[${getTimestamp()}]` : '';
   const categoryTag = category ? `[${category}]` : '';
   const prefix = `${timestamp}${categoryTag}[${levelName}]`;
@@ -108,13 +105,13 @@ function log(level, category, message, ...args) {
     // Fallback for Node.js or when colors disabled
     console.log(`${prefix} ${message}`, ...args);
   }
-}
+};
 
 /**
  * Public API - Debug level.
  * @param {LogCategory|string} category - Log category.
  * @param {string} message - Log message.
- * @param {...*} args - Additional arguments.
+ * @param {...any} args - Additional arguments.
  */
 export function debug(category, message, ...args) {
   log(LogLevel.DEBUG, category, message, ...args);
@@ -124,7 +121,7 @@ export function debug(category, message, ...args) {
  * Public API - Info level.
  * @param {LogCategory|string} category - Log category.
  * @param {string} message - Log message.
- * @param {...*} args - Additional arguments.
+ * @param {...any} args - Additional arguments.
  */
 export function info(category, message, ...args) {
   log(LogLevel.INFO, category, message, ...args);
@@ -134,7 +131,7 @@ export function info(category, message, ...args) {
  * Public API - Warning level.
  * @param {LogCategory|string} category - Log category.
  * @param {string} message - Log message.
- * @param {...*} args - Additional arguments.
+ * @param {...any} args - Additional arguments.
  */
 export function warn(category, message, ...args) {
   log(LogLevel.WARN, category, message, ...args);
@@ -144,7 +141,7 @@ export function warn(category, message, ...args) {
  * Public API - Error level.
  * @param {LogCategory|string} category - Log category.
  * @param {string} message - Log message.
- * @param {...*} args - Additional arguments.
+ * @param {...any} args - Additional arguments.
  */
 export function error(category, message, ...args) {
   log(LogLevel.ERROR, category, message, ...args);
@@ -169,7 +166,8 @@ export const logger = {
    */
   setLevel(level) {
     if (typeof level === 'string') {
-      config.level = LogLevel[level.toUpperCase()] ?? LogLevel.DEBUG;
+      const mapped = LogLevel[level.toUpperCase()];
+      config.level = typeof mapped === 'number' ? mapped : LogLevel.DEBUG;
     } else {
       config.level = level;
     }

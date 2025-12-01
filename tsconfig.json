@@ -22,7 +22,8 @@
       "@input/*": ["./src/input/*"],
       "@ui/*": ["./src/ui/*"],
       "@effects/*": ["./src/effects/*"],
-      "@utils/*": ["./src/utils/*"]
+      "@utils/*": ["./src/utils/*"],
+      "@types/*": ["./src/types/*"]
     }
   },
   "include": ["src/**/*"],

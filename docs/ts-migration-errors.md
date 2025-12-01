@@ -1,43 +1,22 @@
 
-> spaceship-dodge-game@1.0.0 typecheck
-> tsc --noEmit
+## Typecheck status (branch: typscript-conversion)
+- Command: `npm run typecheck` (fails)
+- Last commits: `200f69b` (shared JSDoc types/guards), `d378e5b` (tsconfig/typecheck scripts/docs)
 
-src/core/logger.js(72,31): error TS1016: A required parameter cannot follow an optional parameter.
-src/core/logger.js(80,19): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{ audio: boolean; game: boolean; input: boolean; collision: boolean; ui: boolean; powerup: boolean; level: boolean; render: boolean; }'.
-  No index signature with a parameter of type 'string' was found on type '{ audio: boolean; game: boolean; input: boolean; collision: boolean; ui: boolean; powerup: boolean; level: boolean; render: boolean; }'.
-src/core/logger.js(82,55): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{ DEBUG: number; INFO: number; WARN: number; ERROR: number; NONE: number; }'.
-  No index signature with a parameter of type 'string' was found on type '{ DEBUG: number; INFO: number; WARN: number; ERROR: number; NONE: number; }'.
-src/core/logger.js(89,34): error TS2538: Type 'undefined' cannot be used as an index type.
-src/core/logger.js(90,24): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{ DEBUG: string; INFO: string; WARN: string; ERROR: string; audio: string; game: string; input: string; collision: string; ui: string; powerup: string; level: string; render: string; }'.
-  No index signature with a parameter of type 'string' was found on type '{ DEBUG: string; INFO: string; WARN: string; ERROR: string; audio: string; game: string; input: string; collision: string; ui: string; powerup: string; level: string; render: string; }'.
-src/core/logger.js(165,22): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{ DEBUG: number; INFO: number; WARN: number; ERROR: number; NONE: number; }'.
-  No index signature with a parameter of type 'string' was found on type '{ DEBUG: number; INFO: number; WARN: number; ERROR: number; NONE: number; }'.
-src/core/logger.js(177,5): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{ audio: boolean; game: boolean; input: boolean; collision: boolean; ui: boolean; powerup: boolean; level: boolean; render: boolean; }'.
-  No index signature with a parameter of type 'string' was found on type '{ audio: boolean; game: boolean; input: boolean; collision: boolean; ui: boolean; powerup: boolean; level: boolean; render: boolean; }'.
-src/core/logger.js(213,7): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{ audio: boolean; game: boolean; input: boolean; collision: boolean; ui: boolean; powerup: boolean; level: boolean; render: boolean; }'.
-  No index signature with a parameter of type 'string' was found on type '{ audio: boolean; game: boolean; input: boolean; collision: boolean; ui: boolean; powerup: boolean; level: boolean; render: boolean; }'.
-src/core/logger.js(272,13): error TS7006: Parameter 'message' implicitly has an 'any' type.
-src/core/logger.js(272,22): error TS7019: Rest parameter 'args' implicitly has an 'any[]' type.
-src/core/logger.js(273,12): error TS7006: Parameter 'message' implicitly has an 'any' type.
-src/core/logger.js(273,21): error TS7019: Rest parameter 'args' implicitly has an 'any[]' type.
-src/core/logger.js(274,12): error TS7006: Parameter 'message' implicitly has an 'any' type.
-src/core/logger.js(274,21): error TS7019: Rest parameter 'args' implicitly has an 'any[]' type.
-src/core/logger.js(275,13): error TS7006: Parameter 'message' implicitly has an 'any' type.
-src/core/logger.js(275,22): error TS7019: Rest parameter 'args' implicitly has an 'any[]' type.
-src/core/logger.js(276,13): error TS7006: Parameter 'label' implicitly has an 'any' type.
-src/core/logger.js(281,17): error TS2339: Property 'env' does not exist on type 'ImportMeta'.
-src/core/main.js(77,20): error TS2379: Argument of type 'HTMLElement' is not assignable to parameter of type 'HTMLCanvasElement' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Type 'HTMLElement' is missing the following properties from type 'HTMLCanvasElement': height, width, captureStream, getContext, and 3 more.
-src/core/main.js(84,20): error TS2345: Argument of type 'HTMLElement | null' is not assignable to parameter of type 'HTMLCanvasElement'.
-  Type 'null' is not assignable to type 'HTMLCanvasElement'.
-src/core/main.js(85,24): error TS2345: Argument of type 'HTMLElement | null' is not assignable to parameter of type 'HTMLCanvasElement'.
-  Type 'null' is not assignable to type 'HTMLCanvasElement'.
-src/core/main.js(86,13): error TS2345: Argument of type 'HTMLElement | null' is not assignable to parameter of type 'HTMLCanvasElement'.
-  Type 'null' is not assignable to type 'HTMLCanvasElement'.
-src/core/main.js(96,19): error TS2339: Property 'value' does not exist on type 'ProxyConstructor'.
-src/core/main.js(103,15): error TS2345: Argument of type 'HTMLElement | null' is not assignable to parameter of type 'HTMLCanvasElement'.
-  Type 'null' is not assignable to type 'HTMLCanvasElement'.
-src/core/main.js(114,22): error TS2345: Argument of type 'HTMLElement | null' is not assignable to parameter of type 'HTMLCanvasElement'.
+## Outstanding buckets (ordered)
+1) **Logger**: `LogLevel[key]` still yields `number | undefined`; adjust lookup mapping or add index signature; ensure config.level always number.  
+2) **Type alias imports**: use `import('@types/shared')` (alias configured in jsconfig/tsconfig) instead of `@types/shared.js`; TS currently rejects “type declaration files”.  
+3) **Entities & pools**: pooled objects must return full shapes; add missing fields (`creationTime`, `rotation`, `shape`, `speed`), guard undefined before use, add index signatures.  
+4) **Starfield**: per-frame ctx guard and `stars[i]` defined checks.  
+5) **gameLoop/gameStateManager**: guard nullable canvas/ctx when passed to render/clear.  
+6) **Input/mobile/overlays/settings/audioControls**: add typed settings shape/index signatures, event target casts, TimerId as number, DOM null guards, focus guards.  
+7) **soundManager**: guard `import.meta.env`, add sound map index signature, null-safe audio map, `Promise<void>` JSDoc on unlocks, volumes shape, background music nullability.  
+8) **Collision/poolManager**: type arrays and entities (no bare Object), nearbyObstacles typing; guard bullets/obstacles undefined.  
+9) **HUD**: set `ctx.textAlign` to `CanvasTextAlign` literal; type score popups array items.
+
+## Quick reproduction
+- Run: `npm run typecheck`
+- Most recent output (truncated) shows failures in logger, state imports, asteroid/bullet/powerup shapes, input/overlays/settings, soundManager, collision, HUD.
   Type 'null' is not assignable to type 'HTMLCanvasElement'.
 src/core/main.js(118,21): error TS2339: Property 'value' does not exist on type 'ProxyConstructor'.
 src/core/main.js(120,17): error TS2339: Property 'value' does not exist on type 'ProxyConstructor'.

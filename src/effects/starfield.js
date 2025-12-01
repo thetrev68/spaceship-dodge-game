@@ -43,6 +43,7 @@ export function setupStarfield(canvas) {
    * Animates the starfield by updating and drawing stars.
    */
   function animate() {
+    if (!ctx) return;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
     // Batch drawing for performance
@@ -51,6 +52,7 @@ export function setupStarfield(canvas) {
 
     for (let i = 0; i < starCount; i++) {
       const star = stars[i];
+      if (!star) continue;
       star.y += star.speed;
       
       if (star.y > canvas.height) {

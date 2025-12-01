@@ -27,7 +27,7 @@ if (bctx) {
 }
 
 // Initialize object pool for bullets
-const bulletPool = new ObjectPool(() => /** @type {import('@types/shared.js').BulletState} */ ({
+const bulletPool = new ObjectPool(() => /** @type {import('@types/shared').BulletState} */ ({
   x: 0,
   y: 0,
   radius: bulletRadius,
