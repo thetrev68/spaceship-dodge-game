@@ -14,7 +14,8 @@ import { isMobile } from '@utils/platform.js';
 import * as soundManager from '@systems/soundManager.js';
 import { debug, warn } from '@core/logger.js';
 import { initializeSettings } from '@ui/settings/settingsManager.js';
-import { initializeSettingsUI, showSettings } from '@ui/settings/settingsUI.js';
+import { initializeSettingsUI, showSettings, hideSettings } from '@ui/settings/settingsUI.js';
+import { initPerfHud } from '@ui/hud/perfHUD.js';
 
 /**
  * Flag to track if audio unlock has been attempted.
@@ -49,7 +50,9 @@ document.addEventListener('click', handleFirstTouch, { passive: true });
  * Initializes the game when DOM is loaded.
  */
 function init() {
-  debug('game', 'init running — DOM loaded');
+  debug('game', 'init running - DOM loaded');
+
+  initPerfHud();
 
   const canvas = document.getElementById('gameCanvas');
   const startButton = document.getElementById('startButton');
@@ -174,6 +177,35 @@ function init() {
   settingsButtonGameOver?.addEventListener('click', (e) => {
     e.preventDefault();
     showSettings();
+  });
+
+  document.addEventListener('keydown', (e) => {
+    const isActivateKey = e.key === 'Enter' || e.key === ' ';
+    if (e.key === 'Escape') {
+      hideSettings();
+      return;
+    }
+
+    if (!isActivateKey) return;
+    if (gameState.value === 'PLAYING') return;
+
+    if (gameState.value === 'START') {
+      startGameHandler(e);
+    } else if (gameState.value === 'LEVEL_TRANSITION') {
+      e.preventDefault();
+      continueGame();
+      restartGameLoop();
+    } else if (gameState.value === 'GAME_OVER') {
+      e.preventDefault();
+      startGame(canvas);
+      restartGameLoop();
+    } else if (gameState.value === 'PAUSED') {
+      e.preventDefault();
+      gameState.value = 'PLAYING';
+      showOverlay('PLAYING');
+      soundManager.unmuteAll();
+      restartGameLoop();
+    }
   });
 
   showOverlay('START');

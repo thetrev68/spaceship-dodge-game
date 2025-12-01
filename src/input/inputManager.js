@@ -9,6 +9,7 @@ import { showOverlay } from '@ui/overlays/overlayManager.js';
 import * as soundManager from '@systems/soundManager.js';
 import { restartGameLoop } from '@game/gameLoop.js';
 import { firePlayerBullets, getPlayerSpeed, setPlayerMovement, setPlayerPosition, getPlayerDimensions, getPlayerVelocity } from '@entities/player.js';
+import { togglePerfHud } from '@ui/hud/perfHUD.js';
 
 /**
  * Flag for continuous firing.
@@ -46,6 +47,11 @@ const FIRE_COOLDOWN_MS = 150;
  */
 export function setupInput(canvas) {
   document.addEventListener('keydown', (e) => {
+    if (e.key && e.key.toLowerCase() === 'f') {
+      togglePerfHud();
+      return;
+    }
+
     if (e.key === 'p' && !pauseLocked) {
       pauseLocked = true;
       if (gameState.value !== 'PLAYING' && gameState.value !== 'PAUSED') {

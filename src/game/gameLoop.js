@@ -30,12 +30,15 @@ import { renderAll } from '@systems/renderManager.js';
 import { score } from '@core/state.js';
 import { showOverlay } from '@ui/overlays/overlayManager.js';
 import { isMobile } from '@utils/platform.js';
+import { updatePerfHud } from '@ui/hud/perfHUD.js';
 
 let lastFrameTime = 0;
 let animationId;
 let gameCanvas;
 let ctx;
 let lastPowerupSpawnTime = 0;
+let perfSampleStart = performance.now();
+let perfFrameCounter = 0;
 
 /**
  * Calculates the spawn interval for the given level.
@@ -84,6 +87,7 @@ let skipMobileRender = false;
  * @param {number} timestamp - Current timestamp.
  */
 function gameLoop(canvas, timestamp = 0) {
+  const frameStart = performance.now();
   if (!lastFrameTime) lastFrameTime = timestamp;
   
   let deltaTime = timestamp - lastFrameTime;
@@ -127,6 +131,7 @@ function gameLoop(canvas, timestamp = 0) {
       
     accumulator -= TIME_STEP;
   }
+  const logicEnd = performance.now();
 
   // Render phase - decoupled from logic updates
   if (isMobile()) {
@@ -139,6 +144,20 @@ function gameLoop(canvas, timestamp = 0) {
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   renderAll(ctx);
+  const frameEnd = performance.now();
+
+  perfFrameCounter += 1;
+  const perfWindowMs = frameEnd - perfSampleStart;
+  if (perfWindowMs >= 500) {
+    const fps = (perfFrameCounter / perfWindowMs) * 1000;
+    updatePerfHud({
+      fps,
+      frameMs: frameEnd - frameStart,
+      logicMs: logicEnd - frameStart
+    });
+    perfSampleStart = frameEnd;
+    perfFrameCounter = 0;
+  }
 
   animationId = requestAnimationFrame((t) => gameLoop(canvas, t));
 }

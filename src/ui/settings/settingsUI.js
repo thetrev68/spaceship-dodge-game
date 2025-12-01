@@ -11,6 +11,14 @@ import {
   VOLUME_CONSTANTS
 } from '@core/uiConstants.js';
 
+const focusableSelector = [
+  'button',
+  'input',
+  'select',
+  'textarea',
+  '[tabindex]:not([tabindex="-1"])'
+].join(',');
+
 /**
  * Creates and returns the settings UI element.
  * @returns {HTMLElement} The settings UI container element.
@@ -35,6 +43,10 @@ export function createSettingsUI() {
   container.style.overflowY = 'auto';
   container.style.display = 'none'; // Start hidden
   container.className = 'settings-modal';
+  container.setAttribute('role', 'dialog');
+  container.setAttribute('aria-modal', 'true');
+  container.setAttribute('aria-label', 'Game settings');
+  container.tabIndex = -1;
 
   // Add close button
   const closeButton = document.createElement('button');
@@ -49,8 +61,9 @@ export function createSettingsUI() {
   closeButton.style.cursor = 'pointer';
   closeButton.style.width = SETTINGS_UI.CLOSE_BUTTON_SIZE;
   closeButton.style.height = SETTINGS_UI.CLOSE_BUTTON_SIZE;
+  closeButton.setAttribute('aria-label', 'Close settings');
   closeButton.addEventListener('click', () => {
-    container.style.display = 'none';
+    hideSettings();
   });
 
   // Add title
@@ -221,6 +234,9 @@ export function showSettings() {
   const container = document.getElementById('settingsContainer');
   if (container) {
     container.style.display = 'block';
+    container.setAttribute('aria-hidden', 'false');
+    const focusable = container.querySelector(focusableSelector);
+    requestAnimationFrame(() => (focusable || container).focus({ preventScroll: true }));
   }
 }
 
@@ -231,6 +247,9 @@ export function hideSettings() {
   const container = document.getElementById('settingsContainer');
   if (container) {
     container.style.display = 'none';
+    container.setAttribute('aria-hidden', 'true');
+    const canvas = document.getElementById('gameCanvas');
+    canvas?.focus?.({ preventScroll: true });
   }
 }
 

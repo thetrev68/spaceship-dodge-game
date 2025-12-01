@@ -4,15 +4,17 @@ spaceship-dodge-game/
 ├── src/
 │   ├── core/
 │   │   ├── constants.js (117 lines)
+│   │   ├── gameConstants.js (135 lines)
 │   │   ├── logger.js (257 lines)
-│   │   ├── main.js (145 lines)
-│   │   └── state.js (103 lines)
+│   │   ├── main.js (149 lines)
+│   │   ├── state.js (103 lines)
+│   │   └── uiConstants.js (79 lines)
 │   ├── effects/
 │   │   └── starfield.js (56 lines)
 │   ├── entities/
 │   │   ├── asteroid.js (240 lines)
 │   │   ├── bullet.js (106 lines)
-│   │   ├── player.js (194 lines)
+│   │   ├── player.js (198 lines)
 │   │   └── powerup.js (163 lines)
 │   ├── game/
 │   │   ├── flowManager.js (74 lines)
@@ -25,21 +27,21 @@ spaceship-dodge-game/
 │   │   ├── collisionHandler.js (183 lines)
 │   │   ├── poolManager.js (37 lines)
 │   │   ├── renderManager.js (32 lines)
-│   │   └── soundManager.js (211 lines)
+│   │   └── soundManager.js (212 lines)
 │   ├── ui/
 │   │   ├── controls/
-│   │   │   └── audioControls.js (105 lines)
+│   │   │   └── audioControls.js (109 lines)
 │   │   ├── hud/
-│   │   │   ├── powerupHUD.js (31 lines)
-│   │   │   ├── scoreDisplay.js (17 lines)
-│   │   │   └── scorePopups.js (62 lines)
+│   │   │   ├── powerupHUD.js (32 lines)
+│   │   │   ├── scoreDisplay.js (18 lines)
+│   │   │   └── scorePopups.js (63 lines)
 │   │   ├── overlays/
-│   │   │   └── overlayManager.js (122 lines)
+│   │   │   └── overlayManager.js (128 lines)
 │   │   └── settings/
-│   │       ├── settingsManager.js (156 lines)
-│   │       └── settingsUI.js (210 lines)
+│   │       ├── settingsManager.js (160 lines)
+│   │       └── settingsUI.js (214 lines)
 │   ├── utils/
-│   │   ├── canvasUtils.js (90 lines)
+│   │   ├── canvasUtils.js (91 lines)
 │   │   ├── mathUtils.js (56 lines)
 │   │   └── platform.js (42 lines)
 │   └── javascript.svg
@@ -50,7 +52,7 @@ spaceship-dodge-game/
 ├── CLAUDE.md
 ├── FOLDER_STRUCTURE.md
 ├── Gemini_Rec.md
-├── index.html (113 lines)
+├── index.html (114 lines)
 ├── jsconfig.json
 ├── localhost+2-key.pem
 ├── localhost+2.pem
@@ -66,9 +68,9 @@ spaceship-dodge-game/
 DIRECTORY TREE STATISTICS
 ==================================================
 Total directories: 16
-Total files: 46
-Files with line counts: 33
-Total lines of code: 3,619
+Total files: 48
+Files with line counts: 35
+Total lines of code: 3,865
 
 Configuration:
   Excluded directories: .archive, .claude, .geminiignore, .git, .github, .gitignore, .idea, .kilocode, .pytest_cache, .ruff_cache, .serena, .vite, .vscode, __pycache__, agents.md, backlog.md, build, claude.md, coverage, dist, docs, eslint.config.js, gemini.md, jules-scratch, knip.json, legacy, logs, node_modules, package-lock.json, package.json, playwright-report, public, test-results, tree.txt, tree_scanner.py, venv, vite.config.js
