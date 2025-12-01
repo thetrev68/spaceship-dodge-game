@@ -147,6 +147,10 @@ const spatialGrid = new SpatialGrid(60);
  * Checks bullet-obstacle collisions with spatial optimization.
  */
 function checkBulletObstacleCollisions() {
+  if (bullets.length === 0 || obstacles.length === 0) {
+    return;
+  }
+
   // Build spatial grid for obstacles
   spatialGrid.clear();
   obstacles.forEach(obstacle => spatialGrid.insertObstacle(obstacle));
@@ -185,6 +189,10 @@ function checkBulletObstacleCollisions() {
  * Main collision checking function.
  */
 export function checkCollisions() {
+  if (obstacles.length === 0) {
+    return;
+  }
+
   const hitObstacle = checkPlayerObstacleCollision();
   if (hitObstacle) {
     if (!powerUps.shield.active) {

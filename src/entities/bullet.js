@@ -84,10 +84,10 @@ export function fireBullet(x, y) {
   const bullet = acquireBullet(x, y);
   bullets.push(bullet);
 
-  // Throttle fire sound to match mobileControls.js
+  // Throttle fire sound; skip on mobile to avoid audio overhead
   const now = Date.now();
-  const delay = isMobile() ? 250 : 30; // 250ms on mobile to match fireCooldown
-  if (now - lastFireSoundTime > delay) {
+  const delay = isMobile() ? 400 : 30; // slower cadence on mobile
+  if (!isMobile() && now - lastFireSoundTime > delay) {
     playSound('fire');
     lastFireSoundTime = now;
   }

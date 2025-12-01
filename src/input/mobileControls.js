@@ -44,6 +44,26 @@ let lastFireTime = 0;
  * @const {number}
  */
 const fireCooldown = 250;
+let fireIntervalId = null;
+
+function startFiringLoop() {
+  if (fireIntervalId || gameState.value !== 'PLAYING') return;
+  fireIntervalId = setInterval(() => {
+    if (!touchActive || gameState.value !== 'PLAYING') return;
+    const now = performance.now();
+    if (now - lastFireTime >= fireCooldown) {
+      firePlayerBullets();
+      lastFireTime = now;
+    }
+  }, fireCooldown);
+}
+
+function stopFiringLoop() {
+  if (fireIntervalId) {
+    clearInterval(fireIntervalId);
+    fireIntervalId = null;
+  }
+}
 
 /**
  * Sets up mobile touch input for the canvas.
@@ -52,22 +72,6 @@ const fireCooldown = 250;
 export function setupMobileInput(canvas) {
   canvasEl = canvas;
   debug('input', 'setupMobileInput called', { canvasId: canvas.id });
-
-  // Mobile-specific input/gameplay loop
-  function mobileLoop() {
-    if (touchActive && gameState.value === 'PLAYING') {
-      updatePlayerToTouch();
-      const now = performance.now();
-      if (now - lastFireTime >= fireCooldown) {
-        firePlayerBullets();
-        lastFireTime = now;
-        debug('input', 'Autofire triggered');
-      }
-    }
-    requestAnimationFrame(mobileLoop);
-  }
-
-  requestAnimationFrame(mobileLoop);
 
   function handleTouchStart(e) {
     // debug('input', 'handleTouchStart triggered', e.target);
@@ -90,6 +94,8 @@ export function setupMobileInput(canvas) {
     touchX = t.clientX - rect.left;
     touchY = t.clientY - rect.top;
     touchActive = true;
+    updatePlayerToTouch();
+    startFiringLoop();
 
     debug('input', 'TOUCH START', {
       touchX,
@@ -107,6 +113,7 @@ export function setupMobileInput(canvas) {
     const rect = canvasEl.getBoundingClientRect();
     touchX = t.clientX - rect.left;
     touchY = t.clientY - rect.top;
+    updatePlayerToTouch();
     // debug('input', 'TOUCH MOVE', { touchX, touchY });
   }, { passive: false });
 
@@ -115,6 +122,7 @@ export function setupMobileInput(canvas) {
     if (!touchActive) return;
 
     touchActive = false;
+    stopFiringLoop();
 
     if (gameState.value === 'PLAYING') {
       debug('input', 'Switching state to PAUSED');
@@ -124,6 +132,12 @@ export function setupMobileInput(canvas) {
       stopGameLoop();
     }
   }, { passive: false });
+
+  document.addEventListener('gameStateChange', () => {
+    if (gameState.value !== 'PLAYING') {
+      stopFiringLoop();
+    }
+  });
 }
 
 /**

@@ -29,6 +29,7 @@ let obstacleMinSpeed = ASTEROID_CONFIG.BASE_MIN_SPEED;
 let nextAsteroidId = 1;
 const fragmentTracker = {};
 let obstacleMaxSpeed = ASTEROID_CONFIG.BASE_MAX_SPEED;
+const MOBILE_OBSTACLE_CAP = 14;
 
 // Initialize object pool
 const obstaclePool = new ObjectPool(() => ({}));
@@ -178,7 +179,11 @@ export function updateObstacles(canvasWidth, canvasHeight, spawnInterval, lastSp
     }
   }
 
-  if (allowSpawning && now - lastSpawnTimeRef.value > spawnInterval) {
+  if (
+    allowSpawning &&
+    now - lastSpawnTimeRef.value > spawnInterval &&
+    (!isMobile() || obstacles.length < MOBILE_OBSTACLE_CAP)
+  ) {
     createObstacle(
       Math.random() * (canvasWidth - ASTEROID_CONFIG.LEVEL_SIZES[0] * 2),
       -ASTEROID_CONFIG.LEVEL_SIZES[0] * 2,
@@ -246,7 +251,9 @@ export function destroyObstacle(obstacle, scoreRef) {
 
   if (obstacle.level < ASTEROID_CONFIG.LEVEL_SIZES.length - 1) {
     const nextLevel = obstacle.level + 1;
-    const numNew = randomInt(ASTEROID_CONFIG.FRAGMENTS_MIN, ASTEROID_CONFIG.FRAGMENTS_MAX);
+    const fragmentsMin = isMobile() ? 1 : ASTEROID_CONFIG.FRAGMENTS_MIN;
+    const fragmentsMax = isMobile() ? 2 : ASTEROID_CONFIG.FRAGMENTS_MAX;
+    const numNew = randomInt(fragmentsMin, fragmentsMax);
     for (let k = 0; k < numNew; k++) {
       const angle = Math.random() * Math.PI * 2;
       const scatterSpeed = Math.random() < 0.8

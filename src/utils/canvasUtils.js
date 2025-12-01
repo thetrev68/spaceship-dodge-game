@@ -12,8 +12,8 @@ export function initializeCanvas(canvas) {
 
   if (vw < 600) {
     // Mobile: fixed resolution
-    canvas.width = 480;
-    canvas.height = 854;
+    canvas.width = 360;
+    canvas.height = 640;
 
     canvas.style.width = '100vw';
     canvas.style.height = '100vh';

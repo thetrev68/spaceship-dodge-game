@@ -47,7 +47,8 @@ function getSpawnInterval(level) {
     ? LEVEL_CONFIG.BASE_SPAWN_INTERVAL_MOBILE
     : LEVEL_CONFIG.BASE_SPAWN_INTERVAL_DESKTOP;
   const interval = baseInterval - level * LEVEL_CONFIG.SPAWN_INTERVAL_DECREASE_PER_LEVEL;
-  return Math.max(interval, ASTEROID_CONFIG.MIN_SPAWN_INTERVAL);
+  const minInterval = isMobile() ? Math.max(ASTEROID_CONFIG.MIN_SPAWN_INTERVAL, 500) : ASTEROID_CONFIG.MIN_SPAWN_INTERVAL;
+  return Math.max(interval, minInterval);
 }
 
 let obstacleSpawnInterval = ASTEROID_CONFIG.MIN_SPAWN_INTERVAL;
@@ -58,8 +59,7 @@ let obstacleSpawnInterval = ASTEROID_CONFIG.MIN_SPAWN_INTERVAL;
  */
 export function setCanvas(canvas) {
   gameCanvas = canvas;
-  gameCanvas.width = window.innerWidth;
-  gameCanvas.height = window.innerHeight;
+  // Canvas dimensions are set in initializeCanvas; don't override here or we lose the low-res mobile buffer.
   ctx = gameCanvas.getContext('2d');
 }
 
@@ -73,8 +73,10 @@ export function restartGameLoop() {
 }
 
 
-const TIME_STEP = GAME_CONFIG.FRAME_DURATION; // 16.67ms for 60 FPS logic updates
+// Lower fixed timestep on mobile to reduce work per second.
+const TIME_STEP = isMobile() ? 1000 / 30 : GAME_CONFIG.FRAME_DURATION;
 let accumulator = 0;
+let skipMobileRender = false;
 
 /**
  * Main game loop function.
@@ -127,6 +129,14 @@ function gameLoop(canvas, timestamp = 0) {
   }
 
   // Render phase - decoupled from logic updates
+  if (isMobile()) {
+    skipMobileRender = !skipMobileRender;
+    if (skipMobileRender) {
+      animationId = requestAnimationFrame((t) => gameLoop(canvas, t));
+      return;
+    }
+  }
+
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   renderAll(ctx);
 
