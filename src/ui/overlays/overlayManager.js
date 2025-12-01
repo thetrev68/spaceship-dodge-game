@@ -5,6 +5,7 @@ import {
   setOverlayDimensions as setOverlayDims
 } from '@utils/canvasUtils.js';
 import { stopMusic, startMusic, playSound } from '@systems/soundManager.js';
+import { clearAllBullets } from '@entities/bullet.js';
 
 const startOverlay = document.getElementById('startOverlay');
 const gameOverOverlay = document.getElementById('gameOverOverlay');
@@ -100,7 +101,7 @@ export function quitGame() {
 
   stopMusic();
   gameState.value = 'GAME_OVER';
-  bullets.length = 0;
+  clearAllBullets();
   obstacles.length = 0;
 
   Object.keys(powerUps).forEach(key => {

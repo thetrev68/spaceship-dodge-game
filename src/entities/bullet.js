@@ -49,6 +49,20 @@ function releaseBullet(bullet) {
   bulletPool.release(bullet);
 }
 
+// Public API: Remove bullet from array and return to pool
+export function despawnBullet(index) {
+  if (index >= 0 && index < bullets.length) {
+    const bullet = bullets.splice(index, 1)[0];
+    releaseBullet(bullet);
+  }
+}
+
+// Public API: Clear all bullets and return them to pool
+export function clearAllBullets() {
+  bullets.forEach(bullet => releaseBullet(bullet));
+  bullets.length = 0;
+}
+
 export function fireBullet(x, y) {
   if (gameState.value !== 'PLAYING') return;
 

@@ -9,6 +9,7 @@
 import { player, bullets, obstacles, powerUps, score } from '@core/state.js';
 import { destroyObstacle } from '@entities/asteroid.js';
 import { handlePlayerHit } from '@game/gameStateManager.js';
+import { despawnBullet } from '@entities/bullet.js';
 
 // Circle-rectangle collision helper
 function circleRectCollision(cx, cy, radius, rx, ry, rw, rh) {
@@ -109,7 +110,7 @@ function checkBulletObstacleCollisions() {
 
   // Track destroyed obstacles by identity to avoid double-processing
   const destroyedObstacles = new Set();
-  const bulletsToRemove = new Set();
+  const bulletsToRemove = [];
 
   for (let i = bullets.length - 1; i >= 0; i--) {
     const bullet = bullets[i];
@@ -126,7 +127,7 @@ function checkBulletObstacleCollisions() {
       const distance = Math.sqrt(dx * dx + dy * dy);
 
       if (distance < bullet.radius + obstacle.radius) {
-        bulletsToRemove.add(i);
+        bulletsToRemove.push(i);
         destroyedObstacles.add(obstacle);
         destroyObstacle(obstacle, score); // Handles obstacle removal from array
         break; // Exit inner loop to avoid multiple collisions for same bullet
@@ -135,11 +136,9 @@ function checkBulletObstacleCollisions() {
   }
 
   // Remove bullets in reverse order to maintain correct indices
-  const bulletsArray = Array.from(bulletsToRemove).sort((a, b) => b - a);
-  bulletsArray.forEach(index => {
-    if (index >= 0 && index < bullets.length) {
-      bullets.splice(index, 1);
-    }
+  bulletsToRemove.sort((a, b) => b - a);
+  bulletsToRemove.forEach(index => {
+    despawnBullet(index);
   });
 }
 

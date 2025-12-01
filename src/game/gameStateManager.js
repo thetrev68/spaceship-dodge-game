@@ -11,6 +11,7 @@ import * as soundManager from '@systems/soundManager.js';
 import { unmuteAll } from '@systems/soundManager.js';
 import { createAudioControls } from '@ui/controls/audioControls.js';
 import { resetPlayer } from '@entities/player.js';
+import { clearAllBullets } from '@entities/bullet.js';
 
 export function handlePlayerHit() {
   playerLives.value -= 1;
@@ -29,7 +30,7 @@ export function handlePlayerHit() {
 
 function resetForNextLevel() {
   resetPlayer(window.innerWidth, window.innerHeight);
-  bullets.length = 0;
+  clearAllBullets();
   obstacles.length = 0;
   resetLevelFlow();
   soundManager.stopMusic();
@@ -48,7 +49,7 @@ export function startGame(canvas) {
   powerUps.doubleBlaster.timer = 0;
 
   // Clear arrays
-  bullets.length = 0;
+  clearAllBullets();
   obstacles.length = 0;
 
   // Reset player position and movement

@@ -14,6 +14,7 @@ import { allowSpawning, gameLevel, gameState, levelStartTime, bullets, obstacles
 import { newAsteroidsSpawned } from '@entities/asteroid.js';
 import { playSound, stopMusic } from '@systems/soundManager.js';
 import { debug } from '@core/logger.js';
+import { clearAllBullets } from '@entities/bullet.js';
 
 // Variables to keep track of spawning permission and level up status
 let pendingLevelUp = false;    // Have we started the process of moving to the next level?
@@ -62,7 +63,7 @@ export function updateLevelFlow(onLevelUpCallback) {
             // Advance the level
             gameLevel.value++;
             gameState.value = 'LEVEL_TRANSITION';
-            bullets.length = 0;        // Clear bullets
+            clearAllBullets();        // Clear bullets
             allowSpawning.value = true; // Reset spawning flag for next level
             pendingLevelUp = false;    // Reset flag
             levelClearTime = null;     // Reset timer
