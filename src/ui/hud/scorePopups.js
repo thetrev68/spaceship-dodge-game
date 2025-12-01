@@ -7,17 +7,28 @@ import { isMobile } from '@utils/platform.js';
 import { ObjectPool } from '@systems/poolManager.js';
 import { ANIMATION_CONSTANTS, HUD_CONSTANTS } from '@core/gameConstants.js';
 
+/** @typedef {{ text: string; x: number; y: number; opacity: number; color: string }} ScorePopup */
+
 /**
  * Array of active score popups.
- * @type {Array}
+ * @type {ScorePopup[]}
  */
 const scorePopups = [];
 
 /**
  * Object pool for score popups.
- * @type {ObjectPool}
+ * @type {ObjectPool<ScorePopup>}
  */
-const scorePopupPool = new ObjectPool(() => ({}));
+const scorePopupPool = new ObjectPool(
+  () =>
+    /** @type {ScorePopup} */ ({
+      text: '',
+      x: 0,
+      y: 0,
+      opacity: HUD_CONSTANTS.GLOBAL_ALPHA,
+      color: '#ffffff',
+    })
+);
 
 /**
  * Adds a score popup to the display.
@@ -48,6 +59,7 @@ export function updateScorePopups() {
 
     for (let i = scorePopups.length - 1; i >= 0; i--) {
         const popup = scorePopups[i];
+        if (!popup) continue;
         popup.y -= ANIMATION_CONSTANTS.SCORE_POPUP_FALL_SPEED;
         popup.opacity -= ANIMATION_CONSTANTS.SCORE_POPUP_FADE_SPEED;
 

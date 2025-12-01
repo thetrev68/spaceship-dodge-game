@@ -73,9 +73,9 @@ export function setCanvas(canvas) {
  * Restarts the game loop.
  */
 export function restartGameLoop() {
-  if (gameCanvas) {
-    animationId = requestAnimationFrame((t) => gameLoop(gameCanvas, t));
-  }
+  const canvas = gameCanvas;
+  if (!canvas) return;
+  animationId = requestAnimationFrame((t) => gameLoop(canvas, t));
 }
 
 

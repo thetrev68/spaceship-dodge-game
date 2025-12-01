@@ -11,6 +11,7 @@ import {
 import { stopMusic, startMusic, playSound } from '@systems/soundManager.js';
 import { clearAllBullets } from '@entities/bullet.js';
 import { getPlatformText } from '@ui/settings/settingsManager.js';
+/** @typedef {import('../../types/shared.js').PowerUpKey} PowerUpKey */
 
 const getStartOverlay = () => document.getElementById('startOverlay');
 const getGameOverOverlay = () => document.getElementById('gameOverOverlay');
@@ -81,7 +82,9 @@ function restoreFocus() {
 function handleFocusTrap(e) {
   if (!activeOverlay || !activeOverlay.classList.contains('visible') || e.key !== 'Tab') return;
 
-  const focusable = activeOverlay.querySelectorAll(focusableSelector);
+  const focusable = Array.from(activeOverlay.querySelectorAll(focusableSelector)).filter(
+    (el) => el instanceof HTMLElement
+  );
   if (!focusable.length) {
     e.preventDefault();
     activeOverlay.focus({ preventScroll: true });
@@ -90,6 +93,7 @@ function handleFocusTrap(e) {
 
   const first = focusable[0];
   const last = focusable[focusable.length - 1];
+  if (!first || !last) return;
   const isShift = e.shiftKey;
   const active = document.activeElement;
 
@@ -120,7 +124,7 @@ function hideAllOverlays() {
 
 /**
  * Shows a specific overlay.
- * @param {HTMLElement} overlay - The overlay element to show.
+ * @param {HTMLElement|null} overlay - The overlay element to show.
  */
 function show(overlay) {
   if (!overlay) return;
@@ -130,7 +134,8 @@ function show(overlay) {
   lastFocusedElement = document.activeElement instanceof HTMLElement ? document.activeElement : null;
 
   requestAnimationFrame(() => {
-    (focusable || overlay).focus({ preventScroll: true });
+    const focusTarget = focusable instanceof HTMLElement ? focusable : overlay;
+    focusTarget.focus({ preventScroll: true });
     activeOverlay = overlay;
   });
 }
@@ -243,8 +248,9 @@ export function quitGame() {
   obstacles.length = 0;
 
   Object.keys(powerUps).forEach(key => {
-    powerUps[key].active = false;
-    powerUps[key].timer = 0;
+    const typedKey = /** @type {PowerUpKey} */ (key);
+    powerUps[typedKey].active = false;
+    powerUps[typedKey].timer = 0;
   });
 
   playSound('gameover');
@@ -261,7 +267,7 @@ export function setOverlayDimensions(canvas) {
     getGameOverOverlay(),
     getLevelTransitionOverlay(),
     getPauseOverlay()
-  ].filter(Boolean);
+  ].filter((el) => el instanceof HTMLElement);
 
   setOverlayDims(canvas, /** @type {HTMLElement[]} */ (overlays));
 }

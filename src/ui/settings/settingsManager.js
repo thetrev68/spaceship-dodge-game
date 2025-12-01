@@ -11,6 +11,8 @@ import {
   SETTINGS_CONSTANTS
 } from '@core/uiConstants.js';
 
+/** @typedef {{ backgroundMusicVolume: number; soundEffectsVolume: number; isMuted: boolean; showTutorial: boolean; vibrationEnabled: boolean; platformSpecificText: boolean; version: string }} GameSettings */
+
 /**
  * Game settings storage key.
  * @constant {string}
@@ -19,9 +21,9 @@ const SETTINGS_KEY = SETTINGS_CONSTANTS.LOCAL_STORAGE_KEY;
 
 /**
  * Default settings configuration.
- * @constant {Object}
+ * @constant {GameSettings}
  */
-const DEFAULT_SETTINGS = {
+const DEFAULT_SETTINGS = /** @type {GameSettings} */ ({
   // Audio settings
   backgroundMusicVolume: VOLUME_CONSTANTS.DEFAULT_BACKGROUND_MUSIC,
   soundEffectsVolume: VOLUME_CONSTANTS.DEFAULT_SOUND_EFFECTS,
@@ -36,17 +38,17 @@ const DEFAULT_SETTINGS = {
 
   // Version for future migrations
   version: SETTINGS_CONSTANTS.DEFAULT_SETTINGS_VERSION
-};
+});
 
 /**
  * Current game settings.
- * @type {Object}
+ * @type {GameSettings}
  */
 let currentSettings = { ...DEFAULT_SETTINGS };
 
 /**
  * Load settings from localStorage.
- * @returns {Object} Loaded settings or defaults.
+ * @returns {GameSettings} Loaded settings or defaults.
  */
 export function loadSettings() {
   try {
@@ -84,7 +86,7 @@ export function saveSettings() {
 
 /**
  * Get current settings.
- * @returns {Object} Current settings.
+ * @returns {GameSettings} Current settings.
  */
 export function getSettings() {
   return { ...currentSettings };
@@ -92,8 +94,9 @@ export function getSettings() {
 
 /**
  * Set specific setting value.
- * @param {string} key - Setting key.
- * @param {*} value - Setting value.
+ * @template {keyof GameSettings} K
+ * @param {K} key - Setting key.
+ * @param {GameSettings[K]} value - Setting value.
  */
 export function setSetting(key, value) {
   if (Object.prototype.hasOwnProperty.call(currentSettings, key)) {
@@ -138,7 +141,7 @@ export function initializeSettings() {
 
 /**
  * Get platform-specific text for overlays.
- * @param {string} context - Context for text (start, pause, etc.)
+ * @param {'start'|'pause'|'controls'} context - Context for text (start, pause, etc.)
  * @returns {string} Platform-appropriate text.
  */
 export function getPlatformText(context) {
@@ -146,6 +149,7 @@ export function getPlatformText(context) {
     return getDefaultText(context);
   }
 
+  /** @type {Record<'start'|'pause'|'controls', { mobile: string; desktop: string }>} */
   const platformTexts = {
     start: {
       mobile: 'Tap the Screen to Begin',
@@ -167,10 +171,11 @@ export function getPlatformText(context) {
 
 /**
  * Get default text (fallback).
- * @param {string} context - Context for text.
+ * @param {'start'|'pause'|'controls'} context - Context for text.
  * @returns {string} Default text.
  */
 function getDefaultText(context) {
+  /** @type {Record<'start'|'pause'|'controls', string>} */
   const defaultTexts = {
     start: 'Tap or Click to Begin',
     pause: 'Tap or Press P to Resume',

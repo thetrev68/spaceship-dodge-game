@@ -97,11 +97,13 @@ export function createSettingsUI() {
   bgMusicSlider.min = VOLUME_CONSTANTS.MIN_VOLUME.toString();
   bgMusicSlider.max = VOLUME_CONSTANTS.MAX_VOLUME.toString();
   bgMusicSlider.step = VOLUME_CONSTANTS.VOLUME_STEP.toString();
-  bgMusicSlider.value = settings.backgroundMusicVolume;
+  bgMusicSlider.value = settings.backgroundMusicVolume.toString();
   bgMusicSlider.style.width = SETTINGS_UI.SLIDER_WIDTH;
   bgMusicSlider.style.marginBottom = SETTINGS_UI.SLIDER_MARGIN_BOTTOM;
   bgMusicSlider.addEventListener('input', (e) => {
-    const value = parseFloat(e.target.value);
+    const target = e.target;
+    if (!(target instanceof HTMLInputElement)) return;
+    const value = parseFloat(target.value);
     setSetting('backgroundMusicVolume', value);
     soundManager.setBackgroundMusicVolume(value);
   });
@@ -119,11 +121,13 @@ export function createSettingsUI() {
   sfxSlider.min = VOLUME_CONSTANTS.MIN_VOLUME.toString();
   sfxSlider.max = VOLUME_CONSTANTS.MAX_VOLUME.toString();
   sfxSlider.step = VOLUME_CONSTANTS.VOLUME_STEP.toString();
-  sfxSlider.value = settings.soundEffectsVolume;
+  sfxSlider.value = settings.soundEffectsVolume.toString();
   sfxSlider.style.width = SETTINGS_UI.SLIDER_WIDTH;
   sfxSlider.style.marginBottom = SETTINGS_UI.SLIDER_MARGIN_BOTTOM;
   sfxSlider.addEventListener('input', (e) => {
-    const value = parseFloat(e.target.value);
+    const target = e.target;
+    if (!(target instanceof HTMLInputElement)) return;
+    const value = parseFloat(target.value);
     setSetting('soundEffectsVolume', value);
     soundManager.setSoundEffectsVolume(value);
   });
@@ -146,7 +150,9 @@ export function createSettingsUI() {
   muteCheckbox.style.width = '20px';
   muteCheckbox.style.height = '20px';
   muteCheckbox.addEventListener('change', (e) => {
-    const isChecked = e.target.checked;
+    const target = e.target;
+    if (!(target instanceof HTMLInputElement)) return;
+    const isChecked = target.checked;
     setSetting('isMuted', isChecked);
     if (isChecked) {
       soundManager.muteAll();
@@ -179,7 +185,9 @@ export function createSettingsUI() {
   platformTextCheckbox.style.width = '20px';
   platformTextCheckbox.style.height = '20px';
   platformTextCheckbox.addEventListener('change', (e) => {
-    setSetting('platformSpecificText', e.target.checked);
+    const target = e.target;
+    if (!(target instanceof HTMLInputElement)) return;
+    setSetting('platformSpecificText', target.checked);
   });
 
   // Vibration toggle (mobile only)
@@ -197,7 +205,9 @@ export function createSettingsUI() {
     vibrationCheckbox.style.width = '20px';
     vibrationCheckbox.style.height = '20px';
     vibrationCheckbox.addEventListener('change', (e) => {
-      setSetting('vibrationEnabled', e.target.checked);
+      const target = e.target;
+      if (!(target instanceof HTMLInputElement)) return;
+      setSetting('vibrationEnabled', target.checked);
     });
 
     gameplaySection.appendChild(vibrationLabel);
@@ -236,7 +246,10 @@ export function showSettings() {
     container.style.display = 'block';
     container.setAttribute('aria-hidden', 'false');
     const focusable = container.querySelector(focusableSelector);
-    requestAnimationFrame(() => (focusable || container).focus({ preventScroll: true }));
+    requestAnimationFrame(() => {
+      const focusTarget = focusable instanceof HTMLElement ? focusable : container;
+      focusTarget.focus({ preventScroll: true });
+    });
   }
 }
 

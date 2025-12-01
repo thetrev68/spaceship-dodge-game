@@ -5,14 +5,20 @@
 import { debug, info, warn, error } from '@core/logger.js';
 import { VOLUME_CONSTANTS } from '@core/uiConstants.js';
 
-const BASE_URL = import.meta.env.BASE_URL || '/spaceship-dodge-game/';
+/** @typedef {import('../types/shared.js').VolumeState} VolumeState */
+/** @typedef {import('../types/shared.js').SoundMap} SoundMap */
+
+const envBaseUrl = typeof import.meta !== 'undefined' && import.meta && typeof import.meta === 'object' && 'env' in import.meta
+  ? /** @type {any} */ (import.meta).env?.BASE_URL
+  : undefined;
+const BASE_URL = typeof envBaseUrl === 'string' && envBaseUrl.length > 0 ? envBaseUrl : '/spaceship-dodge-game/';
 debug('audio', 'soundManager BASE_URL', BASE_URL);
 
 const SILENT_MP3 = `${BASE_URL}sounds/silence.mp3`;
 
 /**
  * Current volume levels.
- * @type {Object}
+ * @type {VolumeState}
  */
 export let volumes = {
   backgroundMusic: VOLUME_CONSTANTS.DEFAULT_BACKGROUND_MUSIC,
@@ -40,19 +46,19 @@ let isAudioUnlocked = false;
 
 /**
  * Sound effects and music.
- * @constant {Object<string, Audio|null>}
+ * @constant {SoundMap}
  */
-const sounds = {
+const sounds = /** @type {SoundMap} */ ({
   bgm: null, // Will be created dynamically
   fire: new Audio(`${BASE_URL}sounds/fire.mp3`),
   break: new Audio(`${BASE_URL}sounds/break.mp3`),
   gameover: new Audio(`${BASE_URL}sounds/gameover.mp3`),
   levelup: new Audio(`${BASE_URL}sounds/levelup.mp3`),
-};
+});
 
 // Preload all non-bgm sounds
 Object.entries(sounds).forEach(([key, audio]) => {
-  if (key === 'bgm') return;
+  if (key === 'bgm' || !(audio instanceof HTMLAudioElement)) return;
   audio.volume = currentVolume;
   audio.muted = isMuted;
   audio.addEventListener('loadeddata', () => {
@@ -63,10 +69,10 @@ Object.entries(sounds).forEach(([key, audio]) => {
 
 /**
  * Forces audio unlock by playing a silent sound.
- * @returns {Promise} Promise that resolves when unlock is attempted.
+ * @returns {Promise<void>} Promise that resolves when unlock is attempted.
  */
 export function forceAudioUnlock() {
-  return new Promise((resolve) => {
+  return /** @type {Promise<void>} */ (new Promise((resolve) => {
     try {
       const silent = new Audio(SILENT_MP3);
       silent.volume = 0;
@@ -101,7 +107,7 @@ export function forceAudioUnlock() {
       isAudioUnlocked = true;
       resolve(); // Resolve anyway to prevent blocking
     }
-  });
+  }));
 }
 
 /**
@@ -123,16 +129,19 @@ export function startMusic() {
     sounds.bgm.muted = isMuted;
   }
 
-  sounds.bgm.currentTime = 0;
+  const bgm = sounds.bgm;
+  if (!bgm) return;
 
-  sounds.bgm.volume = volumes.backgroundMusic;
-  sounds.bgm.muted = isMuted;
+  bgm.currentTime = 0;
 
-  sounds.bgm.play()
+  bgm.volume = volumes.backgroundMusic;
+  bgm.muted = isMuted;
+
+  bgm.play()
     .then(() => {
       info('audio', 'BGM playback started');
     })
-    .catch((err) => {
+    .catch((/** @type {unknown} */ err) => {
       error('audio', 'startMusic failed:', err);
     });
 }
@@ -141,9 +150,10 @@ export function startMusic() {
  * Stops background music.
  */
 export function stopMusic() {
-  if (!sounds.bgm) return;
-  sounds.bgm.pause();
-  sounds.bgm.currentTime = 0;
+  const bgm = sounds.bgm;
+  if (!bgm) return;
+  bgm.pause();
+  bgm.currentTime = 0;
 }
 
 /**
@@ -223,10 +233,10 @@ export function setSoundEffectsVolume(val) {
  * @param {string} name - Sound name.
  */
 export function playSound(name) {
-  if (!isAudioUnlocked || isMuted || !sounds[name]) return;
-
   const base = sounds[name];
-  const sfx = base.cloneNode();
+  if (!isAudioUnlocked || isMuted || !base) return;
+
+  const sfx = /** @type {HTMLAudioElement} */ (base.cloneNode());
   sfx.volume = volumes.soundEffects;
   sfx.muted = isMuted;
 
@@ -234,7 +244,7 @@ export function playSound(name) {
     .then(() => {
       debug('audio', `playSound(${name}) triggered`);
     })
-    .catch((err) => {
+    .catch((/** @type {unknown} */ err) => {
       error('audio', `playSound(${name}) failed:`, err);
     });
 }

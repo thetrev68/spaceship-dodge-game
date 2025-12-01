@@ -24,13 +24,25 @@ let obstacleMaxSpeed = ASTEROID_CONFIG.BASE_MAX_SPEED;
 const MOBILE_OBSTACLE_CAP = 14;
 
 // Initialize object pool
-const obstaclePool = new ObjectPool(() => /** @type {import('@types/shared').AsteroidState} */ ({
-  x: 0,
-  y: 0,
-  radius: 0,
-  dx: 0,
-  dy: 0
-}));
+const obstaclePool = new ObjectPool(
+  () =>
+    /** @type {import('../types/shared.js').AsteroidState} */ ({
+      x: 0,
+      y: 0,
+      radius: 0,
+      dx: 0,
+      dy: 0,
+      id: 0,
+      level: 0,
+      parentId: null,
+      scoreValue: 0,
+      creationTime: 0,
+      rotation: 0,
+      rotationSpeed: 0,
+      speed: 0,
+      shape: [],
+    })
+);
 
 /**
  * Count of new asteroids spawned.
@@ -86,11 +98,11 @@ function generateAsteroidShape(radius, numPoints) {
  * @param {number} [initialDx=0]
  * @param {number} [initialDy=0]
  * @param {number|null} [parentId=null]
- * @returns {import('@types/shared').AsteroidState}
+ * @returns {import('../types/shared.js').AsteroidState}
  */
 function createObstacle(x, y, levelIndex, initialDx = 0, initialDy = 0, parentId = null) {
-  const radius = ASTEROID_CONFIG.LEVEL_SIZES[levelIndex];
-  const scoreValue = ASTEROID_CONFIG.SCORE_VALUES[levelIndex];
+  const radius = ASTEROID_CONFIG.LEVEL_SIZES[levelIndex] ?? 0;
+  const scoreValue = ASTEROID_CONFIG.SCORE_VALUES[levelIndex] ?? 0;
   const basePoints = randomInt(ASTEROID_CONFIG.SHAPE_POINTS_MIN, ASTEROID_CONFIG.SHAPE_POINTS_MAX);
   const numPoints = isMobile() ? Math.min(basePoints, MOBILE_CONFIG.MAX_SHAPE_POINTS) : basePoints;
   const shape = generateAsteroidShape(radius, numPoints);
@@ -139,6 +151,8 @@ function createObstacle(x, y, levelIndex, initialDx = 0, initialDy = 0, parentId
   if (levelIndex === 0) {
     newAsteroidsSpawned++;
   }
+
+  return obstacle;
 }
 
 /**
@@ -146,7 +160,7 @@ function createObstacle(x, y, levelIndex, initialDx = 0, initialDy = 0, parentId
  * @param {number} canvasWidth - Canvas width.
  * @param {number} canvasHeight - Canvas height.
  * @param {number} spawnInterval - Spawn interval.
- * @param {Object} lastSpawnTimeRef - Reference to last spawn time.
+ * @param {{ value: number }} lastSpawnTimeRef - Reference to last spawn time.
  * @param {boolean} [allowSpawning=true] - Whether spawning is allowed.
  */
 export function updateObstacles(canvasWidth, canvasHeight, spawnInterval, lastSpawnTimeRef, allowSpawning = true) {
@@ -154,6 +168,7 @@ export function updateObstacles(canvasWidth, canvasHeight, spawnInterval, lastSp
 
   for (let i = 0; i < obstacles.length; i++) {
     const o = obstacles[i];
+    if (!o) continue;
 
     if (!o.creationTime) o.creationTime = now;
 
@@ -171,19 +186,27 @@ export function updateObstacles(canvasWidth, canvasHeight, spawnInterval, lastSp
     if (outOfBounds || tooOld) {
       // Swap and pop for O(1) removal
       const removed = obstacles[i];
-      obstacles[i] = obstacles[obstacles.length - 1];
-      obstacles.pop();
-      i--; // Process the swapped element in the next iteration
+      if (!removed) {
+        continue;
+      }
+      const last = obstacles.pop();
+      if (last && last !== removed) {
+        obstacles[i] = last;
+        i--; // Process the swapped element in the next iteration
+      } else {
+        i--; // Removed last element, adjust for loop increment
+      }
 
       // Decrement fragmentTracker for expired fragments
+      const parentId = removed.parentId;
       if (
-        removed.parentId != null &&
+        parentId != null &&
         removed.level === ASTEROID_CONFIG.LEVEL_SIZES.length - 1 &&
-        typeof fragmentTracker[removed.parentId] === 'number'
+        typeof fragmentTracker[parentId] === 'number'
       ) {
-        fragmentTracker[removed.parentId]--;
-        if (fragmentTracker[removed.parentId] <= 0) {
-          delete fragmentTracker[removed.parentId];
+        fragmentTracker[parentId]--;
+        if ((fragmentTracker[parentId] ?? 0) <= 0) {
+          delete fragmentTracker[parentId];
         }
       }
 
@@ -196,11 +219,8 @@ export function updateObstacles(canvasWidth, canvasHeight, spawnInterval, lastSp
     now - lastSpawnTimeRef.value > spawnInterval &&
     (!isMobile() || obstacles.length < MOBILE_OBSTACLE_CAP)
   ) {
-    createObstacle(
-      Math.random() * (canvasWidth - ASTEROID_CONFIG.LEVEL_SIZES[0] * 2),
-      -ASTEROID_CONFIG.LEVEL_SIZES[0] * 2,
-      0
-    );
+    const spawnRadius = ASTEROID_CONFIG.LEVEL_SIZES[0] ?? 0;
+    createObstacle(Math.random() * (canvasWidth - spawnRadius * 2), -spawnRadius * 2, 0);
     lastSpawnTimeRef.value = now;
   }
 }
@@ -219,6 +239,7 @@ export function drawObstacles(ctx) {
 
   for (let i = 0; i < obstacles.length; i++) {
     const o = obstacles[i];
+    if (!o) continue;
     const cx = o.x + o.radius;
     const cy = o.y + o.radius;
     const cos = Math.cos(o.rotation);
@@ -226,6 +247,7 @@ export function drawObstacles(ctx) {
 
     // Transform first point
     const p0 = o.shape[0];
+    if (!p0) continue;
     const startX = p0.x * cos - p0.y * sin + cx;
     const startY = p0.x * sin + p0.y * cos + cy;
 
@@ -233,6 +255,7 @@ export function drawObstacles(ctx) {
 
     for (let j = 1; j < o.shape.length; j++) {
       const p = o.shape[j];
+      if (!p) continue;
       const px = p.x * cos - p.y * sin + cx;
       const py = p.x * sin + p.y * cos + cy;
       ctx.lineTo(px, py);
@@ -247,16 +270,18 @@ export function drawObstacles(ctx) {
 
 /**
  * Destroys an obstacle, releases to pool, spawns fragments if applicable.
- * @param {Object} obstacle - The obstacle to destroy.
- * @param {Object} scoreRef - Reference to score.
+ * @param {import('../types/shared.js').AsteroidState} obstacle - The obstacle to destroy.
+ * @param {{ value: number }} scoreRef - Reference to score.
  */
 export function destroyObstacle(obstacle, scoreRef) {
   const idx = obstacles.indexOf(obstacle);
   if (idx === -1) return;
 
   // Swap and pop for O(1) removal
-  obstacles[idx] = obstacles[obstacles.length - 1];
-  obstacles.pop();
+  const last = obstacles.pop();
+  if (last && last !== obstacle) {
+    obstacles[idx] = last;
+  }
 
   obstaclePool.release(obstacle);
   playSound('break');
@@ -289,11 +314,17 @@ export function destroyObstacle(obstacle, scoreRef) {
   addScorePopup(`+${obstacle.scoreValue}`, obstacle.x + obstacle.radius, obstacle.y);
 
   if (obstacle.parentId !== null && obstacle.level === ASTEROID_CONFIG.LEVEL_SIZES.length - 1) {
-    fragmentTracker[obstacle.parentId]--;
-    if (fragmentTracker[obstacle.parentId] === 0) {
-      scoreRef.value += ASTEROID_CONFIG.FRAGMENT_BONUS;
-      addScorePopup(`+${ASTEROID_CONFIG.FRAGMENT_BONUS} (All Fragments)`, obstacle.x, obstacle.y - 10, '#00ff00');
-      delete fragmentTracker[obstacle.parentId];
+    const parentId = obstacle.parentId;
+    const count = fragmentTracker[parentId];
+    if (typeof count === 'number') {
+      const nextCount = count - 1;
+      if (nextCount <= 0) {
+        scoreRef.value += ASTEROID_CONFIG.FRAGMENT_BONUS;
+        addScorePopup(`+${ASTEROID_CONFIG.FRAGMENT_BONUS} (All Fragments)`, obstacle.x, obstacle.y - 10, '#00ff00');
+        delete fragmentTracker[parentId];
+      } else {
+        fragmentTracker[parentId] = nextCount;
+      }
     }
   }
 }

@@ -54,7 +54,8 @@ export const AUDIO_CONTROLS = {
   GAP: '10px',
   BUTTON_FONT_SIZE: '1.2rem',
   BUTTON_SIZE: '40px',
-  SLIDER_WIDTH: '120px'
+  SLIDER_WIDTH: '120px',
+  BUTTON_MARGIN_LEFT: '5px'
 };
 
 // Volume Constants

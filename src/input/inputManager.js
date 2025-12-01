@@ -19,7 +19,7 @@ let firing = false;
 
 /**
  * Timeout ID for firing loop.
- * @type {number|null}
+ * @type {ReturnType<typeof setTimeout>|null}
  */
 let fireTimeoutId = null;
 

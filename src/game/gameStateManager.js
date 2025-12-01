@@ -76,7 +76,9 @@ export function startGame(canvas) {
 
   // Clear the canvas explicitly
   const ctx = canvas.getContext('2d');
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  if (ctx) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
 }
 
 /**

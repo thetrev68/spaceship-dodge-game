@@ -9,27 +9,37 @@ import { ObjectPool } from '@systems/poolManager.js';
 import { addScorePopup } from '@ui/hud/scorePopups.js';
 import { POWERUP_CONFIG, GAME_CONFIG } from '@core/constants.js';
 
+/** @typedef {import('../types/shared.js').PowerUpKey} PowerUpKey */
+/** @typedef {{ x: number; y: number; size: number; type: PowerUpKey | null; dy: number }} ActivePowerup */
+
 /**
  * Power-up types enumeration.
  * @enum {string}
  */
-const POWERUP_TYPES = {
+const POWERUP_TYPES = /** @type {const} */ ({
   DOUBLE_BLASTER: 'doubleBlaster',
   SHIELD: 'shield',
-};
+});
 
 const powerupSize = isMobile() ? 40 : 50;
 
 /**
  * Array of active power-ups.
- * @type {Array}
+ * @type {ActivePowerup[]}
  */
 const activePowerups = []; // Renamed from 'powerups' to avoid confusion with the pool
 
 // Initialize object pool for powerups
-const powerupPool = new ObjectPool(() => ({
-  x: 0, y: 0, size: powerupSize, type: null, dy: 0
-}));
+const powerupPool = new ObjectPool(
+  () =>
+    /** @type {ActivePowerup} */ ({
+      x: 0,
+      y: 0,
+      size: powerupSize,
+      type: null,
+      dy: 0,
+    })
+);
 
 
 /**
@@ -39,6 +49,7 @@ const powerupPool = new ObjectPool(() => ({
 export function spawnPowerup(canvasWidth) {
   const x = Math.random() * (canvasWidth - powerupSize);
   const y = -powerupSize;
+  /** @type {PowerUpKey} */
   const type = Math.random() < 0.5 ? POWERUP_TYPES.DOUBLE_BLASTER : POWERUP_TYPES.SHIELD;
 
   const p = powerupPool.acquire();
@@ -53,6 +64,7 @@ export function spawnPowerup(canvasWidth) {
 export function updatePowerups(canvasHeight) {
   for (let i = activePowerups.length - 1; i >= 0; i--) {
     const p = activePowerups[i];
+    if (!p) continue;
     p.y += p.dy;
 
     let remove = false;
@@ -72,18 +84,22 @@ export function updatePowerups(canvasHeight) {
 
     if (remove) {
       // Swap and pop
-      activePowerups[i] = activePowerups[activePowerups.length - 1];
-      activePowerups.pop();
+      const last = activePowerups.pop();
+      if (last && last !== p) {
+        activePowerups[i] = last;
+        i++; // stay on swapped element after loop decrement
+      }
       powerupPool.release(p);
 
-      if (collided) {
+      if (collided && p.type) {
         activatePowerup(p.type);
         addScorePopup(`Power-up! ${p.type}`, player.x, player.y - 20, '#00ffff');
       }
     }
   }
 
-  Object.keys(powerUps).forEach(key => {
+  /** @type {PowerUpKey[]} */
+  (Object.keys(powerUps)).forEach((key) => {
     if (powerUps[key].active) {
       powerUps[key].timer--;
       if (powerUps[key].timer <= 0) {
@@ -173,7 +189,7 @@ export function drawPowerups(ctx) {
 
 /**
  * Activates a power-up.
- * @param {string} type - Power-up type.
+ * @param {PowerUpKey} type - Power-up type.
  */
 function activatePowerup(type) {
   const config = POWERUP_CONFIG[type];

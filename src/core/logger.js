@@ -8,7 +8,7 @@
  * @typedef {'DEBUG'|'INFO'|'WARN'|'ERROR'|'NONE'} LogLevelKey
  */
 
-/** @type {{ DEBUG: number; INFO: number; WARN: number; ERROR: number; NONE: number }} */
+/** @type {Record<LogLevelKey, number> & Record<string, number>} */
 const LogLevel = {
   DEBUG: 0,
   INFO: 1,

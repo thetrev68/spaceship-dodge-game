@@ -44,6 +44,7 @@ let lastFireTime = 0;
  * @const {number}
  */
 const fireCooldown = 250;
+/** @type {ReturnType<typeof setInterval>|null} */
 let fireIntervalId = null;
 
 function startFiringLoop() {
@@ -73,14 +74,18 @@ export function setupMobileInput(canvas) {
   canvasEl = canvas;
   debug('input', 'setupMobileInput called', { canvasId: canvas.id });
 
+  /**
+   * @param {TouchEvent} e
+   */
   function handleTouchStart(e) {
     // debug('input', 'handleTouchStart triggered', e.target);
     e.preventDefault();
 
     // Only block the touch if it's inside a currently visible overlay
     const activeOverlay = document.querySelector('.game-overlay.visible');
-    if (activeOverlay && activeOverlay.contains(e.target)) {
-      debug('input', 'Touch blocked — inside active overlay');
+    const target = e.target;
+    if (activeOverlay && target instanceof Node && activeOverlay.contains(target)) {
+      debug('input', 'Touch blocked - inside active overlay');
       return;
     }
 
@@ -89,6 +94,8 @@ export function setupMobileInput(canvas) {
       warn('input', 'No touch object found');
       return;
     }
+
+    if (!canvasEl) return;
 
     const rect = canvasEl.getBoundingClientRect();
     touchX = t.clientX - rect.left;
@@ -110,6 +117,7 @@ export function setupMobileInput(canvas) {
     e.preventDefault();
     const t = e.touches[0];
     if (!t) return;
+    if (!canvasEl) return;
     const rect = canvasEl.getBoundingClientRect();
     touchX = t.clientX - rect.left;
     touchY = t.clientY - rect.top;

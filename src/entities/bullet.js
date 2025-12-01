@@ -27,18 +27,22 @@ if (bctx) {
 }
 
 // Initialize object pool for bullets
-const bulletPool = new ObjectPool(() => /** @type {import('@types/shared').BulletState} */ ({
-  x: 0,
-  y: 0,
-  radius: bulletRadius,
-  dy: 0
-}));
+const bulletPool = new ObjectPool(
+  () =>
+    /** @type {import('../types/shared.js').BulletState} */ ({
+      x: 0,
+      y: 0,
+      radius: bulletRadius,
+      dy: 0,
+      parentId: null,
+    })
+);
 
 /**
  * Acquires a bullet from the pool.
  * @param {number} x - X position.
  * @param {number} y - Y position.
- * @returns {Object} The bullet object.
+ * @returns {import('../types/shared.js').BulletState} The bullet object.
  */
 function acquireBullet(x, y) {
   const bullet = bulletPool.acquire();
@@ -53,7 +57,7 @@ function acquireBullet(x, y) {
 
 /**
  * Releases a bullet back to the pool.
- * @param {Object} bullet - The bullet to release.
+ * @param {import('../types/shared.js').BulletState} bullet - The bullet to release.
  */
 function releaseBullet(bullet) {
   bulletPool.release(bullet);
@@ -66,7 +70,11 @@ function releaseBullet(bullet) {
 export function despawnBullet(index) {
   if (index >= 0 && index < bullets.length) {
     const bullet = bullets[index];
-    bullets[index] = bullets[bullets.length - 1];
+    if (!bullet) return;
+    const last = bullets[bullets.length - 1];
+    if (last) {
+      bullets[index] = last;
+    }
     bullets.pop();
     releaseBullet(bullet);
   }
@@ -106,11 +114,15 @@ export function fireBullet(x, y) {
 export function updateBullets() {
   for (let i = bullets.length - 1; i >= 0; i--) {
     const b = bullets[i];
+    if (!b) continue;
     b.y += b.dy;
 
     if (b.y + b.radius < 0) {
       // Swap and pop
-      bullets[i] = bullets[bullets.length - 1];
+      const last = bullets[bullets.length - 1];
+      if (last) {
+        bullets[i] = last;
+      }
       bullets.pop();
       releaseBullet(b);
     }

@@ -33,12 +33,12 @@ function reactive(obj) {
 }
 
 /**
- * @typedef {import('@types/shared').GameStateValue} GameStateValue
- * @typedef {import('@types/shared').PowerUpState} PowerUpState
- * @typedef {import('@types/shared').PowerUpMap} PowerUpMap
- * @typedef {import('@types/shared').PlayerState} PlayerState
- * @typedef {import('@types/shared').BulletState} BulletState
- * @typedef {import('@types/shared').AsteroidState} AsteroidState
+ * @typedef {import('../types/shared.js').GameStateValue} GameStateValue
+ * @typedef {import('../types/shared.js').PowerUpState} PowerUpState
+ * @typedef {import('../types/shared.js').PowerUpMap} PowerUpMap
+ * @typedef {import('../types/shared.js').PlayerState} PlayerState
+ * @typedef {import('../types/shared.js').BulletState} BulletState
+ * @typedef {import('../types/shared.js').AsteroidState} AsteroidState
  */
 
 /**
@@ -108,7 +108,7 @@ export const powerUps = {
 
 /**
  * Player state object.
- * @constant {PlayerState}
+ * @type {PlayerState}
  */
 export const player = {
   x: 380,
@@ -118,4 +118,5 @@ export const player = {
   speed: 7,
   dx: 0,
   dy: 0,
+  overridePosition: null,
 };

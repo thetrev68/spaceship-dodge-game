@@ -76,7 +76,9 @@ export function createAudioControls() {
   volumeSlider.value = settings.soundEffectsVolume.toString();
   volumeSlider.style.width = AUDIO_CONTROLS.SLIDER_WIDTH;
   volumeSlider.oninput = (e) => {
-    const val = parseFloat(e.target.value);
+    const target = e.target;
+    if (!(target instanceof HTMLInputElement)) return;
+    const val = parseFloat(target.value);
     setSetting('soundEffectsVolume', val);
     setSetting('backgroundMusicVolume', val);
     soundManager.setSoundEffectsVolume(val);

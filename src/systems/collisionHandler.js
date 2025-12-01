@@ -11,6 +11,9 @@ import { destroyObstacle } from '@entities/asteroid.js';
 import { handlePlayerHit } from '@game/gameStateManager.js';
 import { despawnBullet } from '@entities/bullet.js';
 
+/** @typedef {import('../types/shared.js').AsteroidState} AsteroidState */
+/** @typedef {import('../types/shared.js').BulletState} BulletState */
+
 /**
  * Checks collision between a circle and a rectangle.
  * @param {number} cx - Circle center X.
@@ -32,7 +35,7 @@ function circleRectCollision(cx, cy, radius, rx, ry, rw, rh) {
 
 /**
  * Checks if player collides with any obstacle.
- * @returns {Object|null} The colliding obstacle or null.
+ * @returns {AsteroidState|null} The colliding obstacle or null.
  */
 function checkPlayerObstacleCollision() {
   const px = player.x;
@@ -59,6 +62,7 @@ class SpatialGrid {
    */
   constructor(cellSize = 50) {
     this.cellSize = cellSize;
+    /** @type {Map<string, AsteroidState[]>} */
     this.grid = new Map();
   }
 
@@ -105,17 +109,19 @@ class SpatialGrid {
 
   /**
    * Inserts an obstacle into the grid.
-   * @param {Object} obstacle - The obstacle to insert.
+   * @param {AsteroidState} obstacle - The obstacle to insert.
    */
   insertObstacle(obstacle) {
     const centerX = obstacle.x + obstacle.radius;
     const centerY = obstacle.y + obstacle.radius;
     const key = this._getCellKey(centerX, centerY);
     
-    if (!this.grid.has(key)) {
-      this.grid.set(key, []);
+    let bucket = this.grid.get(key);
+    if (!bucket) {
+      bucket = [];
+      this.grid.set(key, bucket);
     }
-    this.grid.get(key).push(obstacle);
+    bucket.push(obstacle);
   }
 
   /**
@@ -123,10 +129,11 @@ class SpatialGrid {
    * @param {number} x - X coordinate.
    * @param {number} y - Y coordinate.
    * @param {number} [radius=0] - Search radius.
-   * @returns {Object[]} Array of nearby obstacles.
+   * @returns {AsteroidState[]} Array of nearby obstacles.
    */
   getNearbyObstacles(x, y, radius = 0) {
     const nearbyKeys = this._getNearbyCells(x, y, radius);
+    /** @type {AsteroidState[]} */
     const nearbyObstacles = [];
 
     nearbyKeys.forEach(key => {
@@ -163,6 +170,7 @@ function checkBulletObstacleCollisions() {
 
   for (let i = bullets.length - 1; i >= 0; i--) {
     const bullet = bullets[i];
+    if (!bullet) continue;
     const nearbyObstacles = spatialGrid.getNearbyObstacles(bullet.x, bullet.y, searchRadius);
 
     for (const obstacle of nearbyObstacles) {

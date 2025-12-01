@@ -64,8 +64,9 @@ export function resetPlayer(canvasWidth, canvasHeight) {
 export function updatePlayer() {
   if (gameState.value !== 'PLAYING') return;
 
-  if (player.overridePosition) {
-    setPlayerPosition(player.overridePosition.x, player.overridePosition.y);
+  const override = player.overridePosition;
+  if (override && typeof override === 'object' && 'x' in override && 'y' in override) {
+    setPlayerPosition(override.x, override.y);
     player.overridePosition = null;
   } else {
     movePlayer(player.dx, player.dy);
@@ -178,7 +179,7 @@ export function drawPlayer(ctx) {
 
 /**
  * Gets player dimensions.
- * @returns {Object} Object with width and height.
+ * @returns {{ width: number; height: number }} Object with width and height.
  */
 export function getPlayerDimensions() {
     return { width: player.width, height: player.height };
@@ -194,7 +195,7 @@ export function getPlayerSpeed() {
 
 /**
  * Gets player velocity.
- * @returns {Object} Object with dx and dy.
+ * @returns {{ dx: number; dy: number }} Object with dx and dy.
  */
 export function getPlayerVelocity() {
     return { dx: player.dx, dy: player.dy };
