@@ -17,7 +17,7 @@ const LogLevel = {
 
 // Configuration
 const config = {
-  level: LogLevel.DEBUG, // Current minimum level to log
+  level: LogLevel.WARN, // Current minimum level to log
   enabled: true, // Master switch
   categories: {
     // Category-specific overrides (true = enabled, false = disabled)
@@ -233,7 +233,7 @@ export function setupProduction() {
  */
 export function setupDevelopment() {
   logger.setEnabled(true);
-  logger.setLevel(LogLevel.DEBUG);
+  // logger.setLevel(LogLevel.DEBUG); // Respect default config (WARN)
   logger.setCategory('render', false); // Too verbose
 }
 
