@@ -11,6 +11,7 @@ import { powerUps, player } from '@core/state.js';
 import { isMobile } from '@utils/platform.js';
 import { ObjectPool } from '@systems/poolManager.js';
 import { addScorePopup } from '@ui/hud/scorePopups.js';
+import { POWERUP_CONFIG, GAME_CONFIG } from '@core/constants.js';
 
 const POWERUP_TYPES = {
   DOUBLE_BLASTER: 'doubleBlaster',
@@ -135,5 +136,5 @@ export function drawPowerups(ctx) {
 
 function activatePowerup(type) {
   powerUps[type].active = true;
-  powerUps[type].timer = 600;
+  powerUps[type].timer = Math.round(POWERUP_CONFIG[type].DURATION / GAME_CONFIG.FRAME_DURATION);
 }
