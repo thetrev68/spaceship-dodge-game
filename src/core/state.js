@@ -18,13 +18,14 @@
 function reactive(obj) {
   const listeners = new Set();
 
-  const proxy = new Proxy(obj, {
+  const proxy = /** @type {any} */ (new Proxy(/** @type {object} */ (obj), {
     set(target, key, value) {
+      // @ts-ignore - dynamic assignment by design
       target[key] = value;
       listeners.forEach(fn => fn());
       return true;
     }
-  });
+  }));
 
   // @ts-ignore - augment proxy
   proxy.watch = (fn) => listeners.add(fn);
@@ -32,11 +33,11 @@ function reactive(obj) {
 }
 
 /**
- * @typedef {'START'|'PLAYING'|'PAUSED'|'GAME_OVER'|'LEVEL_TRANSITION'} GameStateValue
- * @typedef {{ active: boolean, timer: number }} PowerUpState
- * @typedef {{ x: number, y: number, width: number, height: number, speed: number, dx: number, dy: number }} PlayerState
- * @typedef {{ x: number, y: number, radius: number, dy: number, parentId?: number }} BulletState
- * @typedef {{ x: number, y: number, radius: number, dx: number, dy: number, id?: number, level?: number, parentId?: number, scoreValue?: number }} AsteroidState
+ * @typedef {import('@types/shared.js').GameStateValue} GameStateValue
+ * @typedef {import('@types/shared.js').PowerUpState} PowerUpState
+ * @typedef {import('@types/shared.js').PlayerState} PlayerState
+ * @typedef {import('@types/shared.js').BulletState} BulletState
+ * @typedef {import('@types/shared.js').AsteroidState} AsteroidState
  */
 
 /**

@@ -19,13 +19,20 @@ const bulletSprite = document.createElement('canvas');
 bulletSprite.width = bulletRadius * 2;
 bulletSprite.height = bulletRadius * 2;
 const bctx = bulletSprite.getContext('2d');
-bctx.fillStyle = '#ffff88';
-bctx.beginPath();
-bctx.arc(bulletRadius, bulletRadius, bulletRadius, 0, 2 * Math.PI);
-bctx.fill();
+if (bctx) {
+  bctx.fillStyle = '#ffff88';
+  bctx.beginPath();
+  bctx.arc(bulletRadius, bulletRadius, bulletRadius, 0, 2 * Math.PI);
+  bctx.fill();
+}
 
 // Initialize object pool for bullets
-const bulletPool = new ObjectPool(() => ({}));
+const bulletPool = new ObjectPool(() => /** @type {import('@types/shared.js').BulletState} */ ({
+  x: 0,
+  y: 0,
+  radius: bulletRadius,
+  dy: 0
+}));
 
 /**
  * Acquires a bullet from the pool.

@@ -11,7 +11,9 @@ import { isMobile } from '@utils/platform.js';
  */
 export function setupStarfield(canvas) {
   const ctx = canvas.getContext('2d');
+  if (!ctx) return;
   const starCount = isMobile() ? 40 : 100; // Reduced count for mobile
+  /** @type {{ x: number; y: number; size: number; speed: number }[]} */
   const stars = [];
 
   /**

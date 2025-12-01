@@ -4,35 +4,33 @@
  */
 
 import {
-
-    GAME_CONFIG,
-
-    ASTEROID_CONFIG,
-
-    MOBILE_CONFIG
-
+  GAME_CONFIG,
+  ASTEROID_CONFIG,
+  MOBILE_CONFIG
 } from '@core/constants.js';
 
-
-
 import { obstacles } from '@core/state.js';
-
 import { isMobile } from '@utils/platform.js';
-
 import { randomInt, randomFloat } from '@utils/mathUtils.js';
-
 import { ObjectPool } from '@systems/poolManager.js';
 import { addScorePopup } from '@ui/hud/scorePopups.js';
 import { playSound } from '@systems/soundManager.js';
 
 let obstacleMinSpeed = ASTEROID_CONFIG.BASE_MIN_SPEED;
 let nextAsteroidId = 1;
+/** @type {Record<number, number>} */
 const fragmentTracker = {};
 let obstacleMaxSpeed = ASTEROID_CONFIG.BASE_MAX_SPEED;
 const MOBILE_OBSTACLE_CAP = 14;
 
 // Initialize object pool
-const obstaclePool = new ObjectPool(() => ({}));
+const obstaclePool = new ObjectPool(() => /** @type {import('@types/shared.js').AsteroidState} */ ({
+  x: 0,
+  y: 0,
+  radius: 0,
+  dx: 0,
+  dy: 0
+}));
 
 /**
  * Count of new asteroids spawned.
@@ -52,6 +50,11 @@ export function resetNewAsteroidsSpawned() {
  * @param {number} radius - Asteroid radius.
  * @param {number} numPoints - Number of shape points.
  * @returns {Array<Object>} Array of point objects with x, y.
+ */
+/**
+ * @param {number} radius
+ * @param {number} numPoints
+ * @returns {{x:number,y:number}[]}
  */
 function generateAsteroidShape(radius, numPoints) {
   const points = [];
@@ -75,6 +78,15 @@ function generateAsteroidShape(radius, numPoints) {
  * @param {number} [initialDx=0] - Initial X velocity.
  * @param {number} [initialDy=0] - Initial Y velocity.
  * @param {number|null} [parentId=null] - Parent asteroid ID.
+ */
+/**
+ * @param {number} x
+ * @param {number} y
+ * @param {number} levelIndex
+ * @param {number} [initialDx=0]
+ * @param {number} [initialDy=0]
+ * @param {number|null} [parentId=null]
+ * @returns {import('@types/shared.js').AsteroidState}
  */
 function createObstacle(x, y, levelIndex, initialDx = 0, initialDy = 0, parentId = null) {
   const radius = ASTEROID_CONFIG.LEVEL_SIZES[levelIndex];

@@ -2,6 +2,7 @@
  * @fileoverview Lightweight performance HUD for FPS and timing metrics.
  */
 
+/** @type {HTMLDivElement|null} */
 let hudElement;
 let enabled = false;
 let lastRenderedText = '';

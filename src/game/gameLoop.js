@@ -33,9 +33,12 @@ import { isMobile } from '@utils/platform.js';
 import { updatePerfHud } from '@ui/hud/perfHUD.js';
 
 let lastFrameTime = 0;
-let animationId;
-let gameCanvas;
-let ctx;
+/** @type {number|null} */
+let animationId = null;
+/** @type {HTMLCanvasElement|null} */
+let gameCanvas = null;
+/** @type {CanvasRenderingContext2D|null} */
+let ctx = null;
 let lastPowerupSpawnTime = 0;
 let perfSampleStart = performance.now();
 let perfFrameCounter = 0;
@@ -142,8 +145,10 @@ function gameLoop(canvas, timestamp = 0) {
     }
   }
 
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  renderAll(ctx);
+  if (ctx) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    renderAll(ctx);
+  }
   const frameEnd = performance.now();
 
   perfFrameCounter += 1;

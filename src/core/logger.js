@@ -8,23 +8,24 @@
  * @typedef {'DEBUG'|'INFO'|'WARN'|'ERROR'|'NONE'} LogLevelKey
  */
 
-/**
- * Log levels enumeration.
- * @enum {number}
- */
-const LogLevel = /** @type {const} */ ({
+/** @type {Record<string, number>} */
+const LogLevel = {
   DEBUG: 0,
   INFO: 1,
   WARN: 2,
   ERROR: 3,
   NONE: 4,
-});
+};
 
-// Configuration
-const config = /** @type {const} */ ({
+/**
+ * @typedef {{ level: number; enabled: boolean; categories: Record<string, boolean>; timestamps: boolean; colors: boolean; }} LoggerConfig
+ */
+
+/** @type {LoggerConfig} */
+const config = {
   level: LogLevel.WARN, // Current minimum level to log
   enabled: true, // Master switch
-  categories: /** @type {Record<LogCategory, boolean>} */ ({
+  categories: {
     // Category-specific overrides (true = enabled, false = disabled)
     audio: true,
     game: true,
@@ -34,15 +35,16 @@ const config = /** @type {const} */ ({
     powerup: true,
     level: true,
     render: false, // Usually too verbose
-  }),
+  },
   timestamps: true, // Include timestamps
   colors: true, // Use console colors (browser-only)
-});
+};
 
 /**
  * Color codes for browser console.
  * @constant {Object<string, string>}
  */
+/** @type {Record<string, string>} */
 const colors = {
   DEBUG: '#888',
   INFO: '#0af',
@@ -70,9 +72,9 @@ function getTimestamp() {
 /**
  * Core logging function.
  * @param {number} level - Log level.
- * @param {LogCategory} category - Log category.
+ * @param {LogCategory|string} category - Log category.
  * @param {string} message - Log message.
- * @param {...*} args - Additional arguments.
+ * @param {...any} args - Additional arguments.
  */
 function log(level, category, message, ...args) {
   // Check if logging is enabled
@@ -84,7 +86,7 @@ function log(level, category, message, ...args) {
   // Check category filter
   if (category && config.categories[category] === false) return;
 
-  const levelName = Object.keys(LogLevel).find(key => LogLevel[key] === level) || 'LOG';
+  const levelName = /** @type {LogLevelKey} */ (Object.keys(LogLevel).find(key => LogLevel[key] === level) || 'DEBUG');
   const timestamp = config.timestamps ? `[${getTimestamp()}]` : '';
   const categoryTag = category ? `[${category}]` : '';
   const prefix = `${timestamp}${categoryTag}[${levelName}]`;
@@ -110,7 +112,7 @@ function log(level, category, message, ...args) {
 
 /**
  * Public API - Debug level.
- * @param {LogCategory} category - Log category.
+ * @param {LogCategory|string} category - Log category.
  * @param {string} message - Log message.
  * @param {...*} args - Additional arguments.
  */
@@ -120,7 +122,7 @@ export function debug(category, message, ...args) {
 
 /**
  * Public API - Info level.
- * @param {LogCategory} category - Log category.
+ * @param {LogCategory|string} category - Log category.
  * @param {string} message - Log message.
  * @param {...*} args - Additional arguments.
  */
@@ -130,7 +132,7 @@ export function info(category, message, ...args) {
 
 /**
  * Public API - Warning level.
- * @param {LogCategory} category - Log category.
+ * @param {LogCategory|string} category - Log category.
  * @param {string} message - Log message.
  * @param {...*} args - Additional arguments.
  */
@@ -140,7 +142,7 @@ export function warn(category, message, ...args) {
 
 /**
  * Public API - Error level.
- * @param {LogCategory} category - Log category.
+ * @param {LogCategory|string} category - Log category.
  * @param {string} message - Log message.
  * @param {...*} args - Additional arguments.
  */
@@ -175,7 +177,7 @@ export const logger = {
 
   /**
    * Enable/disable specific category.
-   * @param {LogCategory} category - Category name.
+   * @param {LogCategory|string} category - Category name.
    * @param {boolean} enabled - Whether to enable the category.
    */
   setCategory(category, enabled) {
@@ -274,16 +276,38 @@ export class Timer {
  */
 export function createLogger(category) {
   return {
+    /**
+     * @param {string} message
+     * @param {...any} args
+     */
     debug: (message, ...args) => debug(category, message, ...args),
+    /**
+     * @param {string} message
+     * @param {...any} args
+     */
     info: (message, ...args) => info(category, message, ...args),
+    /**
+     * @param {string} message
+     * @param {...any} args
+     */
     warn: (message, ...args) => warn(category, message, ...args),
+    /**
+     * @param {string} message
+     * @param {...any} args
+     */
     error: (message, ...args) => error(category, message, ...args),
+    /**
+     * @param {string} label
+     */
     timer: (label) => new Timer(category, label),
   };
 }
 
 // Auto-configure based on environment (guarded for non-Vite contexts)
-const mode = typeof import.meta !== 'undefined' && import.meta && import.meta.env ? import.meta.env.MODE : 'development';
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const mode = typeof import.meta !== 'undefined' && import.meta && /** @type {any} */ (import.meta).env
+  ? /** @type {any} */ (import.meta).env.MODE
+  : 'development';
 if (mode === 'production') {
   setupProduction();
 } else {
