@@ -297,7 +297,7 @@ def main():
         print(f"📊 Counting lines for: {', '.join(sorted(scanner.count_lines_for))}")
     
     # Generate tree
-    content = scanner.generate_tree(root_path, args.output)
+    scanner.generate_tree(root_path, args.output)
     
     # Display summary
     print("\n📊 Summary:")
