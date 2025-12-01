@@ -3,7 +3,7 @@
     Optimized with object pooling (2025-06-06)
 */
 
-import { isMobile } from './state.js';
+import { isMobile } from './utils/platform.js';
 
 const scorePopups = [];
 const scorePopupPool = [];

@@ -18,9 +18,6 @@ function reactive(obj) {
   return proxy;
 }
 
-// 📱 Platform check
-export const isMobile = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-
 // 🎮 Game state
 export const gameState = reactive({ value: 'START' });
 export const score = reactive({ value: 0 });

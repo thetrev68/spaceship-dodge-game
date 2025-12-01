@@ -1,4 +1,9 @@
-import { playerLives, isMobile } from './state.js';
+import { playerLives } from './state.js';
+import { isMobile } from './utils/platform.js';
+import {
+  initializeCanvas as initCanvas,
+  setOverlayDimensions as setOverlayDims
+} from './utils/canvasUtils.js';
 
 const startOverlay = document.getElementById('startOverlay');
 const gameOverOverlay = document.getElementById('gameOverOverlay');
@@ -85,29 +90,7 @@ export function showOverlay(state, score = 0, level = 0) {
 }
 
 export function initializeCanvas(canvas) {
-  const vw = window.innerWidth;
-  const vh = window.innerHeight;
-
-  if (vw < 600) {
-    // Mobile: fixed resolution
-    canvas.width = 480;
-    canvas.height = 854;
-
-    canvas.style.width = '100vw';
-    canvas.style.height = '100vh';
-    canvas.style.objectFit = 'contain';
-  } else {
-    // Desktop: match screen resolution
-    canvas.width = vw;
-    canvas.height = vh;
-
-    canvas.style.width = vw + 'px';
-    canvas.style.height = vh + 'px';
-    canvas.style.objectFit = 'contain';
-  }
-
-  canvas.style.display = 'block';
-  canvas.style.backgroundColor = 'black';
+  initCanvas(canvas);
 }
 
 export function quitGame() {
@@ -135,11 +118,5 @@ export function quitGame() {
 }
 
 export function setOverlayDimensions(canvas) {
-  const canvasRect = canvas.getBoundingClientRect();
-  [startOverlay, gameOverOverlay, levelTransitionOverlay, pauseOverlay].forEach(overlay => {
-    overlay.style.width = canvasRect.width + 'px';
-    overlay.style.height = canvasRect.height + 'px';
-    overlay.style.left = canvasRect.left + 'px';
-    overlay.style.top = canvasRect.top + 'px';
-  });
+  setOverlayDims(canvas, [startOverlay, gameOverOverlay, levelTransitionOverlay, pauseOverlay]);
 }

@@ -12,10 +12,9 @@ import {
     MOBILE_CONFIG
 } from './constants.js';
 
-import {
-    obstacles,
-    isMobile
-} from './state.js';
+import { obstacles } from './state.js';
+import { isMobile } from './utils/platform.js';
+import { randomInt, randomFloat } from './utils/mathUtils.js';
 
 import { addScorePopup } from './scorePopups.js';
 import { playSound } from './soundManager.js';
@@ -52,7 +51,7 @@ function generateAsteroidShape(radius, numPoints) {
 function createObstacle(x, y, levelIndex, initialDx = 0, initialDy = 0, parentId = null) {
   const radius = ASTEROID_CONFIG.LEVEL_SIZES[levelIndex];
   const scoreValue = ASTEROID_CONFIG.SCORE_VALUES[levelIndex];
-  const basePoints = Math.floor(Math.random() * (ASTEROID_CONFIG.SHAPE_POINTS_MAX - ASTEROID_CONFIG.SHAPE_POINTS_MIN + 1)) + ASTEROID_CONFIG.SHAPE_POINTS_MIN;
+  const basePoints = randomInt(ASTEROID_CONFIG.SHAPE_POINTS_MIN, ASTEROID_CONFIG.SHAPE_POINTS_MAX);
   const numPoints = isMobile ? Math.min(basePoints, MOBILE_CONFIG.MAX_SHAPE_POINTS) : basePoints;
   const shape = generateAsteroidShape(radius, numPoints);
 
@@ -68,10 +67,10 @@ function createObstacle(x, y, levelIndex, initialDx = 0, initialDy = 0, parentId
     fragmentTracker[assignedParentId]++;
   }
 
-  const baseSpeed = Math.random() * (obstacleMaxSpeed - obstacleMinSpeed) + obstacleMinSpeed;
+  const baseSpeed = randomFloat(obstacleMinSpeed, obstacleMaxSpeed);
   const speed = parentId === null ? baseSpeed : baseSpeed * ASTEROID_CONFIG.FRAGMENT_SPEED_MULTIPLIER;
   const rotation = Math.random() * 2 * Math.PI;
-  const rotationSpeed = (Math.random() * (ASTEROID_CONFIG.ROTATION_SPEED_MAX - ASTEROID_CONFIG.ROTATION_SPEED_MIN)) + ASTEROID_CONFIG.ROTATION_SPEED_MIN;
+  const rotationSpeed = randomFloat(ASTEROID_CONFIG.ROTATION_SPEED_MIN, ASTEROID_CONFIG.ROTATION_SPEED_MAX);
   const now = Date.now();
 
   const obstacle = obstaclePool.length > 0 ? obstaclePool.pop() : {};
@@ -164,12 +163,12 @@ export function destroyObstacle(obstacle, scoreRef) {
 
   if (obstacle.level < ASTEROID_CONFIG.LEVEL_SIZES.length - 1) {
     const nextLevel = obstacle.level + 1;
-    const numNew = Math.floor(Math.random() * (ASTEROID_CONFIG.FRAGMENTS_MAX - ASTEROID_CONFIG.FRAGMENTS_MIN + 1)) + ASTEROID_CONFIG.FRAGMENTS_MIN;
+    const numNew = randomInt(ASTEROID_CONFIG.FRAGMENTS_MIN, ASTEROID_CONFIG.FRAGMENTS_MAX);
     for (let k = 0; k < numNew; k++) {
       const angle = Math.random() * Math.PI * 2;
       const scatterSpeed = Math.random() < 0.8
-        ? (Math.random() * 0.7) + 0.3
-        : (Math.random() * 1.5) + 1.0;
+        ? randomFloat(0.3, 1.0)
+        : randomFloat(1.0, 2.5);
       const dx = Math.cos(angle) * scatterSpeed;
       const dy = Math.sin(angle) * scatterSpeed;
       createObstacle(

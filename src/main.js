@@ -4,7 +4,8 @@ import { setCanvas, restartGameLoop } from './gameLoop.js';
 import { startGame, continueGame } from './gameStateManager.js';
 import { setupInput } from './inputManager.js';
 import { setupMobileInput } from './mobileControls.js';
-import { gameState, isMobile } from './state.js';
+import { gameState } from './state.js';
+import { isMobile } from './utils/platform.js';
 import * as soundManager from './soundManager.js';
 import { debug, warn } from './logger.js';
 

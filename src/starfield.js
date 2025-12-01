@@ -1,6 +1,6 @@
 // starfield.js (Mobile disabled version)
 
-import { isMobile } from './state.js';
+import { isMobile } from './utils/platform.js';
 
 export function setupStarfield(canvas) {
   if (isMobile) {

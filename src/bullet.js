@@ -1,6 +1,7 @@
 // js/bullet.js
 
-import { bullets, gameState, isMobile } from './state.js';
+import { bullets, gameState } from './state.js';
+import { isMobile } from './utils/platform.js';
 import { BULLET_CONFIG } from './constants.js';
 import { playSound } from './soundManager.js';
 
