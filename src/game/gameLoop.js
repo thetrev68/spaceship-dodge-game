@@ -23,12 +23,12 @@ import { updatePlayer } from '@entities/player';
 import { updateObstacles, resetNewAsteroidsSpawned } from '@entities/asteroid';
 import { updateBullets } from '@entities/bullet';
 import { updatePowerups, spawnPowerup } from '@entities/powerup';
-import { updateScorePopups } from '../scorePopups.js';
+import { updateScorePopups } from '@ui/hud/scorePopups.js';
 import { checkCollisions } from '@systems/collisionHandler.js';
 import { updateLevelFlow, resetLevelFlow } from './flowManager.js';
 import { renderAll } from '@systems/renderManager.js';
 import { score } from '@core/state';
-import { showOverlay } from '../ui.js';
+import { showOverlay } from '@ui/overlays/overlayManager.js';
 
 let lastFrameTime = 0;
 let animationId;

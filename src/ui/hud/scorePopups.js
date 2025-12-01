@@ -3,20 +3,16 @@
     Optimized with object pooling (2025-06-06)
 */
 
-import { isMobile } from './utils/platform.js';
+import { isMobile } from '@utils/platform.js';
+import { ObjectPool } from '@systems/poolManager.js';
 
 const scorePopups = [];
-const scorePopupPool = [];
+const scorePopupPool = new ObjectPool(() => ({}));
 
 export function addScorePopup(text, x, y, color = '#ffffff') {
     if (isMobile) return;
 
-    let popup;
-    if (scorePopupPool.length > 0) {
-        popup = scorePopupPool.pop();
-    } else {
-        popup = {};
-    }
+    const popup = scorePopupPool.acquire();
 
     popup.text = text;
     popup.x = x;
@@ -37,7 +33,7 @@ export function updateScorePopups() {
 
         if (popup.opacity <= 0) {
             scorePopups.splice(i, 1);
-            scorePopupPool.push(popup); // Recycle the object
+            scorePopupPool.release(popup); // Recycle the object
         }
     }
 }

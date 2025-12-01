@@ -6,7 +6,7 @@
 */
 
 import { gameState } from '@core/state';
-import { showOverlay } from './ui.js';
+import { showOverlay } from '@ui/overlays/overlayManager.js';
 import * as soundManager from '@systems/soundManager.js';
 import { restartGameLoop } from '@game/gameLoop';
 import { firePlayerBullets, getPlayerSpeed, setPlayerMovement, setPlayerPosition, getPlayerDimensions, getPlayerVelocity } from '@entities/player';

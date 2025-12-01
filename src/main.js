@@ -1,4 +1,4 @@
-import { initializeCanvas, setOverlayDimensions, showOverlay, quitGame } from './ui.js';
+import { initializeCanvas, setOverlayDimensions, showOverlay, quitGame } from '@ui/overlays/overlayManager.js';
 import { setupStarfield } from './starfield.js';
 import { setCanvas, restartGameLoop } from '@game/gameLoop';
 import { startGame, continueGame } from '@game/gameStateManager';

@@ -144,12 +144,12 @@ import { playSound } from '@systems/soundManager.js';
 - [x] jsconfig.json added
 
 **Phase 2-8: Migration** (In Progress)
-- [ ] Extract utilities to `utils/`
-- [ ] Move core modules to `core/`
-- [ ] Move game logic to `game/`
-- [ ] Move entities to `entities/`
-- [ ] Move systems to `systems/`
-- [ ] Move UI to `ui/`
+- [x] Extract utilities to `utils/`
+- [x] Move core modules to `core/`
+- [x] Move game logic to `game/`
+- [x] Move entities to `entities/`
+- [x] Move systems to `systems/`
+- [x] Move UI to `ui/`
 - [ ] Move input to `input/`
 - [ ] Move effects to `effects/`
 

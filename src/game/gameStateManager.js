@@ -6,10 +6,10 @@
 
 import { gameState, playerLives, bullets, obstacles, score, gameLevel, powerUps } from '@core/state';
 import { resetLevelFlow } from './flowManager.js';
-import { showOverlay } from '../ui.js';
+import { showOverlay } from '@ui/overlays/overlayManager.js';
 import * as soundManager from '@systems/soundManager.js';
 import { unmuteAll } from '@systems/soundManager.js';
-import { createAudioControls } from '../audioControls.js';
+import { createAudioControls } from '@ui/controls/audioControls.js';
 import { resetPlayer } from '@entities/player';
 
 export function handlePlayerHit() {

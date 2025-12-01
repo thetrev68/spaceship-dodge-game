@@ -1,9 +1,9 @@
 import { playerLives, gameState, bullets, obstacles, powerUps, score, gameLevel } from '@core/state';
-import { isMobile } from './utils/platform.js';
+import { isMobile } from '@utils/platform.js';
 import {
   initializeCanvas as initCanvas,
   setOverlayDimensions as setOverlayDims
-} from './utils/canvasUtils.js';
+} from '@utils/canvasUtils.js';
 import { stopMusic, startMusic, playSound } from '@systems/soundManager.js';
 
 const startOverlay = document.getElementById('startOverlay');

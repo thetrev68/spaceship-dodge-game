@@ -19,7 +19,7 @@ import { randomInt, randomFloat } from '@utils/mathUtils';
 import { ObjectPool } from '@systems/poolManager';
 
 // TODO: Update these imports when modules are moved in Phase 5 & 6
-import { addScorePopup } from '../scorePopups.js';
+import { addScorePopup } from '@ui/hud/scorePopups.js';
 import { playSound } from '@systems/soundManager.js';
 
 let obstacleMinSpeed = ASTEROID_CONFIG.BASE_MIN_SPEED;
