@@ -9,6 +9,7 @@ import { drawBullets } from '@entities/bullet';
 import { drawPowerups } from '@entities/powerup';
 import { drawScorePopups } from '../scorePopups.js';
 import { drawScore } from '../scoreDisplay.js';
+import { gameState } from '@core/state';
 import { drawPowerupTimers } from '../powerupHUD.js';
 
 export function renderAll(ctx) {

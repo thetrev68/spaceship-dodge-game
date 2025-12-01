@@ -24,8 +24,8 @@ function clampToCanvas() {
     player.y = Math.max(0, Math.min(player.y, canvas.height - player.height));
 }
 
-// Public API: Move player by delta values
-export function movePlayer(dx, dy) {
+// Internal: Move player by delta values
+function movePlayer(dx, dy) {
     player.x += dx;
     player.y += dy;
     clampToCanvas();

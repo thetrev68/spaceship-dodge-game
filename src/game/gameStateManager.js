@@ -4,12 +4,13 @@
   integrated with updated leveling system.
 */
 
-import { gameState, playerLives, player, bullets, obstacles, score, gameLevel, powerUps } from '@core/state';
+import { gameState, playerLives, bullets, obstacles, score, gameLevel, powerUps } from '@core/state';
 import { resetLevelFlow } from './flowManager.js';
 import { showOverlay } from '../ui.js';
 import * as soundManager from '@systems/soundManager.js';
 import { unmuteAll } from '@systems/soundManager.js';
 import { createAudioControls } from '../audioControls.js';
+import { resetPlayer } from '@entities/player';
 
 export function handlePlayerHit() {
   playerLives.value -= 1;
@@ -27,10 +28,7 @@ export function handlePlayerHit() {
 }
 
 function resetForNextLevel() {
-  player.x = window.innerWidth / 2 - player.width / 2;
-  player.y = window.innerHeight - player.height - 50;
-  player.dx = 0;
-  player.dy = 0;
+  resetPlayer(window.innerWidth, window.innerHeight);
   bullets.length = 0;
   obstacles.length = 0;
   resetLevelFlow();
@@ -54,10 +52,7 @@ export function startGame(canvas) {
   obstacles.length = 0;
 
   // Reset player position and movement
-  player.x = canvas.width / 2 - player.width / 2;
-  player.y = canvas.height - player.height - 50;
-  player.dx = 0;
-  player.dy = 0;
+  resetPlayer(canvas.width, canvas.height);
 
   resetLevelFlow();
 

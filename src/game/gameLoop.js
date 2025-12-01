@@ -58,7 +58,7 @@ export function restartGameLoop() {
 }
 
 // TODO: Currently exported but only called internally - consider making private
-export function gameLoop(canvas, timestamp = 0) {
+function gameLoop(canvas, timestamp = 0) {
   if (timestamp - lastFrameTime < GAME_CONFIG.FRAME_DURATION) {
     animationId = requestAnimationFrame((t) => gameLoop(canvas, t));
     return;
