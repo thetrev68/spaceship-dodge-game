@@ -1,14 +1,17 @@
-/*
-    scoreDisplay.js
-    Created: 2025-05-28
-    Author: ChatGPT + Trevor Clark
-
-    Updates:
-        Added display of player lives.
-*/
+/**
+ * @fileoverview Score and HUD display.
+ * Created: 2025-05-28
+ * Author: ChatGPT + Trevor Clark
+ * Updates:
+ *     Added display of player lives.
+ */
 
 import { score, gameLevel, playerLives } from '@core/state.js';
 
+/**
+ * Draws the score, level, and lives on the canvas.
+ * @param {CanvasRenderingContext2D} ctx - Canvas context.
+ */
 export function drawScore(ctx) {
     ctx.fillStyle = '#ffffff';
     ctx.font = '24px "Inter", sans-serif';

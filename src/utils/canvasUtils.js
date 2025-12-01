@@ -1,5 +1,6 @@
-// utils/canvasUtils.js
-// Canvas sizing and positioning utilities
+/**
+ * @fileoverview Canvas sizing and positioning utilities.
+ */
 
 /**
  * Initialize canvas size based on viewport and device type
