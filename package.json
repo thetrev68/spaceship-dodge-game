@@ -12,6 +12,8 @@
     "deploy": "gh-pages -d dist",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
+    "typecheck": "tsc --noEmit",
+    "typecheck:watch": "tsc --noEmit --watch",
     "knip": "knip",
     "docs": "jsdoc -r src -d docs"
   },
@@ -25,6 +27,7 @@
     "knip": "^5.70.2",
     "postcss": "^8.4.47",
     "tailwindcss": "^4.1.17",
+    "typescript": "^5.9.3",
     "vite": "^7.2.4"
   }
 }

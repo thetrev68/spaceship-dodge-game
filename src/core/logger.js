@@ -4,22 +4,27 @@
  */
 
 /**
+ * @typedef {'audio'|'game'|'input'|'collision'|'ui'|'powerup'|'level'|'render'} LogCategory
+ * @typedef {'DEBUG'|'INFO'|'WARN'|'ERROR'|'NONE'} LogLevelKey
+ */
+
+/**
  * Log levels enumeration.
  * @enum {number}
  */
-const LogLevel = {
+const LogLevel = /** @type {const} */ ({
   DEBUG: 0,
   INFO: 1,
   WARN: 2,
   ERROR: 3,
   NONE: 4,
-};
+});
 
 // Configuration
-const config = {
+const config = /** @type {const} */ ({
   level: LogLevel.WARN, // Current minimum level to log
   enabled: true, // Master switch
-  categories: {
+  categories: /** @type {Record<LogCategory, boolean>} */ ({
     // Category-specific overrides (true = enabled, false = disabled)
     audio: true,
     game: true,
@@ -29,10 +34,10 @@ const config = {
     powerup: true,
     level: true,
     render: false, // Usually too verbose
-  },
+  }),
   timestamps: true, // Include timestamps
   colors: true, // Use console colors (browser-only)
-};
+});
 
 /**
  * Color codes for browser console.
@@ -65,7 +70,7 @@ function getTimestamp() {
 /**
  * Core logging function.
  * @param {number} level - Log level.
- * @param {string} [category] - Log category.
+ * @param {LogCategory} category - Log category.
  * @param {string} message - Log message.
  * @param {...*} args - Additional arguments.
  */
@@ -105,7 +110,7 @@ function log(level, category, message, ...args) {
 
 /**
  * Public API - Debug level.
- * @param {string} category - Log category.
+ * @param {LogCategory} category - Log category.
  * @param {string} message - Log message.
  * @param {...*} args - Additional arguments.
  */
@@ -115,7 +120,7 @@ export function debug(category, message, ...args) {
 
 /**
  * Public API - Info level.
- * @param {string} category - Log category.
+ * @param {LogCategory} category - Log category.
  * @param {string} message - Log message.
  * @param {...*} args - Additional arguments.
  */
@@ -125,7 +130,7 @@ export function info(category, message, ...args) {
 
 /**
  * Public API - Warning level.
- * @param {string} category - Log category.
+ * @param {LogCategory} category - Log category.
  * @param {string} message - Log message.
  * @param {...*} args - Additional arguments.
  */
@@ -135,7 +140,7 @@ export function warn(category, message, ...args) {
 
 /**
  * Public API - Error level.
- * @param {string} category - Log category.
+ * @param {LogCategory} category - Log category.
  * @param {string} message - Log message.
  * @param {...*} args - Additional arguments.
  */
@@ -158,7 +163,7 @@ export const logger = {
 
   /**
    * Set minimum log level.
-   * @param {number|string} level - Log level (number or string).
+   * @param {number|LogLevelKey} level - Log level (number or string).
    */
   setLevel(level) {
     if (typeof level === 'string') {
@@ -170,7 +175,7 @@ export const logger = {
 
   /**
    * Enable/disable specific category.
-   * @param {string} category - Category name.
+   * @param {LogCategory} category - Category name.
    * @param {boolean} enabled - Whether to enable the category.
    */
   setCategory(category, enabled) {
@@ -277,8 +282,9 @@ export function createLogger(category) {
   };
 }
 
-// Auto-configure based on environment
-if (import.meta.env?.MODE === 'production') {
+// Auto-configure based on environment (guarded for non-Vite contexts)
+const mode = typeof import.meta !== 'undefined' && import.meta && import.meta.env ? import.meta.env.MODE : 'development';
+if (mode === 'production') {
   setupProduction();
 } else {
   setupDevelopment();

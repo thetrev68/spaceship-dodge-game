@@ -54,7 +54,12 @@ function init() {
 
   initPerfHud();
 
-  const canvas = document.getElementById('gameCanvas');
+  const canvasEl = document.getElementById('gameCanvas');
+  if (!(canvasEl instanceof HTMLCanvasElement)) {
+    warn('ui', 'gameCanvas not found or not a canvas element.');
+    return;
+  }
+  const canvas = canvasEl;
   const startButton = document.getElementById('startButton');
   const restartButton = document.getElementById('restartButton');
   const continueButton = document.getElementById('continueButton');
@@ -62,7 +67,8 @@ function init() {
   const startOverlay = document.getElementById('startOverlay');
   const pauseOverlay = document.getElementById('pauseOverlay');
   const levelTransitionOverlay = document.getElementById('levelTransitionOverlay');
-  const starfieldCanvas = document.getElementById('starfieldCanvas');
+  const starfieldCanvasEl = document.getElementById('starfieldCanvas');
+  const starfieldCanvas = starfieldCanvasEl instanceof HTMLCanvasElement ? starfieldCanvasEl : null;
   const settingsButtonStart = document.getElementById('settingsButtonStart');
   const settingsButtonLevel = document.getElementById('settingsButtonLevel');
   const settingsButtonPause = document.getElementById('settingsButtonPause');

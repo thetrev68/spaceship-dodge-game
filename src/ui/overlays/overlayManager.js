@@ -43,7 +43,9 @@ const focusableSelector = [
   '[tabindex]:not([tabindex="-1"])'
 ].join(',');
 
+/** @type {HTMLElement|null} */
 let activeOverlay = null;
+/** @type {HTMLElement|null} */
 let lastFocusedElement = null;
 
 /**
@@ -254,10 +256,12 @@ export function quitGame() {
  * @param {HTMLCanvasElement} canvas - The game canvas.
  */
 export function setOverlayDimensions(canvas) {
-  setOverlayDims(canvas, [
+  const overlays = [
     getStartOverlay(),
     getGameOverOverlay(),
     getLevelTransitionOverlay(),
     getPauseOverlay()
-  ]);
+  ].filter(Boolean);
+
+  setOverlayDims(canvas, /** @type {HTMLElement[]} */ (overlays));
 }

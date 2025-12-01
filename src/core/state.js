@@ -5,9 +5,15 @@
  */
 
 /**
+ * @template T extends object
+ * @typedef {T & { watch: (fn: () => void) => void }} ReactiveState<T>
+ */
+
+/**
  * Creates a minimal reactive object with watchers.
- * @param {Object} obj - The object to make reactive.
- * @returns {Proxy} The reactive proxy object with a watch method.
+ * @template T extends object
+ * @param {T} obj - The object to make reactive.
+ * @returns {ReactiveState<T>} The reactive proxy object with a watch method.
  */
 function reactive(obj) {
   const listeners = new Set();
@@ -20,31 +26,40 @@ function reactive(obj) {
     }
   });
 
+  // @ts-ignore - augment proxy
   proxy.watch = (fn) => listeners.add(fn);
-  return proxy;
+  return /** @type {ReactiveState<T>} */ (proxy);
 }
 
 /**
+ * @typedef {'START'|'PLAYING'|'PAUSED'|'GAME_OVER'|'LEVEL_TRANSITION'} GameStateValue
+ * @typedef {{ active: boolean, timer: number }} PowerUpState
+ * @typedef {{ x: number, y: number, width: number, height: number, speed: number, dx: number, dy: number }} PlayerState
+ * @typedef {{ x: number, y: number, radius: number, dy: number, parentId?: number }} BulletState
+ * @typedef {{ x: number, y: number, radius: number, dx: number, dy: number, id?: number, level?: number, parentId?: number, scoreValue?: number }} AsteroidState
+ */
+
+/**
  * Reactive game state object.
- * @constant {Proxy}
+ * @constant {ReactiveState<{ value: GameStateValue }>}
  */
 export const gameState = reactive({ value: 'START' });
 
 /**
  * Reactive score object.
- * @constant {Proxy}
+ * @constant {ReactiveState<{ value: number }>}
  */
 export const score = reactive({ value: 0 });
 
 /**
  * Reactive game level object.
- * @constant {Proxy}
+ * @constant {ReactiveState<{ value: number }>}
  */
 export const gameLevel = reactive({ value: 0 });
 
 /**
  * Reactive player lives object.
- * @constant {Proxy}
+ * @constant {ReactiveState<{ value: number }>}
  */
 export const playerLives = reactive({ value: 3 });
 
@@ -64,31 +79,25 @@ export const levelStartTime = { value: 0 };
 
 /**
  * Reactive flag for allowing spawning.
- * @constant {Proxy}
+ * @constant {ReactiveState<{ value: boolean }>}
  */
 export const allowSpawning = reactive({ value: true });
 
 /**
  * Array of active bullets.
- * @type {Array}
+ * @type {BulletState[]}
  */
 export const bullets = [];
 
 /**
  * Array of active obstacles.
- * @type {Array}
+ * @type {AsteroidState[]}
  */
 export const obstacles = [];
 
 /**
  * Power-up states.
- * @constant {Object}
- * @property {Object} doubleBlaster - Double blaster power-up state.
- * @property {boolean} doubleBlaster.active - Whether active.
- * @property {number} doubleBlaster.timer - Timer value.
- * @property {Object} shield - Shield power-up state.
- * @property {boolean} shield.active - Whether active.
- * @property {number} shield.timer - Timer value.
+ * @constant {{ [key: string]: PowerUpState }}
  */
 export const powerUps = {
   doubleBlaster: { active: false, timer: 0 },
@@ -97,14 +106,7 @@ export const powerUps = {
 
 /**
  * Player state object.
- * @constant {Object}
- * @property {number} x - X position.
- * @property {number} y - Y position.
- * @property {number} width - Width.
- * @property {number} height - Height.
- * @property {number} speed - Movement speed.
- * @property {number} dx - X velocity.
- * @property {number} dy - Y velocity.
+ * @constant {PlayerState}
  */
 export const player = {
   x: 380,
