@@ -1,6 +1,6 @@
 // soundManager.js
 
-import { debug, info, warn, error } from '@core/logger';
+import { debug, info, warn, error } from '@core/logger.js';
 
 const BASE_URL = import.meta.env.BASE_URL || '/spaceship-dodge-game/';
 debug('audio', 'soundManager BASE_URL', BASE_URL);

@@ -8,12 +8,10 @@
     Adds object pooling to optimize bullet memory reuse.
 */
 
-import { bullets, gameState } from '@core/state';
-import { isMobile } from '@utils/platform';
-import { BULLET_CONFIG } from '@core/constants';
-import { ObjectPool } from '@systems/poolManager';
-
-// TODO: Update these imports when modules are moved in Phase 5
+import { bullets, gameState } from '@core/state.js';
+import { isMobile } from '@utils/platform.js';
+import { BULLET_CONFIG } from '@core/constants.js';
+import { ObjectPool } from '@systems/poolManager.js';
 import { playSound } from '@systems/soundManager.js';
 
 const bulletSpeed = BULLET_CONFIG.SPEED;

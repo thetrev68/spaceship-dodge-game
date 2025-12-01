@@ -8,17 +8,24 @@
 */
 
 import {
+
     GAME_CONFIG,
+
     ASTEROID_CONFIG,
+
     MOBILE_CONFIG
-} from '@core/constants';
 
-import { obstacles } from '@core/state';
-import { isMobile } from '@utils/platform';
-import { randomInt, randomFloat } from '@utils/mathUtils';
-import { ObjectPool } from '@systems/poolManager';
+} from '@core/constants.js';
 
-// TODO: Update these imports when modules are moved in Phase 5 & 6
+
+
+import { obstacles } from '@core/state.js';
+
+import { isMobile } from '@utils/platform.js';
+
+import { randomInt, randomFloat } from '@utils/mathUtils.js';
+
+import { ObjectPool } from '@systems/poolManager.js';
 import { addScorePopup } from '@ui/hud/scorePopups.js';
 import { playSound } from '@systems/soundManager.js';
 

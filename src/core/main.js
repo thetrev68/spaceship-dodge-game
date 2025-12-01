@@ -1,13 +1,13 @@
 import { initializeCanvas, setOverlayDimensions, showOverlay, quitGame } from '@ui/overlays/overlayManager.js';
 import { setupStarfield } from '@effects/starfield.js';
-import { setCanvas, restartGameLoop } from '@game/gameLoop';
-import { startGame, continueGame } from '@game/gameStateManager';
+import { setCanvas, restartGameLoop } from '@game/gameLoop.js';
+import { startGame, continueGame } from '@game/gameStateManager.js';
 import { setupInput } from '@input/inputManager.js';
 import { setupMobileInput } from '@input/mobileControls.js';
-import { gameState } from '@core/state';
+import { gameState } from '@core/state.js';
 import { isMobile } from '@utils/platform.js';
 import * as soundManager from '@systems/soundManager.js';
-import { debug, warn } from '@core/logger';
+import { debug, warn } from '@core/logger.js';
 
 let audioUnlockAttempted = false;
 

@@ -3,13 +3,13 @@
   Optimized: Centralizes all draw calls and applies shared ctx styles.
 */
 
-import { drawPlayer } from '@entities/player';
-import { drawObstacles } from '@entities/asteroid';
-import { drawBullets } from '@entities/bullet';
-import { drawPowerups } from '@entities/powerup';
+import { drawPlayer } from '@entities/player.js';
+import { drawObstacles } from '@entities/asteroid.js';
+import { drawBullets } from '@entities/bullet.js';
+import { drawPowerups } from '@entities/powerup.js';
 import { drawScorePopups } from '@ui/hud/scorePopups.js';
 import { drawScore } from '@ui/hud/scoreDisplay.js';
-import { gameState } from '@core/state';
+import { gameState } from '@core/state.js';
 import { drawPowerupTimers } from '@ui/hud/powerupHUD.js';
 
 export function renderAll(ctx) {

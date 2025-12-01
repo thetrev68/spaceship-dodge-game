@@ -7,7 +7,7 @@
         Added display of player lives.
 */
 
-import { score, gameLevel, playerLives } from '@core/state';
+import { score, gameLevel, playerLives } from '@core/state.js';
 
 export function drawScore(ctx) {
     ctx.fillStyle = '#ffffff';

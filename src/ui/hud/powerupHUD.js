@@ -3,7 +3,7 @@
   Draw countdown timers for active powerups on the HUD.
 */
 
-import { powerUps } from '@core/state';
+import { powerUps } from '@core/state.js';
 
 export function drawPowerupTimers(ctx) {
   const x = 20;

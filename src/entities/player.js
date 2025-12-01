@@ -9,9 +9,9 @@
         Refactored with public mutation API (Phase 4)
 */
 
-import { player, gameState, powerUps } from '@core/state';
-import { fireBullet } from '@entities/bullet';
-import { warn } from '@core/logger';
+import { player, gameState, powerUps } from '@core/state.js';
+import { fireBullet } from '@entities/bullet.js';
+import { warn } from '@core/logger.js';
 
 // Private helper: clamp player position to canvas bounds
 function clampToCanvas() {

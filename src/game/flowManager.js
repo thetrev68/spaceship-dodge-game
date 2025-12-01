@@ -10,10 +10,10 @@
     The comments explain each part in simple terms.
 */
 
-import { allowSpawning, gameLevel, gameState, levelStartTime, bullets, obstacles } from '@core/state';
-import { newAsteroidsSpawned } from '@entities/asteroid';
+import { allowSpawning, gameLevel, gameState, levelStartTime, bullets, obstacles } from '@core/state.js';
+import { newAsteroidsSpawned } from '@entities/asteroid.js';
 import { playSound, stopMusic } from '@systems/soundManager.js';
-import { debug } from '@core/logger';
+import { debug } from '@core/logger.js';
 
 // Variables to keep track of spawning permission and level up status
 let pendingLevelUp = false;    // Have we started the process of moving to the next level?

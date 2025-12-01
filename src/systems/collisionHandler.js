@@ -6,9 +6,9 @@
   - Powerup & player (if needed here)
 */
 
-import { player, bullets, obstacles, powerUps, score } from '@core/state';
-import { destroyObstacle } from '@entities/asteroid';
-import { handlePlayerHit } from '@game/gameStateManager';
+import { player, bullets, obstacles, powerUps, score } from '@core/state.js';
+import { destroyObstacle } from '@entities/asteroid.js';
+import { handlePlayerHit } from '@game/gameStateManager.js';
 
 // Circle-rectangle collision helper
 function circleRectCollision(cx, cy, radius, rx, ry, rw, rh) {

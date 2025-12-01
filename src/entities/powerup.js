@@ -7,11 +7,9 @@
     Adds object pooling to optimize power-up memory reuse.
 */
 
-import { powerUps, player } from '@core/state';
-import { isMobile } from '@utils/platform';
-import { ObjectPool } from '@systems/poolManager';
-
-// TODO: Update these imports when modules are moved in Phase 6
+import { powerUps, player } from '@core/state.js';
+import { isMobile } from '@utils/platform.js';
+import { ObjectPool } from '@systems/poolManager.js';
 import { addScorePopup } from '@ui/hud/scorePopups.js';
 
 const POWERUP_TYPES = {

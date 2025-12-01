@@ -10,24 +10,24 @@ import {
   lastObstacleSpawnTime,
   gameLevel,
   allowSpawning
-} from '@core/state';
+} from '@core/state.js';
 
 import {
   GAME_CONFIG,
   LEVEL_CONFIG,
   POWERUP_CONFIG,
   ASTEROID_CONFIG
-} from '@core/constants';
+} from '@core/constants.js';
 
-import { updatePlayer } from '@entities/player';
-import { updateObstacles, resetNewAsteroidsSpawned } from '@entities/asteroid';
-import { updateBullets } from '@entities/bullet';
-import { updatePowerups, spawnPowerup } from '@entities/powerup';
+import { updatePlayer } from '@entities/player.js';
+import { updateObstacles, resetNewAsteroidsSpawned } from '@entities/asteroid.js';
+import { updateBullets } from '@entities/bullet.js';
+import { updatePowerups, spawnPowerup } from '@entities/powerup.js';
 import { updateScorePopups } from '@ui/hud/scorePopups.js';
 import { checkCollisions } from '@systems/collisionHandler.js';
-import { updateLevelFlow, resetLevelFlow } from './flowManager.js';
+import { updateLevelFlow, resetLevelFlow } from '@game/flowManager.js';
 import { renderAll } from '@systems/renderManager.js';
-import { score } from '@core/state';
+import { score } from '@core/state.js';
 import { showOverlay } from '@ui/overlays/overlayManager.js';
 
 let lastFrameTime = 0;

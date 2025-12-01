@@ -1,11 +1,11 @@
 // js/mobileControls.js
 
-import { gameState } from '@core/state';
-import { setPlayerPosition, firePlayerBullets, getPlayerDimensions } from '@entities/player';
+import { gameState } from '@core/state.js';
+import { setPlayerPosition, firePlayerBullets, getPlayerDimensions } from '@entities/player.js';
 import { showOverlay } from '@ui/overlays/overlayManager.js';
 import * as soundManager from '@systems/soundManager.js';
-import { stopGameLoop } from '@game/gameLoop';
-import { debug, warn } from '@core/logger';
+import { stopGameLoop } from '@game/gameLoop.js';
+import { debug, warn } from '@core/logger.js';
 
 let touchActive = false;
 let touchX = 0;

@@ -4,13 +4,13 @@
   integrated with updated leveling system.
 */
 
-import { gameState, playerLives, bullets, obstacles, score, gameLevel, powerUps } from '@core/state';
-import { resetLevelFlow } from './flowManager.js';
+import { gameState, playerLives, bullets, obstacles, score, gameLevel, powerUps } from '@core/state.js';
+import { resetLevelFlow } from '@game/flowManager.js';
 import { showOverlay } from '@ui/overlays/overlayManager.js';
 import * as soundManager from '@systems/soundManager.js';
 import { unmuteAll } from '@systems/soundManager.js';
 import { createAudioControls } from '@ui/controls/audioControls.js';
-import { resetPlayer } from '@entities/player';
+import { resetPlayer } from '@entities/player.js';
 
 export function handlePlayerHit() {
   playerLives.value -= 1;
