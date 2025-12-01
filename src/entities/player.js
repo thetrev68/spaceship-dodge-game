@@ -5,7 +5,6 @@
 
 import { player, gameState, powerUps } from '@core/state.js';
 import { fireBullet } from '@entities/bullet.js';
-import { warn } from '@core/logger.js';
 import { clamp } from '@utils/mathUtils.js';
 import { isMobile } from '@utils/platform.js';
 import {
