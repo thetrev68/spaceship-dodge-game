@@ -151,7 +151,7 @@ import { playSound } from '@systems/soundManager.js';
 - [x] Move systems to `systems/`
 - [x] Move UI to `ui/`
 - [x] Move input to `input/`
-- [ ] Move effects to `effects/`
+- [x] Move effects to `effects/`
 
 See [TECHNICAL_DEBT_ASSESSMENT.md](TECHNICAL_DEBT_ASSESSMENT.md) for full migration plan.
 
