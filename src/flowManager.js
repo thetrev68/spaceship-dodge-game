@@ -88,8 +88,3 @@ export function updateLevelFlow(onLevelUpCallback) {
         }
     }
 }
-
-// TODO: Currently unused - spawning check done via allowSpawning.value directly
-export function canSpawnAsteroids() {
-    return allowSpawning.value;
-}

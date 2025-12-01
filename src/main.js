@@ -6,6 +6,7 @@ import { setupInput } from './inputManager.js';
 import { setupMobileInput } from './mobileControls.js';
 import { gameState, isMobile } from './state.js';
 import * as soundManager from './soundManager.js';
+import { debug, warn } from './logger.js';
 
 let audioUnlockAttempted = false;
 
@@ -13,13 +14,13 @@ function handleFirstTouch() {
   if (audioUnlockAttempted) return;
   audioUnlockAttempted = true;
 
-  console.log('[DEBUG] Attempting unlock from first touch');
+  debug('audio', 'Attempting unlock from first touch');
 
   soundManager.forceAudioUnlock().then(() => {
-    console.log('[DEBUG] Audio unlocked from raw touch event');
+    debug('audio', 'Audio unlocked from raw touch event');
     soundManager.unmuteAll(); // 🔊 triggers startMusic after unlock
   }).catch(err => {
-    console.warn('[WARN] Final audio unlock failed:', err);
+    warn('audio', 'Final audio unlock failed:', err);
   });
 
   document.removeEventListener('touchend', handleFirstTouch);
@@ -29,10 +30,8 @@ function handleFirstTouch() {
 document.addEventListener('touchend', handleFirstTouch, { passive: true });
 document.addEventListener('click', handleFirstTouch, { passive: true });
 
-// console.log('[DEBUG] main.js is running');
-
 function init() {
-  // console.log('[DEBUG] init running — DOM loaded');
+  debug('game', 'init running — DOM loaded');
 
   const canvas = document.getElementById('gameCanvas');
   const startButton = document.getElementById('startButton');
@@ -44,10 +43,8 @@ function init() {
   const levelTransitionOverlay = document.getElementById('levelTransitionOverlay');
   const starfieldCanvas = document.getElementById('starfieldCanvas');
 
-  // console.log('[DEBUG] startOverlay element:', startOverlay);
-
   if (!startOverlay) {
-    // console.error('[ERROR] startOverlay not found in DOM.');
+    warn('ui', 'startOverlay not found in DOM.');
     return;
   }
 
@@ -65,7 +62,7 @@ function init() {
     e.preventDefault();
     if (gameState.value !== 'START') return;
 
-    // console.log('[DEBUG] Starting game from overlay');
+    debug('game', 'Starting game from overlay');
 
     // Do NOT call forceAudioUnlock here
     soundManager.unmuteAll();   // this will call startMusic if unlock already succeeded
@@ -82,7 +79,7 @@ function init() {
     pauseOverlay?.addEventListener('touchstart', (e) => {
       e.preventDefault();
       if (gameState.value !== 'PAUSED') return;
-      // console.log('[DEBUG] Resuming game from overlay touch');
+      debug('game', 'Resuming game from overlay touch');
       gameState.value = 'PLAYING';
       showOverlay('PLAYING');
       import('./soundManager.js').then(m => m.unmuteAll());
@@ -92,7 +89,7 @@ function init() {
     levelTransitionOverlay?.addEventListener('touchstart', (e) => {
       e.preventDefault();
       if (gameState.value !== 'LEVEL_TRANSITION') return;
-      // console.log('[DEBUG] Resuming from level transition overlay');
+      debug('game', 'Resuming from level transition overlay');
       continueGame();
       restartGameLoop();
     }, { passive: false });

@@ -10,17 +10,7 @@ export const GAME_CONFIG = {
   SPAWN_MARGIN: 100,
 };
 
-// 🚀 Player Configuration
-// TODO: Currently unused - consider using for player initialization or settings UI
-export const PLAYER_CONFIG = {
-  WIDTH: 30,
-  HEIGHT: 45,
-  SPEED: 7,
-  START_X: 380,
-  START_Y: 500,
-  SHIELD_RADIUS_MULTIPLIER: 0.7,
-  THRUSTER_PULSE_SPEED: 500, // milliseconds
-};
+// 🚀 Player Configuration (removed - unused)
 
 // 🔫 Bullet Configuration
 export const BULLET_CONFIG = {
@@ -61,49 +51,9 @@ export const POWERUP_CONFIG = {
   SPAWN_INTERVAL: 10000, // 10 seconds
 };
 
-// 🎵 Audio Configuration
-// TODO: Currently unused - consider using in soundManager.js for volume/loop settings
-export const AUDIO_CONFIG = {
-  BASE_VOLUME: 0.4,
-  BGM_LOOP: true,
-  SILENT_UNLOCK_VOLUME: 0,
-};
+// 🎵 Audio Configuration (removed - unused)
 
-// 🎨 Visual Configuration
-// TODO: Currently unused - consider using in renderManager.js for consistent styling
-export const VISUAL_CONFIG = {
-  COLORS: {
-    PLAYER: '#00ffff',
-    ASTEROID: '#ff4500',
-    BULLET: '#ffffff',
-    SHIELD: '#00ffff',
-    TEXT_SHADOW: 'rgba(0, 0, 0, 0.5)',
-    GLOW_SHADOW: 'rgba(0, 255, 255, 0.5)',
-    BUTTON_SHADOW: 'rgba(0, 123, 255, 0.4)',
-    OVERLAY_BACKGROUND: 'rgba(0, 0, 0, 0.7)',
-  },
-  STROKE_WIDTH: {
-    PLAYER: 2,
-    ASTEROID: 2,
-  },
-  SHIELD: {
-    STROKE_WIDTH: 4,
-    BLUR: 20,
-  },
-  TRANSITION: {
-    DURATION: 300, // milliseconds
-    EASING: 'ease-in-out',
-  },
-  FONTS: {
-    SIZE: {
-      H1: '3rem', // 48px
-      P: '1.5rem', // 24px
-      BUTTON: '1.25rem', // 20px
-      SCORE: '1.5rem', // 24px
-    },
-    FAMILY: 'Inter, sans-serif',
-  },
-};
+// 🎨 Visual Configuration (removed - unused)
 
 // 📱 Mobile Configuration
 export const MOBILE_CONFIG = {
@@ -112,13 +62,7 @@ export const MOBILE_CONFIG = {
   TOUCH_ACTION: 'manipulation',
 };
 
-// 🏆 Scoring Configuration
-// TODO: Currently unused - consider using in scorePopups.js for duration/offset
-export const SCORING_CONFIG = {
-  POPUP_DURATION: 2000, // milliseconds
-  POPUP_OFFSET_Y: -10,
-  FRAGMENT_COMPLETION_BONUS: 150,
-};
+// 🏆 Scoring Configuration (removed - unused)
 
 // 🎯 Level Configuration
 export const LEVEL_CONFIG = {
@@ -129,10 +73,4 @@ export const LEVEL_CONFIG = {
   LOGARITHMIC_SCALE_START: 5,
 };
 
-// 🔧 Development Configuration
-// TODO: Currently unused - could be used for debug logging and performance monitoring
-export const DEV_CONFIG = {
-  DEBUG_MODE: false, // Set to true for debug output
-  CONSOLE_PREFIX: '[Spaceship Dodge]',
-  PERFORMANCE_MONITORING: false,
-};
+// 🔧 Development Configuration (removed - unused)

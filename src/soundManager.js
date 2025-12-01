@@ -1,7 +1,9 @@
 // soundManager.js
 
+import { debug, info, warn, error } from './logger.js';
+
 const BASE_URL = import.meta.env.BASE_URL || '/spaceship-dodge-game/';
-console.log('[DEBUG] soundManager BASE_URL', BASE_URL);
+debug('audio', 'soundManager BASE_URL', BASE_URL);
 
 const SILENT_MP3 = `${BASE_URL}sounds/silence.mp3`;
 
@@ -23,7 +25,7 @@ Object.entries(sounds).forEach(([key, audio]) => {
   audio.volume = currentVolume;
   audio.muted = isMuted;
   audio.addEventListener('loadeddata', () => {
-    console.log('[DEBUG] Audio loaded:', key);
+    debug('audio', 'Audio loaded:', key);
   });
   audio.load();
 });
@@ -36,7 +38,7 @@ export function forceAudioUnlock() {
 
       // Add error handling for audio loading
       silent.addEventListener('error', (err) => {
-        console.warn('[WARN] Silent audio failed to load, but continuing:', err);
+        warn('audio', 'Silent audio failed to load, but continuing:', err);
         isAudioUnlocked = true; // Still consider unlocked to allow other audio
         resolve();
       }, { once: true });
@@ -47,20 +49,20 @@ export function forceAudioUnlock() {
           silent.pause();
           silent.remove();
           isAudioUnlocked = true;
-          console.log('[DEBUG] Silent audio unlocked the audio context');
+          debug('audio', 'Silent audio unlocked the audio context');
           resolve();
         }).catch((err) => {
-          console.warn('[WARN] Silent audio unlock failed, but continuing:', err);
+          warn('audio', 'Silent audio unlock failed, but continuing:', err);
           isAudioUnlocked = true; // Still consider unlocked to allow other audio
           resolve(); // Resolve anyway to prevent blocking
         });
       } else {
-        console.warn('[WARN] Silent audio play() did not return a promise');
+        warn('audio', 'Silent audio play() did not return a promise');
         isAudioUnlocked = true;
         resolve();
       }
     } catch (err) {
-      console.warn('[WARN] Audio unlock exception, but continuing:', err);
+      warn('audio', 'Audio unlock exception, but continuing:', err);
       isAudioUnlocked = true;
       resolve(); // Resolve anyway to prevent blocking
     }
@@ -68,15 +70,15 @@ export function forceAudioUnlock() {
 }
 
 export function startMusic() {
-  console.log('[DEBUG] startMusic called');
+  debug('audio', 'startMusic called');
 
   if (!isAudioUnlocked || isMuted) {
-    console.log('[DEBUG] startMusic blocked: muted or not unlocked');
+    debug('audio', 'startMusic blocked: muted or not unlocked');
     return;
   }
 
   if (!sounds.bgm) {
-    console.log('[DEBUG] Creating bgm audio element');
+    debug('audio', 'Creating bgm audio element');
     sounds.bgm = new Audio(`${BASE_URL}sounds/bg-music.mp3`);
     sounds.bgm.loop = true;
     sounds.bgm.volume = currentVolume;
@@ -87,10 +89,10 @@ export function startMusic() {
 
   sounds.bgm.play()
     .then(() => {
-      console.log('[DEBUG] BGM playback started');
+      info('audio', 'BGM playback started');
     })
     .catch((err) => {
-      console.error('[ERROR] startMusic failed:', err);
+      error('audio', 'startMusic failed:', err);
     });
 }
 
@@ -101,20 +103,20 @@ export function stopMusic() {
 }
 
 export function muteAll() {
-  console.log('[DEBUG] muteAll called');
+  debug('audio', 'muteAll called');
   isMuted = true;
   applyVolumeAndMute();
 }
 
 export function unmuteAll() {
-  console.log('[DEBUG] unmuteAll called');
+  debug('audio', 'unmuteAll called');
   isMuted = false;
   applyVolumeAndMute();
   startMusic();
 }
 
 function applyVolumeAndMute() {
-  console.log('[DEBUG] applyVolumeAndMute', { isMuted, currentVolume });
+  debug('audio', 'applyVolumeAndMute', { isMuted, currentVolume });
   Object.entries(sounds).forEach(([_key, audio]) => {
     if (!audio) return;
     audio.volume = isMuted ? 0 : currentVolume;
@@ -124,7 +126,7 @@ function applyVolumeAndMute() {
 
 export function setVolume(val) {
   currentVolume = val;
-  console.log('[DEBUG] setVolume', { currentVolume: val });
+  debug('audio', 'setVolume', { currentVolume: val });
   if (!isMuted) applyVolumeAndMute();
 }
 
@@ -138,12 +140,11 @@ export function playSound(name) {
 
   sfx.play()
     .then(() => {
-      console.log(`[DEBUG] playSound(${name}) triggered`);
+      debug('audio', `playSound(${name}) triggered`);
     })
     .catch((err) => {
-      console.error(`[ERROR] playSound(${name}) failed:`, err);
+      error('audio', `playSound(${name}) failed:`, err);
     });
 }
 
-// TODO: Currently unused - exported for potential external sound manipulation
-export { sounds };
+// Removed unused sounds export

@@ -10,6 +10,7 @@
 
 import { player, gameState, powerUps } from './state.js';
 import { fireBullet } from './bullet.js';
+import { warn } from './logger.js';
 
 export function updatePlayer() {
   if (gameState.value !== 'PLAYING') return;
@@ -26,7 +27,7 @@ export function updatePlayer() {
     // Keep player within canvas bounds
     const canvas = document.getElementById('gameCanvas');
     if (!canvas) {
-        console.warn('[WARN] Game canvas not found');
+        warn('game', 'Game canvas not found');
         return;
     }
     player.x = Math.max(0, Math.min(player.x, canvas.width - player.width));
