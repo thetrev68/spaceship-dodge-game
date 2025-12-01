@@ -12,6 +12,7 @@
 import { player, gameState, powerUps } from '@core/state.js';
 import { fireBullet } from '@entities/bullet.js';
 import { warn } from '@core/logger.js';
+import { clamp } from '@utils/mathUtils.js';
 
 // Private helper: clamp player position to canvas bounds
 function clampToCanvas() {
@@ -20,8 +21,8 @@ function clampToCanvas() {
         warn('player', 'Game canvas not found');
         return;
     }
-    player.x = Math.max(0, Math.min(player.x, canvas.width - player.width));
-    player.y = Math.max(0, Math.min(player.y, canvas.height - player.height));
+    player.x = clamp(player.x, 0, canvas.width - player.width);
+    player.y = clamp(player.y, 0, canvas.height - player.height);
 }
 
 // Internal: Move player by delta values
