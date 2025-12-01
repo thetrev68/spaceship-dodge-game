@@ -53,5 +53,8 @@ export function lerp(start, end, t) {
  * @returns {number} Mapped value
  */
 export function mapRange(value, inMin, inMax, outMin, outMax) {
+  if (inMin === inMax) {
+    throw new RangeError(`Invalid input range: inMin (${inMin}) cannot equal inMax (${inMax}) when mapping value ${value}`);
+  }
   return ((value - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin;
 }
