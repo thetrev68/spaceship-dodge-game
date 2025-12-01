@@ -133,6 +133,19 @@ export function updateObstacles(canvasWidth, canvasHeight, spawnInterval, lastSp
 
     if (outOfBounds || tooOld) {
       const [removed] = obstacles.splice(i, 1);
+
+      // Decrement fragmentTracker for expired fragments
+      if (
+        removed.parentId != null &&
+        removed.level === ASTEROID_CONFIG.LEVEL_SIZES.length - 1 &&
+        typeof fragmentTracker[removed.parentId] === 'number'
+      ) {
+        fragmentTracker[removed.parentId]--;
+        if (fragmentTracker[removed.parentId] <= 0) {
+          delete fragmentTracker[removed.parentId];
+        }
+      }
+
       obstaclePool.release(removed);
       i--;
     }
@@ -182,8 +195,9 @@ export function destroyObstacle(obstacle, scoreRef) {
       const scatterSpeed = Math.random() < 0.8
         ? randomFloat(0.3, 1.0)
         : randomFloat(1.0, 2.5);
-      const dx = Math.cos(angle) * scatterSpeed;
-      const dy = Math.sin(angle) * scatterSpeed;
+      // Inherit parent velocity plus random scatter
+      const dx = obstacle.dx + Math.cos(angle) * scatterSpeed;
+      const dy = obstacle.dy + Math.sin(angle) * scatterSpeed;
       createObstacle(
         obstacle.x + obstacle.radius,
         obstacle.y + obstacle.radius,
