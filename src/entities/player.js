@@ -8,6 +8,11 @@ import { fireBullet } from '@entities/bullet.js';
 import { warn } from '@core/logger.js';
 import { clamp } from '@utils/mathUtils.js';
 import { isMobile } from '@utils/platform.js';
+import {
+  PLAYER_CONSTANTS,
+  HUD_CONSTANTS,
+  GAME_STATE_CONSTANTS
+} from '@core/gameConstants.js';
 
 /**
  * Clamps player position to canvas bounds.
@@ -48,7 +53,7 @@ export function setPlayerPosition(x, y) {
  */
 export function resetPlayer(canvasWidth, canvasHeight) {
     player.x = canvasWidth / 2 - player.width / 2;
-    player.y = canvasHeight - player.height - 50;
+    player.y = canvasHeight - player.height - GAME_STATE_CONSTANTS.PLAYER_RESET_Y_OFFSET;
     player.dx = 0;
     player.dy = 0;
     player.overridePosition = null;
@@ -79,14 +84,14 @@ export function drawPlayer(ctx) {
     if (powerUps.shield.active) {
         const cx = player.x + player.width / 2;
         const cy = player.y + player.height / 2;
-        const radius = Math.max(player.width, player.height) * 0.7;
+        const radius = Math.max(player.width, player.height) * PLAYER_CONSTANTS.SHIELD_RADIUS_FACTOR;
         ctx.save();
         if (!isMobile()) {
-            ctx.shadowColor = '#0ff';
-            ctx.shadowBlur = 20;
+            ctx.shadowColor = HUD_CONSTANTS.SHIELD_SHADOW_COLOR;
+            ctx.shadowBlur = HUD_CONSTANTS.SHIELD_SHADOW_BLUR;
         }
-        ctx.strokeStyle = '#00ffff';
-        ctx.lineWidth = 3;
+        ctx.strokeStyle = HUD_CONSTANTS.SHIELD_STROKE_STYLE;
+        ctx.lineWidth = HUD_CONSTANTS.SHIELD_LINE_WIDTH;
         ctx.beginPath();
         ctx.arc(cx, cy, radius, 0, Math.PI * 2);
         ctx.stroke();
@@ -101,23 +106,23 @@ export function drawPlayer(ctx) {
     const x = player.x;
     const y = player.y;
     const cx = x + w / 2;
-    const narrowFactor = 0.3; // Increase this to narrow the ship
+    const narrowFactor = PLAYER_CONSTANTS.NARROW_FACTOR; // Increase this to narrow the ship
 
     // Main Ship Body
     ctx.beginPath();
     ctx.moveTo(cx, y);
-    ctx.lineTo(x + w * 0.2, y + h * 0.8);
-    ctx.lineTo(cx - w * narrowFactor, y + h * 0.75);
-    ctx.lineTo(cx + w * narrowFactor, y + h * 0.75);
+    ctx.lineTo(x + w * PLAYER_CONSTANTS.ENGINE_TOP_WIDTH_FACTOR, y + h * 0.8);
+    ctx.lineTo(cx - w * narrowFactor, y + h * PLAYER_CONSTANTS.ENGINE_Y_FACTOR);
+    ctx.lineTo(cx + w * narrowFactor, y + h * PLAYER_CONSTANTS.ENGINE_Y_FACTOR);
     ctx.lineTo(x + w * 0.8, y + h * 0.8);
     ctx.closePath();
     ctx.stroke();
 
     // Engine Block
-    const engineTopWidth = w * 0.2;
-    const engineBottomWidth = w * 0.07;
-    const engineHeight = h * 0.3;
-    const engineY = y + h * 0.75;
+    const engineTopWidth = w * PLAYER_CONSTANTS.ENGINE_TOP_WIDTH_FACTOR;
+    const engineBottomWidth = w * PLAYER_CONSTANTS.ENGINE_BOTTOM_WIDTH_FACTOR;
+    const engineHeight = h * PLAYER_CONSTANTS.ENGINE_HEIGHT_FACTOR;
+    const engineY = y + h * PLAYER_CONSTANTS.ENGINE_Y_FACTOR;
     const engineBottomY = engineY + engineHeight;
     const engineTopLeftX = cx - engineTopWidth / 2;
     const engineTopRightX = cx + engineTopWidth / 2;
@@ -143,7 +148,7 @@ export function drawPlayer(ctx) {
     ctx.stroke();
 
     // Pulsing thruster flame
-    const time = performance.now() / 500; // pulse speed
+    const time = performance.now() / PLAYER_CONSTANTS.PULSE_SPEED_DIVISOR; // pulse speed
     const pulse = (Math.sin(time) + 1) / 2; // 0 to 1
 
     const flameX = cx;
@@ -211,9 +216,9 @@ export function setPlayerMovement(dx, dy) {
  */
 export function firePlayerBullets() {
     if (powerUps.doubleBlaster.active) {
-        fireBullet(player.x + player.width * 0.25, player.y);
-        fireBullet(player.x + player.width * 0.75, player.y);
+        fireBullet(player.x + player.width * PLAYER_CONSTANTS.DOUBLE_BLASTER_OFFSET, player.y);
+        fireBullet(player.x + player.width * (1 - PLAYER_CONSTANTS.DOUBLE_BLASTER_OFFSET), player.y);
     } else {
-        fireBullet(player.x + player.width / 2, player.y);
+        fireBullet(player.x + player.width * PLAYER_CONSTANTS.SINGLE_BLASTER_OFFSET, player.y);
     }
 }
