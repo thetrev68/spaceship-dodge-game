@@ -92,7 +92,8 @@ class TreeScanner:
                 with open(file_path, 'r', encoding='latin-1', errors='ignore') as f:
                     lines = [line for line in f.readlines() if line.strip()]
                     return len(lines)
-            except:
+            except (UnicodeDecodeError, PermissionError, OSError, FileNotFoundError):
+                # Expected file/IO errors - return 0 for unreadable files
                 return 0
     
     def should_count_lines(self, file_path: Path) -> bool:
