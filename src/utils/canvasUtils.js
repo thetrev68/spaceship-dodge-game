@@ -1,6 +1,7 @@
 /**
  * @fileoverview Canvas sizing and positioning utilities.
  */
+import { CANVAS_CONSTANTS } from '@core/uiConstants.js';
 
 /**
  * Initialize canvas size based on viewport and device type
@@ -10,10 +11,10 @@ export function initializeCanvas(canvas) {
   const vw = window.innerWidth;
   const vh = window.innerHeight;
 
-  if (vw < 600) {
+  if (vw < CANVAS_CONSTANTS.MOBILE_THRESHOLD) {
     // Mobile: fixed resolution
-    canvas.width = 360;
-    canvas.height = 640;
+    canvas.width = CANVAS_CONSTANTS.MOBILE_WIDTH;
+    canvas.height = CANVAS_CONSTANTS.MOBILE_HEIGHT;
 
     canvas.style.width = '100vw';
     canvas.style.height = '100vh';

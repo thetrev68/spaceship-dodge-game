@@ -10,8 +10,8 @@
     "build:css": "tailwindcss -i ./src/input.css -o ./styles/tailwind.css",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist",
-    "lint": "eslint src",
-    "lint:fix": "eslint src --fix",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "knip": "knip",
     "docs": "jsdoc -r src -d docs"
   },

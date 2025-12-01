@@ -3,6 +3,7 @@
  */
 
 import { debug, info, warn, error } from '@core/logger.js';
+import { VOLUME_CONSTANTS } from '@core/uiConstants.js';
 
 const BASE_URL = import.meta.env.BASE_URL || '/spaceship-dodge-game/';
 debug('audio', 'soundManager BASE_URL', BASE_URL);
@@ -14,8 +15,8 @@ const SILENT_MP3 = `${BASE_URL}sounds/silence.mp3`;
  * @type {Object}
  */
 export let volumes = {
-  backgroundMusic: 0.2,
-  soundEffects: 0.5
+  backgroundMusic: VOLUME_CONSTANTS.DEFAULT_BACKGROUND_MUSIC,
+  soundEffects: VOLUME_CONSTANTS.DEFAULT_SOUND_EFFECTS
 };
 
 /**
@@ -23,7 +24,7 @@ export let volumes = {
  * @type {number}
  * @deprecated Use volumes.soundEffects instead
  */
-export let currentVolume = 0.5;
+export let currentVolume = VOLUME_CONSTANTS.DEFAULT_SOUND_EFFECTS;
 
 /**
  * Flag for muted state.

@@ -6,6 +6,10 @@
 import { getSettings, setSetting } from './settingsManager.js';
 import * as soundManager from '@systems/soundManager.js';
 import { isMobile } from '@utils/platform.js';
+import {
+  SETTINGS_UI,
+  VOLUME_CONSTANTS
+} from '@core/uiConstants.js';
 
 /**
  * Creates and returns the settings UI element.
@@ -21,13 +25,13 @@ export function createSettingsUI() {
   container.style.top = '50%';
   container.style.left = '50%';
   container.style.transform = 'translate(-50%, -50%)';
-  container.style.zIndex = '100';
-  container.style.backgroundColor = 'rgba(0, 0, 0, 0.9)';
-  container.style.padding = '2rem';
-  container.style.borderRadius = '0.5rem';
-  container.style.width = isMobile() ? '90%' : '500px';
-  container.style.maxWidth = '90%';
-  container.style.maxHeight = '80%';
+  container.style.zIndex = SETTINGS_UI.Z_INDEX.toString();
+  container.style.backgroundColor = `rgba(0, 0, 0, ${SETTINGS_UI.BACKGROUND_OPACITY})`;
+  container.style.padding = SETTINGS_UI.PADDING;
+  container.style.borderRadius = SETTINGS_UI.BORDER_RADIUS;
+  container.style.width = isMobile() ? SETTINGS_UI.MOBILE_WIDTH : SETTINGS_UI.DESKTOP_WIDTH;
+  container.style.maxWidth = SETTINGS_UI.MAX_WIDTH;
+  container.style.maxHeight = SETTINGS_UI.MAX_HEIGHT;
   container.style.overflowY = 'auto';
   container.style.display = 'none'; // Start hidden
   container.className = 'settings-modal';
@@ -41,10 +45,10 @@ export function createSettingsUI() {
   closeButton.style.background = 'none';
   closeButton.style.border = 'none';
   closeButton.style.color = 'white';
-  closeButton.style.fontSize = '1.5rem';
+  closeButton.style.fontSize = SETTINGS_UI.CLOSE_BUTTON_FONT_SIZE;
   closeButton.style.cursor = 'pointer';
-  closeButton.style.width = '30px';
-  closeButton.style.height = '30px';
+  closeButton.style.width = SETTINGS_UI.CLOSE_BUTTON_SIZE;
+  closeButton.style.height = SETTINGS_UI.CLOSE_BUTTON_SIZE;
   closeButton.addEventListener('click', () => {
     container.style.display = 'none';
   });
@@ -53,36 +57,36 @@ export function createSettingsUI() {
   const title = document.createElement('h2');
   title.textContent = 'Game Settings';
   title.style.textAlign = 'center';
-  title.style.marginBottom = '1.5rem';
+  title.style.marginBottom = SETTINGS_UI.TITLE_MARGIN_BOTTOM;
   title.style.color = 'white';
-  title.style.fontSize = '1.5rem';
+  title.style.fontSize = SETTINGS_UI.TITLE_FONT_SIZE;
 
   // Create audio settings section
   const audioSection = document.createElement('div');
-  audioSection.style.marginBottom = '1.5rem';
+  audioSection.style.marginBottom = SETTINGS_UI.SECTION_MARGIN_BOTTOM;
 
   const audioTitle = document.createElement('h3');
   audioTitle.textContent = 'Audio Settings';
   audioTitle.style.color = 'white';
-  audioTitle.style.marginBottom = '1rem';
-  audioTitle.style.fontSize = '1.2rem';
+  audioTitle.style.marginBottom = SETTINGS_UI.SUBTITLE_MARGIN_BOTTOM;
+  audioTitle.style.fontSize = SETTINGS_UI.SUBTITLE_FONT_SIZE;
 
   // Background music volume control
   const bgMusicLabel = document.createElement('label');
   bgMusicLabel.textContent = 'Background Music Volume';
   bgMusicLabel.style.display = 'block';
   bgMusicLabel.style.color = 'white';
-  bgMusicLabel.style.marginBottom = '0.5rem';
-  bgMusicLabel.style.fontSize = '0.9rem';
+  bgMusicLabel.style.marginBottom = SETTINGS_UI.LABEL_MARGIN_BOTTOM;
+  bgMusicLabel.style.fontSize = SETTINGS_UI.LABEL_FONT_SIZE;
 
   const bgMusicSlider = document.createElement('input');
   bgMusicSlider.type = 'range';
-  bgMusicSlider.min = '0';
-  bgMusicSlider.max = '1';
-  bgMusicSlider.step = '0.05';
+  bgMusicSlider.min = VOLUME_CONSTANTS.MIN_VOLUME.toString();
+  bgMusicSlider.max = VOLUME_CONSTANTS.MAX_VOLUME.toString();
+  bgMusicSlider.step = VOLUME_CONSTANTS.VOLUME_STEP.toString();
   bgMusicSlider.value = settings.backgroundMusicVolume;
-  bgMusicSlider.style.width = '100%';
-  bgMusicSlider.style.marginBottom = '1rem';
+  bgMusicSlider.style.width = SETTINGS_UI.SLIDER_WIDTH;
+  bgMusicSlider.style.marginBottom = SETTINGS_UI.SLIDER_MARGIN_BOTTOM;
   bgMusicSlider.addEventListener('input', (e) => {
     const value = parseFloat(e.target.value);
     setSetting('backgroundMusicVolume', value);
@@ -94,17 +98,17 @@ export function createSettingsUI() {
   sfxLabel.textContent = 'Sound Effects Volume';
   sfxLabel.style.display = 'block';
   sfxLabel.style.color = 'white';
-  sfxLabel.style.marginBottom = '0.5rem';
-  sfxLabel.style.fontSize = '0.9rem';
+  sfxLabel.style.marginBottom = SETTINGS_UI.LABEL_MARGIN_BOTTOM;
+  sfxLabel.style.fontSize = SETTINGS_UI.LABEL_FONT_SIZE;
 
   const sfxSlider = document.createElement('input');
   sfxSlider.type = 'range';
-  sfxSlider.min = '0';
-  sfxSlider.max = '1';
-  sfxSlider.step = '0.05';
+  sfxSlider.min = VOLUME_CONSTANTS.MIN_VOLUME.toString();
+  sfxSlider.max = VOLUME_CONSTANTS.MAX_VOLUME.toString();
+  sfxSlider.step = VOLUME_CONSTANTS.VOLUME_STEP.toString();
   sfxSlider.value = settings.soundEffectsVolume;
-  sfxSlider.style.width = '100%';
-  sfxSlider.style.marginBottom = '1rem';
+  sfxSlider.style.width = SETTINGS_UI.SLIDER_WIDTH;
+  sfxSlider.style.marginBottom = SETTINGS_UI.SLIDER_MARGIN_BOTTOM;
   sfxSlider.addEventListener('input', (e) => {
     const value = parseFloat(e.target.value);
     setSetting('soundEffectsVolume', value);
@@ -121,7 +125,7 @@ export function createSettingsUI() {
   muteLabel.textContent = 'Mute All Audio';
   muteLabel.style.color = 'white';
   muteLabel.style.marginRight = '1rem';
-  muteLabel.style.fontSize = '0.9rem';
+  muteLabel.style.fontSize = SETTINGS_UI.LABEL_FONT_SIZE;
 
   const muteCheckbox = document.createElement('input');
   muteCheckbox.type = 'checkbox';
@@ -140,21 +144,21 @@ export function createSettingsUI() {
 
   // Gameplay settings section
   const gameplaySection = document.createElement('div');
-  gameplaySection.style.marginBottom = '1.5rem';
+  gameplaySection.style.marginBottom = SETTINGS_UI.SECTION_MARGIN_BOTTOM;
 
   const gameplayTitle = document.createElement('h3');
   gameplayTitle.textContent = 'Gameplay Settings';
   gameplayTitle.style.color = 'white';
-  gameplayTitle.style.marginBottom = '1rem';
-  gameplayTitle.style.fontSize = '1.2rem';
+  gameplayTitle.style.marginBottom = SETTINGS_UI.SUBTITLE_MARGIN_BOTTOM;
+  gameplayTitle.style.fontSize = SETTINGS_UI.SUBTITLE_FONT_SIZE;
 
   // Platform-specific text toggle
   const platformTextLabel = document.createElement('label');
   platformTextLabel.textContent = 'Use Platform-Specific Text';
   platformTextLabel.style.display = 'block';
   platformTextLabel.style.color = 'white';
-  platformTextLabel.style.marginBottom = '0.5rem';
-  platformTextLabel.style.fontSize = '0.9rem';
+  platformTextLabel.style.marginBottom = SETTINGS_UI.LABEL_MARGIN_BOTTOM;
+  platformTextLabel.style.fontSize = SETTINGS_UI.LABEL_FONT_SIZE;
 
   const platformTextCheckbox = document.createElement('input');
   platformTextCheckbox.type = 'checkbox';
@@ -171,8 +175,8 @@ export function createSettingsUI() {
     vibrationLabel.textContent = 'Enable Vibration';
     vibrationLabel.style.display = 'block';
     vibrationLabel.style.color = 'white';
-    vibrationLabel.style.marginBottom = '0.5rem';
-    vibrationLabel.style.fontSize = '0.9rem';
+    vibrationLabel.style.marginBottom = SETTINGS_UI.LABEL_MARGIN_BOTTOM;
+    vibrationLabel.style.fontSize = SETTINGS_UI.LABEL_FONT_SIZE;
 
     const vibrationCheckbox = document.createElement('input');
     vibrationCheckbox.type = 'checkbox';

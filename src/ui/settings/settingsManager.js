@@ -6,12 +6,16 @@
 import { debug, warn } from '@core/logger.js';
 import * as soundManager from '@systems/soundManager.js';
 import { isMobile } from '@utils/platform.js';
+import {
+  VOLUME_CONSTANTS,
+  SETTINGS_CONSTANTS
+} from '@core/uiConstants.js';
 
 /**
  * Game settings storage key.
  * @constant {string}
  */
-const SETTINGS_KEY = 'spaceshipDodgeSettings';
+const SETTINGS_KEY = SETTINGS_CONSTANTS.LOCAL_STORAGE_KEY;
 
 /**
  * Default settings configuration.
@@ -19,8 +23,8 @@ const SETTINGS_KEY = 'spaceshipDodgeSettings';
  */
 const DEFAULT_SETTINGS = {
   // Audio settings
-  backgroundMusicVolume: 0.2,
-  soundEffectsVolume: 0.5,
+  backgroundMusicVolume: VOLUME_CONSTANTS.DEFAULT_BACKGROUND_MUSIC,
+  soundEffectsVolume: VOLUME_CONSTANTS.DEFAULT_SOUND_EFFECTS,
   isMuted: false,
 
   // Gameplay settings
@@ -31,7 +35,7 @@ const DEFAULT_SETTINGS = {
   platformSpecificText: true,
 
   // Version for future migrations
-  version: '1.0'
+  version: SETTINGS_CONSTANTS.DEFAULT_SETTINGS_VERSION
 };
 
 /**

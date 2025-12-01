@@ -9,6 +9,10 @@
 
 import * as soundManager from '@systems/soundManager.js';
 import { getSettings, setSetting } from '@ui/settings/settingsManager.js';
+import {
+  AUDIO_CONTROLS,
+  VOLUME_CONSTANTS
+} from '@core/uiConstants.js';
 
 /**
  * Creates and appends audio control UI elements to the document.
@@ -19,19 +23,19 @@ export function createAudioControls() {
 
   const container = document.createElement('div');
   container.style.position = 'absolute';
-  container.style.top = '20px';
-  container.style.right = '20px';
-  container.style.zIndex = '20';
+  container.style.top = AUDIO_CONTROLS.POSITION_TOP;
+  container.style.right = AUDIO_CONTROLS.POSITION_RIGHT;
+  container.style.zIndex = AUDIO_CONTROLS.Z_INDEX.toString();
   container.style.display = 'flex';
-  container.style.gap = '10px';
+  container.style.gap = AUDIO_CONTROLS.GAP;
   container.style.alignItems = 'center';
 
   // Mute toggle button
   const muteBtn = document.createElement('button');
   muteBtn.textContent = settings.isMuted ? '🔇' : '🔊';
-  muteBtn.style.fontSize = '1.2rem';
-  muteBtn.style.width = '40px';
-  muteBtn.style.height = '40px';
+  muteBtn.style.fontSize = AUDIO_CONTROLS.BUTTON_FONT_SIZE;
+  muteBtn.style.width = AUDIO_CONTROLS.BUTTON_SIZE;
+  muteBtn.style.height = AUDIO_CONTROLS.BUTTON_SIZE;
   muteBtn.style.display = 'flex';
   muteBtn.style.alignItems = 'center';
   muteBtn.style.justifyContent = 'center';
@@ -66,11 +70,11 @@ export function createAudioControls() {
   // Volume slider (now controls both music and SFX)
   const volumeSlider = document.createElement('input');
   volumeSlider.type = 'range';
-  volumeSlider.min = '0';
-  volumeSlider.max = '1';
-  volumeSlider.step = '0.05';
+  volumeSlider.min = VOLUME_CONSTANTS.MIN_VOLUME.toString();
+  volumeSlider.max = VOLUME_CONSTANTS.MAX_VOLUME.toString();
+  volumeSlider.step = VOLUME_CONSTANTS.VOLUME_STEP.toString();
   volumeSlider.value = settings.soundEffectsVolume.toString();
-  volumeSlider.style.width = '120px';
+  volumeSlider.style.width = AUDIO_CONTROLS.SLIDER_WIDTH;
   volumeSlider.oninput = (e) => {
     const val = parseFloat(e.target.value);
     setSetting('soundEffectsVolume', val);
@@ -82,9 +86,9 @@ export function createAudioControls() {
   // Settings button to open full settings menu
   const settingsBtn = document.createElement('button');
   settingsBtn.textContent = '⚙️';
-  settingsBtn.style.fontSize = '1.2rem';
-  settingsBtn.style.width = '40px';
-  settingsBtn.style.height = '40px';
+  settingsBtn.style.fontSize = AUDIO_CONTROLS.BUTTON_FONT_SIZE;
+  settingsBtn.style.width = AUDIO_CONTROLS.BUTTON_SIZE;
+  settingsBtn.style.height = AUDIO_CONTROLS.BUTTON_SIZE;
   settingsBtn.style.display = 'flex';
   settingsBtn.style.alignItems = 'center';
   settingsBtn.style.justifyContent = 'center';
@@ -92,7 +96,7 @@ export function createAudioControls() {
   settingsBtn.style.borderRadius = '50%';
   settingsBtn.style.border = 'none';
   settingsBtn.style.cursor = 'pointer';
-  settingsBtn.style.marginLeft = '5px';
+  settingsBtn.style.marginLeft = AUDIO_CONTROLS.BUTTON_MARGIN_LEFT;
 
   settingsBtn.addEventListener('touchstart', (e) => {
     e.preventDefault();
