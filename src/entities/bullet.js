@@ -71,7 +71,7 @@ export function fireBullet(x, y) {
 
   // Throttle fire sound to match mobileControls.js
   const now = Date.now();
-  const delay = isMobile ? 250 : 30; // 250ms on mobile to match fireCooldown
+  const delay = isMobile() ? 250 : 30; // 250ms on mobile to match fireCooldown
   if (now - lastFireSoundTime > delay) {
     playSound('fire');
     lastFireSoundTime = now;

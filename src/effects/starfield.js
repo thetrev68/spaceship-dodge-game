@@ -3,7 +3,7 @@
 import { isMobile } from '@utils/platform.js';
 
 export function setupStarfield(canvas) {
-  if (isMobile) {
+  if (isMobile()) {
     canvas.style.display = 'none'; // Hide the background canvas entirely
     return;
   }

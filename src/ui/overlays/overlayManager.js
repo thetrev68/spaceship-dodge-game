@@ -44,15 +44,15 @@ export function showOverlay(state, score = 0, level = 0) {
   if (livesInfoLevel) livesInfoLevel.textContent = `Lives: ${playerLives.value}`;
   if (livesInfoPause) livesInfoPause.textContent = `Lives: ${playerLives.value}`;
 
-  if (startButton) startButton.style.display = isMobile ? 'none' : 'block';
-  if (continueButton) continueButton.style.display = isMobile ? 'none' : 'block';
-  if (quitButton) quitButton.style.display = isMobile ? 'none' : 'block';
-  if (tapToContinueMobile) tapToContinueMobile.style.display = isMobile ? 'block' : 'none';
+  if (startButton) startButton.style.display = isMobile() ? 'none' : 'block';
+  if (continueButton) continueButton.style.display = isMobile() ? 'none' : 'block';
+  if (quitButton) quitButton.style.display = isMobile() ? 'none' : 'block';
+  if (tapToContinueMobile) tapToContinueMobile.style.display = isMobile() ? 'block' : 'none';
 
   switch (state) {
     case 'START':
       if (startText) {
-        startText.textContent = isMobile
+        startText.textContent = isMobile()
           ? 'Tap the Screen to Begin'
           : 'Press SPACE or Left Mouse Click to fire!';
       }
@@ -76,7 +76,7 @@ export function showOverlay(state, score = 0, level = 0) {
     case 'PAUSED':
       stopMusic();
       if (pauseText) {
-        pauseText.textContent = isMobile
+        pauseText.textContent = isMobile()
           ? 'Tap to Resume'
           : 'Press P to Resume';
       }

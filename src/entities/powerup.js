@@ -73,7 +73,7 @@ export function updatePowerups(canvasHeight) {
 export function drawPowerups(ctx) {
   const now = performance.now();
   const time = now / 600;
-  const pulse = isMobile ? 0.85 : (Math.sin(time) + 1) / 2;
+  const pulse = isMobile() ? 0.85 : (Math.sin(time) + 1) / 2;
   const scale = 0.75 + 0.5 * pulse;
 
   activePowerups.forEach(p => {
@@ -91,7 +91,7 @@ export function drawPowerups(ctx) {
       const outerRadius = maxRadius * 0.8;
       const innerRadius = outerRadius / 2.5;
 
-      if (!isMobile) {
+      if (!isMobile()) {
         ctx.shadowColor = '#f9d71c';
         ctx.shadowBlur = 15 * pulse;
       }
@@ -113,7 +113,7 @@ export function drawPowerups(ctx) {
     } else if (p.type === POWERUP_TYPES.SHIELD) {
       const radius = maxRadius * (0.75 + 0.25 * pulse);
 
-      if (!isMobile) {
+      if (!isMobile()) {
         const gradient = ctx.createRadialGradient(cx, cy, radius * 0.1, cx, cy, radius);
         gradient.addColorStop(0, `rgba(0, 255, 255, ${0.8 * pulse})`);
         gradient.addColorStop(1, 'rgba(0, 255, 255, 0)');

@@ -10,7 +10,7 @@ const scorePopups = [];
 const scorePopupPool = new ObjectPool(() => ({}));
 
 export function addScorePopup(text, x, y, color = '#ffffff') {
-    if (isMobile) return;
+    if (isMobile()) return;
 
     const popup = scorePopupPool.acquire();
 
@@ -24,7 +24,7 @@ export function addScorePopup(text, x, y, color = '#ffffff') {
 }
 
 export function updateScorePopups() {
-    if (isMobile) return;
+    if (isMobile()) return;
 
     for (let i = scorePopups.length - 1; i >= 0; i--) {
         const popup = scorePopups[i];
@@ -39,7 +39,7 @@ export function updateScorePopups() {
 }
 
 export function drawScorePopups(ctx) {
-    if (isMobile) return;
+    if (isMobile()) return;
 
     ctx.font = '16px Inter'; // set once
     scorePopups.forEach(popup => {

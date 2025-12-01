@@ -3,9 +3,9 @@
 
 /**
  * Detects if the current device is mobile based on touch capabilities
- * @type {boolean}
+ * @returns {boolean}
  */
-export const isMobile = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+export const isMobile = () => __getMobileState();
 
 /**
  * Detects if the device supports touch events

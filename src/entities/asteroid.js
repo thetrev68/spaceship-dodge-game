@@ -63,7 +63,7 @@ function createObstacle(x, y, levelIndex, initialDx = 0, initialDy = 0, parentId
   const radius = ASTEROID_CONFIG.LEVEL_SIZES[levelIndex];
   const scoreValue = ASTEROID_CONFIG.SCORE_VALUES[levelIndex];
   const basePoints = randomInt(ASTEROID_CONFIG.SHAPE_POINTS_MIN, ASTEROID_CONFIG.SHAPE_POINTS_MAX);
-  const numPoints = isMobile ? Math.min(basePoints, MOBILE_CONFIG.MAX_SHAPE_POINTS) : basePoints;
+  const numPoints = isMobile() ? Math.min(basePoints, MOBILE_CONFIG.MAX_SHAPE_POINTS) : basePoints;
   const shape = generateAsteroidShape(radius, numPoints);
 
   const id = nextAsteroidId++;

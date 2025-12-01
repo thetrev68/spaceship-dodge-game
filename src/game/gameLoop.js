@@ -38,7 +38,7 @@ let ctx;
 let lastPowerupSpawnTime = 0;
 
 function getSpawnInterval(level) {
-  const baseInterval = isMobile
+  const baseInterval = isMobile()
     ? LEVEL_CONFIG.BASE_SPAWN_INTERVAL_MOBILE
     : LEVEL_CONFIG.BASE_SPAWN_INTERVAL_DESKTOP;
   const interval = baseInterval - level * LEVEL_CONFIG.SPAWN_INTERVAL_DECREASE_PER_LEVEL;

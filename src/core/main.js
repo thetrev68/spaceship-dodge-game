@@ -49,7 +49,7 @@ function init() {
     return;
   }
 
-  if (!isMobile && starfieldCanvas) {
+  if (!isMobile() && starfieldCanvas) {
     setupStarfield(starfieldCanvas);
   }
 
@@ -74,7 +74,7 @@ function init() {
 
   startOverlay.addEventListener(startEvent, startGameHandler, { passive: false });
 
-  if (isMobile) {
+  if (isMobile()) {
     setupMobileInput(canvas);
 
     pauseOverlay?.addEventListener('touchstart', (e) => {
