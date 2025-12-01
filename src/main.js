@@ -2,8 +2,8 @@ import { initializeCanvas, setOverlayDimensions, showOverlay, quitGame } from '@
 import { setupStarfield } from './starfield.js';
 import { setCanvas, restartGameLoop } from '@game/gameLoop';
 import { startGame, continueGame } from '@game/gameStateManager';
-import { setupInput } from './inputManager.js';
-import { setupMobileInput } from './mobileControls.js';
+import { setupInput } from '@input/inputManager.js';
+import { setupMobileInput } from '@input/mobileControls.js';
 import { gameState } from '@core/state';
 import { isMobile } from './utils/platform.js';
 import * as soundManager from '@systems/soundManager.js';

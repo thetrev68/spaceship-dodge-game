@@ -150,7 +150,7 @@ import { playSound } from '@systems/soundManager.js';
 - [x] Move entities to `entities/`
 - [x] Move systems to `systems/`
 - [x] Move UI to `ui/`
-- [ ] Move input to `input/`
+- [x] Move input to `input/`
 - [ ] Move effects to `effects/`
 
 See [TECHNICAL_DEBT_ASSESSMENT.md](TECHNICAL_DEBT_ASSESSMENT.md) for full migration plan.

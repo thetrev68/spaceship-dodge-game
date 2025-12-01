@@ -62,19 +62,19 @@ export function setupMobileInput(canvas) {
     });
   }
 
-canvas.addEventListener('touchstart', handleTouchStart, { passive: false });
-// console.log('[DEBUG] Bound touchstart to canvas');
+  canvas.addEventListener('touchstart', handleTouchStart, { passive: false });
+  // console.log('[DEBUG] Bound touchstart to canvas');
 
-canvas.addEventListener('touchmove', (e) => {
-  e.preventDefault();
-  const t = e.touches[0];
-  if (!t) return;
-  const rect = canvasEl.getBoundingClientRect();
-  touchX = t.clientX - rect.left;
-  touchY = t.clientY - rect.top;
-  // console.log('[DEBUG] TOUCH MOVE', { touchX, touchY });
-}, { passive: false });
-// console.log('[DEBUG] Bound touchmove to canvas');
+  canvas.addEventListener('touchmove', (e) => {
+    e.preventDefault();
+    const t = e.touches[0];
+    if (!t) return;
+    const rect = canvasEl.getBoundingClientRect();
+    touchX = t.clientX - rect.left;
+    touchY = t.clientY - rect.top;
+    // console.log('[DEBUG] TOUCH MOVE', { touchX, touchY });
+  }, { passive: false });
+  // console.log('[DEBUG] Bound touchmove to canvas');
 
   document.addEventListener('touchend', () => {
     // console.log('[DEBUG] TOUCH END');
@@ -90,7 +90,7 @@ canvas.addEventListener('touchmove', (e) => {
       stopGameLoop();
     }
   }, { passive: false });
-  }
+}
 
 function updatePlayerToTouch() {
   const { width, height } = getPlayerDimensions(); // Get dimensions
