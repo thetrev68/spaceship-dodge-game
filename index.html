@@ -81,11 +81,15 @@
 
   <div id="startOverlay" class="game-overlay visible">
     <h1 class="text-4xl font-bold mb-4">Spaceship Dodge</h1>
-    <p class="mb-2">Dodge or Shoot the incoming asteroids!</p>
-    <p id="desktopControlHint" class="mb-2">Use mouse to move.</p>
-    <p id="startHint" class="mb-4 text-lg">Touch and Hold the Screen to Begin</p>
+    <p class="mb-2">Dodge and Shoot the incoming asteroids</p>
+    <p id="desktopControlHint" class="mb-2">Use mouse to move</p>
+    <p id="mobileControlHint" class="mb-2 hidden">Use touch to move your spaceship</p>
+    <p id="startHint" class="mb-4 text-lg">Tap Screen to Begin</p>
     <p id="livesInfoStart" class="mb-4 text-lg">Lives: 3</p>
-    <button id="startButton" class="px-6 py-3 bg-blue-600 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400">Start Game</button>
+    <div class="flex gap-4">
+      <button id="startButton" class="px-6 py-3 bg-blue-600 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400">Start Game</button>
+      <button id="settingsButtonStart" class="px-6 py-3 bg-gray-600 rounded hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-400">Settings</button>
+    </div>
   </div>
 
   <div id="levelTransitionOverlay" class="game-overlay">
@@ -94,20 +98,29 @@
     <p id="currentScoreInfo" class="mb-4">Score: 0</p>
     <p id="livesInfoLevel" class="mb-4 text-lg"></p>
     <p id="tapToContinueMobile" class="text-lg mt-4 hidden">Tap Anywhere to Continue</p>
-    <button id="continueButton" class="px-6 py-3 bg-green-600 rounded hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-400">Continue</button>
+    <div class="flex gap-4">
+      <button id="continueButton" class="px-6 py-3 bg-green-600 rounded hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-400">Continue</button>
+      <button id="settingsButtonLevel" class="px-6 py-3 bg-gray-600 rounded hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-400">Settings</button>
+    </div>
   </div>
 
   <div id="pauseOverlay" class="game-overlay">
     <h1 class="text-4xl font-bold mb-4">PAUSED</h1>
     <p id="livesInfoPause" class="mb-4 text-lg"></p>
-    <button id="quitButton" class="px-6 py-3 bg-blue-600 rounded hover:bg-blue-700 focus:outline-none focus:ring-blue-400 hidden">Continue Game</button>
+    <div class="flex gap-4">
+      <button id="quitButton" class="px-6 py-3 bg-blue-600 rounded hover:bg-blue-700 focus:outline-none focus:ring-blue-400 hidden">Continue Game</button>
+      <button id="settingsButtonPause" class="px-6 py-3 bg-gray-600 rounded hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-400">Settings</button>
+    </div>
     <p id="pauseResumeMessage">Tap to Resume</p>
   </div>
 
   <div id="gameOverOverlay" class="game-overlay">
-    <h1 class="text-4xl font-bold mb-4">GAME OVER!</h1>
+    <h1 class="text-4xl font-bold mb-4">GAME OVER</h1>
     <p id="finalScore" class="mb-4">Final Score: 0</p>
-    <button id="restartButton" class="px-6 py-3 bg-blue-600 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400">Play Again</button>
+    <div class="flex gap-4">
+      <button id="restartButton" class="px-6 py-3 bg-blue-600 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400">Play Again</button>
+      <button id="settingsButtonGameOver" class="px-6 py-3 bg-gray-600 rounded hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-400">Settings</button>
+    </div>
   </div>
 
   <script type="module" src="/src/core/main.js"></script>

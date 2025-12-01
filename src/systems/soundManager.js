@@ -10,10 +10,20 @@ debug('audio', 'soundManager BASE_URL', BASE_URL);
 const SILENT_MP3 = `${BASE_URL}sounds/silence.mp3`;
 
 /**
- * Current volume level.
- * @type {number}
+ * Current volume levels.
+ * @type {Object}
  */
-export let currentVolume = 0.2;
+export let volumes = {
+  backgroundMusic: 0.2,
+  soundEffects: 0.5
+};
+
+/**
+ * Current volume level (legacy - kept for backward compatibility).
+ * @type {number}
+ * @deprecated Use volumes.soundEffects instead
+ */
+export let currentVolume = 0.5;
 
 /**
  * Flag for muted state.
@@ -114,6 +124,9 @@ export function startMusic() {
 
   sounds.bgm.currentTime = 0;
 
+  sounds.bgm.volume = volumes.backgroundMusic;
+  sounds.bgm.muted = isMuted;
+
   sounds.bgm.play()
     .then(() => {
       info('audio', 'BGM playback started');
@@ -155,21 +168,52 @@ export function unmuteAll() {
  * Applies volume and mute settings to all sounds.
  */
 function applyVolumeAndMute() {
-  debug('audio', 'applyVolumeAndMute', { isMuted, currentVolume });
-  Object.entries(sounds).forEach(([_key, audio]) => {
+  debug('audio', 'applyVolumeAndMute', { isMuted, volumes });
+  Object.entries(sounds).forEach(([key, audio]) => {
     if (!audio) return;
-    audio.volume = isMuted ? 0 : currentVolume;
+    // Background music uses its own volume setting
+    if (key === 'bgm') {
+      audio.volume = isMuted ? 0 : volumes.backgroundMusic;
+    } else {
+      // Sound effects use their volume setting
+      audio.volume = isMuted ? 0 : volumes.soundEffects;
+    }
     audio.muted = isMuted;
   });
 }
 
 /**
- * Sets the volume level.
+ * Sets the volume level (legacy - kept for backward compatibility).
  * @param {number} val - Volume value (0-1).
+ * @deprecated Use setSoundEffectsVolume instead
  */
 export function setVolume(val) {
   currentVolume = val;
-  debug('audio', 'setVolume', { currentVolume: val });
+  volumes.soundEffects = val;
+  debug('audio', 'setVolume (legacy)', { currentVolume: val });
+  if (!isMuted) applyVolumeAndMute();
+}
+
+/**
+ * Sets the background music volume.
+ * @param {number} val - Volume value (0-1).
+ */
+export function setBackgroundMusicVolume(val) {
+  volumes.backgroundMusic = val;
+  debug('audio', 'setBackgroundMusicVolume', { backgroundMusicVolume: val });
+  if (!isMuted && sounds.bgm) {
+    sounds.bgm.volume = val;
+  }
+}
+
+/**
+ * Sets the sound effects volume.
+ * @param {number} val - Volume value (0-1).
+ */
+export function setSoundEffectsVolume(val) {
+  volumes.soundEffects = val;
+  currentVolume = val; // Keep legacy variable in sync
+  debug('audio', 'setSoundEffectsVolume', { soundEffectsVolume: val });
   if (!isMuted) applyVolumeAndMute();
 }
 
@@ -182,7 +226,7 @@ export function playSound(name) {
 
   const base = sounds[name];
   const sfx = base.cloneNode();
-  sfx.volume = currentVolume;
+  sfx.volume = volumes.soundEffects;
   sfx.muted = isMuted;
 
   sfx.play()

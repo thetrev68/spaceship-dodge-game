@@ -10,6 +10,7 @@ import {
 } from '@utils/canvasUtils.js';
 import { stopMusic, startMusic, playSound } from '@systems/soundManager.js';
 import { clearAllBullets } from '@entities/bullet.js';
+import { getPlatformText } from '@ui/settings/settingsManager.js';
 
 const startOverlay = document.getElementById('startOverlay');
 const gameOverOverlay = document.getElementById('gameOverOverlay');
@@ -61,17 +62,22 @@ export function showOverlay(state, score = 0, level = 0) {
   if (livesInfoLevel) livesInfoLevel.textContent = `Lives: ${playerLives.value}`;
   if (livesInfoPause) livesInfoPause.textContent = `Lives: ${playerLives.value}`;
 
-  if (startButton) startButton.style.display = isMobile() ? 'none' : 'block';
+  // Always show start button on both platforms
+  if (startButton) startButton.style.display = 'block';
   if (continueButton) continueButton.style.display = isMobile() ? 'none' : 'block';
   if (quitButton) quitButton.style.display = isMobile() ? 'none' : 'block';
   if (tapToContinueMobile) tapToContinueMobile.style.display = isMobile() ? 'block' : 'none';
 
+  // Handle platform-specific control hints
+  const desktopControlHint = document.getElementById('desktopControlHint');
+  const mobileControlHint = document.getElementById('mobileControlHint');
+  if (desktopControlHint) desktopControlHint.style.display = isMobile() ? 'none' : 'block';
+  if (mobileControlHint) mobileControlHint.style.display = isMobile() ? 'block' : 'none';
+
   switch (state) {
     case 'START':
       if (startText) {
-        startText.textContent = isMobile()
-          ? 'Tap the Screen to Begin'
-          : 'Press SPACE or Left Mouse Click to fire!';
+        startText.textContent = getPlatformText('start');
       }
       show(startOverlay);
       break;
@@ -84,7 +90,7 @@ export function showOverlay(state, score = 0, level = 0) {
 
     case 'LEVEL_TRANSITION':
       stopMusic();
-      levelUpMessage.textContent = `LEVEL ${level + 1} !`;
+      levelUpMessage.textContent = `LEVEL ${level + 1}`;
       currentLevelInfo.textContent = 'Get Ready!';
       currentScoreInfo.textContent = `Score: ${score}`;
       show(levelTransitionOverlay);
@@ -93,9 +99,7 @@ export function showOverlay(state, score = 0, level = 0) {
     case 'PAUSED':
       stopMusic();
       if (pauseText) {
-        pauseText.textContent = isMobile()
-          ? 'Tap to Resume'
-          : 'Press P to Resume';
+        pauseText.textContent = getPlatformText('pause');
       }
       show(pauseOverlay);
       break;

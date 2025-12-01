@@ -27,6 +27,9 @@ export default [
         performance: 'readonly',
         Event: 'readonly',
         confirm: 'readonly',
+        localStorage: 'readonly',
+        setInterval: 'readonly',
+        clearInterval: 'readonly',
       },
     },
     rules: {

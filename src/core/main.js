@@ -13,6 +13,8 @@ import { gameState } from '@core/state.js';
 import { isMobile } from '@utils/platform.js';
 import * as soundManager from '@systems/soundManager.js';
 import { debug, warn } from '@core/logger.js';
+import { initializeSettings } from '@ui/settings/settingsManager.js';
+import { initializeSettingsUI, showSettings } from '@ui/settings/settingsUI.js';
 
 /**
  * Flag to track if audio unlock has been attempted.
@@ -58,6 +60,10 @@ function init() {
   const pauseOverlay = document.getElementById('pauseOverlay');
   const levelTransitionOverlay = document.getElementById('levelTransitionOverlay');
   const starfieldCanvas = document.getElementById('starfieldCanvas');
+  const settingsButtonStart = document.getElementById('settingsButtonStart');
+  const settingsButtonLevel = document.getElementById('settingsButtonLevel');
+  const settingsButtonPause = document.getElementById('settingsButtonPause');
+  const settingsButtonGameOver = document.getElementById('settingsButtonGameOver');
 
   if (!startOverlay) {
     warn('ui', 'startOverlay not found in DOM.');
@@ -67,6 +73,10 @@ function init() {
   if (!isMobile() && starfieldCanvas) {
     setupStarfield(starfieldCanvas);
   }
+
+  // Initialize settings system
+  initializeSettings();
+  initializeSettingsUI();
 
   initializeCanvas(canvas);
   setOverlayDimensions(canvas);
@@ -91,7 +101,11 @@ function init() {
     restartGameLoop();
   };
 
-  startOverlay.addEventListener(startEvent, startGameHandler, { passive: false });
+  // Remove the overlay-wide event listener to prevent starting by tapping anywhere
+  // startOverlay.addEventListener(startEvent, startGameHandler, { passive: false });
+
+  // Only allow starting via the start button
+  startButton?.addEventListener(startEvent, startGameHandler, { passive: false });
 
   if (isMobile()) {
     setupMobileInput(canvas);
@@ -116,14 +130,15 @@ function init() {
   } else {
     setupInput(canvas);
 
-    startButton?.addEventListener('click', () => {
-      if (gameState.value !== 'START') return;
-      soundManager.forceAudioUnlock().then(() => {
-        soundManager.startMusic();
-        startGame(canvas);
-        restartGameLoop();
-      });
-    });
+    // Remove duplicate start button listener - handled above for both mobile and desktop
+    // startButton?.addEventListener('click', () => {
+    //   if (gameState.value !== 'START') return;
+    //   soundManager.forceAudioUnlock().then(() => {
+    //     soundManager.startMusic();
+    //     startGame(canvas);
+    //     restartGameLoop();
+    //   });
+    // });
 
     continueButton?.addEventListener('click', () => {
       continueGame();
@@ -138,6 +153,27 @@ function init() {
   restartButton?.addEventListener('click', () => {
     startGame(canvas);
     restartGameLoop();
+  });
+
+  // Add settings button event listeners
+  settingsButtonStart?.addEventListener('click', (e) => {
+    e.preventDefault();
+    showSettings();
+  });
+
+  settingsButtonLevel?.addEventListener('click', (e) => {
+    e.preventDefault();
+    showSettings();
+  });
+
+  settingsButtonPause?.addEventListener('click', (e) => {
+    e.preventDefault();
+    showSettings();
+  });
+
+  settingsButtonGameOver?.addEventListener('click', (e) => {
+    e.preventDefault();
+    showSettings();
   });
 
   showOverlay('START');
