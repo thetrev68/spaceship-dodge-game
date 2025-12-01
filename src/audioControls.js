@@ -8,7 +8,7 @@
         Manages mute/unmute and volume slider.
 */
 
-import * as soundManager from './soundManager.js';
+import * as soundManager from '@systems/soundManager.js';
 
 export function createAudioControls() {
   const container = document.createElement('div');

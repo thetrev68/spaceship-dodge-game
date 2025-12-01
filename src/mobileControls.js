@@ -3,7 +3,7 @@
 import { gameState } from '@core/state';
 import { setPlayerPosition, firePlayerBullets, getPlayerDimensions } from '@entities/player';
 import { showOverlay } from './ui.js';
-import * as soundManager from './soundManager.js';
+import * as soundManager from '@systems/soundManager.js';
 import { stopGameLoop } from '@game/gameLoop';
 
 let touchActive = false;

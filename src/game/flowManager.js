@@ -12,7 +12,7 @@
 
 import { allowSpawning, gameLevel, gameState, levelStartTime, bullets, obstacles } from '@core/state';
 import { newAsteroidsSpawned } from '@entities/asteroid';
-import { playSound, stopMusic } from '../soundManager.js';
+import { playSound, stopMusic } from '@systems/soundManager.js';
 
 // Variables to keep track of spawning permission and level up status
 let pendingLevelUp = false;    // Have we started the process of moving to the next level?

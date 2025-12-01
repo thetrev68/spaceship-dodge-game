@@ -4,7 +4,7 @@ import {
   initializeCanvas as initCanvas,
   setOverlayDimensions as setOverlayDims
 } from './utils/canvasUtils.js';
-import { stopMusic, startMusic, playSound } from './soundManager.js';
+import { stopMusic, startMusic, playSound } from '@systems/soundManager.js';
 
 const startOverlay = document.getElementById('startOverlay');
 const gameOverOverlay = document.getElementById('gameOverOverlay');

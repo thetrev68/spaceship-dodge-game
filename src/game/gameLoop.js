@@ -24,9 +24,9 @@ import { updateObstacles, resetNewAsteroidsSpawned } from '@entities/asteroid';
 import { updateBullets } from '@entities/bullet';
 import { updatePowerups, spawnPowerup } from '@entities/powerup';
 import { updateScorePopups } from '../scorePopups.js';
-import { checkCollisions } from '../collisionHandler.js';
+import { checkCollisions } from '@systems/collisionHandler.js';
 import { updateLevelFlow, resetLevelFlow } from './flowManager.js';
-import { renderAll } from '../renderManager.js';
+import { renderAll } from '@systems/renderManager.js';
 import { score } from '@core/state';
 import { showOverlay } from '../ui.js';
 

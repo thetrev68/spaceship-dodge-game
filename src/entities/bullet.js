@@ -14,7 +14,7 @@ import { BULLET_CONFIG } from '@core/constants';
 import { ObjectPool } from '@systems/poolManager';
 
 // TODO: Update these imports when modules are moved in Phase 5
-import { playSound } from '../soundManager.js';
+import { playSound } from '@systems/soundManager.js';
 
 const bulletSpeed = BULLET_CONFIG.SPEED;
 const bulletRadius = BULLET_CONFIG.RADIUS;
