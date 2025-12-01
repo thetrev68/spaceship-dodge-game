@@ -1,4 +1,4 @@
-import { playerLives, gameState, bullets, obstacles, powerUps, score, gameLevel } from '@core/state.js';
+import { playerLives, gameState, obstacles, powerUps, score, gameLevel } from '@core/state.js';
 import { isMobile } from '@utils/platform.js';
 import {
   initializeCanvas as initCanvas,

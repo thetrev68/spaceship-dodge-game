@@ -4,7 +4,7 @@
   integrated with updated leveling system.
 */
 
-import { gameState, playerLives, bullets, obstacles, score, gameLevel, powerUps } from '@core/state.js';
+import { gameState, playerLives, obstacles, score, gameLevel, powerUps } from '@core/state.js';
 import { resetLevelFlow } from '@game/flowManager.js';
 import { showOverlay } from '@ui/overlays/overlayManager.js';
 import * as soundManager from '@systems/soundManager.js';
