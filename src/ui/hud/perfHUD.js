@@ -12,7 +12,8 @@ function ensureHudElement() {
   hudElement.id = 'perfHud';
   hudElement.style.position = 'fixed';
   hudElement.style.top = '12px';
-  hudElement.style.left = '12px';
+  hudElement.style.left = '50%';
+  hudElement.style.transform = 'translateX(-50%)';
   hudElement.style.padding = '6px 10px';
   hudElement.style.background = 'rgba(0, 0, 0, 0.7)';
   hudElement.style.color = '#00e7ff';
