@@ -5,6 +5,7 @@ import { setPlayerPosition, firePlayerBullets, getPlayerDimensions } from '@enti
 import { showOverlay } from '@ui/overlays/overlayManager.js';
 import * as soundManager from '@systems/soundManager.js';
 import { stopGameLoop } from '@game/gameLoop';
+import { debug, warn } from '@core/logger';
 
 let touchActive = false;
 let touchX = 0;
@@ -15,7 +16,7 @@ const fireCooldown = 250; // milliseconds
 
 export function setupMobileInput(canvas) {
   canvasEl = canvas;
-  // console.log('[DEBUG] setupMobileInput called', { canvasId: canvas.id });
+  debug('input', 'setupMobileInput called', { canvasId: canvas.id });
 
   // Mobile-specific input/gameplay loop
   function mobileLoop() {
@@ -25,7 +26,7 @@ export function setupMobileInput(canvas) {
       if (now - lastFireTime >= fireCooldown) {
         firePlayerBullets();
         lastFireTime = now;
-        // console.log('[DEBUG] Autofire triggered');
+        debug('input', 'Autofire triggered');
       }
     }
     requestAnimationFrame(mobileLoop);
@@ -34,19 +35,19 @@ export function setupMobileInput(canvas) {
   requestAnimationFrame(mobileLoop);
 
   function handleTouchStart(e) {
-    // console.log('[DEBUG] handleTouchStart triggered', e.target);
+    // debug('input', 'handleTouchStart triggered', e.target);
     e.preventDefault();
 
     // Only block the touch if it's inside a currently visible overlay
     const activeOverlay = document.querySelector('.game-overlay.visible');
     if (activeOverlay && activeOverlay.contains(e.target)) {
-      // console.log('[DEBUG] Touch blocked — inside active overlay');
+      debug('input', 'Touch blocked — inside active overlay');
       return;
     }
 
     const t = e.touches[0];
     if (!t) {
-      console.warn('[WARN] No touch object found');
+      warn('input', 'No touch object found');
       return;
     }
 
@@ -55,7 +56,7 @@ export function setupMobileInput(canvas) {
     touchY = t.clientY - rect.top;
     touchActive = true;
 
-    console.log('[DEBUG] TOUCH START', {
+    debug('input', 'TOUCH START', {
       touchX,
       touchY,
       state: gameState.value
@@ -63,7 +64,6 @@ export function setupMobileInput(canvas) {
   }
 
   canvas.addEventListener('touchstart', handleTouchStart, { passive: false });
-  // console.log('[DEBUG] Bound touchstart to canvas');
 
   canvas.addEventListener('touchmove', (e) => {
     e.preventDefault();
@@ -72,18 +72,17 @@ export function setupMobileInput(canvas) {
     const rect = canvasEl.getBoundingClientRect();
     touchX = t.clientX - rect.left;
     touchY = t.clientY - rect.top;
-    // console.log('[DEBUG] TOUCH MOVE', { touchX, touchY });
+    // debug('input', 'TOUCH MOVE', { touchX, touchY });
   }, { passive: false });
-  // console.log('[DEBUG] Bound touchmove to canvas');
 
   document.addEventListener('touchend', () => {
-    // console.log('[DEBUG] TOUCH END');
+    // debug('input', 'TOUCH END');
     if (!touchActive) return;
 
     touchActive = false;
 
     if (gameState.value === 'PLAYING') {
-      // console.log('[DEBUG] Switching state to PAUSED');
+      debug('input', 'Switching state to PAUSED');
       gameState.value = 'PAUSED';
       showOverlay('PAUSED');
       soundManager.muteAll();
@@ -99,5 +98,4 @@ function updatePlayerToTouch() {
     touchY - height / 2
   );
   // player.dx and player.dy no longer needed here as setPlayerPosition handles position directly
-  // console.log('[DEBUG] player.overridePosition set', player.overridePosition);
 }

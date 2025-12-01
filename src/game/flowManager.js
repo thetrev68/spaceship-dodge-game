@@ -13,6 +13,7 @@
 import { allowSpawning, gameLevel, gameState, levelStartTime, bullets, obstacles } from '@core/state';
 import { newAsteroidsSpawned } from '@entities/asteroid';
 import { playSound, stopMusic } from '@systems/soundManager.js';
+import { debug } from '@core/logger';
 
 // Variables to keep track of spawning permission and level up status
 let pendingLevelUp = false;    // Have we started the process of moving to the next level?
@@ -27,7 +28,7 @@ export function resetLevelFlow() {
     pendingLevelUp = false;      // Not yet moving to next level
     levelClearTime = null;       // Reset clear timer
     levelStartTime.value = Date.now(); // Remember when this level started
-    // console.log('[FlowManager] Level flow reset');
+    debug('level', 'Level flow reset');
 }
 
 // This is called every frame (or frequently) to check if conditions are met to advance level
@@ -35,24 +36,12 @@ export function resetLevelFlow() {
 export function updateLevelFlow(onLevelUpCallback) {
     const now = Date.now(); // current time in milliseconds
 
-    // Log key state variables for debugging
-    // console.log('[FlowManager] elapsed:', elapsed.toFixed(2), 'seconds');
-    // console.log('[FlowManager] allowSpawning:', allowSpawning.value);
-    // console.log('[FlowManager] newAsteroidsSpawned:', newAsteroidsSpawned);
-    // console.log('[FlowManager] gameLevel:', gameLevel.value);
-    // console.log('[FlowManager] obstacles still on screen:', obstacles.length);
-    // console.log('[FlowManager] pendingLevelUp:', pendingLevelUp);
-
     // Step 1: Decide when to stop spawning new asteroids
     // We stop spawning either if too many seconds have passed (15s), or
     // if we have spawned the required number of new asteroids for this level.
-    // if (elapsed >= 15) {
-    //     allowSpawning.value = false;  // Stop spawning due to time limit
-    //     console.log('[FlowManager] Stopping spawning: elapsed time limit reached');
-    // }
     if (newAsteroidsSpawned >= (gameLevel.value + 1) * ASTEROIDS_PER_LEVEL) {
         allowSpawning.value = false;  // Stop spawning due to count limit reached
-        // console.log('[FlowManager] Stopping spawning: asteroid count limit reached');
+        debug('level', 'Stopping spawning: asteroid count limit reached');
     }
 
     // Step 2: If spawning stopped, and we haven't started level-up process,
@@ -60,7 +49,7 @@ export function updateLevelFlow(onLevelUpCallback) {
     if (!allowSpawning.value && !pendingLevelUp && obstacles.length === 0) {
         pendingLevelUp = true;       // Flag we are about to move levels
         levelClearTime = now;        // Remember when the screen became clear
-        // console.log('[FlowManager] Screen clear, pending level up started');
+        debug('level', 'Screen clear, pending level up started');
     }
 
     // Step 3: If level-up pending, wait 1.5 seconds or max wait time,
@@ -85,7 +74,7 @@ export function updateLevelFlow(onLevelUpCallback) {
             // Call the provided callback for any additional level-up logic
             onLevelUpCallback();
 
-            // console.log('[FlowManager] Level up triggered!');
+            debug('level', 'Level up triggered!');
         }
     }
 }
