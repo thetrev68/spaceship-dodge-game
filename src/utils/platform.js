@@ -2,6 +2,28 @@
 // Platform detection utilities
 
 /**
+ * Private function to detect if the device supports touch events
+ * @returns {boolean}
+ */
+const _detectMobile = () => 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+/**
+ * For testing purposes - allows overriding mobile detection
+ * @type {boolean|null}
+ * @private
+ */
+let mobileOverride = null;
+
+/**
+ * Get current mobile state (respects test overrides)
+ * @returns {boolean}
+ * @private
+ */
+export const __getMobileState = () => {
+  return mobileOverride !== null ? mobileOverride : _detectMobile();
+};
+
+/**
  * Detects if the current device is mobile based on touch capabilities
  * @returns {boolean}
  */
@@ -19,9 +41,6 @@ export const isTouch = () => 'ontouchstart' in window;
  */
 export const supportsVibration = () => 'vibrate' in navigator;
 
-// For testing purposes - allows overriding mobile detection
-let mobileOverride = null;
-
 /**
  * Override mobile detection for testing
  * @param {boolean|null} value - true for mobile, false for desktop, null to use real detection
@@ -29,13 +48,4 @@ let mobileOverride = null;
  */
 export const __setMobileOverride = (value) => {
   mobileOverride = value;
-};
-
-/**
- * Get current mobile state (respects test overrides)
- * @returns {boolean}
- * @private
- */
-export const __getMobileState = () => {
-  return mobileOverride !== null ? mobileOverride : isMobile;
 };
