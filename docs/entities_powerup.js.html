@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: entities/powerup.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: entities/powerup.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @fileoverview Power-up entity management with object pooling.
+ * Updated: 2025-06-06
+ * Author: ChatGPT + Trevor Clark
+ * Refactored: Phase 4 (Entities)
+ * Adds object pooling to optimize power-up memory reuse.
+ */
+
+import { powerUps, player } from '@core/state.js';
+import { isMobile } from '@utils/platform.js';
+import { ObjectPool } from '@systems/poolManager.js';
+import { addScorePopup } from '@ui/hud/scorePopups.js';
+import { POWERUP_CONFIG, GAME_CONFIG } from '@core/constants.js';
+
+/**
+ * Power-up types enumeration.
+ * @enum {string}
+ */
+const POWERUP_TYPES = {
+  DOUBLE_BLASTER: 'doubleBlaster',
+  SHIELD: 'shield',
+};
+
+const powerupSize = 50;
+
+/**
+ * Array of active power-ups.
+ * @type {Array}
+ */
+const activePowerups = []; // Renamed from 'powerups' to avoid confusion with the pool
+
+// Initialize object pool for powerups
+const powerupPool = new ObjectPool(() => ({
+  x: 0, y: 0, size: powerupSize, type: null, dy: 0
+}));
+
+
+/**
+ * Spawns a random power-up.
+ * @param {number} canvasWidth - Canvas width.
+ */
+export function spawnPowerup(canvasWidth) {
+  const x = Math.random() * (canvasWidth - powerupSize);
+  const y = -powerupSize;
+  const type = Math.random() &lt; 0.5 ? POWERUP_TYPES.DOUBLE_BLASTER : POWERUP_TYPES.SHIELD;
+
+  const p = powerupPool.acquire();
+  Object.assign(p, { x, y, size: powerupSize, type, dy: 1.5 });
+  activePowerups.push(p);
+}
+
+/**
+ * Updates all power-ups, checks collisions, and manages timers.
+ * @param {number} canvasHeight - Canvas height.
+ */
+export function updatePowerups(canvasHeight) {
+  for (let i = activePowerups.length - 1; i >= 0; i--) {
+    const p = activePowerups[i];
+    p.y += p.dy;
+
+    if (p.y > canvasHeight) {
+      const [removed] = activePowerups.splice(i, 1);
+      powerupPool.release(removed);
+      continue;
+    }
+
+    if (
+      player.x &lt; p.x + p.size &amp;&amp;
+      player.x + player.width > p.x &amp;&amp;
+      player.y &lt; p.y + p.size &amp;&amp;
+      player.y + player.height > p.y
+    ) {
+      activatePowerup(p.type);
+      const [removed] = activePowerups.splice(i, 1);
+      powerupPool.release(removed);
+      addScorePopup(`Power-up! ${p.type}`, player.x, player.y - 20, '#00ffff');
+    }
+  }
+
+  Object.keys(powerUps).forEach(key => {
+    if (powerUps[key].active) {
+      powerUps[key].timer--;
+      if (powerUps[key].timer &lt;= 0) {
+        powerUps[key].active = false;
+      }
+    }
+  });
+}
+
+/**
+ * Draws all power-ups on the canvas.
+ * @param {CanvasRenderingContext2D} ctx - Canvas context.
+ */
+export function drawPowerups(ctx) {
+  const now = performance.now();
+  const time = now / 600;
+  const pulse = isMobile() ? 0.85 : (Math.sin(time) + 1) / 2;
+  const scale = 0.75 + 0.5 * pulse;
+
+  activePowerups.forEach(p => {
+    const cx = p.x + powerupSize / 2;
+    const cy = p.y + powerupSize / 2;
+    const maxRadius = powerupSize / 2;
+
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.scale(scale, scale);
+    ctx.translate(-cx, -cy);
+
+    if (p.type === POWERUP_TYPES.DOUBLE_BLASTER) {
+      const spikes = 5;
+      const outerRadius = maxRadius * 0.8;
+      const innerRadius = outerRadius / 2.5;
+
+      if (!isMobile()) {
+        ctx.shadowColor = '#f9d71c';
+        ctx.shadowBlur = 15 * pulse;
+      }
+
+      ctx.fillStyle = '#f9d71c';
+      ctx.beginPath();
+      for (let i = 0; i &lt; spikes; i++) {
+        const rot = Math.PI / 2 * 3 + (i * Math.PI * 2) / spikes;
+        const xOuter = cx + Math.cos(rot) * outerRadius;
+        const yOuter = cy + Math.sin(rot) * outerRadius;
+        ctx.lineTo(xOuter, yOuter);
+        const rotInner = rot + Math.PI / spikes;
+        const xInner = cx + Math.cos(rotInner) * innerRadius;
+        const yInner = cy + Math.sin(rotInner) * innerRadius;
+        ctx.lineTo(xInner, yInner);
+      }
+      ctx.closePath();
+      ctx.fill();
+    } else if (p.type === POWERUP_TYPES.SHIELD) {
+      const radius = maxRadius * (0.75 + 0.25 * pulse);
+
+      if (!isMobile()) {
+        const gradient = ctx.createRadialGradient(cx, cy, radius * 0.1, cx, cy, radius);
+        gradient.addColorStop(0, `rgba(0, 255, 255, ${0.8 * pulse})`);
+        gradient.addColorStop(1, 'rgba(0, 255, 255, 0)');
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      ctx.fillStyle = '#0ff';
+      ctx.beginPath();
+      ctx.arc(cx, cy, radius * 0.6, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    ctx.restore();
+  });
+}
+
+/**
+ * Activates a power-up.
+ * @param {string} type - Power-up type.
+ */
+function activatePowerup(type) {
+  const config = POWERUP_CONFIG[type];
+  if (!config) {
+    console.warn(`Unknown powerup type: ${type}`);
+    return;
+  }
+
+  powerUps[type].active = true;
+  powerUps[type].timer = Math.round(config.DURATION / GAME_CONFIG.FRAME_DURATION);
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Namespaces</h3><ul><li><a href="logger.html">logger</a></li></ul><h3>Classes</h3><ul><li><a href="ObjectPool.html">ObjectPool</a></li><li><a href="SpatialGrid.html">SpatialGrid</a></li><li><a href="Timer.html">Timer</a></li></ul><h3>Global</h3><ul><li><a href="global.html#ASTEROIDS_PER_LEVEL">ASTEROIDS_PER_LEVEL</a></li><li><a href="global.html#ASTEROID_CONFIG">ASTEROID_CONFIG</a></li><li><a href="global.html#BULLET_CONFIG">BULLET_CONFIG</a></li><li><a href="global.html#FIRE_COOLDOWN_MS">FIRE_COOLDOWN_MS</a></li><li><a href="global.html#GAME_CONFIG">GAME_CONFIG</a></li><li><a href="global.html#LEVEL_CONFIG">LEVEL_CONFIG</a></li><li><a href="global.html#LogLevel">LogLevel</a></li><li><a href="global.html#MAX_WAIT">MAX_WAIT</a></li><li><a href="global.html#MOBILE_CONFIG">MOBILE_CONFIG</a></li><li><a href="global.html#POWERUP_CONFIG">POWERUP_CONFIG</a></li><li><a href="global.html#POWERUP_TYPES">POWERUP_TYPES</a></li><li><a href="global.html#__getMobileState">__getMobileState</a></li><li><a href="global.html#__setMobileOverride">__setMobileOverride</a></li><li><a href="global.html#_detectMobile">_detectMobile</a></li><li><a href="global.html#acquireBullet">acquireBullet</a></li><li><a href="global.html#activatePowerup">activatePowerup</a></li><li><a href="global.html#activePowerups">activePowerups</a></li><li><a href="global.html#addScorePopup">addScorePopup</a></li><li><a href="global.html#allowSpawning">allowSpawning</a></li><li><a href="global.html#applyVolumeAndMute">applyVolumeAndMute</a></li><li><a href="global.html#audioUnlockAttempted">audioUnlockAttempted</a></li><li><a href="global.html#bullets">bullets</a></li><li><a href="global.html#canvasEl">canvasEl</a></li><li><a href="global.html#capitalize">capitalize</a></li><li><a href="global.html#checkBulletObstacleCollisions">checkBulletObstacleCollisions</a></li><li><a href="global.html#checkCollisions">checkCollisions</a></li><li><a href="global.html#checkPlayerObstacleCollision">checkPlayerObstacleCollision</a></li><li><a href="global.html#circleRectCollision">circleRectCollision</a></li><li><a href="global.html#clamp">clamp</a></li><li><a href="global.html#clampToCanvas">clampToCanvas</a></li><li><a href="global.html#clearAllBullets">clearAllBullets</a></li><li><a href="global.html#colors">colors</a></li><li><a href="global.html#continueGame">continueGame</a></li><li><a href="global.html#createAudioControls">createAudioControls</a></li><li><a href="global.html#createLogger">createLogger</a></li><li><a href="global.html#createObstacle">createObstacle</a></li><li><a href="global.html#currentVolume">currentVolume</a></li><li><a href="global.html#debug">debug</a></li><li><a href="global.html#despawnBullet">despawnBullet</a></li><li><a href="global.html#destroyObstacle">destroyObstacle</a></li><li><a href="global.html#drawBullets">drawBullets</a></li><li><a href="global.html#drawObstacles">drawObstacles</a></li><li><a href="global.html#drawPlayer">drawPlayer</a></li><li><a href="global.html#drawPowerupTimers">drawPowerupTimers</a></li><li><a href="global.html#drawPowerups">drawPowerups</a></li><li><a href="global.html#drawScore">drawScore</a></li><li><a href="global.html#drawScorePopups">drawScorePopups</a></li><li><a href="global.html#error">error</a></li><li><a href="global.html#fireBullet">fireBullet</a></li><li><a href="global.html#fireCooldown">fireCooldown</a></li><li><a href="global.html#firePlayerBullets">firePlayerBullets</a></li><li><a href="global.html#fireTimeoutId">fireTimeoutId</a></li><li><a href="global.html#firing">firing</a></li><li><a href="global.html#forceAudioUnlock">forceAudioUnlock</a></li><li><a href="global.html#gameLevel">gameLevel</a></li><li><a href="global.html#gameLoop">gameLoop</a></li><li><a href="global.html#gameState">gameState</a></li><li><a href="global.html#generateAsteroidShape">generateAsteroidShape</a></li><li><a href="global.html#getCanvasCenter">getCanvasCenter</a></li><li><a href="global.html#getCanvasDimensions">getCanvasDimensions</a></li><li><a href="global.html#getPlayerDimensions">getPlayerDimensions</a></li><li><a href="global.html#getPlayerSpeed">getPlayerSpeed</a></li><li><a href="global.html#getPlayerVelocity">getPlayerVelocity</a></li><li><a href="global.html#getSpawnInterval">getSpawnInterval</a></li><li><a href="global.html#getTimestamp">getTimestamp</a></li><li><a href="global.html#handleFirstTouch">handleFirstTouch</a></li><li><a href="global.html#handlePlayerHit">handlePlayerHit</a></li><li><a href="global.html#hideAllOverlays">hideAllOverlays</a></li><li><a href="global.html#info">info</a></li><li><a href="global.html#init">init</a></li><li><a href="global.html#initializeCanvas">initializeCanvas</a></li><li><a href="global.html#isAudioUnlocked">isAudioUnlocked</a></li><li><a href="global.html#isMobile">isMobile</a></li><li><a href="global.html#isMuted">isMuted</a></li><li><a href="global.html#isPointInCanvas">isPointInCanvas</a></li><li><a href="global.html#isTouch">isTouch</a></li><li><a href="global.html#lastFireTime">lastFireTime</a></li><li><a href="global.html#lastObstacleSpawnTime">lastObstacleSpawnTime</a></li><li><a href="global.html#lerp">lerp</a></li><li><a href="global.html#levelClearTime">levelClearTime</a></li><li><a href="global.html#levelStartTime">levelStartTime</a></li><li><a href="global.html#log">log</a></li><li><a href="global.html#mapRange">mapRange</a></li><li><a href="global.html#mobileOverride">mobileOverride</a></li><li><a href="global.html#movePlayer">movePlayer</a></li><li><a href="global.html#muteAll">muteAll</a></li><li><a href="global.html#newAsteroidsSpawned">newAsteroidsSpawned</a></li><li><a href="global.html#obstacles">obstacles</a></li><li><a href="global.html#pauseLocked">pauseLocked</a></li><li><a href="global.html#pendingLevelUp">pendingLevelUp</a></li><li><a href="global.html#playSound">playSound</a></li><li><a href="global.html#player">player</a></li><li><a href="global.html#playerLives">playerLives</a></li><li><a href="global.html#powerUps">powerUps</a></li><li><a href="global.html#quitGame">quitGame</a></li><li><a href="global.html#randomFloat">randomFloat</a></li><li><a href="global.html#randomInt">randomInt</a></li><li><a href="global.html#reactive">reactive</a></li><li><a href="global.html#releaseBullet">releaseBullet</a></li><li><a href="global.html#renderAll">renderAll</a></li><li><a href="global.html#resetForNextLevel">resetForNextLevel</a></li><li><a href="global.html#resetLevelFlow">resetLevelFlow</a></li><li><a href="global.html#resetNewAsteroidsSpawned">resetNewAsteroidsSpawned</a></li><li><a href="global.html#resetPlayer">resetPlayer</a></li><li><a href="global.html#restartGameLoop">restartGameLoop</a></li><li><a href="global.html#score">score</a></li><li><a href="global.html#scorePopupPool">scorePopupPool</a></li><li><a href="global.html#scorePopups">scorePopups</a></li><li><a href="global.html#setCanvas">setCanvas</a></li><li><a href="global.html#setOverlayDimensions">setOverlayDimensions</a></li><li><a href="global.html#setPlayerMovement">setPlayerMovement</a></li><li><a href="global.html#setPlayerPosition">setPlayerPosition</a></li><li><a href="global.html#setVolume">setVolume</a></li><li><a href="global.html#setupDevelopment">setupDevelopment</a></li><li><a href="global.html#setupInput">setupInput</a></li><li><a href="global.html#setupMobileInput">setupMobileInput</a></li><li><a href="global.html#setupProduction">setupProduction</a></li><li><a href="global.html#setupStarfield">setupStarfield</a></li><li><a href="global.html#show">show</a></li><li><a href="global.html#showOverlay">showOverlay</a></li><li><a href="global.html#sounds">sounds</a></li><li><a href="global.html#spawnPowerup">spawnPowerup</a></li><li><a href="global.html#startGame">startGame</a></li><li><a href="global.html#startMusic">startMusic</a></li><li><a href="global.html#stopFiring">stopFiring</a></li><li><a href="global.html#stopGameLoop">stopGameLoop</a></li><li><a href="global.html#stopMusic">stopMusic</a></li><li><a href="global.html#supportsVibration">supportsVibration</a></li><li><a href="global.html#touchActive">touchActive</a></li><li><a href="global.html#touchX">touchX</a></li><li><a href="global.html#touchY">touchY</a></li><li><a href="global.html#unmuteAll">unmuteAll</a></li><li><a href="global.html#updateBullets">updateBullets</a></li><li><a href="global.html#updateLevelFlow">updateLevelFlow</a></li><li><a href="global.html#updateObstacles">updateObstacles</a></li><li><a href="global.html#updatePlayer">updatePlayer</a></li><li><a href="global.html#updatePlayerToTouch">updatePlayerToTouch</a></li><li><a href="global.html#updatePowerups">updatePowerups</a></li><li><a href="global.html#updateScorePopups">updateScorePopups</a></li><li><a href="global.html#warn">warn</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Mon Dec 01 2025 00:17:51 GMT-0600 (Central Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
