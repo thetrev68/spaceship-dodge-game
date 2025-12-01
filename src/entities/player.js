@@ -1,44 +1,59 @@
-/*
-    player.js
-    Created: 2025-05-28
-    Author: ChatGPT + Trevor Clark
-    Updates:
-        Added pulsing thruster effect.
-        Added double blaster firing support.
-        Added shield visual effect.
-        Refactored with public mutation API (Phase 4)
-*/
+/**
+ * @fileoverview Player entity management.
+ * Created: 2025-05-28
+ * Author: ChatGPT + Trevor Clark
+ * Updates:
+ *     Added pulsing thruster effect.
+ *     Added double blaster firing support.
+ *     Added shield visual effect.
+ *     Refactored with public mutation API (Phase 4)
+ */
 
 import { player, gameState, powerUps } from '@core/state.js';
 import { fireBullet } from '@entities/bullet.js';
 import { warn } from '@core/logger.js';
+import { clamp } from '@utils/mathUtils.js';
 
-// Private helper: clamp player position to canvas bounds
+/**
+ * Clamps player position to canvas bounds.
+ */
 function clampToCanvas() {
     const canvas = document.getElementById('gameCanvas');
     if (!canvas) {
         warn('player', 'Game canvas not found');
         return;
     }
-    player.x = Math.max(0, Math.min(player.x, canvas.width - player.width));
-    player.y = Math.max(0, Math.min(player.y, canvas.height - player.height));
+    player.x = clamp(player.x, 0, canvas.width - player.width);
+    player.y = clamp(player.y, 0, canvas.height - player.height);
 }
 
-// Internal: Move player by delta values
+/**
+ * Moves player by delta values.
+ * @param {number} dx - Delta X.
+ * @param {number} dy - Delta Y.
+ */
 function movePlayer(dx, dy) {
     player.x += dx;
     player.y += dy;
     clampToCanvas();
 }
 
-// Public API: Set player position directly (for touch controls)
+/**
+ * Sets player position directly (for touch controls).
+ * @param {number} x - X position.
+ * @param {number} y - Y position.
+ */
 export function setPlayerPosition(x, y) {
     player.x = x;
     player.y = y;
     clampToCanvas();
 }
 
-// Public API: Reset player to initial position
+/**
+ * Resets player to initial position.
+ * @param {number} canvasWidth - Canvas width.
+ * @param {number} canvasHeight - Canvas height.
+ */
 export function resetPlayer(canvasWidth, canvasHeight) {
     player.x = canvasWidth / 2 - player.width / 2;
     player.y = canvasHeight - player.height - 50;
@@ -47,6 +62,9 @@ export function resetPlayer(canvasWidth, canvasHeight) {
     player.overridePosition = null;
 }
 
+/**
+ * Updates player position and state.
+ */
 export function updatePlayer() {
   if (gameState.value !== 'PLAYING') return;
 
@@ -58,6 +76,10 @@ export function updatePlayer() {
   }
 }
 
+/**
+ * Draws the player on the canvas.
+ * @param {CanvasRenderingContext2D} ctx - Canvas context.
+ */
 export function drawPlayer(ctx) {
     if (gameState.value !== 'PLAYING') return;
 
@@ -154,24 +176,43 @@ export function drawPlayer(ctx) {
     ctx.fill();
 }
 
+/**
+ * Gets player dimensions.
+ * @returns {Object} Object with width and height.
+ */
 export function getPlayerDimensions() {
     return { width: player.width, height: player.height };
 }
 
+/**
+ * Gets player speed.
+ * @returns {number} Player speed.
+ */
 export function getPlayerSpeed() {
     return player.speed;
 }
 
+/**
+ * Gets player velocity.
+ * @returns {Object} Object with dx and dy.
+ */
 export function getPlayerVelocity() {
     return { dx: player.dx, dy: player.dy };
 }
 
+/**
+ * Sets player movement.
+ * @param {number} dx - Delta X.
+ * @param {number} dy - Delta Y.
+ */
 export function setPlayerMovement(dx, dy) {
     player.dx = dx;
     player.dy = dy;
 }
 
-// Fire bullets with double blaster power-up support
+/**
+ * Fires player bullets with double blaster power-up support.
+ */
 export function firePlayerBullets() {
     if (powerUps.doubleBlaster.active) {
         fireBullet(player.x + player.width * 0.25, player.y);

@@ -1,17 +1,27 @@
-// collisionHandler.js
-/*
-  Handles all collision detection and response logic:
-  - Player & obstacles (including shield effect)
-  - Bullets & obstacles
-  - Powerup & player (if needed here)
-*/
+/**
+ * @fileoverview Collision detection and response system.
+ * Handles all collision detection and response logic:
+ * - Player & obstacles (including shield effect)
+ * - Bullets & obstacles
+ * - Powerup & player (if needed here)
+ */
 
 import { player, bullets, obstacles, powerUps, score } from '@core/state.js';
 import { destroyObstacle } from '@entities/asteroid.js';
 import { handlePlayerHit } from '@game/gameStateManager.js';
 import { despawnBullet } from '@entities/bullet.js';
 
-// Circle-rectangle collision helper
+/**
+ * Checks collision between a circle and a rectangle.
+ * @param {number} cx - Circle center X.
+ * @param {number} cy - Circle center Y.
+ * @param {number} radius - Circle radius.
+ * @param {number} rx - Rectangle X.
+ * @param {number} ry - Rectangle Y.
+ * @param {number} rw - Rectangle width.
+ * @param {number} rh - Rectangle height.
+ * @returns {boolean} True if colliding.
+ */
 function circleRectCollision(cx, cy, radius, rx, ry, rw, rh) {
   const closestX = Math.max(rx, Math.min(cx, rx + rw));
   const closestY = Math.max(ry, Math.min(cy, ry + rh));
@@ -20,7 +30,10 @@ function circleRectCollision(cx, cy, radius, rx, ry, rw, rh) {
   return (dx * dx + dy * dy) < (radius * radius);
 }
 
-// Check if player collides with any obstacle, returns the obstacle or null
+/**
+ * Checks if player collides with any obstacle.
+ * @returns {Object|null} The colliding obstacle or null.
+ */
 function checkPlayerObstacleCollision() {
   const px = player.x;
   const py = player.y;
@@ -37,19 +50,37 @@ function checkPlayerObstacleCollision() {
   return null;
 }
 
-// Optimized collision detection with spatial partitioning
+/**
+ * Optimized collision detection with spatial partitioning.
+ */
 class SpatialGrid {
+  /**
+   * @param {number} [cellSize=50] - Size of each grid cell.
+   */
   constructor(cellSize = 50) {
     this.cellSize = cellSize;
     this.grid = new Map();
   }
 
+  /**
+   * Gets the cell key for coordinates.
+   * @param {number} x - X coordinate.
+   * @param {number} y - Y coordinate.
+   * @returns {string} Cell key.
+   */
   _getCellKey(x, y) {
     const cellX = Math.floor(x / this.cellSize);
     const cellY = Math.floor(y / this.cellSize);
     return `${cellX},${cellY}`;
   }
 
+  /**
+   * Gets nearby cell keys.
+   * @param {number} x - X coordinate.
+   * @param {number} y - Y coordinate.
+   * @param {number} radius - Search radius.
+   * @returns {string[]} Array of cell keys.
+   */
   _getNearbyCells(x, y, radius) {
     const cells = [];
     const minCellX = Math.floor((x - radius) / this.cellSize);
@@ -65,10 +96,17 @@ class SpatialGrid {
     return cells;
   }
 
+  /**
+   * Clears the grid.
+   */
   clear() {
     this.grid.clear();
   }
 
+  /**
+   * Inserts an obstacle into the grid.
+   * @param {Object} obstacle - The obstacle to insert.
+   */
   insertObstacle(obstacle) {
     const centerX = obstacle.x + obstacle.radius;
     const centerY = obstacle.y + obstacle.radius;
@@ -80,6 +118,13 @@ class SpatialGrid {
     this.grid.get(key).push(obstacle);
   }
 
+  /**
+   * Gets nearby obstacles.
+   * @param {number} x - X coordinate.
+   * @param {number} y - Y coordinate.
+   * @param {number} [radius=0] - Search radius.
+   * @returns {Object[]} Array of nearby obstacles.
+   */
   getNearbyObstacles(x, y, radius = 0) {
     const nearbyKeys = this._getNearbyCells(x, y, radius);
     const nearbyObstacles = [];
@@ -98,7 +143,9 @@ class SpatialGrid {
 // Create spatial grid instance
 const spatialGrid = new SpatialGrid(60);
 
-// Check bullet-obstacle collisions with spatial optimization
+/**
+ * Checks bullet-obstacle collisions with spatial optimization.
+ */
 function checkBulletObstacleCollisions() {
   // Build spatial grid for obstacles
   spatialGrid.clear();
@@ -142,6 +189,9 @@ function checkBulletObstacleCollisions() {
   });
 }
 
+/**
+ * Main collision checking function.
+ */
 export function checkCollisions() {
   const hitObstacle = checkPlayerObstacleCollision();
   if (hitObstacle) {

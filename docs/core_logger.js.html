@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: core/logger.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: core/logger.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @fileoverview Centralized debug logging utility with configurable levels and categories.
+ * Created: 2025-11-30
+ */
+
+/**
+ * Log levels enumeration.
+ * @enum {number}
+ */
+const LogLevel = {
+  DEBUG: 0,
+  INFO: 1,
+  WARN: 2,
+  ERROR: 3,
+  NONE: 4,
+};
+
+// Configuration
+const config = {
+  level: LogLevel.DEBUG, // Current minimum level to log
+  enabled: true, // Master switch
+  categories: {
+    // Category-specific overrides (true = enabled, false = disabled)
+    audio: true,
+    game: true,
+    input: true,
+    collision: true,
+    ui: true,
+    powerup: true,
+    level: true,
+    render: false, // Usually too verbose
+  },
+  timestamps: true, // Include timestamps
+  colors: true, // Use console colors (browser-only)
+};
+
+/**
+ * Color codes for browser console.
+ * @constant {Object&lt;string, string>}
+ */
+const colors = {
+  DEBUG: '#888',
+  INFO: '#0af',
+  WARN: '#fa0',
+  ERROR: '#f44',
+  audio: '#9c27b0',
+  game: '#4caf50',
+  input: '#2196f3',
+  collision: '#ff5722',
+  ui: '#00bcd4',
+  powerup: '#ffc107',
+  level: '#8bc34a',
+  render: '#607d8b',
+};
+
+/**
+ * Format timestamp for log output.
+ * @returns {string} Formatted timestamp.
+ */
+function getTimestamp() {
+  const now = new Date();
+  return `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}.${now.getMilliseconds().toString().padStart(3, '0')}`;
+}
+
+/**
+ * Core logging function.
+ * @param {number} level - Log level.
+ * @param {string} [category] - Log category.
+ * @param {string} message - Log message.
+ * @param {...*} args - Additional arguments.
+ */
+function log(level, category, message, ...args) {
+  // Check if logging is enabled
+  if (!config.enabled) return;
+
+  // Check log level
+  if (level &lt; config.level) return;
+
+  // Check category filter
+  if (category &amp;&amp; config.categories[category] === false) return;
+
+  const levelName = Object.keys(LogLevel).find(key => LogLevel[key] === level) || 'LOG';
+  const timestamp = config.timestamps ? `[${getTimestamp()}]` : '';
+  const categoryTag = category ? `[${category}]` : '';
+  const prefix = `${timestamp}${categoryTag}[${levelName}]`;
+
+  // Use colors in browser console
+  if (config.colors &amp;&amp; typeof window !== 'undefined') {
+    const categoryColor = colors[category] || '#888';
+    const levelColor = colors[levelName] || '#888';
+
+    console.log(
+      `%c${timestamp}%c${categoryTag}%c[${levelName}]%c ${message}`,
+      'color: #888',
+      `color: ${categoryColor}; font-weight: bold`,
+      `color: ${levelColor}; font-weight: bold`,
+      'color: inherit',
+      ...args
+    );
+  } else {
+    // Fallback for Node.js or when colors disabled
+    console.log(`${prefix} ${message}`, ...args);
+  }
+}
+
+/**
+ * Public API - Debug level.
+ * @param {string} category - Log category.
+ * @param {string} message - Log message.
+ * @param {...*} args - Additional arguments.
+ */
+export function debug(category, message, ...args) {
+  log(LogLevel.DEBUG, category, message, ...args);
+}
+
+/**
+ * Public API - Info level.
+ * @param {string} category - Log category.
+ * @param {string} message - Log message.
+ * @param {...*} args - Additional arguments.
+ */
+export function info(category, message, ...args) {
+  log(LogLevel.INFO, category, message, ...args);
+}
+
+/**
+ * Public API - Warning level.
+ * @param {string} category - Log category.
+ * @param {string} message - Log message.
+ * @param {...*} args - Additional arguments.
+ */
+export function warn(category, message, ...args) {
+  log(LogLevel.WARN, category, message, ...args);
+}
+
+/**
+ * Public API - Error level.
+ * @param {string} category - Log category.
+ * @param {string} message - Log message.
+ * @param {...*} args - Additional arguments.
+ */
+export function error(category, message, ...args) {
+  log(LogLevel.ERROR, category, message, ...args);
+}
+
+/**
+ * Configuration helpers.
+ * @namespace
+ */
+export const logger = {
+  /**
+   * Enable/disable logging globally.
+   * @param {boolean} enabled - Whether to enable logging.
+   */
+  setEnabled(enabled) {
+    config.enabled = enabled;
+  },
+
+  /**
+   * Set minimum log level.
+   * @param {number|string} level - Log level (number or string).
+   */
+  setLevel(level) {
+    if (typeof level === 'string') {
+      config.level = LogLevel[level.toUpperCase()] ?? LogLevel.DEBUG;
+    } else {
+      config.level = level;
+    }
+  },
+
+  /**
+   * Enable/disable specific category.
+   * @param {string} category - Category name.
+   * @param {boolean} enabled - Whether to enable the category.
+   */
+  setCategory(category, enabled) {
+    config.categories[category] = enabled;
+  },
+
+  /**
+   * Enable/disable timestamps.
+   * @param {boolean} enabled - Whether to include timestamps.
+   */
+  setTimestamps(enabled) {
+    config.timestamps = enabled;
+  },
+
+  /**
+   * Enable/disable colors.
+   * @param {boolean} enabled - Whether to use colors.
+   */
+  setColors(enabled) {
+    config.colors = enabled;
+  },
+
+  /**
+   * Get current configuration.
+   * @returns {Object} Current config copy.
+   */
+  getConfig() {
+    return { ...config };
+  },
+
+  /**
+   * Reset to defaults.
+   */
+  reset() {
+    config.level = LogLevel.DEBUG;
+    config.enabled = true;
+    config.timestamps = true;
+    config.colors = true;
+    Object.keys(config.categories).forEach(cat => {
+      config.categories[cat] = true;
+    });
+  },
+
+  /**
+   * Log levels for external use.
+   * @constant {Object} LogLevel
+   */
+  LogLevel,
+};
+
+/**
+ * Quick setup for production.
+ */
+export function setupProduction() {
+  logger.setEnabled(false);
+}
+
+/**
+ * Quick setup for development.
+ */
+export function setupDevelopment() {
+  logger.setEnabled(true);
+  logger.setLevel(LogLevel.DEBUG);
+  logger.setCategory('render', false); // Too verbose
+}
+
+/**
+ * Performance timer utility.
+ */
+export class Timer {
+  /**
+   * @param {string} category - Log category.
+   * @param {string} label - Timer label.
+   */
+  constructor(category, label) {
+    this.category = category;
+    this.label = label;
+    this.startTime = performance.now();
+  }
+
+  /**
+   * End the timer and log the duration.
+   * @returns {number} Duration in milliseconds.
+   */
+  end() {
+    const duration = performance.now() - this.startTime;
+    debug(this.category, `${this.label} took ${duration.toFixed(2)}ms`);
+    return duration;
+  }
+}
+
+/**
+ * Create a scoped logger for a specific category.
+ * @param {string} category - Log category.
+ * @returns {Object} Logger object with debug, info, warn, error, timer methods.
+ */
+export function createLogger(category) {
+  return {
+    debug: (message, ...args) => debug(category, message, ...args),
+    info: (message, ...args) => info(category, message, ...args),
+    warn: (message, ...args) => warn(category, message, ...args),
+    error: (message, ...args) => error(category, message, ...args),
+    timer: (label) => new Timer(category, label),
+  };
+}
+
+// Auto-configure based on environment
+if (import.meta.env?.MODE === 'production') {
+  setupProduction();
+} else {
+  setupDevelopment();
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Namespaces</h3><ul><li><a href="logger.html">logger</a></li></ul><h3>Classes</h3><ul><li><a href="ObjectPool.html">ObjectPool</a></li><li><a href="SpatialGrid.html">SpatialGrid</a></li><li><a href="Timer.html">Timer</a></li></ul><h3>Global</h3><ul><li><a href="global.html#ASTEROIDS_PER_LEVEL">ASTEROIDS_PER_LEVEL</a></li><li><a href="global.html#ASTEROID_CONFIG">ASTEROID_CONFIG</a></li><li><a href="global.html#BULLET_CONFIG">BULLET_CONFIG</a></li><li><a href="global.html#FIRE_COOLDOWN_MS">FIRE_COOLDOWN_MS</a></li><li><a href="global.html#GAME_CONFIG">GAME_CONFIG</a></li><li><a href="global.html#LEVEL_CONFIG">LEVEL_CONFIG</a></li><li><a href="global.html#LogLevel">LogLevel</a></li><li><a href="global.html#MAX_WAIT">MAX_WAIT</a></li><li><a href="global.html#MOBILE_CONFIG">MOBILE_CONFIG</a></li><li><a href="global.html#POWERUP_CONFIG">POWERUP_CONFIG</a></li><li><a href="global.html#POWERUP_TYPES">POWERUP_TYPES</a></li><li><a href="global.html#__getMobileState">__getMobileState</a></li><li><a href="global.html#__setMobileOverride">__setMobileOverride</a></li><li><a href="global.html#_detectMobile">_detectMobile</a></li><li><a href="global.html#acquireBullet">acquireBullet</a></li><li><a href="global.html#activatePowerup">activatePowerup</a></li><li><a href="global.html#activePowerups">activePowerups</a></li><li><a href="global.html#addScorePopup">addScorePopup</a></li><li><a href="global.html#allowSpawning">allowSpawning</a></li><li><a href="global.html#applyVolumeAndMute">applyVolumeAndMute</a></li><li><a href="global.html#audioUnlockAttempted">audioUnlockAttempted</a></li><li><a href="global.html#bullets">bullets</a></li><li><a href="global.html#canvasEl">canvasEl</a></li><li><a href="global.html#capitalize">capitalize</a></li><li><a href="global.html#checkBulletObstacleCollisions">checkBulletObstacleCollisions</a></li><li><a href="global.html#checkCollisions">checkCollisions</a></li><li><a href="global.html#checkPlayerObstacleCollision">checkPlayerObstacleCollision</a></li><li><a href="global.html#circleRectCollision">circleRectCollision</a></li><li><a href="global.html#clamp">clamp</a></li><li><a href="global.html#clampToCanvas">clampToCanvas</a></li><li><a href="global.html#clearAllBullets">clearAllBullets</a></li><li><a href="global.html#colors">colors</a></li><li><a href="global.html#continueGame">continueGame</a></li><li><a href="global.html#createAudioControls">createAudioControls</a></li><li><a href="global.html#createLogger">createLogger</a></li><li><a href="global.html#createObstacle">createObstacle</a></li><li><a href="global.html#currentVolume">currentVolume</a></li><li><a href="global.html#debug">debug</a></li><li><a href="global.html#despawnBullet">despawnBullet</a></li><li><a href="global.html#destroyObstacle">destroyObstacle</a></li><li><a href="global.html#drawBullets">drawBullets</a></li><li><a href="global.html#drawObstacles">drawObstacles</a></li><li><a href="global.html#drawPlayer">drawPlayer</a></li><li><a href="global.html#drawPowerupTimers">drawPowerupTimers</a></li><li><a href="global.html#drawPowerups">drawPowerups</a></li><li><a href="global.html#drawScore">drawScore</a></li><li><a href="global.html#drawScorePopups">drawScorePopups</a></li><li><a href="global.html#error">error</a></li><li><a href="global.html#fireBullet">fireBullet</a></li><li><a href="global.html#fireCooldown">fireCooldown</a></li><li><a href="global.html#firePlayerBullets">firePlayerBullets</a></li><li><a href="global.html#fireTimeoutId">fireTimeoutId</a></li><li><a href="global.html#firing">firing</a></li><li><a href="global.html#forceAudioUnlock">forceAudioUnlock</a></li><li><a href="global.html#gameLevel">gameLevel</a></li><li><a href="global.html#gameLoop">gameLoop</a></li><li><a href="global.html#gameState">gameState</a></li><li><a href="global.html#generateAsteroidShape">generateAsteroidShape</a></li><li><a href="global.html#getCanvasCenter">getCanvasCenter</a></li><li><a href="global.html#getCanvasDimensions">getCanvasDimensions</a></li><li><a href="global.html#getPlayerDimensions">getPlayerDimensions</a></li><li><a href="global.html#getPlayerSpeed">getPlayerSpeed</a></li><li><a href="global.html#getPlayerVelocity">getPlayerVelocity</a></li><li><a href="global.html#getSpawnInterval">getSpawnInterval</a></li><li><a href="global.html#getTimestamp">getTimestamp</a></li><li><a href="global.html#handleFirstTouch">handleFirstTouch</a></li><li><a href="global.html#handlePlayerHit">handlePlayerHit</a></li><li><a href="global.html#hideAllOverlays">hideAllOverlays</a></li><li><a href="global.html#info">info</a></li><li><a href="global.html#init">init</a></li><li><a href="global.html#initializeCanvas">initializeCanvas</a></li><li><a href="global.html#isAudioUnlocked">isAudioUnlocked</a></li><li><a href="global.html#isMobile">isMobile</a></li><li><a href="global.html#isMuted">isMuted</a></li><li><a href="global.html#isPointInCanvas">isPointInCanvas</a></li><li><a href="global.html#isTouch">isTouch</a></li><li><a href="global.html#lastFireTime">lastFireTime</a></li><li><a href="global.html#lastObstacleSpawnTime">lastObstacleSpawnTime</a></li><li><a href="global.html#lerp">lerp</a></li><li><a href="global.html#levelClearTime">levelClearTime</a></li><li><a href="global.html#levelStartTime">levelStartTime</a></li><li><a href="global.html#log">log</a></li><li><a href="global.html#mapRange">mapRange</a></li><li><a href="global.html#mobileOverride">mobileOverride</a></li><li><a href="global.html#movePlayer">movePlayer</a></li><li><a href="global.html#muteAll">muteAll</a></li><li><a href="global.html#newAsteroidsSpawned">newAsteroidsSpawned</a></li><li><a href="global.html#obstacles">obstacles</a></li><li><a href="global.html#pauseLocked">pauseLocked</a></li><li><a href="global.html#pendingLevelUp">pendingLevelUp</a></li><li><a href="global.html#playSound">playSound</a></li><li><a href="global.html#player">player</a></li><li><a href="global.html#playerLives">playerLives</a></li><li><a href="global.html#powerUps">powerUps</a></li><li><a href="global.html#quitGame">quitGame</a></li><li><a href="global.html#randomFloat">randomFloat</a></li><li><a href="global.html#randomInt">randomInt</a></li><li><a href="global.html#reactive">reactive</a></li><li><a href="global.html#releaseBullet">releaseBullet</a></li><li><a href="global.html#renderAll">renderAll</a></li><li><a href="global.html#resetForNextLevel">resetForNextLevel</a></li><li><a href="global.html#resetLevelFlow">resetLevelFlow</a></li><li><a href="global.html#resetNewAsteroidsSpawned">resetNewAsteroidsSpawned</a></li><li><a href="global.html#resetPlayer">resetPlayer</a></li><li><a href="global.html#restartGameLoop">restartGameLoop</a></li><li><a href="global.html#score">score</a></li><li><a href="global.html#scorePopupPool">scorePopupPool</a></li><li><a href="global.html#scorePopups">scorePopups</a></li><li><a href="global.html#setCanvas">setCanvas</a></li><li><a href="global.html#setOverlayDimensions">setOverlayDimensions</a></li><li><a href="global.html#setPlayerMovement">setPlayerMovement</a></li><li><a href="global.html#setPlayerPosition">setPlayerPosition</a></li><li><a href="global.html#setVolume">setVolume</a></li><li><a href="global.html#setupDevelopment">setupDevelopment</a></li><li><a href="global.html#setupInput">setupInput</a></li><li><a href="global.html#setupMobileInput">setupMobileInput</a></li><li><a href="global.html#setupProduction">setupProduction</a></li><li><a href="global.html#setupStarfield">setupStarfield</a></li><li><a href="global.html#show">show</a></li><li><a href="global.html#showOverlay">showOverlay</a></li><li><a href="global.html#sounds">sounds</a></li><li><a href="global.html#spawnPowerup">spawnPowerup</a></li><li><a href="global.html#startGame">startGame</a></li><li><a href="global.html#startMusic">startMusic</a></li><li><a href="global.html#stopFiring">stopFiring</a></li><li><a href="global.html#stopGameLoop">stopGameLoop</a></li><li><a href="global.html#stopMusic">stopMusic</a></li><li><a href="global.html#supportsVibration">supportsVibration</a></li><li><a href="global.html#touchActive">touchActive</a></li><li><a href="global.html#touchX">touchX</a></li><li><a href="global.html#touchY">touchY</a></li><li><a href="global.html#unmuteAll">unmuteAll</a></li><li><a href="global.html#updateBullets">updateBullets</a></li><li><a href="global.html#updateLevelFlow">updateLevelFlow</a></li><li><a href="global.html#updateObstacles">updateObstacles</a></li><li><a href="global.html#updatePlayer">updatePlayer</a></li><li><a href="global.html#updatePlayerToTouch">updatePlayerToTouch</a></li><li><a href="global.html#updatePowerups">updatePowerups</a></li><li><a href="global.html#updateScorePopups">updateScorePopups</a></li><li><a href="global.html#warn">warn</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Mon Dec 01 2025 00:17:51 GMT-0600 (Central Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

@@ -1,11 +1,10 @@
-/*
-    entities/powerup.js
-    Updated: 2025-06-06
-    Author: ChatGPT + Trevor Clark
-    Refactored: Phase 4 (Entities)
-
-    Adds object pooling to optimize power-up memory reuse.
-*/
+/**
+ * @fileoverview Power-up entity management with object pooling.
+ * Updated: 2025-06-06
+ * Author: ChatGPT + Trevor Clark
+ * Refactored: Phase 4 (Entities)
+ * Adds object pooling to optimize power-up memory reuse.
+ */
 
 import { powerUps, player } from '@core/state.js';
 import { isMobile } from '@utils/platform.js';
@@ -13,12 +12,21 @@ import { ObjectPool } from '@systems/poolManager.js';
 import { addScorePopup } from '@ui/hud/scorePopups.js';
 import { POWERUP_CONFIG, GAME_CONFIG } from '@core/constants.js';
 
+/**
+ * Power-up types enumeration.
+ * @enum {string}
+ */
 const POWERUP_TYPES = {
   DOUBLE_BLASTER: 'doubleBlaster',
   SHIELD: 'shield',
 };
 
 const powerupSize = 50;
+
+/**
+ * Array of active power-ups.
+ * @type {Array}
+ */
 const activePowerups = []; // Renamed from 'powerups' to avoid confusion with the pool
 
 // Initialize object pool for powerups
@@ -27,6 +35,10 @@ const powerupPool = new ObjectPool(() => ({
 }));
 
 
+/**
+ * Spawns a random power-up.
+ * @param {number} canvasWidth - Canvas width.
+ */
 export function spawnPowerup(canvasWidth) {
   const x = Math.random() * (canvasWidth - powerupSize);
   const y = -powerupSize;
@@ -37,6 +49,10 @@ export function spawnPowerup(canvasWidth) {
   activePowerups.push(p);
 }
 
+/**
+ * Updates all power-ups, checks collisions, and manages timers.
+ * @param {number} canvasHeight - Canvas height.
+ */
 export function updatePowerups(canvasHeight) {
   for (let i = activePowerups.length - 1; i >= 0; i--) {
     const p = activePowerups[i];
@@ -71,6 +87,10 @@ export function updatePowerups(canvasHeight) {
   });
 }
 
+/**
+ * Draws all power-ups on the canvas.
+ * @param {CanvasRenderingContext2D} ctx - Canvas context.
+ */
 export function drawPowerups(ctx) {
   const now = performance.now();
   const time = now / 600;
@@ -134,7 +154,17 @@ export function drawPowerups(ctx) {
   });
 }
 
+/**
+ * Activates a power-up.
+ * @param {string} type - Power-up type.
+ */
 function activatePowerup(type) {
+  const config = POWERUP_CONFIG[type];
+  if (!config) {
+    console.warn(`Unknown powerup type: ${type}`);
+    return;
+  }
+
   powerUps[type].active = true;
-  powerUps[type].timer = Math.round(POWERUP_CONFIG[type].DURATION / GAME_CONFIG.FRAME_DURATION);
+  powerUps[type].timer = Math.round(config.DURATION / GAME_CONFIG.FRAME_DURATION);
 }

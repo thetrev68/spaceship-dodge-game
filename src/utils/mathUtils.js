@@ -1,5 +1,6 @@
-// utils/mathUtils.js
-// Math utility functions for random number generation and value clamping
+/**
+ * @fileoverview Math utility functions for random number generation and value clamping.
+ */
 
 /**
  * Generate a random integer within a specified range (inclusive)

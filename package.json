@@ -12,7 +12,8 @@
     "deploy": "gh-pages -d dist",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
-    "knip": "knip"
+    "knip": "knip",
+    "docs": "jsdoc -r src -d docs"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
@@ -20,6 +21,7 @@
     "autoprefixer": "^10.4.22",
     "eslint": "^9.39.1",
     "gh-pages": "^6.3.0",
+    "jsdoc": "^4.0.5",
     "knip": "^5.70.2",
     "postcss": "^8.4.47",
     "tailwindcss": "^4.1.17",

@@ -1,7 +1,13 @@
-// starfield.js (Mobile disabled version)
+/**
+ * @fileoverview Starfield effect for background animation (disabled on mobile).
+ */
 
 import { isMobile } from '@utils/platform.js';
 
+/**
+ * Sets up the starfield effect on the given canvas.
+ * @param {HTMLCanvasElement} canvas - The canvas element for the starfield.
+ */
 export function setupStarfield(canvas) {
   if (isMobile()) {
     canvas.style.display = 'none'; // Hide the background canvas entirely
@@ -12,6 +18,9 @@ export function setupStarfield(canvas) {
   const stars = [];
   const starCount = 100;
 
+  /**
+   * Resizes the canvas to full window size.
+   */
   function resize() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
@@ -32,6 +41,9 @@ export function setupStarfield(canvas) {
     });
   }
 
+  /**
+   * Animates the starfield by updating and drawing stars.
+   */
   function animate() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = 'white';

@@ -49,6 +49,7 @@ export default [
       'dist/**',
       'styles/**',
       '*.config.js',
+      'docs/scripts/**',
     ],
   },
 ];

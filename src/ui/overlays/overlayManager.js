@@ -1,3 +1,7 @@
+/**
+ * @fileoverview Game overlay management.
+ */
+
 import { playerLives, gameState, obstacles, powerUps, score, gameLevel } from '@core/state.js';
 import { isMobile } from '@utils/platform.js';
 import {
@@ -27,16 +31,29 @@ const continueButton = document.getElementById('continueButton');
 const startButton = document.getElementById('startButton');
 const quitButton = document.getElementById('quitButton');
 
+/**
+ * Hides all game overlays.
+ */
 function hideAllOverlays() {
   document.querySelectorAll('.game-overlay').forEach(ov => {
     ov.classList.remove('visible');
   });
 }
 
+/**
+ * Shows a specific overlay.
+ * @param {HTMLElement} overlay - The overlay element to show.
+ */
 function show(overlay) {
   overlay.classList.add('visible');
 }
 
+/**
+ * Shows the appropriate overlay based on game state.
+ * @param {string} state - Game state.
+ * @param {number} [score=0] - Current score.
+ * @param {number} [level=0] - Current level.
+ */
 export function showOverlay(state, score = 0, level = 0) {
   hideAllOverlays();
 
@@ -91,10 +108,17 @@ export function showOverlay(state, score = 0, level = 0) {
   document.dispatchEvent(new Event('gameStateChange'));
 }
 
+/**
+ * Initializes the game canvas.
+ * @param {HTMLCanvasElement} canvas - The game canvas.
+ */
 export function initializeCanvas(canvas) {
   initCanvas(canvas);
 }
 
+/**
+ * Quits the game after confirmation.
+ */
 export function quitGame() {
   const confirmed = confirm('Are you sure you want to quit the game?');
   if (!confirmed) return;
@@ -113,6 +137,10 @@ export function quitGame() {
   showOverlay('GAME_OVER', score.value, gameLevel.value);
 }
 
+/**
+ * Sets overlay dimensions to match canvas.
+ * @param {HTMLCanvasElement} canvas - The game canvas.
+ */
 export function setOverlayDimensions(canvas) {
   setOverlayDims(canvas, [startOverlay, gameOverOverlay, levelTransitionOverlay, pauseOverlay]);
 }

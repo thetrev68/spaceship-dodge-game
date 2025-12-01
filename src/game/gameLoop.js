@@ -1,9 +1,9 @@
-// gameLoop.js
-/*
-  Complete game loop module with proper obstacle spawn timing,
-  canvas sizing, and update/draw orchestration using renderManager.
-  Updated: 2025-11-30 for performance improvements and error handling
-*/
+/**
+ * @fileoverview Main game loop management.
+ * Complete game loop module with proper obstacle spawn timing,
+ * canvas sizing, and update/draw orchestration using renderManager.
+ * Updated: 2025-11-30 for performance improvements and error handling
+ */
 
 import {
   gameState,
@@ -37,6 +37,11 @@ let gameCanvas;
 let ctx;
 let lastPowerupSpawnTime = 0;
 
+/**
+ * Calculates the spawn interval for the given level.
+ * @param {number} level - Current game level.
+ * @returns {number} Spawn interval in milliseconds.
+ */
 function getSpawnInterval(level) {
   const baseInterval = isMobile()
     ? LEVEL_CONFIG.BASE_SPAWN_INTERVAL_MOBILE
@@ -47,6 +52,10 @@ function getSpawnInterval(level) {
 
 let obstacleSpawnInterval = ASTEROID_CONFIG.MIN_SPAWN_INTERVAL;
 
+/**
+ * Sets the game canvas.
+ * @param {HTMLCanvasElement} canvas - The game canvas.
+ */
 export function setCanvas(canvas) {
   gameCanvas = canvas;
   gameCanvas.width = window.innerWidth;
@@ -54,13 +63,20 @@ export function setCanvas(canvas) {
   ctx = gameCanvas.getContext('2d');
 }
 
+/**
+ * Restarts the game loop.
+ */
 export function restartGameLoop() {
   if (gameCanvas) {
     animationId = requestAnimationFrame((t) => gameLoop(gameCanvas, t));
   }
 }
 
-// TODO: Currently exported but only called internally - consider making private
+/**
+ * Main game loop function.
+ * @param {HTMLCanvasElement} canvas - The game canvas.
+ * @param {number} timestamp - Current timestamp.
+ */
 function gameLoop(canvas, timestamp = 0) {
   if (timestamp - lastFrameTime < GAME_CONFIG.FRAME_DURATION) {
     animationId = requestAnimationFrame((t) => gameLoop(canvas, t));
@@ -69,7 +85,7 @@ function gameLoop(canvas, timestamp = 0) {
   lastFrameTime = timestamp;
 
   if (gameState.value !== 'PLAYING') {
-    stopGameLoop(); // fully pause game loop
+    stopGameLoop();
     return;
   }
 
@@ -83,7 +99,6 @@ function gameLoop(canvas, timestamp = 0) {
   }
 
   updatePlayer();
-  // Pass reactive allowSpawning.value here to gate spawning
   updateObstacles(canvas.width, canvas.height, obstacleSpawnInterval, lastObstacleSpawnTime, allowSpawning.value);
   updateBullets();
   updatePowerups(canvas.height);
@@ -94,7 +109,6 @@ function gameLoop(canvas, timestamp = 0) {
   renderAll(ctx);
 
   updateLevelFlow(() => {
-    // Reset spawn count and level flow on level up
     resetNewAsteroidsSpawned();
     resetLevelFlow();
 
@@ -104,6 +118,9 @@ function gameLoop(canvas, timestamp = 0) {
   animationId = requestAnimationFrame((t) => gameLoop(canvas, t));
 }
 
+/**
+ * Stops the game loop.
+ */
 export function stopGameLoop() {
   if (animationId) {
     cancelAnimationFrame(animationId);

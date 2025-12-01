@@ -1,9 +1,8 @@
-// js/inputManager.js
-
-/*
-  Sets up keyboard and mouse/touch input handlers.
-  Calls player movement and firing functions.
-*/
+/**
+ * @fileoverview Input management for keyboard and mouse.
+ * Sets up keyboard and mouse/touch input handlers.
+ * Calls player movement and firing functions.
+ */
 
 import { gameState } from '@core/state.js';
 import { showOverlay } from '@ui/overlays/overlayManager.js';
@@ -11,12 +10,40 @@ import * as soundManager from '@systems/soundManager.js';
 import { restartGameLoop } from '@game/gameLoop.js';
 import { firePlayerBullets, getPlayerSpeed, setPlayerMovement, setPlayerPosition, getPlayerDimensions, getPlayerVelocity } from '@entities/player.js';
 
+/**
+ * Flag for continuous firing.
+ * @type {boolean}
+ */
 let firing = false;
+
+/**
+ * Timeout ID for firing loop.
+ * @type {number|null}
+ */
 let fireTimeoutId = null;
+
+/**
+ * Flag to prevent rapid pause toggling.
+ * @type {boolean}
+ */
 let pauseLocked = false;
+
+/**
+ * Last fire time for cooldown.
+ * @type {number}
+ */
 let lastFireTime = 0;
+
+/**
+ * Fire cooldown in milliseconds.
+ * @const {number}
+ */
 const FIRE_COOLDOWN_MS = 150;
 
+/**
+ * Sets up input handlers for the canvas.
+ * @param {HTMLCanvasElement} canvas - The game canvas.
+ */
 export function setupInput(canvas) {
   document.addEventListener('keydown', (e) => {
     if (e.key === 'p' && !pauseLocked) {
@@ -139,6 +166,9 @@ export function setupInput(canvas) {
   });
 }
 
+/**
+ * Stops continuous firing.
+ */
 function stopFiring() {
   firing = false;
   if (fireTimeoutId) {

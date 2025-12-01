@@ -1,15 +1,17 @@
-/*
-    audioControls.js
-    Created: 2025-05-28
-    Author: ChatGPT + Trevor Clark
-
-    Updates:
-        Uses static import for soundManager.
-        Manages mute/unmute and volume slider.
-*/
+/**
+ * @fileoverview Audio control UI components.
+ * Created: 2025-05-28
+ * Author: ChatGPT + Trevor Clark
+ * Updates:
+ *     Uses static import for soundManager.
+ *     Manages mute/unmute and volume slider.
+ */
 
 import * as soundManager from '@systems/soundManager.js';
 
+/**
+ * Creates and appends audio control UI elements to the document.
+ */
 export function createAudioControls() {
   const container = document.createElement('div');
   container.style.position = 'absolute';

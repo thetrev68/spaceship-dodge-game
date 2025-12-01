@@ -1,3 +1,8 @@
+/**
+ * @fileoverview Main entry point for the spaceship dodge game.
+ * Handles initialization, input setup, and game start logic.
+ */
+
 import { initializeCanvas, setOverlayDimensions, showOverlay, quitGame } from '@ui/overlays/overlayManager.js';
 import { setupStarfield } from '@effects/starfield.js';
 import { setCanvas, restartGameLoop } from '@game/gameLoop.js';
@@ -9,8 +14,15 @@ import { isMobile } from '@utils/platform.js';
 import * as soundManager from '@systems/soundManager.js';
 import { debug, warn } from '@core/logger.js';
 
+/**
+ * Flag to track if audio unlock has been attempted.
+ * @type {boolean}
+ */
 let audioUnlockAttempted = false;
 
+/**
+ * Handles the first touch or click to unlock audio.
+ */
 function handleFirstTouch() {
   if (audioUnlockAttempted) return;
   audioUnlockAttempted = true;
@@ -31,6 +43,9 @@ function handleFirstTouch() {
 document.addEventListener('touchend', handleFirstTouch, { passive: true });
 document.addEventListener('click', handleFirstTouch, { passive: true });
 
+/**
+ * Initializes the game when DOM is loaded.
+ */
 function init() {
   debug('game', 'init running — DOM loaded');
 
@@ -59,6 +74,10 @@ function init() {
 
   const startEvent = 'ontouchstart' in window ? 'touchstart' : 'click';
 
+  /**
+   * Handler for starting the game from overlay.
+   * @param {Event} e - The event object.
+   */
   const startGameHandler = (e) => {
     e.preventDefault();
     if (gameState.value !== 'START') return;

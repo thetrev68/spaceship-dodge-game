@@ -1,11 +1,10 @@
-/*
-    entities/asteroid.js
-    Updated: 2025-06-06
-    Author: ChatGPT + Trevor Clark
-    Refactored: Phase 4 (Entities)
-
-    Adds object pooling to optimize asteroid memory reuse.
-*/
+/**
+ * @fileoverview Asteroid entity management with object pooling.
+ * Updated: 2025-06-06
+ * Author: ChatGPT + Trevor Clark
+ * Refactored: Phase 4 (Entities)
+ * Adds object pooling to optimize asteroid memory reuse.
+ */
 
 import {
 
@@ -37,13 +36,25 @@ let obstacleMaxSpeed = ASTEROID_CONFIG.BASE_MAX_SPEED;
 // Initialize object pool
 const obstaclePool = new ObjectPool(() => ({}));
 
+/**
+ * Count of new asteroids spawned.
+ * @type {number}
+ */
 export let newAsteroidsSpawned = 0;
 
+/**
+ * Resets the count of new asteroids spawned.
+ */
 export function resetNewAsteroidsSpawned() {
   newAsteroidsSpawned = 0;
 }
 
-// Private: Generate asteroid shape
+/**
+ * Generates asteroid shape points.
+ * @param {number} radius - Asteroid radius.
+ * @param {number} numPoints - Number of shape points.
+ * @returns {Array<Object>} Array of point objects with x, y.
+ */
 function generateAsteroidShape(radius, numPoints) {
   const points = [];
   const angleIncrement = (Math.PI * 2) / numPoints;
@@ -58,7 +69,15 @@ function generateAsteroidShape(radius, numPoints) {
   return points;
 }
 
-// Private: Create and spawn a single obstacle
+/**
+ * Creates and spawns a single obstacle.
+ * @param {number} x - X position.
+ * @param {number} y - Y position.
+ * @param {number} levelIndex - Asteroid level index.
+ * @param {number} [initialDx=0] - Initial X velocity.
+ * @param {number} [initialDy=0] - Initial Y velocity.
+ * @param {number|null} [parentId=null] - Parent asteroid ID.
+ */
 function createObstacle(x, y, levelIndex, initialDx = 0, initialDy = 0, parentId = null) {
   const radius = ASTEROID_CONFIG.LEVEL_SIZES[levelIndex];
   const scoreValue = ASTEROID_CONFIG.SCORE_VALUES[levelIndex];
@@ -112,6 +131,14 @@ function createObstacle(x, y, levelIndex, initialDx = 0, initialDy = 0, parentId
   }
 }
 
+/**
+ * Updates obstacles, removes out of bounds or expired, spawns new if allowed.
+ * @param {number} canvasWidth - Canvas width.
+ * @param {number} canvasHeight - Canvas height.
+ * @param {number} spawnInterval - Spawn interval.
+ * @param {Object} lastSpawnTimeRef - Reference to last spawn time.
+ * @param {boolean} [allowSpawning=true] - Whether spawning is allowed.
+ */
 export function updateObstacles(canvasWidth, canvasHeight, spawnInterval, lastSpawnTimeRef, allowSpawning = true) {
   const now = Date.now();
 
@@ -161,6 +188,10 @@ export function updateObstacles(canvasWidth, canvasHeight, spawnInterval, lastSp
   }
 }
 
+/**
+ * Draws all obstacles on the canvas.
+ * @param {CanvasRenderingContext2D} ctx - Canvas context.
+ */
 export function drawObstacles(ctx) {
   ctx.strokeStyle = '#ff4500';
   ctx.lineWidth = 2;
@@ -179,6 +210,11 @@ export function drawObstacles(ctx) {
   });
 }
 
+/**
+ * Destroys an obstacle, releases to pool, spawns fragments if applicable.
+ * @param {Object} obstacle - The obstacle to destroy.
+ * @param {Object} scoreRef - Reference to score.
+ */
 export function destroyObstacle(obstacle, scoreRef) {
   const idx = obstacles.indexOf(obstacle);
   if (idx === -1) return;
