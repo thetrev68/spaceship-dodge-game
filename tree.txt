@@ -1,0 +1,53 @@
+spaceship-dodge-game/
+├── .nojekyll/
+├── assets/
+├── js/
+├── src/
+│   ├── asteroid.js (185 lines)
+│   ├── audioControls.js (46 lines)
+│   ├── bullet.js (55 lines)
+│   ├── collisionHandler.js (134 lines)
+│   ├── constants.js (127 lines)
+│   ├── flowManager.js (79 lines)
+│   ├── gameLoop.js (91 lines)
+│   ├── gameStateManager.js (76 lines)
+│   ├── inputManager.js (132 lines)
+│   ├── javascript.svg
+│   ├── main.js (103 lines)
+│   ├── mobileControls.js (88 lines)
+│   ├── player.js (122 lines)
+│   ├── powerupHUD.js (23 lines)
+│   ├── powerups.js (106 lines)
+│   ├── renderManager.js (28 lines)
+│   ├── scoreDisplay.js (16 lines)
+│   ├── scorePopups.js (44 lines)
+│   ├── soundManager.js (127 lines)
+│   ├── starfield.js (44 lines)
+│   ├── state.js (44 lines)
+│   └── ui.js (121 lines)
+├── styles/
+│   ├── main-tailwind.css (100 lines)
+│   └── main.css (90 lines)
+├── .gitattributes
+├── CLAUDE.md
+├── Gemini_Rec.md
+├── index.html (101 lines)
+├── localhost+2-key.pem
+├── localhost+2.pem
+├── postcss.config.js (6 lines)
+├── README.md
+├── settings.json
+├── tailwind.config.js (8 lines)
+└── UPGRADE_NOTES.md
+
+==================================================
+DIRECTORY TREE STATISTICS
+==================================================
+Total directories: 5
+Total files: 35
+Files with line counts: 26
+Total lines of code: 2,096
+
+Configuration:
+  Excluded directories: .archive, .claude, .geminiignore, .git, .github, .gitignore, .idea, .kilocode, .pytest_cache, .ruff_cache, .serena, .vite, .vscode, __pycache__, agents.md, backlog.md, build, claude.md, coverage, dist, docs, eslint.config.js, gemini.md, jules-scratch, knip.json, legacy, logs, node_modules, package-lock.json, package.json, playwright-report, public, test-results, tree.txt, tree_scanner.py, venv, vite.config.js
+  Line counting for: .c, .cpp, .css, .dart, .h, .html, .java, .js, .ts, .tsx
