@@ -1,0 +1,50 @@
+{
+  "mcp_servers": {
+    "serena": {
+      "enabled": true,
+      "command": "uvx --from git+https://github.com/oraios/serena serena start-mcp-server --context ide-assistant --project C:/Repos/spaceship-dodge-game",
+      "auto_start": true,
+      "working_directory": "C:/Repos/spaceship-dodge-game",
+      "environment": {
+        "NODE_ENV": "development"
+      }
+    },
+    "context7": {
+      "enabled": true,
+      "command": "npx -y @upstash/context7-mcp",
+      "auto_start": true,
+      "working_directory": "C:/Repos/spaceship-dodge-game",
+      "environment": {
+        "NODE_ENV": "development"
+      }
+    }
+  },
+  "project_specific": {
+    "root_path": "C:/Repos/spaceship-dodge-game",
+    "language": "typescript",
+    "file_encoding": "utf-8",
+    "excluded_files": [
+      "node_modules/**",
+      "dist/**",
+      ".git/**",
+      "*.lock",
+      "*.log"
+    ],
+    "included_extensions": [
+      ".js",
+      ".ts",
+      ".jsx",
+      ".tsx",
+      ".json",
+      ".css",
+      ".html",
+      ".md"
+    ]
+  },
+  "symbol_analysis": {
+    "max_symbols_per_file": 1000,
+    "max_file_size_kb": 500,
+    "enable_caching": true,
+    "cache_directory": ".kilocode/cache"
+  }
+}
