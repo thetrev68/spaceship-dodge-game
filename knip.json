@@ -1,7 +1,7 @@
 {
   "$schema": "https://unpkg.com/knip@latest/schema.json",
   "entry": [
-    "src/main.js",
+    "src/core/main.js",
     "index.html"
   ],
   "project": [
@@ -10,7 +10,8 @@
   "ignore": [
     "node_modules/**",
     "dist/**",
-    "styles/**"
+    "styles/**",
+    "src/game/flowManager.js"
   ],
   "ignoreDependencies": [
     "gh-pages",
@@ -18,5 +19,18 @@
   ],
   "ignoreBinaries": [
     "tailwindcss"
-  ]
+  ],
+  "tsConfig": {
+    "baseUrl": ".",
+    "paths": {
+      "@core/*": ["src/core/*"],
+      "@entities/*": ["src/entities/*"],
+      "@systems/*": ["src/systems/*"],
+      "@ui/*": ["src/ui/*"],
+      "@utils/*": ["src/utils/*"],
+      "@effects/*": ["src/effects/*"],
+      "@input/*": ["src/input/*"],
+      "@game/*": ["src/game/*"]
+    }
+  }
 }
