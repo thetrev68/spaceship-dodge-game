@@ -5,6 +5,7 @@
 
 import { isMobile } from '@utils/platform.js';
 import { ObjectPool } from '@systems/poolManager.js';
+import { ANIMATION_CONSTANTS, HUD_CONSTANTS } from '@core/gameConstants.js';
 
 /**
  * Array of active score popups.
@@ -33,7 +34,7 @@ export function addScorePopup(text, x, y, color = '#ffffff') {
     popup.text = text;
     popup.x = x;
     popup.y = y;
-    popup.opacity = 1.0;
+    popup.opacity = HUD_CONSTANTS.GLOBAL_ALPHA;
     popup.color = color;
 
     scorePopups.push(popup);
@@ -47,8 +48,8 @@ export function updateScorePopups() {
 
     for (let i = scorePopups.length - 1; i >= 0; i--) {
         const popup = scorePopups[i];
-        popup.y -= 0.5;
-        popup.opacity -= 0.02;
+        popup.y -= ANIMATION_CONSTANTS.SCORE_POPUP_FALL_SPEED;
+        popup.opacity -= ANIMATION_CONSTANTS.SCORE_POPUP_FADE_SPEED;
 
         if (popup.opacity <= 0) {
             scorePopups.splice(i, 1);
@@ -70,5 +71,5 @@ export function drawScorePopups(ctx) {
         ctx.fillStyle = popup.color;
         ctx.fillText(popup.text, popup.x, popup.y);
     });
-    ctx.globalAlpha = 1.0; // reset
+    ctx.globalAlpha = HUD_CONSTANTS.GLOBAL_ALPHA; // reset
 }

@@ -4,14 +4,15 @@
  */
 
 import { powerUps } from '@core/state.js';
+import { HUD_CONSTANTS } from '@core/gameConstants.js';
 
 /**
  * Draws countdown timers for active power-ups on the HUD.
  * @param {CanvasRenderingContext2D} ctx - Canvas context.
  */
 export function drawPowerupTimers(ctx) {
-  const x = 20;
-  const startY = 120; // increase from 40 to 80 or more to move down below score
+  const x = HUD_CONSTANTS.SCORE_X;
+  const startY = HUD_CONSTANTS.POWERUP_START_Y; // increase from 40 to 80 or more to move down below score
   let y = startY;
   ctx.font = '18px monospace';
   ctx.fillStyle = '#00ffff';
@@ -20,7 +21,7 @@ export function drawPowerupTimers(ctx) {
     if (pu.active) {
       const secondsLeft = Math.ceil(pu.timer / 60);
       ctx.fillText(`${capitalize(key)}: ${secondsLeft}s`, x, y);
-      y += 24;
+      y += HUD_CONSTANTS.POWERUP_LINE_HEIGHT;
     }
   });
 }
