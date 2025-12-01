@@ -5,30 +5,31 @@
   Updated: 2025-11-30 for performance improvements and error handling
 */
 
-import { 
-  gameState, 
-  lastObstacleSpawnTime, 
+import {
+  gameState,
+  lastObstacleSpawnTime,
   gameLevel,
   allowSpawning
-} from './state.js';
+} from '@core/state';
 
 import {
   GAME_CONFIG,
   LEVEL_CONFIG,
   POWERUP_CONFIG,
   ASTEROID_CONFIG
-} from './constants.js';
+} from '@core/constants';
 
-import { updatePlayer } from './player.js';
-import { updateObstacles } from './asteroid.js';
-import * as asteroid from './asteroid.js';
-import { updateBullets } from './bullet.js';
-import { updatePowerups, spawnPowerup } from './powerups.js';
-import { updateScorePopups } from './scorePopups.js';
-import { checkCollisions } from './collisionHandler.js';
+import { updatePlayer } from '../player.js';
+import { updateObstacles } from '../asteroid.js';
+import * as asteroid from '../asteroid.js';
+import { updateBullets } from '../bullet.js';
+import { updatePowerups, spawnPowerup } from '../powerups.js';
+import { updateScorePopups } from '../scorePopups.js';
+import { checkCollisions } from '../collisionHandler.js';
 import { updateLevelFlow, resetLevelFlow } from './flowManager.js';
-import { renderAll } from './renderManager.js';
-import { score } from './state.js';
+import { renderAll } from '../renderManager.js';
+import { score } from '@core/state';
+import { showOverlay } from '../ui.js';
 
 let lastFrameTime = 0;
 let animationId;
@@ -95,9 +96,7 @@ export function gameLoop(canvas, timestamp = 0) {
     asteroid.resetNewAsteroidsSpawned();
     resetLevelFlow();
 
-    import('./ui.js').then(ui => {
-      ui.showOverlay('LEVEL_TRANSITION', score.value, gameLevel.value);
-    });
+    showOverlay('LEVEL_TRANSITION', score.value, gameLevel.value);
   });
 
   animationId = requestAnimationFrame((t) => gameLoop(canvas, t));

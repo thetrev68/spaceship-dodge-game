@@ -1,13 +1,13 @@
 import { initializeCanvas, setOverlayDimensions, showOverlay, quitGame } from './ui.js';
 import { setupStarfield } from './starfield.js';
-import { setCanvas, restartGameLoop } from './gameLoop.js';
-import { startGame, continueGame } from './gameStateManager.js';
+import { setCanvas, restartGameLoop } from '@game/gameLoop';
+import { startGame, continueGame } from '@game/gameStateManager';
 import { setupInput } from './inputManager.js';
 import { setupMobileInput } from './mobileControls.js';
-import { gameState } from './state.js';
+import { gameState } from '@core/state';
 import { isMobile } from './utils/platform.js';
 import * as soundManager from './soundManager.js';
-import { debug, warn } from './logger.js';
+import { debug, warn } from '@core/logger';
 
 let audioUnlockAttempted = false;
 
@@ -83,7 +83,7 @@ function init() {
       debug('game', 'Resuming game from overlay touch');
       gameState.value = 'PLAYING';
       showOverlay('PLAYING');
-      import('./soundManager.js').then(m => m.unmuteAll());
+      soundManager.unmuteAll();
       restartGameLoop();
     }, { passive: false });
 
@@ -99,12 +99,10 @@ function init() {
 
     startButton?.addEventListener('click', () => {
       if (gameState.value !== 'START') return;
-      import('./soundManager.js').then(m => {
-        m.forceAudioUnlock().then(() => {
-          m.startMusic();
-          startGame(canvas);
-          restartGameLoop();
-        });
+      soundManager.forceAudioUnlock().then(() => {
+        soundManager.startMusic();
+        startGame(canvas);
+        restartGameLoop();
       });
     });
 

@@ -10,8 +10,9 @@
     The comments explain each part in simple terms.
 */
 
-import { allowSpawning, gameLevel, gameState, levelStartTime, bullets, obstacles } from './state.js';
-import { newAsteroidsSpawned } from './asteroid.js';
+import { allowSpawning, gameLevel, gameState, levelStartTime, bullets, obstacles } from '@core/state';
+import { newAsteroidsSpawned } from '../asteroid.js';
+import { playSound, stopMusic } from '../soundManager.js';
 
 // Variables to keep track of spawning permission and level up status
 let pendingLevelUp = false;    // Have we started the process of moving to the next level?
@@ -77,9 +78,9 @@ export function updateLevelFlow(onLevelUpCallback) {
             pendingLevelUp = false;    // Reset flag
             levelClearTime = null;     // Reset timer
 
-            // Play sounds asynchronously
-            import('./soundManager.js').then(m => m.playSound('levelup'));
-            import('./soundManager.js').then(m => m.stopMusic());
+            // Play sounds
+            playSound('levelup');
+            stopMusic();
 
             // Call the provided callback for any additional level-up logic
             onLevelUpCallback();

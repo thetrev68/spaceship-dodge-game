@@ -10,9 +10,9 @@ import {
     GAME_CONFIG,
     ASTEROID_CONFIG,
     MOBILE_CONFIG
-} from './constants.js';
+} from '@core/constants';
 
-import { obstacles } from './state.js';
+import { obstacles } from '@core/state';
 import { isMobile } from './utils/platform.js';
 import { randomInt, randomFloat } from './utils/mathUtils.js';
 

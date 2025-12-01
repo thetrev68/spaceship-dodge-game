@@ -4,12 +4,12 @@
   integrated with updated leveling system.
 */
 
-import { gameState, playerLives, player, bullets, obstacles, score, gameLevel, powerUps } from './state.js';
+import { gameState, playerLives, player, bullets, obstacles, score, gameLevel, powerUps } from '@core/state';
 import { resetLevelFlow } from './flowManager.js';
-import { showOverlay } from './ui.js';
-import * as soundManager from './soundManager.js';
-import { unmuteAll } from './soundManager.js';
-import { createAudioControls } from './audioControls.js';
+import { showOverlay } from '../ui.js';
+import * as soundManager from '../soundManager.js';
+import { unmuteAll } from '../soundManager.js';
+import { createAudioControls } from '../audioControls.js';
 
 export function handlePlayerHit() {
   playerLives.value -= 1;
@@ -66,7 +66,7 @@ export function startGame(canvas) {
   createAudioControls();
 
   unmuteAll();       // Unmute audio
-  import('./soundManager.js').then(m => m.startMusic());
+  soundManager.startMusic();
 
   // Clear the canvas explicitly
   const ctx = canvas.getContext('2d');

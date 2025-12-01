@@ -3,7 +3,7 @@
     Optimized: performance-aware power-up visuals and updates
 */
 
-import { powerUps, player } from './state.js';
+import { powerUps, player } from '@core/state';
 import { isMobile } from './utils/platform.js';
 import { addScorePopup } from './scorePopups.js';
 

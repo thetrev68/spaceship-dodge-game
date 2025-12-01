@@ -6,8 +6,9 @@
   - Powerup & player (if needed here)
 */
 
-import { player, bullets, obstacles, powerUps, score } from './state.js';
+import { player, bullets, obstacles, powerUps, score } from '@core/state';
 import { destroyObstacle } from './asteroid.js';
+import { handlePlayerHit } from '@game/gameStateManager';
 
 // Circle-rectangle collision helper
 function circleRectCollision(cx, cy, radius, rx, ry, rw, rh) {
@@ -147,7 +148,7 @@ export function checkCollisions() {
   if (hitObstacle) {
     if (!powerUps.shield.active) {
       // Player takes damage
-      import('./gameStateManager.js').then(m => m.handlePlayerHit());
+      handlePlayerHit();
     } else {
       // Phase shield active: ignore collision, player passes through
       // Optionally, add subtle visual or sound feedback here

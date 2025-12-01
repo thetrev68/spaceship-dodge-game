@@ -5,10 +5,10 @@
   Calls player movement and firing functions.
 */
 
-import { gameState, player } from './state.js';
+import { gameState, player } from '@core/state';
 import { showOverlay } from './ui.js';
 import * as soundManager from './soundManager.js';
-import { restartGameLoop } from './gameLoop.js';
+import { restartGameLoop } from '@game/gameLoop';
 import { firePlayerBullets } from './player.js';
 
 let firing = false;

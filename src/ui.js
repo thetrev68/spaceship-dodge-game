@@ -1,9 +1,10 @@
-import { playerLives } from './state.js';
+import { playerLives, gameState, bullets, obstacles, powerUps, score, gameLevel } from '@core/state';
 import { isMobile } from './utils/platform.js';
 import {
   initializeCanvas as initCanvas,
   setOverlayDimensions as setOverlayDims
 } from './utils/canvasUtils.js';
+import { stopMusic, startMusic, playSound } from './soundManager.js';
 
 const startOverlay = document.getElementById('startOverlay');
 const gameOverOverlay = document.getElementById('gameOverOverlay');
@@ -58,13 +59,13 @@ export function showOverlay(state, score = 0, level = 0) {
       break;
 
     case 'GAME_OVER':
-      import('./soundManager.js').then(m => m.stopMusic());
+      stopMusic();
       finalScoreDisplay.textContent = `Final Score: ${score} (Level ${level + 1})`;
       show(gameOverOverlay);
       break;
 
     case 'LEVEL_TRANSITION':
-      import('./soundManager.js').then(m => m.stopMusic());
+      stopMusic();
       levelUpMessage.textContent = `LEVEL ${level + 1} !`;
       currentLevelInfo.textContent = 'Get Ready!';
       currentScoreInfo.textContent = `Score: ${score}`;
@@ -72,7 +73,7 @@ export function showOverlay(state, score = 0, level = 0) {
       break;
 
     case 'PAUSED':
-      import('./soundManager.js').then(m => m.stopMusic());
+      stopMusic();
       if (pauseText) {
         pauseText.textContent = isMobile
           ? 'Tap to Resume'
@@ -82,7 +83,7 @@ export function showOverlay(state, score = 0, level = 0) {
       break;
 
     case 'PLAYING':
-      import('./soundManager.js').then(m => m.startMusic());
+      startMusic();
       break;
   }
 
@@ -97,24 +98,18 @@ export function quitGame() {
   const confirmed = confirm('Are you sure you want to quit the game?');
   if (!confirmed) return;
 
-  Promise.all([
-    import('./soundManager.js'),
-    import('./state.js'),
-    import('./ui.js')
-  ]).then(([soundManager, state, ui]) => {
-    soundManager.stopMusic();
-    state.gameState.value = 'GAME_OVER';
-    state.bullets.length = 0;
-    state.obstacles.length = 0;
+  stopMusic();
+  gameState.value = 'GAME_OVER';
+  bullets.length = 0;
+  obstacles.length = 0;
 
-    Object.keys(state.powerUps).forEach(key => {
-      state.powerUps[key].active = false;
-      state.powerUps[key].timer = 0;
-    });
-
-    soundManager.playSound('gameover');
-    ui.showOverlay('GAME_OVER', state.score.value, state.gameLevel.value);
+  Object.keys(powerUps).forEach(key => {
+    powerUps[key].active = false;
+    powerUps[key].timer = 0;
   });
+
+  playSound('gameover');
+  showOverlay('GAME_OVER', score.value, gameLevel.value);
 }
 
 export function setOverlayDimensions(canvas) {

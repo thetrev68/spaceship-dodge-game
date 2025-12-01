@@ -1,8 +1,8 @@
 // js/bullet.js
 
-import { bullets, gameState } from './state.js';
+import { bullets, gameState } from '@core/state';
 import { isMobile } from './utils/platform.js';
-import { BULLET_CONFIG } from './constants.js';
+import { BULLET_CONFIG } from '@core/constants';
 import { playSound } from './soundManager.js';
 
 const bulletSpeed = BULLET_CONFIG.SPEED;

@@ -8,9 +8,9 @@
         Added shield visual effect.
 */
 
-import { player, gameState, powerUps } from './state.js';
+import { player, gameState, powerUps } from '@core/state';
 import { fireBullet } from './bullet.js';
-import { warn } from './logger.js';
+import { warn } from '@core/logger';
 
 export function updatePlayer() {
   if (gameState.value !== 'PLAYING') return;
