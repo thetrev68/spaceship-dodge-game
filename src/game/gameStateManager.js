@@ -88,6 +88,3 @@ export function continueGame() {
   showOverlay('PLAYING');
   soundManager.startMusic();
 }
-
-// Removed unused endGame function
-// Removed re-exports - import directly where needed

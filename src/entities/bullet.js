@@ -1,8 +1,5 @@
 /**
  * @fileoverview Bullet entity management with object pooling.
- * Updated: 2025-06-06
- * Author: ChatGPT + Trevor Clark
- * Refactored: Phase 4 (Entities)
  * Adds object pooling to optimize bullet memory reuse.
  */
 
@@ -61,7 +58,9 @@ function releaseBullet(bullet) {
  */
 export function despawnBullet(index) {
   if (index >= 0 && index < bullets.length) {
-    const bullet = bullets.splice(index, 1)[0];
+    const bullet = bullets[index];
+    bullets[index] = bullets[bullets.length - 1];
+    bullets.pop();
     releaseBullet(bullet);
   }
 }
@@ -103,7 +102,9 @@ export function updateBullets() {
     b.y += b.dy;
 
     if (b.y + b.radius < 0) {
-      bullets.splice(i, 1);
+      // Swap and pop
+      bullets[i] = bullets[bullets.length - 1];
+      bullets.pop();
       releaseBullet(b);
     }
   }

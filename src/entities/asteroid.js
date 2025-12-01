@@ -1,8 +1,5 @@
 /**
  * @fileoverview Asteroid entity management with object pooling.
- * Updated: 2025-06-06
- * Author: ChatGPT + Trevor Clark
- * Refactored: Phase 4 (Entities)
  * Adds object pooling to optimize asteroid memory reuse.
  */
 
@@ -159,7 +156,11 @@ export function updateObstacles(canvasWidth, canvasHeight, spawnInterval, lastSp
     const tooOld = now - o.creationTime > GAME_CONFIG.MAX_LIFETIME;
 
     if (outOfBounds || tooOld) {
-      const [removed] = obstacles.splice(i, 1);
+      // Swap and pop for O(1) removal
+      const removed = obstacles[i];
+      obstacles[i] = obstacles[obstacles.length - 1];
+      obstacles.pop();
+      i--; // Process the swapped element in the next iteration
 
       // Decrement fragmentTracker for expired fragments
       if (
@@ -174,7 +175,6 @@ export function updateObstacles(canvasWidth, canvasHeight, spawnInterval, lastSp
       }
 
       obstaclePool.release(removed);
-      i--;
     }
   }
 
@@ -190,24 +190,42 @@ export function updateObstacles(canvasWidth, canvasHeight, spawnInterval, lastSp
 
 /**
  * Draws all obstacles on the canvas.
+ * Optimized to use a single draw call and manual vertex transformation.
  * @param {CanvasRenderingContext2D} ctx - Canvas context.
  */
 export function drawObstacles(ctx) {
+  if (obstacles.length === 0) return;
+
   ctx.strokeStyle = '#ff4500';
   ctx.lineWidth = 2;
-  obstacles.forEach(o => {
-    ctx.save();
-    ctx.translate(o.x + o.radius, o.y + o.radius);
-    ctx.rotate(o.rotation);
-    ctx.beginPath();
-    ctx.moveTo(o.shape[0].x, o.shape[0].y);
-    for (let i = 1; i < o.shape.length; i++) {
-      ctx.lineTo(o.shape[i].x, o.shape[i].y);
+  ctx.beginPath();
+
+  for (let i = 0; i < obstacles.length; i++) {
+    const o = obstacles[i];
+    const cx = o.x + o.radius;
+    const cy = o.y + o.radius;
+    const cos = Math.cos(o.rotation);
+    const sin = Math.sin(o.rotation);
+
+    // Transform first point
+    const p0 = o.shape[0];
+    const startX = p0.x * cos - p0.y * sin + cx;
+    const startY = p0.x * sin + p0.y * cos + cy;
+
+    ctx.moveTo(startX, startY);
+
+    for (let j = 1; j < o.shape.length; j++) {
+      const p = o.shape[j];
+      const px = p.x * cos - p.y * sin + cx;
+      const py = p.x * sin + p.y * cos + cy;
+      ctx.lineTo(px, py);
     }
-    ctx.closePath();
-    ctx.stroke();
-    ctx.restore();
-  });
+    
+    // Close the shape
+    ctx.lineTo(startX, startY);
+  }
+
+  ctx.stroke();
 }
 
 /**
@@ -219,7 +237,10 @@ export function destroyObstacle(obstacle, scoreRef) {
   const idx = obstacles.indexOf(obstacle);
   if (idx === -1) return;
 
-  obstacles.splice(idx, 1);
+  // Swap and pop for O(1) removal
+  obstacles[idx] = obstacles[obstacles.length - 1];
+  obstacles.pop();
+
   obstaclePool.release(obstacle);
   playSound('break');
 

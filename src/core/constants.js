@@ -93,10 +93,6 @@ export const POWERUP_CONFIG = {
   SPAWN_INTERVAL: 10000, // 10 seconds
 };
 
-// 🎵 Audio Configuration (removed - unused)
-
-// 🎨 Visual Configuration (removed - unused)
-
 /**
  * Mobile-specific configuration constants.
  * @constant {Object} MOBILE_CONFIG
@@ -109,8 +105,6 @@ export const MOBILE_CONFIG = {
   SPAWN_INTERVAL_MULTIPLIER: 1.6, // 2400ms vs 1500ms
   TOUCH_ACTION: 'manipulation',
 };
-
-// 🏆 Scoring Configuration (removed - unused)
 
 /**
  * Level configuration constants.
@@ -128,5 +122,3 @@ export const LEVEL_CONFIG = {
   DIFFICULTY_SCALE_THRESHOLD: 5,
   LOGARITHMIC_SCALE_START: 5,
 };
-
-// 🔧 Development Configuration (removed - unused)

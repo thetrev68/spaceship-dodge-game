@@ -1,8 +1,5 @@
 /**
  * @fileoverview Power-up entity management with object pooling.
- * Updated: 2025-06-06
- * Author: ChatGPT + Trevor Clark
- * Refactored: Phase 4 (Entities)
  * Adds object pooling to optimize power-up memory reuse.
  */
 
@@ -58,22 +55,31 @@ export function updatePowerups(canvasHeight) {
     const p = activePowerups[i];
     p.y += p.dy;
 
-    if (p.y > canvasHeight) {
-      const [removed] = activePowerups.splice(i, 1);
-      powerupPool.release(removed);
-      continue;
-    }
+    let remove = false;
+    let collided = false;
 
-    if (
+    if (p.y > canvasHeight) {
+      remove = true;
+    } else if (
       player.x < p.x + p.size &&
       player.x + player.width > p.x &&
       player.y < p.y + p.size &&
       player.y + player.height > p.y
     ) {
-      activatePowerup(p.type);
-      const [removed] = activePowerups.splice(i, 1);
-      powerupPool.release(removed);
-      addScorePopup(`Power-up! ${p.type}`, player.x, player.y - 20, '#00ffff');
+      collided = true;
+      remove = true;
+    }
+
+    if (remove) {
+      // Swap and pop
+      activePowerups[i] = activePowerups[activePowerups.length - 1];
+      activePowerups.pop();
+      powerupPool.release(p);
+
+      if (collided) {
+        activatePowerup(p.type);
+        addScorePopup(`Power-up! ${p.type}`, player.x, player.y - 20, '#00ffff');
+      }
     }
   }
 

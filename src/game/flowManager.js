@@ -1,7 +1,5 @@
 /**
  * @fileoverview Manages game level progression and flow.
- * Created: 2025-06-01
- * Author: ChatGPT + Trevor Clark
  * This file controls when the game level should move to the next one.
  * It uses a count of new asteroids spawned (not fragments) to decide when to stop spawning,
  * and waits for the player to clear the screen before advancing.

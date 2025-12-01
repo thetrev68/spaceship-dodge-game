@@ -1,8 +1,8 @@
-
-````markdown
 # 🚀 Spaceship Dodge
 
 A fast-paced arcade-style browser game where you pilot a glowing vector spaceship, dodge and shoot asteroids, and level up against rising difficulty. Built with JavaScript, Tailwind CSS, and Vite — supports mouse, keyboard, and full touch/mobile controls with layered audio effects.
+
+**Recently refactored to a modular, domain-driven architecture for better scalability and maintainability.**
 
 ---
 
@@ -31,34 +31,45 @@ A fast-paced arcade-style browser game where you pilot a glowing vector spaceshi
 
 ---
 
-## 📁 Folder Structure
+## 🏗️ Architecture & File Structure
+
+The codebase has been migrated to a modular, domain-driven structure. Path aliases (e.g., `@core`, `@game`) are used for cleaner imports.
+
+For a detailed breakdown, see [FOLDER_STRUCTURE.md](./FOLDER_STRUCTURE.md).
 
 ```plaintext
-spaceship-dodge-game/
-│
-├── index.html                 # Game UI layout + overlays
-├── styles/
-│   └── main-tailwind.css      # Compiled Tailwind output
-├── public/
-│   └── sounds/                # bg-music.mp3, fire.mp3, etc.
-├── src/
-│   ├── main.js                # Entry point, unlock flow, canvas init
-│   ├── gameLoop.js            # Game loop and frame updates
-│   ├── state.js               # Shared game state (score, level, etc.)
-│   ├── player.js              # Player update, draw, fire logic
-│   ├── asteroid.js            # Asteroid pooling, generation, updates
-│   ├── bullet.js              # Bullet pool, rendering
-│   ├── collisionHandler.js    # Player/bullet collision checks
-│   ├── mobileControls.js      # Touch input, pause handling
-│   ├── controls.js            # Keyboard & mouse input
-│   ├── ui.js                  # Overlay management, canvas sizing
-│   ├── scoreDisplay.js        # HUD rendering: lives, level, score
-│   ├── audioControls.js       # Volume slider + mute/unmute buttons
-│   ├── soundManager.js        # 🎵 Manages all sound playback + unlock
-│   ├── renderManager.js       # All canvas draw calls centralized
-│   ├── flowManager.js         # Level progression and timers
-│   └── powerups.js            # Spawning, pickup, visual effects
-````
+src/
+├── core/           # Application bootstrap, global state, configuration
+├── game/           # Game loop, state machine, level progression
+├── entities/       # Game objects (player, asteroids, bullets, powerups)
+├── systems/        # Cross-cutting concerns (collision, rendering, audio)
+├── input/          # Input handling (desktop, mobile)
+├── ui/             # User interface components
+│   ├── overlays/   # Game overlays (start, pause, level transition)
+│   ├── hud/        # Heads-up display (score, lives)
+│   └── controls/   # UI controls (audio)
+├── effects/        # Visual effects (starfield)
+└── utils/          # Pure utility functions (math, canvas, platform)
+```
+
+### Key Modules
+- **Core**: `main.js` (entry), `state.js` (global state), `constants.js` (config), `logger.js`
+- **Game**: `gameLoop.js` (loop), `gameStateManager.js` (state machine), `flowManager.js`
+- **Systems**: `collisionHandler.js` (spatial grid), `renderManager.js`, `soundManager.js`
+- **Entities**: `player.js`, `asteroid.js`, `bullet.js`, `powerup.js`
+
+---
+
+## 🔧 Technical Improvements (v1.1.0)
+
+Recent updates focus on performance, stability, and code quality. See [UPGRADE_NOTES.md](./UPGRADE_NOTES.md) for details.
+
+*   **Modular Architecture**: Codebase split into domain-specific modules (Entities, Systems, UI, etc.).
+*   **Spatial Partitioning**: Implemented a spatial grid for O(n) collision detection, significantly improving performance with many objects.
+*   **DOM Caching**: New system to cache DOM elements and reduce expensive `getElementById` calls.
+*   **Tailwind CSS v4**: Upgraded to the latest version for better performance and smaller build size.
+*   **Constants Centralization**: All magic numbers moved to `core/constants.js` for easier tuning.
+*   **Bug Fixes**: Resolved array mutation issues during collisions and improved audio unlocking resilience.
 
 ---
 
@@ -66,8 +77,7 @@ spaceship-dodge-game/
 
 * Level-up waits until all fragments are cleared (intended but sometimes feels delayed)
 * If game is paused at exact collision frame, rare scoring overlap occurs
-* SFX race condition may play 1–2 extra sounds when pausing rapidly
-* Background music won’t start unless gesture is detected (handled by silent unlock now)
+* Background music requires user interaction to start (browser policy) - handled via silent unlock, but may still be silent initially on some devices.
 
 ---
 
@@ -82,7 +92,7 @@ spaceship-dodge-game/
 
 ### Visual Polish
 
-* 🌌 Starfield and depth scrolling
+* 🌌 Starfield and depth scrolling (Basic implementation in `@effects/starfield.js`)
 * 🔥 Particle thrust trails
 * 💥 Screen shake on hit/death
 
@@ -91,13 +101,6 @@ spaceship-dodge-game/
 * 🎶 Layered dynamic music based on level/intensity
 * 🔊 Per-sound sliders in audio menu
 * 🗣️ Voiceovers: "Level Up!", "Shield Activated", etc.
-
-### UX / Controls
-
-* 🎮 On-screen joystick (mobile)
-* ⏸️ Pause menu with resume, restart, settings
-* 🏆 Persistent high scores + best level tracking
-* 🧭 Save + load settings and progress to localStorage
 
 ### Technical
 
@@ -111,9 +114,9 @@ spaceship-dodge-game/
 
 > ✅ Complete core game loop
 > ✅ Mobile + desktop support
-> ✅ Audio unlock and playback system
-> ✅ Modular, well-structured codebase
-> ✅ Ready for feature expansion or open-source contribution
+> ✅ Modular architecture (v1.1.0)
+> ✅ Spatial grid collision detection
+> ✅ Ready for feature expansion
 
 ---
 
@@ -122,7 +125,3 @@ spaceship-dodge-game/
 [https://github.com/thetrev68/spaceship-dodge-game](https://github.com/thetrev68/spaceship-dodge-game)
 
 Pull requests welcome! 🚀
-
-```
-
-

@@ -1,30 +1,22 @@
 /**
  * @fileoverview Player entity management.
  * Created: 2025-05-28
- * Author: ChatGPT + Trevor Clark
- * Updates:
- *     Added pulsing thruster effect.
- *     Added double blaster firing support.
- *     Added shield visual effect.
- *     Refactored with public mutation API (Phase 4)
  */
 
 import { player, gameState, powerUps } from '@core/state.js';
 import { fireBullet } from '@entities/bullet.js';
 import { warn } from '@core/logger.js';
 import { clamp } from '@utils/mathUtils.js';
+import { isMobile } from '@utils/platform.js';
 
 /**
  * Clamps player position to canvas bounds.
  */
 function clampToCanvas() {
-    const canvas = document.getElementById('gameCanvas');
-    if (!canvas) {
-        warn('player', 'Game canvas not found');
-        return;
-    }
-    player.x = clamp(player.x, 0, canvas.width - player.width);
-    player.y = clamp(player.y, 0, canvas.height - player.height);
+    // Optimized: Use window dimensions since game is full screen
+    // Avoids DOM access every frame
+    player.x = clamp(player.x, 0, window.innerWidth - player.width);
+    player.y = clamp(player.y, 0, window.innerHeight - player.height);
 }
 
 /**
@@ -156,17 +148,19 @@ export function drawPlayer(ctx) {
     const flameY = engineBottomY + 5;
     const flameRadius = engineBottomWidth;
 
-    // Create gradient for flame glow
-    const gradient = ctx.createRadialGradient(flameX, flameY, 0, flameX, flameY, flameRadius * 3);
-    gradient.addColorStop(0, `rgba(0, 255, 255, ${0.6 * pulse})`);
-    gradient.addColorStop(1, 'rgba(0, 255, 255, 0)');
+    if (!isMobile()) {
+        // High-quality gradient glow for desktop
+        const gradient = ctx.createRadialGradient(flameX, flameY, 0, flameX, flameY, flameRadius * 3);
+        gradient.addColorStop(0, `rgba(0, 255, 255, ${0.6 * pulse})`);
+        gradient.addColorStop(1, 'rgba(0, 255, 255, 0)');
 
-    ctx.fillStyle = gradient;
-    ctx.beginPath();
-    ctx.ellipse(flameX, flameY + flameRadius, flameRadius * 1.5, flameRadius * 3, 0, 0, Math.PI * 2);
-    ctx.fill();
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.ellipse(flameX, flameY + flameRadius, flameRadius * 1.5, flameRadius * 3, 0, 0, Math.PI * 2);
+        ctx.fill();
+    }
 
-    // Core flame shape
+    // Core flame shape (simple solid color for mobile)
     ctx.fillStyle = `rgba(0, 255, 255, ${0.7 * pulse})`;
     ctx.beginPath();
     ctx.moveTo(flameX - flameRadius * 0.6, engineBottomY);

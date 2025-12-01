@@ -72,16 +72,19 @@ export function restartGameLoop() {
   }
 }
 
+
+const TIME_STEP = GAME_CONFIG.FRAME_DURATION; // 16.67ms for 60 FPS logic updates
+let accumulator = 0;
+
 /**
  * Main game loop function.
  * @param {HTMLCanvasElement} canvas - The game canvas.
  * @param {number} timestamp - Current timestamp.
  */
 function gameLoop(canvas, timestamp = 0) {
-  if (timestamp - lastFrameTime < GAME_CONFIG.FRAME_DURATION) {
-    animationId = requestAnimationFrame((t) => gameLoop(canvas, t));
-    return;
-  }
+  if (!lastFrameTime) lastFrameTime = timestamp;
+  
+  let deltaTime = timestamp - lastFrameTime;
   lastFrameTime = timestamp;
 
   if (gameState.value !== 'PLAYING') {
@@ -89,31 +92,43 @@ function gameLoop(canvas, timestamp = 0) {
     return;
   }
 
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  // Prevent "spiral of death" if tab is backgrounded or extremely slow
+  if (deltaTime > 250) deltaTime = 250;
 
-  obstacleSpawnInterval = getSpawnInterval(gameLevel.value);
+  accumulator += deltaTime;
 
-  if (!lastPowerupSpawnTime || timestamp - lastPowerupSpawnTime > POWERUP_CONFIG.SPAWN_INTERVAL) {
-    spawnPowerup(canvas.width);
-    lastPowerupSpawnTime = timestamp;
+  // Fixed timestep update loop
+  while (accumulator >= TIME_STEP) {
+    obstacleSpawnInterval = getSpawnInterval(gameLevel.value);
+
+    if (!lastPowerupSpawnTime || Date.now() - lastPowerupSpawnTime > POWERUP_CONFIG.SPAWN_INTERVAL) {
+      spawnPowerup(canvas.width);
+      lastPowerupSpawnTime = Date.now();
+    }
+
+    updatePlayer();
+    // We pass TIME_STEP or similar if the update functions supported variable dt,
+    // but here they assume per-frame execution, so we just execute them.
+    updateObstacles(canvas.width, canvas.height, obstacleSpawnInterval, lastObstacleSpawnTime, allowSpawning.value);
+    updateBullets();
+    updatePowerups(canvas.height);
+    updateScorePopups();
+    
+    checkCollisions();
+    
+    updateLevelFlow(() => {
+        resetNewAsteroidsSpawned();
+        resetLevelFlow();
+    
+        showOverlay('LEVEL_TRANSITION', score.value, gameLevel.value);
+      });
+      
+    accumulator -= TIME_STEP;
   }
 
-  updatePlayer();
-  updateObstacles(canvas.width, canvas.height, obstacleSpawnInterval, lastObstacleSpawnTime, allowSpawning.value);
-  updateBullets();
-  updatePowerups(canvas.height);
-  updateScorePopups();
-
-  checkCollisions();
-
+  // Render phase - decoupled from logic updates
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
   renderAll(ctx);
-
-  updateLevelFlow(() => {
-    resetNewAsteroidsSpawned();
-    resetLevelFlow();
-
-    showOverlay('LEVEL_TRANSITION', score.value, gameLevel.value);
-  });
 
   animationId = requestAnimationFrame((t) => gameLoop(canvas, t));
 }
