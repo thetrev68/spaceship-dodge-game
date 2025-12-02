@@ -45,3 +45,6 @@ temp
 
 # Optional eslint cache
 .eslintcache
+
+# Generated documentation
+docs/

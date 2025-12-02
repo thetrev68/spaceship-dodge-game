@@ -1,21 +1,17 @@
 {
   "$schema": "https://unpkg.com/knip@latest/schema.json",
   "entry": [
-    "src/core/main.js",
+    "src/core/main.ts",
     "index.html"
   ],
   "project": [
-    "src/**/*.js"
+    "src/**/*.ts"
   ],
   "ignore": [
     "node_modules/**",
     "dist/**",
     "styles/**",
     "src/game/flowManager.js"
-  ],
-  "ignoreDependencies": [
-    "gh-pages",
-    "@tailwindcss/postcss"
   ],
   "ignoreBinaries": [
     "tailwindcss"

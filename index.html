@@ -22,6 +22,18 @@
       justify-content: center;
     }
 
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
     #gameCanvas, #starfieldCanvas {
       touch-action: none;
       pointer-events: auto;
@@ -77,10 +89,13 @@
 </head>
 <body>
   <canvas id="starfieldCanvas"></canvas>
-  <canvas id="gameCanvas"></canvas>
+  <canvas id="gameCanvas" tabindex="0"></canvas>
 
-  <div id="startOverlay" class="game-overlay visible">
-    <h1 class="text-4xl font-bold mb-4">Spaceship Dodge</h1>
+  <div id="liveRegionStatus" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
+  <div id="liveRegionScore" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
+
+  <div id="startOverlay" class="game-overlay visible" role="dialog" aria-modal="true" aria-labelledby="startOverlayTitle" aria-describedby="startHint" tabindex="-1">
+    <h1 id="startOverlayTitle" class="text-4xl font-bold mb-4">Spaceship Dodge</h1>
     <p class="mb-2">Dodge and Shoot the incoming asteroids</p>
     <p id="desktopControlHint" class="mb-2">Use mouse to move</p>
     <p id="mobileControlHint" class="mb-2 hidden">Use touch to move your spaceship</p>
@@ -92,8 +107,8 @@
     </div>
   </div>
 
-  <div id="levelTransitionOverlay" class="game-overlay">
-    <h1 id="levelUpMessage" class="text-4xl font-bold mb-4">LEVEL UP!</h1>
+  <div id="levelTransitionOverlay" class="game-overlay" role="dialog" aria-modal="true" aria-labelledby="levelOverlayTitle" aria-describedby="currentLevelInfo currentScoreInfo" tabindex="-1">
+    <h1 id="levelOverlayTitle" class="text-4xl font-bold mb-4">LEVEL UP!</h1>
     <p id="currentLevelInfo" class="mb-2">Level 1</p>
     <p id="currentScoreInfo" class="mb-4">Score: 0</p>
     <p id="livesInfoLevel" class="mb-4 text-lg"></p>
@@ -104,8 +119,8 @@
     </div>
   </div>
 
-  <div id="pauseOverlay" class="game-overlay">
-    <h1 class="text-4xl font-bold mb-4">PAUSED</h1>
+  <div id="pauseOverlay" class="game-overlay" role="dialog" aria-modal="true" aria-labelledby="pauseOverlayTitle" tabindex="-1">
+    <h1 id="pauseOverlayTitle" class="text-4xl font-bold mb-4">PAUSED</h1>
     <p id="livesInfoPause" class="mb-4 text-lg"></p>
     <div class="flex gap-4">
       <button id="quitButton" class="px-6 py-3 bg-blue-600 rounded hover:bg-blue-700 focus:outline-none focus:ring-blue-400 hidden">Continue Game</button>
@@ -114,8 +129,8 @@
     <p id="pauseResumeMessage">Tap to Resume</p>
   </div>
 
-  <div id="gameOverOverlay" class="game-overlay">
-    <h1 class="text-4xl font-bold mb-4">GAME OVER</h1>
+  <div id="gameOverOverlay" class="game-overlay" role="dialog" aria-modal="true" aria-labelledby="gameOverOverlayTitle" aria-describedby="finalScore" tabindex="-1">
+    <h1 id="gameOverOverlayTitle" class="text-4xl font-bold mb-4">GAME OVER</h1>
     <p id="finalScore" class="mb-4">Final Score: 0</p>
     <div class="flex gap-4">
       <button id="restartButton" class="px-6 py-3 bg-blue-600 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400">Play Again</button>
@@ -123,6 +138,6 @@
     </div>
   </div>
 
-  <script type="module" src="/src/core/main.js"></script>
+  <script type="module" src="/src/core/main.ts"></script>
 </body>
 </html>

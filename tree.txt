@@ -3,55 +3,66 @@ spaceship-dodge-game/
 ├── assets/
 ├── src/
 │   ├── core/
-│   │   ├── constants.js (117 lines)
-│   │   ├── logger.js (257 lines)
-│   │   ├── main.js (145 lines)
-│   │   └── state.js (103 lines)
+│   │   ├── constants.ts (79 lines)
+│   │   ├── gameConstants.ts (227 lines)
+│   │   ├── logger.ts (157 lines)
+│   │   ├── main.ts (147 lines)
+│   │   ├── state.ts (46 lines)
+│   │   └── uiConstants.ts (120 lines)
 │   ├── effects/
-│   │   └── starfield.js (56 lines)
+│   │   └── starfield.ts (59 lines)
 │   ├── entities/
-│   │   ├── asteroid.js (240 lines)
-│   │   ├── bullet.js (106 lines)
-│   │   ├── player.js (194 lines)
-│   │   └── powerup.js (163 lines)
+│   │   ├── asteroid.ts (254 lines)
+│   │   ├── bullet.ts (114 lines)
+│   │   ├── player.ts (169 lines)
+│   │   └── powerup.ts (170 lines)
 │   ├── game/
-│   │   ├── flowManager.js (74 lines)
-│   │   ├── gameLoop.js (128 lines)
-│   │   └── gameStateManager.js (76 lines)
+│   │   ├── flowManager.ts (47 lines)
+│   │   ├── gameLoop.ts (118 lines)
+│   │   └── gameStateManager.ts (58 lines)
 │   ├── input/
-│   │   ├── inputManager.js (159 lines)
-│   │   └── mobileControls.js (130 lines)
+│   │   ├── inputManager.ts (143 lines)
+│   │   └── mobileControls.ts (97 lines)
 │   ├── systems/
-│   │   ├── collisionHandler.js (183 lines)
-│   │   ├── poolManager.js (37 lines)
-│   │   ├── renderManager.js (32 lines)
-│   │   └── soundManager.js (211 lines)
+│   │   ├── collisionHandler.ts (152 lines)
+│   │   ├── poolManager.ts (17 lines)
+│   │   ├── renderManager.ts (28 lines)
+│   │   └── soundManager.ts (155 lines)
+│   ├── types/
+│   │   ├── index.ts (74 lines)
+│   │   └── shared.ts (2 lines)
 │   ├── ui/
 │   │   ├── controls/
-│   │   │   └── audioControls.js (105 lines)
+│   │   │   └── audioControls.ts (106 lines)
 │   │   ├── hud/
-│   │   │   ├── powerupHUD.js (31 lines)
-│   │   │   ├── scoreDisplay.js (17 lines)
-│   │   │   └── scorePopups.js (62 lines)
+│   │   │   ├── perfHUD.ts (49 lines)
+│   │   │   ├── powerupHUD.ts (22 lines)
+│   │   │   ├── scoreDisplay.ts (13 lines)
+│   │   │   └── scorePopups.ts (48 lines)
 │   │   ├── overlays/
-│   │   │   └── overlayManager.js (122 lines)
+│   │   │   └── overlayManager.ts (187 lines)
 │   │   └── settings/
-│   │       ├── settingsManager.js (156 lines)
-│   │       └── settingsUI.js (210 lines)
+│   │       ├── settingsManager.ts (112 lines)
+│   │       └── settingsUI.ts (226 lines)
 │   ├── utils/
-│   │   ├── canvasUtils.js (90 lines)
-│   │   ├── mathUtils.js (56 lines)
-│   │   └── platform.js (42 lines)
-│   └── javascript.svg
+│   │   ├── canvasUtils.ts (84 lines)
+│   │   ├── dom.ts (34 lines)
+│   │   ├── mathUtils.ts (42 lines)
+│   │   └── platform.ts (36 lines)
+│   ├── javascript.svg
+│   └── vite-env.d.ts (1 lines)
 ├── styles/
 │   ├── main-tailwind.css (100 lines)
 │   └── main.css (90 lines)
+├── tests/
+│   ├── collisionHandler.test.ts (35 lines)
+│   ├── mathUtils.test.ts (25 lines)
+│   └── poolManager.test.ts (24 lines)
 ├── .gitattributes
 ├── CLAUDE.md
 ├── FOLDER_STRUCTURE.md
 ├── Gemini_Rec.md
-├── index.html (113 lines)
-├── jsconfig.json
+├── index.html (127 lines)
 ├── localhost+2-key.pem
 ├── localhost+2.pem
 ├── LOGGER_USAGE.md
@@ -60,15 +71,17 @@ spaceship-dodge-game/
 ├── settings.json
 ├── tailwind.config.js (8 lines)
 ├── TECHNICAL_DEBT_ASSESSMENT.md
-└── UPGRADE_NOTES.md
+├── tsconfig.json
+├── UPGRADE_NOTES.md
+└── vitest.config.ts (21 lines)
 
 ==================================================
 DIRECTORY TREE STATISTICS
 ==================================================
-Total directories: 16
-Total files: 46
-Files with line counts: 33
-Total lines of code: 3,619
+Total directories: 18
+Total files: 57
+Files with line counts: 44
+Total lines of code: 3,829
 
 Configuration:
   Excluded directories: .archive, .claude, .geminiignore, .git, .github, .gitignore, .idea, .kilocode, .pytest_cache, .ruff_cache, .serena, .vite, .vscode, __pycache__, agents.md, backlog.md, build, claude.md, coverage, dist, docs, eslint.config.js, gemini.md, jules-scratch, knip.json, legacy, logs, node_modules, package-lock.json, package.json, playwright-report, public, test-results, tree.txt, tree_scanner.py, venv, vite.config.js
