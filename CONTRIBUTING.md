@@ -8,7 +8,7 @@ Thanks for your interest in improving the game! This guide outlines the preferre
 - Run the game locally with `npm run dev`.
 
 ## Branching & Commits
-- Work off feature branches from `typescript-conversion` (or the current mainline branch).
+- Work off feature branches from `feature-adds` (or the current mainline branch).
 - Keep commits focused and descriptive. Example: `feat: add shield cooldown HUD`, `chore: tighten collision typing`.
 
 ## Coding Standards
