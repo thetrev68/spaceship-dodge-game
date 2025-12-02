@@ -110,18 +110,4 @@ export const CANVAS_CONSTANTS: ReadonlyConfig<{
   MOBILE_THRESHOLD: 600,
 };
 
-export const ANIMATION_CONSTANTS: ReadonlyConfig<{
-  OPACITY_TRANSITION: string;
-  PULSE_SPEED_DIVISOR: number;
-}> = {
-  OPACITY_TRANSITION: '0.3s',
-  PULSE_SPEED_DIVISOR: 500,
-};
 
-export const MOBILE_DETECTION: ReadonlyConfig<{
-  MAX_TOUCH_POINTS: number;
-  TOUCH_EVENT: string;
-}> = {
-  MAX_TOUCH_POINTS: 0,
-  TOUCH_EVENT: 'ontouchstart',
-};

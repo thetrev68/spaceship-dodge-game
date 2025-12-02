@@ -1,4 +1,3 @@
-import type { OverlayState } from '@types';
 
 export type EventKey =
   | 'ArrowUp'
@@ -26,14 +25,4 @@ export function getById<T extends HTMLElement = HTMLElement>(id: string): T | nu
   return isHTMLElement<T>(el) ? el : null;
 }
 
-export function requireById<T extends HTMLElement = HTMLElement>(id: string): T {
-  const el = getById<T>(id);
-  if (!el) {
-    throw new Error(`Element with id "${id}" not found`);
-  }
-  return el;
-}
 
-export function isOverlayState(state: string): state is OverlayState {
-  return state === 'START' || state === 'PLAYING' || state === 'PAUSED' || state === 'GAME_OVER' || state === 'LEVEL_TRANSITION';
-}

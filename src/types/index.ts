@@ -2,8 +2,8 @@
  * Centralized TypeScript types shared across the game.
  */
 
-export type Nullable<T> = T | null;
-export type Optional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
+type _Nullable<T> = T | null;
+type _Optional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
 type Primitive = string | number | boolean | bigint | symbol | undefined | null;
 export type ReadonlyConfig<T> = T extends Primitive
@@ -20,8 +20,8 @@ export type OverlayState = GameStateValue;
 export type HudTextAlign = 'left' | 'center' | 'right';
 
 export type PowerUpKey = 'doubleBlaster' | 'shield';
-export type PowerUp = { active: boolean; timer: number };
-export type PowerUpMap = Record<PowerUpKey, PowerUp>;
+type _PowerUp = { active: boolean; timer: number };
+export type PowerUpMap = Record<PowerUpKey, _PowerUp>;
 
 export type Player = {
   x: number;
@@ -31,7 +31,7 @@ export type Player = {
   speed: number;
   dx: number;
   dy: number;
-  overridePosition: Nullable<Vector2>;
+  overridePosition: _Nullable<Vector2>;
 };
 
 export type Bullet = {
@@ -78,10 +78,3 @@ export type GameConfig = {
   SPAWN_MARGIN: number;
 };
 
-// Legacy aliases kept for JS JSDoc compatibility during migration.
-export type PlayerState = Player;
-export type BulletState = Bullet;
-export type AsteroidState = Asteroid;
-export type PowerUpState = PowerUp;
-export type VolumeState = Volumes;
-export type TimerId = number;

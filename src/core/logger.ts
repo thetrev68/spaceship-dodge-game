@@ -2,10 +2,10 @@
  * @fileoverview Centralized debug logging utility with configurable levels and categories.
  */
 
-export type LogCategory = 'audio' | 'game' | 'input' | 'collision' | 'ui' | 'powerup' | 'level' | 'render';
-export type LogLevelKey = 'DEBUG' | 'INFO' | 'WARN' | 'ERROR' | 'NONE';
+type _LogCategory = 'audio' | 'game' | 'input' | 'collision' | 'ui' | 'powerup' | 'level' | 'render';
+type _LogLevelKey = 'DEBUG' | 'INFO' | 'WARN' | 'ERROR' | 'NONE';
 
-export const LogLevel: Record<LogLevelKey, number> = {
+const LogLevel: Record<_LogLevelKey, number> = {
   DEBUG: 0,
   INFO: 1,
   WARN: 2,
@@ -53,12 +53,12 @@ const colors: Record<string, string> = {
   render: '#607d8b',
 };
 
-const log = (level: number, category: LogCategory | string, message: string, ...args: unknown[]): void => {
+const log = (level: number, category: _LogCategory | string, message: string, ...args: unknown[]): void => {
   if (!config.enabled) return;
   if (level < config.level) return;
   if (category && config.categories[category] === false) return;
 
-  const levelName = (Object.keys(LogLevel) as LogLevelKey[]).find((key) => LogLevel[key] === level) ?? 'DEBUG';
+  const levelName = (Object.keys(LogLevel) as _LogLevelKey[]).find((key) => LogLevel[key] === level) ?? 'DEBUG';
   const timestamp = config.timestamps ? `[${getTimestamp()}]` : '';
   const categoryTag = category ? `[${category}]` : '';
 
@@ -84,35 +84,35 @@ function getTimestamp(): string {
   return `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}.${now.getMilliseconds().toString().padStart(3, '0')}`;
 }
 
-export function debug(category: LogCategory | string, message: string, ...args: unknown[]): void {
+export function debug(category: _LogCategory | string, message: string, ...args: unknown[]): void {
   log(LogLevel.DEBUG, category, message, ...args);
 }
 
-export function info(category: LogCategory | string, message: string, ...args: unknown[]): void {
+export function info(category: _LogCategory | string, message: string, ...args: unknown[]): void {
   log(LogLevel.INFO, category, message, ...args);
 }
 
-export function warn(category: LogCategory | string, message: string, ...args: unknown[]): void {
+export function warn(category: _LogCategory | string, message: string, ...args: unknown[]): void {
   log(LogLevel.WARN, category, message, ...args);
 }
 
-export function error(category: LogCategory | string, message: string, ...args: unknown[]): void {
+export function error(category: _LogCategory | string, message: string, ...args: unknown[]): void {
   log(LogLevel.ERROR, category, message, ...args);
 }
 
-export const logger = {
+const logger = {
   setEnabled(enabled: boolean): void {
     config.enabled = enabled;
   },
-  setLevel(level: number | LogLevelKey): void {
+  setLevel(level: number | _LogLevelKey): void {
     if (typeof level === 'string') {
-      const mapped = LogLevel[level.toUpperCase() as LogLevelKey];
+      const mapped = LogLevel[level.toUpperCase() as _LogLevelKey];
       config.level = typeof mapped === 'number' ? mapped : LogLevel.DEBUG;
     } else {
       config.level = level;
     }
   },
-  setCategory(category: LogCategory | string, enabled: boolean): void {
+  setCategory(category: _LogCategory | string, enabled: boolean): void {
     config.categories[category] = enabled;
   },
   setTimestamps(enabled: boolean): void {
@@ -136,16 +136,16 @@ export const logger = {
   LogLevel,
 };
 
-export function setupProduction(): void {
+function setupProduction(): void {
   logger.setEnabled(false);
 }
 
-export function setupDevelopment(): void {
+function setupDevelopment(): void {
   logger.setEnabled(true);
   logger.setCategory('render', false);
 }
 
-export class Timer {
+class Timer {
   private readonly startTime: number;
 
   constructor(private readonly category: string, private readonly label: string) {
@@ -159,7 +159,7 @@ export class Timer {
   }
 }
 
-export function createLogger(category: string) {
+function _createLogger(category: string) {
   return {
     debug: (message: string, ...args: unknown[]) => debug(category, message, ...args),
     info: (message: string, ...args: unknown[]) => info(category, message, ...args),

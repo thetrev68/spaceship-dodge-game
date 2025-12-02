@@ -16,7 +16,7 @@ let mobileOverride: boolean | null = null;
 /**
  * Get current mobile state (respects test overrides).
  */
-export const __getMobileState = (): boolean => {
+const __getMobileState = (): boolean => {
   return mobileOverride !== null ? mobileOverride : _detectMobile();
 };
 
@@ -26,18 +26,8 @@ export const __getMobileState = (): boolean => {
 export const isMobile = (): boolean => __getMobileState();
 
 /**
- * Detects if the device supports touch events.
- */
-export const isTouch = (): boolean => 'ontouchstart' in window;
-
-/**
- * Detects if the device supports vibration API.
- */
-export const supportsVibration = (): boolean => 'vibrate' in navigator;
-
-/**
  * Override mobile detection for testing.
  */
-export const __setMobileOverride = (value: boolean | null): void => {
+const __setMobileOverride = (value: boolean | null): void => {
   mobileOverride = value;
 };

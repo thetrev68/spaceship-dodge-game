@@ -8,9 +8,9 @@ import * as soundManager from '@systems/soundManager.js';
 import { isMobile } from '@utils/platform.js';
 import { VOLUME_CONSTANTS, SETTINGS_CONSTANTS } from '@core/uiConstants.js';
 
-export type SettingsContext = 'start' | 'pause' | 'controls';
+type _SettingsContext = 'start' | 'pause' | 'controls';
 
-export type GameSettings = {
+type _GameSettings = {
   backgroundMusicVolume: number;
   soundEffectsVolume: number;
   isMuted: boolean;
@@ -22,7 +22,7 @@ export type GameSettings = {
 
 const SETTINGS_KEY = SETTINGS_CONSTANTS.LOCAL_STORAGE_KEY;
 
-const DEFAULT_SETTINGS: GameSettings = {
+const DEFAULT_SETTINGS: _GameSettings = {
   backgroundMusicVolume: VOLUME_CONSTANTS.DEFAULT_BACKGROUND_MUSIC,
   soundEffectsVolume: VOLUME_CONSTANTS.DEFAULT_SOUND_EFFECTS,
   isMuted: false,
@@ -32,13 +32,13 @@ const DEFAULT_SETTINGS: GameSettings = {
   version: SETTINGS_CONSTANTS.DEFAULT_SETTINGS_VERSION,
 };
 
-let currentSettings: GameSettings = { ...DEFAULT_SETTINGS };
+let currentSettings: _GameSettings = { ...DEFAULT_SETTINGS };
 
-export function loadSettings(): GameSettings {
+function loadSettings(): _GameSettings {
   try {
     const savedSettings = typeof localStorage !== 'undefined' ? localStorage.getItem(SETTINGS_KEY) : null;
     if (savedSettings) {
-      const parsed = JSON.parse(savedSettings) as Partial<GameSettings>;
+      const parsed = JSON.parse(savedSettings) as Partial<_GameSettings>;
       currentSettings = { ...DEFAULT_SETTINGS, ...parsed };
       debug('settings', 'Settings loaded from storage', currentSettings);
     } else {
@@ -53,7 +53,7 @@ export function loadSettings(): GameSettings {
   return currentSettings;
 }
 
-export function saveSettings(): void {
+function saveSettings(): void {
   try {
     if (typeof localStorage !== 'undefined') {
       localStorage.setItem(SETTINGS_KEY, JSON.stringify(currentSettings));
@@ -64,17 +64,17 @@ export function saveSettings(): void {
   }
 }
 
-export function getSettings(): GameSettings {
+export function getSettings(): _GameSettings {
   return { ...currentSettings };
 }
 
-export function setSetting<K extends keyof GameSettings>(key: K, value: GameSettings[K]): void {
+export function setSetting<K extends keyof _GameSettings>(key: K, value: _GameSettings[K]): void {
   currentSettings[key] = value;
   debug('settings', `Setting updated: ${key} = ${String(value)}`);
   saveSettings();
 }
 
-export function applyAudioSettings(): void {
+function applyAudioSettings(): void {
   debug('settings', 'Applying audio settings', {
     bgVolume: currentSettings.backgroundMusicVolume,
     sfxVolume: currentSettings.soundEffectsVolume,
@@ -97,12 +97,12 @@ export function initializeSettings(): void {
   debug('settings', 'Settings system initialized');
 }
 
-export function getPlatformText(context: SettingsContext): string {
+export function getPlatformText(context: _SettingsContext): string {
   if (!currentSettings.platformSpecificText) {
     return getDefaultText(context);
   }
 
-  const platformTexts: Record<SettingsContext, { mobile: string; desktop: string }> = {
+  const platformTexts: Record<_SettingsContext, { mobile: string; desktop: string }> = {
     start: {
       mobile: 'Tap the Screen to Begin',
       desktop: 'Mouse Click to fire',
@@ -121,8 +121,8 @@ export function getPlatformText(context: SettingsContext): string {
   return platformTexts[context]?.[platform] ?? getDefaultText(context);
 }
 
-function getDefaultText(context: SettingsContext): string {
-  const defaultTexts: Record<SettingsContext, string> = {
+function getDefaultText(context: _SettingsContext): string {
+  const defaultTexts: Record<_SettingsContext, string> = {
     start: 'Tap or Click to Begin',
     pause: 'Tap or Press P to Resume',
     controls: 'Use touch or mouse to move',

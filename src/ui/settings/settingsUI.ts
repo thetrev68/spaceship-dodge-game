@@ -17,7 +17,7 @@ const focusableSelector = [
   '[tabindex]:not([tabindex="-1"])',
 ].join(',');
 
-export function createSettingsUI(): HTMLElement {
+function createSettingsUI(): HTMLElement {
   const settings = getSettings();
 
   const container = document.createElement('div');

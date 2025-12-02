@@ -74,123 +74,12 @@ export const PLAYER_CONSTANTS: ReadonlyConfig<{
   SHIELD_RADIUS_FACTOR: 0.8,
 };
 
-export const BULLET_CONSTANTS: ReadonlyConfig<{
-  RADIUS: number;
-  SPRITE_SIZE: number;
-  MOBILE_FIRE_DELAY: number;
-  DESKTOP_FIRE_DELAY: number;
-  FIRE_SOUND_COOLDOWN: number;
-}> = {
-  RADIUS: 3,
-  SPRITE_SIZE: 6, // radius * 2
-  MOBILE_FIRE_DELAY: 400, // ms
-  DESKTOP_FIRE_DELAY: 30, // ms
-  FIRE_SOUND_COOLDOWN: 30, // ms
-};
 
-export const ASTEROID_CONSTANTS: ReadonlyConfig<{
-  MOBILE_OBSTACLE_CAP: number;
-  MAX_OBSTACLE_RADIUS: number;
-  SEARCH_RADIUS_FALLBACK: number;
-  FRAGMENT_SPEED_MULTIPLIER: number;
-  FRAGMENT_SCATTER_SPEED_MIN: number;
-  FRAGMENT_SCATTER_SPEED_MAX: number;
-  FRAGMENT_BONUS_SCORE: number;
-  FRAGMENT_BONUS_Y_OFFSET: number;
-  FRAGMENT_BONUS_COLOR: string;
-}> = {
-  MOBILE_OBSTACLE_CAP: 14,
-  MAX_OBSTACLE_RADIUS: 50,
-  SEARCH_RADIUS_FALLBACK: 100,
-  FRAGMENT_SPEED_MULTIPLIER: 0.3,
-  FRAGMENT_SCATTER_SPEED_MIN: 0.3,
-  FRAGMENT_SCATTER_SPEED_MAX: 2.5,
-  FRAGMENT_BONUS_SCORE: 150,
-  FRAGMENT_BONUS_Y_OFFSET: -10,
-  FRAGMENT_BONUS_COLOR: '#00ff00',
-};
 
-export const STARFIELD_CONSTANTS: ReadonlyConfig<{
-  MOBILE_STAR_COUNT: number;
-  DESKTOP_STAR_COUNT: number;
-  STAR_SIZE_MIN: number;
-  STAR_SIZE_MAX: number;
-  STAR_SPEED_MIN: number;
-  STAR_SPEED_MAX: number;
-}> = {
-  MOBILE_STAR_COUNT: 40,
-  DESKTOP_STAR_COUNT: 100,
-  STAR_SIZE_MIN: 1,
-  STAR_SIZE_MAX: 3, // random * 2 + 1
-  STAR_SPEED_MIN: 0.1,
-  STAR_SPEED_MAX: 0.6, // random * 0.5 + 0.1
-};
 
-export const GAME_FLOW_CONSTANTS: ReadonlyConfig<{
-  ASTEROIDS_PER_LEVEL: number;
-  LEVEL_CLEAR_DELAY: number;
-  MAX_WAIT_TIME: number;
-  MAX_DELTA_TIME: number;
-  MOBILE_TIME_STEP: number;
-  SKIP_RENDER_THRESHOLD: number;
-}> = {
-  ASTEROIDS_PER_LEVEL: 20,
-  LEVEL_CLEAR_DELAY: 1500, // ms
-  MAX_WAIT_TIME: 5000, // ms
-  MAX_DELTA_TIME: 250, // ms - prevent spiral of death
-  MOBILE_TIME_STEP: 1000 / 30, // ms - lower FPS on mobile
-  SKIP_RENDER_THRESHOLD: 3, // frames
-};
 
-export const POWERUP_CONSTANTS: ReadonlyConfig<{
-  MOBILE_SIZE: number;
-  DESKTOP_SIZE: number;
-  SPAWN_Y_OFFSET: number;
-  FALL_SPEED: number;
-  PULSE_DIVISOR: number;
-  PULSE_AMPLITUDE: number;
-  PULSE_BASE: number;
-  SHIELD_SCORE_OFFSET: number;
-  SHIELD_SCORE_COLOR: string;
-  POWERUP_SCORE_OFFSET: number;
-  POWERUP_SCORE_COLOR: string;
-}> = {
-  MOBILE_SIZE: 40,
-  DESKTOP_SIZE: 50,
-  SPAWN_Y_OFFSET: -1, // -powerupSize
-  FALL_SPEED: 1.5,
-  PULSE_DIVISOR: 600,
-  PULSE_AMPLITUDE: 0.5,
-  PULSE_BASE: 0.75,
-  SHIELD_SCORE_OFFSET: -20,
-  SHIELD_SCORE_COLOR: '#00ffff',
-  POWERUP_SCORE_OFFSET: -20,
-  POWERUP_SCORE_COLOR: '#00ffff',
-};
 
-export const INPUT_CONSTANTS: ReadonlyConfig<{
-  FIRE_COOLDOWN_MS: number;
-  PAUSE_LOCK_DURATION: number;
-  MOUSE_BUTTON_PRIMARY: number;
-  FIRE_LOOP_INTERVAL: number;
-  MOBILE_FIRE_COOLDOWN: number;
-  DESKTOP_FIRE_COOLDOWN: number;
-}> = {
-  FIRE_COOLDOWN_MS: 150,
-  PAUSE_LOCK_DURATION: 300, // ms
-  MOUSE_BUTTON_PRIMARY: 0,
-  FIRE_LOOP_INTERVAL: 100, // ms
-  MOBILE_FIRE_COOLDOWN: 250, // ms
-  DESKTOP_FIRE_COOLDOWN: 150, // ms
-};
 
-export const COLLISION_CONSTANTS: ReadonlyConfig<{
-  SPATIAL_GRID_CELL_SIZE: number;
-  MAX_OBSTACLE_RADIUS: number;
-}> = {
-  SPATIAL_GRID_CELL_SIZE: 60,
-  MAX_OBSTACLE_RADIUS: 50, // Safe upper bound for optimization
-};
 
 export const ANIMATION_CONSTANTS: ReadonlyConfig<{
   SCORE_POPUP_FALL_SPEED: number;
@@ -222,20 +111,4 @@ export const GAME_STATE_CONSTANTS: ReadonlyConfig<{
   PLAYER_RESET_Y_OFFSET: 50,
 };
 
-export const CANVAS_RENDER_CONSTANTS: ReadonlyConfig<{
-  CLEAR_RECT_ALPHA: number;
-  DEFAULT_STROKE_STYLE: string;
-  DEFAULT_LINE_WIDTH: number;
-}> = {
-  CLEAR_RECT_ALPHA: 1.0,
-  DEFAULT_STROKE_STYLE: '#ff4500',
-  DEFAULT_LINE_WIDTH: 2,
-};
 
-export const MOBILE_DETECTION_CONSTANTS: ReadonlyConfig<{
-  MAX_TOUCH_POINTS: number;
-  TOUCH_EVENT: string;
-}> = {
-  MAX_TOUCH_POINTS: 0,
-  TOUCH_EVENT: 'ontouchstart',
-};

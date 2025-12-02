@@ -48,47 +48,7 @@ export function setOverlayDimensions(canvas: HTMLCanvasElement, overlays: HTMLEl
 }
 
 /**
- * Get canvas dimensions
- */
-export function getCanvasDimensions(canvas: HTMLCanvasElement): { width: number; height: number } {
-  return {
-    width: canvas.width,
-    height: canvas.height
-  };
-}
-
-/**
- * Get canvas center point
- */
-export function getCanvasCenter(canvas: HTMLCanvasElement): { x: number; y: number } {
-  return {
-    x: canvas.width / 2,
-    y: canvas.height / 2
-  };
-}
-
-/**
  * Check if a point is within canvas bounds
  * @param {number} x - X coordinate
  * @param {number} y - Y coordinate
  */
-export function isPointInCanvas(x: number, y: number, canvas: HTMLCanvasElement): boolean {
-  return x >= 0 && x <= canvas.width && y >= 0 && y <= canvas.height;
-}
-
-/**
- * Clamp a point to canvas bounds
- * @param {number} x - X coordinate
- * @param {number} y - Y coordinate
- */
-export function clampToCanvas(
-  x: number,
-  y: number,
-  canvas: HTMLCanvasElement,
-  margin = 0
-): { x: number; y: number } {
-  return {
-    x: Math.max(margin, Math.min(x, canvas.width - margin)),
-    y: Math.max(margin, Math.min(y, canvas.height - margin))
-  };
-}

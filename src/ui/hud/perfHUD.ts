@@ -32,7 +32,7 @@ export function initPerfHud(): void {
   ensureHudElement();
 }
 
-export function isPerfHudEnabled(): boolean {
+function _isPerfHudEnabled(): boolean {
   return enabled;
 }
 
@@ -40,7 +40,7 @@ export function togglePerfHud(): void {
   setPerfHudEnabled(!enabled);
 }
 
-export function setPerfHudEnabled(state: boolean): void {
+function setPerfHudEnabled(state: boolean): void {
   enabled = state;
   const el = ensureHudElement();
   el.style.display = enabled ? 'inline-flex' : 'none';

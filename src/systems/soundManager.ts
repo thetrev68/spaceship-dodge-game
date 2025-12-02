@@ -10,12 +10,12 @@ debug('audio', 'soundManager BASE_URL', BASE_URL);
 
 const SILENT_MP3 = `${BASE_URL}sounds/silence.mp3`;
 
-export const volumes: Volumes = {
+const volumes: Volumes = {
   backgroundMusic: VOLUME_CONSTANTS.DEFAULT_BACKGROUND_MUSIC,
   soundEffects: VOLUME_CONSTANTS.DEFAULT_SOUND_EFFECTS,
 };
 
-export let currentVolume = VOLUME_CONSTANTS.DEFAULT_SOUND_EFFECTS;
+let currentVolume = VOLUME_CONSTANTS.DEFAULT_SOUND_EFFECTS;
 
 let isMuted = false;
 let isAudioUnlocked = false;
@@ -141,12 +141,6 @@ function applyVolumeAndMute(): void {
   });
 }
 
-export function setVolume(val: number): void {
-  currentVolume = val;
-  volumes.soundEffects = val;
-  debug('audio', 'setVolume (legacy)', { currentVolume: val });
-  if (!isMuted) applyVolumeAndMute();
-}
 
 export function setBackgroundMusicVolume(val: number): void {
   volumes.backgroundMusic = val;
