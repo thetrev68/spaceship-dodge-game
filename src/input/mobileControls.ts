@@ -9,45 +9,16 @@ import * as soundManager from '@systems/soundManager.js';
 import { stopGameLoop } from '@game/gameLoop.js';
 import { debug, warn } from '@core/logger.js';
 
-/**
- * Flag for active touch.
- * @type {boolean}
- */
 let touchActive = false;
-
-/**
- * Current touch X position.
- * @type {number}
- */
 let touchX = 0;
-
-/**
- * Current touch Y position.
- * @type {number}
- */
 let touchY = 0;
-
-/**
- * Canvas element reference.
- * @type {HTMLCanvasElement|null}
- */
-let canvasEl = null;
-
-/**
- * Last fire time for cooldown.
- * @type {number}
- */
+let canvasEl: HTMLCanvasElement | null = null;
 let lastFireTime = 0;
 
-/**
- * Fire cooldown in milliseconds.
- * @const {number}
- */
 const fireCooldown = 250;
-/** @type {ReturnType<typeof setInterval>|null} */
-let fireIntervalId = null;
+let fireIntervalId: ReturnType<typeof setInterval> | null = null;
 
-function startFiringLoop() {
+function startFiringLoop(): void {
   if (fireIntervalId || gameState.value !== 'PLAYING') return;
   fireIntervalId = setInterval(() => {
     if (!touchActive || gameState.value !== 'PLAYING') return;
@@ -59,38 +30,29 @@ function startFiringLoop() {
   }, fireCooldown);
 }
 
-function stopFiringLoop() {
+function stopFiringLoop(): void {
   if (fireIntervalId) {
     clearInterval(fireIntervalId);
     fireIntervalId = null;
   }
 }
 
-/**
- * Sets up mobile touch input for the canvas.
- * @param {HTMLCanvasElement} canvas - The game canvas.
- */
-export function setupMobileInput(canvas) {
+export function setupMobileInput(canvas: HTMLCanvasElement): void {
   canvasEl = canvas;
   debug('input', 'setupMobileInput called', { canvasId: canvas.id });
 
-  /**
-   * @param {TouchEvent} e
-   */
-  function handleTouchStart(e) {
-    // debug('input', 'handleTouchStart triggered', e.target);
-    e.preventDefault();
+  const handleTouchStart = (event: TouchEvent): void => {
+    event.preventDefault();
 
-    // Only block the touch if it's inside a currently visible overlay
     const activeOverlay = document.querySelector('.game-overlay.visible');
-    const target = e.target;
+    const target = event.target;
     if (activeOverlay && target instanceof Node && activeOverlay.contains(target)) {
       debug('input', 'Touch blocked - inside active overlay');
       return;
     }
 
-    const t = e.touches[0];
-    if (!t) {
+    const touch = event.touches[0];
+    if (!touch) {
       warn('input', 'No touch object found');
       return;
     }
@@ -98,8 +60,8 @@ export function setupMobileInput(canvas) {
     if (!canvasEl) return;
 
     const rect = canvasEl.getBoundingClientRect();
-    touchX = t.clientX - rect.left;
-    touchY = t.clientY - rect.top;
+    touchX = touch.clientX - rect.left;
+    touchY = touch.clientY - rect.top;
     touchActive = true;
     updatePlayerToTouch();
     startFiringLoop();
@@ -107,26 +69,23 @@ export function setupMobileInput(canvas) {
     debug('input', 'TOUCH START', {
       touchX,
       touchY,
-      state: gameState.value
+      state: gameState.value,
     });
-  }
+  };
 
   canvas.addEventListener('touchstart', handleTouchStart, { passive: false });
 
-  canvas.addEventListener('touchmove', (e) => {
-    e.preventDefault();
-    const t = e.touches[0];
-    if (!t) return;
-    if (!canvasEl) return;
+  canvas.addEventListener('touchmove', (event: TouchEvent) => {
+    event.preventDefault();
+    const touch = event.touches[0];
+    if (!touch || !canvasEl) return;
     const rect = canvasEl.getBoundingClientRect();
-    touchX = t.clientX - rect.left;
-    touchY = t.clientY - rect.top;
+    touchX = touch.clientX - rect.left;
+    touchY = touch.clientY - rect.top;
     updatePlayerToTouch();
-    // debug('input', 'TOUCH MOVE', { touchX, touchY });
   }, { passive: false });
 
   document.addEventListener('touchend', () => {
-    // debug('input', 'TOUCH END');
     if (!touchActive) return;
 
     touchActive = false;
@@ -148,13 +107,10 @@ export function setupMobileInput(canvas) {
   });
 }
 
-/**
- * Updates player position to current touch position.
- */
-function updatePlayerToTouch() {
+function updatePlayerToTouch(): void {
   const { width, height } = getPlayerDimensions();
   setPlayerPosition(
     touchX - width / 2,
-    touchY - height / 2
+    touchY - height / 2,
   );
 }

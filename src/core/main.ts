@@ -16,17 +16,11 @@ import { debug, warn } from '@core/logger.js';
 import { initializeSettings } from '@ui/settings/settingsManager.js';
 import { initializeSettingsUI, showSettings, hideSettings } from '@ui/settings/settingsUI.js';
 import { initPerfHud } from '@ui/hud/perfHUD.js';
+import { getById } from '@utils/dom.js';
 
-/**
- * Flag to track if audio unlock has been attempted.
- * @type {boolean}
- */
 let audioUnlockAttempted = false;
 
-/**
- * Handles the first touch or click to unlock audio.
- */
-function handleFirstTouch() {
+function handleFirstTouch(): void {
   if (audioUnlockAttempted) return;
   audioUnlockAttempted = true;
 
@@ -34,8 +28,8 @@ function handleFirstTouch() {
 
   soundManager.forceAudioUnlock().then(() => {
     debug('audio', 'Audio unlocked from raw touch event');
-    soundManager.unmuteAll(); // 🔊 triggers startMusic after unlock
-  }).catch(err => {
+    soundManager.unmuteAll();
+  }).catch((err: unknown) => {
     warn('audio', 'Final audio unlock failed:', err);
   });
 
@@ -46,33 +40,29 @@ function handleFirstTouch() {
 document.addEventListener('touchend', handleFirstTouch, { passive: true });
 document.addEventListener('click', handleFirstTouch, { passive: true });
 
-/**
- * Initializes the game when DOM is loaded.
- */
-function init() {
+function init(): void {
   debug('game', 'init running - DOM loaded');
 
   initPerfHud();
 
-  const canvasEl = document.getElementById('gameCanvas');
-  if (!(canvasEl instanceof HTMLCanvasElement)) {
+  const canvasEl = getById<HTMLCanvasElement>('gameCanvas');
+  if (!canvasEl) {
     warn('ui', 'gameCanvas not found or not a canvas element.');
     return;
   }
   const canvas = canvasEl;
-  const startButton = document.getElementById('startButton');
-  const restartButton = document.getElementById('restartButton');
-  const continueButton = document.getElementById('continueButton');
-  const quitButton = document.getElementById('quitButton');
-  const startOverlay = document.getElementById('startOverlay');
-  const pauseOverlay = document.getElementById('pauseOverlay');
-  const levelTransitionOverlay = document.getElementById('levelTransitionOverlay');
-  const starfieldCanvasEl = document.getElementById('starfieldCanvas');
-  const starfieldCanvas = starfieldCanvasEl instanceof HTMLCanvasElement ? starfieldCanvasEl : null;
-  const settingsButtonStart = document.getElementById('settingsButtonStart');
-  const settingsButtonLevel = document.getElementById('settingsButtonLevel');
-  const settingsButtonPause = document.getElementById('settingsButtonPause');
-  const settingsButtonGameOver = document.getElementById('settingsButtonGameOver');
+  const startButton = getById<HTMLButtonElement>('startButton');
+  const restartButton = getById<HTMLButtonElement>('restartButton');
+  const continueButton = getById<HTMLButtonElement>('continueButton');
+  const quitButton = getById<HTMLButtonElement>('quitButton');
+  const startOverlay = getById<HTMLElement>('startOverlay');
+  const pauseOverlay = getById<HTMLElement>('pauseOverlay');
+  const levelTransitionOverlay = getById<HTMLElement>('levelTransitionOverlay');
+  const starfieldCanvas = getById<HTMLCanvasElement>('starfieldCanvas');
+  const settingsButtonStart = getById<HTMLButtonElement>('settingsButtonStart');
+  const settingsButtonLevel = getById<HTMLButtonElement>('settingsButtonLevel');
+  const settingsButtonPause = getById<HTMLButtonElement>('settingsButtonPause');
+  const settingsButtonGameOver = getById<HTMLButtonElement>('settingsButtonGameOver');
 
   if (!startOverlay) {
     warn('ui', 'startOverlay not found in DOM.');
@@ -83,7 +73,6 @@ function init() {
     setupStarfield(starfieldCanvas);
   }
 
-  // Initialize settings system
   initializeSettings();
   initializeSettingsUI();
 
@@ -91,36 +80,25 @@ function init() {
   setOverlayDimensions(canvas);
   setCanvas(canvas);
 
-  const startEvent = 'ontouchstart' in window ? 'touchstart' : 'click';
+  const startEvent: 'touchstart' | 'click' = 'ontouchstart' in window ? 'touchstart' : 'click';
 
-  /**
-   * Handler for starting the game from overlay.
-   * @param {Event} e - The event object.
-   */
-  const startGameHandler = (e) => {
-    e.preventDefault();
+  const startGameHandler = (event: Event): void => {
+    event.preventDefault();
     if (gameState.value !== 'START') return;
 
     debug('game', 'Starting game from overlay');
-
-    // Do NOT call forceAudioUnlock here
-    soundManager.unmuteAll();   // this will call startMusic if unlock already succeeded
-
+    soundManager.unmuteAll();
     startGame(canvas);
     restartGameLoop();
   };
 
-  // Remove the overlay-wide event listener to prevent starting by tapping anywhere
-  // startOverlay.addEventListener(startEvent, startGameHandler, { passive: false });
-
-  // Only allow starting via the start button
   startButton?.addEventListener(startEvent, startGameHandler, { passive: false });
 
   if (isMobile()) {
     setupMobileInput(canvas);
 
-    pauseOverlay?.addEventListener('touchstart', (e) => {
-      e.preventDefault();
+    pauseOverlay?.addEventListener('touchstart', (event: TouchEvent) => {
+      event.preventDefault();
       if (gameState.value !== 'PAUSED') return;
       debug('game', 'Resuming game from overlay touch');
       gameState.value = 'PLAYING';
@@ -129,8 +107,8 @@ function init() {
       restartGameLoop();
     }, { passive: false });
 
-    levelTransitionOverlay?.addEventListener('touchstart', (e) => {
-      e.preventDefault();
+    levelTransitionOverlay?.addEventListener('touchstart', (event: TouchEvent) => {
+      event.preventDefault();
       if (gameState.value !== 'LEVEL_TRANSITION') return;
       debug('game', 'Resuming from level transition overlay');
       continueGame();
@@ -138,16 +116,6 @@ function init() {
     }, { passive: false });
   } else {
     setupInput(canvas);
-
-    // Remove duplicate start button listener - handled above for both mobile and desktop
-    // startButton?.addEventListener('click', () => {
-    //   if (gameState.value !== 'START') return;
-    //   soundManager.forceAudioUnlock().then(() => {
-    //     soundManager.startMusic();
-    //     startGame(canvas);
-    //     restartGameLoop();
-    //   });
-    // });
 
     continueButton?.addEventListener('click', () => {
       continueGame();
@@ -164,49 +132,39 @@ function init() {
     restartGameLoop();
   });
 
-  // Add settings button event listeners
-  settingsButtonStart?.addEventListener('click', (e) => {
-    e.preventDefault();
-    showSettings();
-  });
+  const addSettingsHandler = (button: HTMLButtonElement | null): void => {
+    button?.addEventListener('click', (event) => {
+      event.preventDefault();
+      showSettings();
+    });
+  };
 
-  settingsButtonLevel?.addEventListener('click', (e) => {
-    e.preventDefault();
-    showSettings();
-  });
+  addSettingsHandler(settingsButtonStart);
+  addSettingsHandler(settingsButtonLevel);
+  addSettingsHandler(settingsButtonPause);
+  addSettingsHandler(settingsButtonGameOver);
 
-  settingsButtonPause?.addEventListener('click', (e) => {
-    e.preventDefault();
-    showSettings();
-  });
-
-  settingsButtonGameOver?.addEventListener('click', (e) => {
-    e.preventDefault();
-    showSettings();
-  });
-
-  document.addEventListener('keydown', (e) => {
-    const isActivateKey = e.key === 'Enter' || e.key === ' ';
-    if (e.key === 'Escape') {
+  document.addEventListener('keydown', (event: KeyboardEvent) => {
+    const isActivateKey = event.key === 'Enter' || event.key === ' ';
+    if (event.key === 'Escape') {
       hideSettings();
       return;
     }
 
-    if (!isActivateKey) return;
-    if (gameState.value === 'PLAYING') return;
+    if (!isActivateKey || gameState.value === 'PLAYING') return;
 
     if (gameState.value === 'START') {
-      startGameHandler(e);
+      startGameHandler(event);
     } else if (gameState.value === 'LEVEL_TRANSITION') {
-      e.preventDefault();
+      event.preventDefault();
       continueGame();
       restartGameLoop();
     } else if (gameState.value === 'GAME_OVER') {
-      e.preventDefault();
+      event.preventDefault();
       startGame(canvas);
       restartGameLoop();
     } else if (gameState.value === 'PAUSED') {
-      e.preventDefault();
+      event.preventDefault();
       gameState.value = 'PLAYING';
       showOverlay('PLAYING');
       soundManager.unmuteAll();

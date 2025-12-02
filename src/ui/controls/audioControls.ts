@@ -1,27 +1,28 @@
 /**
  * @fileoverview Audio control UI components.
- * Created: 2025-05-28
- * Author: ChatGPT + Trevor Clark
- * Updates:
- *     Uses static import for soundManager.
- *     Manages mute/unmute and volume slider.
  */
 
 import * as soundManager from '@systems/soundManager.js';
 import { getSettings, setSetting } from '@ui/settings/settingsManager.js';
-import {
-  AUDIO_CONTROLS,
-  VOLUME_CONSTANTS
-} from '@core/uiConstants.js';
+import { showSettings } from '@ui/settings/settingsUI.js';
+import { AUDIO_CONTROLS, VOLUME_CONSTANTS } from '@core/uiConstants.js';
+import { getById } from '@utils/dom.js';
 
-/**
- * Creates and appends audio control UI elements to the document.
- * Now uses the settings system for volume management.
- */
-export function createAudioControls() {
+function updateMuteButtonLabel(button: HTMLButtonElement, muted: boolean): void {
+  button.textContent = muted ? 'M' : 'U';
+  button.setAttribute('aria-label', muted ? 'Unmute audio' : 'Mute audio');
+}
+
+export function createAudioControls(): void {
   const settings = getSettings();
 
+  const existing = getById<HTMLDivElement>('audioControlsContainer');
+  if (existing) {
+    existing.remove();
+  }
+
   const container = document.createElement('div');
+  container.id = 'audioControlsContainer';
   container.style.position = 'absolute';
   container.style.top = AUDIO_CONTROLS.POSITION_TOP;
   container.style.right = AUDIO_CONTROLS.POSITION_RIGHT;
@@ -30,9 +31,7 @@ export function createAudioControls() {
   container.style.gap = AUDIO_CONTROLS.GAP;
   container.style.alignItems = 'center';
 
-  // Mute toggle button
   const muteBtn = document.createElement('button');
-  muteBtn.textContent = settings.isMuted ? '🔇' : '🔊';
   muteBtn.style.fontSize = AUDIO_CONTROLS.BUTTON_FONT_SIZE;
   muteBtn.style.width = AUDIO_CONTROLS.BUTTON_SIZE;
   muteBtn.style.height = AUDIO_CONTROLS.BUTTON_SIZE;
@@ -43,31 +42,29 @@ export function createAudioControls() {
   muteBtn.style.borderRadius = '50%';
   muteBtn.style.border = 'none';
   muteBtn.style.cursor = 'pointer';
+  updateMuteButtonLabel(muteBtn, settings.isMuted);
 
-  muteBtn.addEventListener('touchstart', (e) => {
-    e.preventDefault();
+  const toggleMute = (): void => {
     const newMutedState = !settings.isMuted;
+    settings.isMuted = newMutedState;
     setSetting('isMuted', newMutedState);
-    muteBtn.textContent = newMutedState ? '🔇' : '🔊';
+    updateMuteButtonLabel(muteBtn, newMutedState);
     if (newMutedState) {
       soundManager.muteAll();
     } else {
       soundManager.unmuteAll();
     }
+  };
+
+  muteBtn.addEventListener('touchstart', (event: TouchEvent) => {
+    event.preventDefault();
+    toggleMute();
   }, { passive: false });
 
   muteBtn.addEventListener('click', () => {
-    const newMutedState = !settings.isMuted;
-    setSetting('isMuted', newMutedState);
-    muteBtn.textContent = newMutedState ? '🔇' : '🔊';
-    if (newMutedState) {
-      soundManager.muteAll();
-    } else {
-      soundManager.unmuteAll();
-    }
+    toggleMute();
   });
 
-  // Volume slider (now controls both music and SFX)
   const volumeSlider = document.createElement('input');
   volumeSlider.type = 'range';
   volumeSlider.min = VOLUME_CONSTANTS.MIN_VOLUME.toString();
@@ -75,19 +72,24 @@ export function createAudioControls() {
   volumeSlider.step = VOLUME_CONSTANTS.VOLUME_STEP.toString();
   volumeSlider.value = settings.soundEffectsVolume.toString();
   volumeSlider.style.width = AUDIO_CONTROLS.SLIDER_WIDTH;
-  volumeSlider.oninput = (e) => {
-    const target = e.target;
-    if (!(target instanceof HTMLInputElement)) return;
-    const val = parseFloat(target.value);
-    setSetting('soundEffectsVolume', val);
-    setSetting('backgroundMusicVolume', val);
-    soundManager.setSoundEffectsVolume(val);
-    soundManager.setBackgroundMusicVolume(val);
+
+  const applyVolume = (value: number): void => {
+    settings.soundEffectsVolume = value;
+    settings.backgroundMusicVolume = value;
+    setSetting('soundEffectsVolume', value);
+    setSetting('backgroundMusicVolume', value);
+    soundManager.setSoundEffectsVolume(value);
+    soundManager.setBackgroundMusicVolume(value);
   };
 
-  // Settings button to open full settings menu
+  volumeSlider.addEventListener('input', (event: Event) => {
+    const target = event.target instanceof HTMLInputElement ? event.target : null;
+    if (!target) return;
+    applyVolume(parseFloat(target.value));
+  });
+
   const settingsBtn = document.createElement('button');
-  settingsBtn.textContent = '⚙️';
+  settingsBtn.textContent = 'S';
   settingsBtn.style.fontSize = AUDIO_CONTROLS.BUTTON_FONT_SIZE;
   settingsBtn.style.width = AUDIO_CONTROLS.BUTTON_SIZE;
   settingsBtn.style.height = AUDIO_CONTROLS.BUTTON_SIZE;
@@ -99,20 +101,19 @@ export function createAudioControls() {
   settingsBtn.style.border = 'none';
   settingsBtn.style.cursor = 'pointer';
   settingsBtn.style.marginLeft = AUDIO_CONTROLS.BUTTON_MARGIN_LEFT;
+  settingsBtn.setAttribute('aria-label', 'Open settings');
 
-  settingsBtn.addEventListener('touchstart', (e) => {
-    e.preventDefault();
-    const settingsModal = document.getElementById('settingsContainer');
-    if (settingsModal) {
-      settingsModal.style.display = 'block';
-    }
+  const openSettings = (): void => {
+    showSettings();
+  };
+
+  settingsBtn.addEventListener('touchstart', (event: TouchEvent) => {
+    event.preventDefault();
+    openSettings();
   }, { passive: false });
 
   settingsBtn.addEventListener('click', () => {
-    const settingsModal = document.getElementById('settingsContainer');
-    if (settingsModal) {
-      settingsModal.style.display = 'block';
-    }
+    openSettings();
   });
 
   container.appendChild(muteBtn);

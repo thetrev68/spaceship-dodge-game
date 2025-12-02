@@ -15,7 +15,7 @@ import { despawnBullet } from '@entities/bullet.js';
 /**
  * Checks collision between a circle and a rectangle.
  */
-function circleRectCollision(
+export function circleRectCollision(
   cx: number,
   cy: number,
   radius: number,

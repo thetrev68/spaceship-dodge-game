@@ -6,27 +6,20 @@
 import { getSettings, setSetting } from './settingsManager.js';
 import * as soundManager from '@systems/soundManager.js';
 import { isMobile } from '@utils/platform.js';
-import {
-  SETTINGS_UI,
-  VOLUME_CONSTANTS
-} from '@core/uiConstants.js';
+import { SETTINGS_UI, VOLUME_CONSTANTS } from '@core/uiConstants.js';
+import { getById } from '@utils/dom.js';
 
 const focusableSelector = [
   'button',
   'input',
   'select',
   'textarea',
-  '[tabindex]:not([tabindex="-1"])'
+  '[tabindex]:not([tabindex="-1"])',
 ].join(',');
 
-/**
- * Creates and returns the settings UI element.
- * @returns {HTMLElement} The settings UI container element.
- */
-export function createSettingsUI() {
+export function createSettingsUI(): HTMLElement {
   const settings = getSettings();
 
-  // Create main container
   const container = document.createElement('div');
   container.id = 'settingsContainer';
   container.style.position = 'absolute';
@@ -41,16 +34,15 @@ export function createSettingsUI() {
   container.style.maxWidth = SETTINGS_UI.MAX_WIDTH;
   container.style.maxHeight = SETTINGS_UI.MAX_HEIGHT;
   container.style.overflowY = 'auto';
-  container.style.display = 'none'; // Start hidden
+  container.style.display = 'none';
   container.className = 'settings-modal';
   container.setAttribute('role', 'dialog');
   container.setAttribute('aria-modal', 'true');
   container.setAttribute('aria-label', 'Game settings');
   container.tabIndex = -1;
 
-  // Add close button
   const closeButton = document.createElement('button');
-  closeButton.textContent = '×';
+  closeButton.textContent = 'x';
   closeButton.style.position = 'absolute';
   closeButton.style.top = '10px';
   closeButton.style.right = '10px';
@@ -66,7 +58,6 @@ export function createSettingsUI() {
     hideSettings();
   });
 
-  // Add title
   const title = document.createElement('h2');
   title.textContent = 'Game Settings';
   title.style.textAlign = 'center';
@@ -74,7 +65,6 @@ export function createSettingsUI() {
   title.style.color = 'white';
   title.style.fontSize = SETTINGS_UI.TITLE_FONT_SIZE;
 
-  // Create audio settings section
   const audioSection = document.createElement('div');
   audioSection.style.marginBottom = SETTINGS_UI.SECTION_MARGIN_BOTTOM;
 
@@ -84,7 +74,6 @@ export function createSettingsUI() {
   audioTitle.style.marginBottom = SETTINGS_UI.SUBTITLE_MARGIN_BOTTOM;
   audioTitle.style.fontSize = SETTINGS_UI.SUBTITLE_FONT_SIZE;
 
-  // Background music volume control
   const bgMusicLabel = document.createElement('label');
   bgMusicLabel.textContent = 'Background Music Volume';
   bgMusicLabel.style.display = 'block';
@@ -100,15 +89,15 @@ export function createSettingsUI() {
   bgMusicSlider.value = settings.backgroundMusicVolume.toString();
   bgMusicSlider.style.width = SETTINGS_UI.SLIDER_WIDTH;
   bgMusicSlider.style.marginBottom = SETTINGS_UI.SLIDER_MARGIN_BOTTOM;
-  bgMusicSlider.addEventListener('input', (e) => {
-    const target = e.target;
-    if (!(target instanceof HTMLInputElement)) return;
+  bgMusicSlider.addEventListener('input', (event: Event) => {
+    const target = event.target instanceof HTMLInputElement ? event.target : null;
+    if (!target) return;
     const value = parseFloat(target.value);
     setSetting('backgroundMusicVolume', value);
     soundManager.setBackgroundMusicVolume(value);
+    settings.backgroundMusicVolume = value;
   });
 
-  // Sound effects volume control
   const sfxLabel = document.createElement('label');
   sfxLabel.textContent = 'Sound Effects Volume';
   sfxLabel.style.display = 'block';
@@ -124,15 +113,15 @@ export function createSettingsUI() {
   sfxSlider.value = settings.soundEffectsVolume.toString();
   sfxSlider.style.width = SETTINGS_UI.SLIDER_WIDTH;
   sfxSlider.style.marginBottom = SETTINGS_UI.SLIDER_MARGIN_BOTTOM;
-  sfxSlider.addEventListener('input', (e) => {
-    const target = e.target;
-    if (!(target instanceof HTMLInputElement)) return;
+  sfxSlider.addEventListener('input', (event: Event) => {
+    const target = event.target instanceof HTMLInputElement ? event.target : null;
+    if (!target) return;
     const value = parseFloat(target.value);
     setSetting('soundEffectsVolume', value);
     soundManager.setSoundEffectsVolume(value);
+    settings.soundEffectsVolume = value;
   });
 
-  // Mute toggle
   const muteToggle = document.createElement('div');
   muteToggle.style.display = 'flex';
   muteToggle.style.alignItems = 'center';
@@ -149,10 +138,11 @@ export function createSettingsUI() {
   muteCheckbox.checked = settings.isMuted;
   muteCheckbox.style.width = '20px';
   muteCheckbox.style.height = '20px';
-  muteCheckbox.addEventListener('change', (e) => {
-    const target = e.target;
-    if (!(target instanceof HTMLInputElement)) return;
+  muteCheckbox.addEventListener('change', (event: Event) => {
+    const target = event.target instanceof HTMLInputElement ? event.target : null;
+    if (!target) return;
     const isChecked = target.checked;
+    settings.isMuted = isChecked;
     setSetting('isMuted', isChecked);
     if (isChecked) {
       soundManager.muteAll();
@@ -161,7 +151,6 @@ export function createSettingsUI() {
     }
   });
 
-  // Gameplay settings section
   const gameplaySection = document.createElement('div');
   gameplaySection.style.marginBottom = SETTINGS_UI.SECTION_MARGIN_BOTTOM;
 
@@ -171,7 +160,6 @@ export function createSettingsUI() {
   gameplayTitle.style.marginBottom = SETTINGS_UI.SUBTITLE_MARGIN_BOTTOM;
   gameplayTitle.style.fontSize = SETTINGS_UI.SUBTITLE_FONT_SIZE;
 
-  // Platform-specific text toggle
   const platformTextLabel = document.createElement('label');
   platformTextLabel.textContent = 'Use Platform-Specific Text';
   platformTextLabel.style.display = 'block';
@@ -184,13 +172,13 @@ export function createSettingsUI() {
   platformTextCheckbox.checked = settings.platformSpecificText;
   platformTextCheckbox.style.width = '20px';
   platformTextCheckbox.style.height = '20px';
-  platformTextCheckbox.addEventListener('change', (e) => {
-    const target = e.target;
-    if (!(target instanceof HTMLInputElement)) return;
+  platformTextCheckbox.addEventListener('change', (event: Event) => {
+    const target = event.target instanceof HTMLInputElement ? event.target : null;
+    if (!target) return;
+    settings.platformSpecificText = target.checked;
     setSetting('platformSpecificText', target.checked);
   });
 
-  // Vibration toggle (mobile only)
   if (isMobile()) {
     const vibrationLabel = document.createElement('label');
     vibrationLabel.textContent = 'Enable Vibration';
@@ -204,9 +192,10 @@ export function createSettingsUI() {
     vibrationCheckbox.checked = settings.vibrationEnabled;
     vibrationCheckbox.style.width = '20px';
     vibrationCheckbox.style.height = '20px';
-    vibrationCheckbox.addEventListener('change', (e) => {
-      const target = e.target;
-      if (!(target instanceof HTMLInputElement)) return;
+    vibrationCheckbox.addEventListener('change', (event: Event) => {
+      const target = event.target instanceof HTMLInputElement ? event.target : null;
+      if (!target) return;
+      settings.vibrationEnabled = target.checked;
       setSetting('vibrationEnabled', target.checked);
     });
 
@@ -214,7 +203,6 @@ export function createSettingsUI() {
     gameplaySection.appendChild(vibrationCheckbox);
   }
 
-  // Assemble the UI
   container.appendChild(closeButton);
   container.appendChild(title);
 
@@ -237,39 +225,34 @@ export function createSettingsUI() {
   return container;
 }
 
-/**
- * Shows the settings modal.
- */
-export function showSettings() {
-  const container = document.getElementById('settingsContainer');
-  if (container) {
-    container.style.display = 'block';
-    container.setAttribute('aria-hidden', 'false');
-    const focusable = container.querySelector(focusableSelector);
-    requestAnimationFrame(() => {
-      const focusTarget = focusable instanceof HTMLElement ? focusable : container;
-      focusTarget.focus({ preventScroll: true });
-    });
-  }
+export function showSettings(): void {
+  const container = getById<HTMLElement>('settingsContainer');
+  if (!container) return;
+
+  container.style.display = 'block';
+  container.setAttribute('aria-hidden', 'false');
+  const focusable = container.querySelector<HTMLElement>(focusableSelector);
+  requestAnimationFrame(() => {
+    const focusTarget = focusable ?? container;
+    focusTarget.focus({ preventScroll: true });
+  });
 }
 
-/**
- * Hides the settings modal.
- */
-export function hideSettings() {
-  const container = document.getElementById('settingsContainer');
-  if (container) {
-    container.style.display = 'none';
-    container.setAttribute('aria-hidden', 'true');
-    const canvas = document.getElementById('gameCanvas');
-    canvas?.focus?.({ preventScroll: true });
-  }
+export function hideSettings(): void {
+  const container = getById<HTMLElement>('settingsContainer');
+  if (!container) return;
+
+  container.style.display = 'none';
+  container.setAttribute('aria-hidden', 'true');
+  const canvas = getById<HTMLCanvasElement>('gameCanvas');
+  canvas?.focus({ preventScroll: true });
 }
 
-/**
- * Initializes the settings UI and adds it to the document.
- */
-export function initializeSettingsUI() {
+export function initializeSettingsUI(): void {
+  const existing = getById<HTMLElement>('settingsContainer');
+  if (existing) {
+    existing.remove();
+  }
   const settingsUI = createSettingsUI();
   document.body.appendChild(settingsUI);
 }

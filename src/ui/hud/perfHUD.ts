@@ -2,12 +2,11 @@
  * @fileoverview Lightweight performance HUD for FPS and timing metrics.
  */
 
-/** @type {HTMLDivElement|null} */
-let hudElement;
+let hudElement: HTMLDivElement | null = null;
 let enabled = false;
 let lastRenderedText = '';
 
-function ensureHudElement() {
+function ensureHudElement(): HTMLDivElement {
   if (hudElement) return hudElement;
   hudElement = document.createElement('div');
   hudElement.id = 'perfHud';
@@ -29,46 +28,25 @@ function ensureHudElement() {
   return hudElement;
 }
 
-/**
- * Initializes the HUD element.
- */
-export function initPerfHud() {
+export function initPerfHud(): void {
   ensureHudElement();
 }
 
-/**
- * Returns whether the HUD is currently enabled.
- * @returns {boolean}
- */
-export function isPerfHudEnabled() {
+export function isPerfHudEnabled(): boolean {
   return enabled;
 }
 
-/**
- * Toggles HUD visibility.
- */
-export function togglePerfHud() {
+export function togglePerfHud(): void {
   setPerfHudEnabled(!enabled);
 }
 
-/**
- * Enables or disables the HUD.
- * @param {boolean} state - Desired enabled state.
- */
-export function setPerfHudEnabled(state) {
+export function setPerfHudEnabled(state: boolean): void {
   enabled = state;
-  if (!hudElement) return;
-  hudElement.style.display = enabled ? 'inline-flex' : 'none';
+  const el = ensureHudElement();
+  el.style.display = enabled ? 'inline-flex' : 'none';
 }
 
-/**
- * Updates the HUD text.
- * @param {Object} params - Performance data.
- * @param {number} params.fps - Frames per second.
- * @param {number} params.frameMs - Total frame time in ms.
- * @param {number} params.logicMs - Logic/update time in ms.
- */
-export function updatePerfHud({ fps, frameMs, logicMs }) {
+export function updatePerfHud({ fps, frameMs, logicMs }: { fps: number; frameMs: number; logicMs: number }): void {
   if (!enabled) return;
   const el = ensureHudElement();
   const text = `FPS ${fps.toFixed(0)} | frame ${frameMs.toFixed(1)}ms | logic ${logicMs.toFixed(1)}ms`;
