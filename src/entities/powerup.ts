@@ -3,23 +3,23 @@
  * Adds object pooling to optimize power-up memory reuse.
  */
 
+import type { PowerUpKey } from '@types';
 import { powerUps, player } from '@core/state.js';
 import { isMobile } from '@utils/platform.js';
 import { ObjectPool } from '@systems/poolManager.js';
 import { addScorePopup } from '@ui/hud/scorePopups.js';
 import { POWERUP_CONFIG, GAME_CONFIG } from '@core/constants.js';
 
-/** @typedef {import('../types/shared.js').PowerUpKey} PowerUpKey */
-/** @typedef {{ x: number; y: number; size: number; type: PowerUpKey | null; dy: number }} ActivePowerup */
+type ActivePowerup = { x: number; y: number; size: number; type: PowerUpKey | null; dy: number };
 
 /**
  * Power-up types enumeration.
  * @enum {string}
  */
-const POWERUP_TYPES = /** @type {const} */ ({
+const POWERUP_TYPES = {
   DOUBLE_BLASTER: 'doubleBlaster',
   SHIELD: 'shield',
-});
+} as const;
 
 const powerupSize = isMobile() ? 40 : 50;
 
@@ -27,30 +27,25 @@ const powerupSize = isMobile() ? 40 : 50;
  * Array of active power-ups.
  * @type {ActivePowerup[]}
  */
-const activePowerups = []; // Renamed from 'powerups' to avoid confusion with the pool
+const activePowerups: ActivePowerup[] = []; // Renamed from 'powerups' to avoid confusion with the pool
 
 // Initialize object pool for powerups
-const powerupPool = new ObjectPool(
-  () =>
-    /** @type {ActivePowerup} */ ({
-      x: 0,
-      y: 0,
-      size: powerupSize,
-      type: null,
-      dy: 0,
-    })
-);
+const powerupPool = new ObjectPool<ActivePowerup>(() => ({
+  x: 0,
+  y: 0,
+  size: powerupSize,
+  type: null,
+  dy: 0,
+}));
 
 
 /**
  * Spawns a random power-up.
- * @param {number} canvasWidth - Canvas width.
  */
-export function spawnPowerup(canvasWidth) {
+export function spawnPowerup(canvasWidth: number): void {
   const x = Math.random() * (canvasWidth - powerupSize);
   const y = -powerupSize;
-  /** @type {PowerUpKey} */
-  const type = Math.random() < 0.5 ? POWERUP_TYPES.DOUBLE_BLASTER : POWERUP_TYPES.SHIELD;
+  const type: PowerUpKey = Math.random() < 0.5 ? POWERUP_TYPES.DOUBLE_BLASTER : POWERUP_TYPES.SHIELD;
 
   const p = powerupPool.acquire();
   Object.assign(p, { x, y, size: powerupSize, type, dy: 1.5 });
@@ -59,9 +54,8 @@ export function spawnPowerup(canvasWidth) {
 
 /**
  * Updates all power-ups, checks collisions, and manages timers.
- * @param {number} canvasHeight - Canvas height.
  */
-export function updatePowerups(canvasHeight) {
+export function updatePowerups(canvasHeight: number): void {
   for (let i = activePowerups.length - 1; i >= 0; i--) {
     const p = activePowerups[i];
     if (!p) continue;
@@ -98,12 +92,13 @@ export function updatePowerups(canvasHeight) {
     }
   }
 
-  /** @type {PowerUpKey[]} */
-  (Object.keys(powerUps)).forEach((key) => {
-    if (powerUps[key].active) {
-      powerUps[key].timer--;
-      if (powerUps[key].timer <= 0) {
-        powerUps[key].active = false;
+  Object.keys(powerUps).forEach((key) => {
+    const typedKey = key as PowerUpKey;
+    const state = powerUps[typedKey];
+    if (state.active) {
+      state.timer--;
+      if (state.timer <= 0) {
+        state.active = false;
       }
     }
   });
@@ -111,9 +106,8 @@ export function updatePowerups(canvasHeight) {
 
 /**
  * Draws all power-ups on the canvas.
- * @param {CanvasRenderingContext2D} ctx - Canvas context.
  */
-export function drawPowerups(ctx) {
+export function drawPowerups(ctx: CanvasRenderingContext2D): void {
   const now = performance.now();
   const time = now / 600;
   const pulse = isMobile() ? 1 : (Math.sin(time) + 1) / 2;
@@ -188,10 +182,8 @@ export function drawPowerups(ctx) {
 }
 
 /**
- * Activates a power-up.
- * @param {PowerUpKey} type - Power-up type.
  */
-function activatePowerup(type) {
+function activatePowerup(type: PowerUpKey): void {
   const config = POWERUP_CONFIG[type];
   if (!config) {
     console.warn(`Unknown powerup type: ${type}`);

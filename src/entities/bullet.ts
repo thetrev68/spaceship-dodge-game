@@ -3,6 +3,7 @@
  * Adds object pooling to optimize bullet memory reuse.
  */
 
+import type { Bullet } from '@types';
 import { bullets, gameState } from '@core/state.js';
 import { isMobile } from '@utils/platform.js';
 import { BULLET_CONFIG } from '@core/constants.js';
@@ -27,24 +28,18 @@ if (bctx) {
 }
 
 // Initialize object pool for bullets
-const bulletPool = new ObjectPool(
-  () =>
-    /** @type {import('../types/shared.js').BulletState} */ ({
-      x: 0,
-      y: 0,
-      radius: bulletRadius,
-      dy: 0,
-      parentId: null,
-    })
-);
+const bulletPool = new ObjectPool<Bullet>(() => ({
+  x: 0,
+  y: 0,
+  radius: bulletRadius,
+  dy: 0,
+  parentId: null,
+}));
 
 /**
  * Acquires a bullet from the pool.
- * @param {number} x - X position.
- * @param {number} y - Y position.
- * @returns {import('../types/shared.js').BulletState} The bullet object.
  */
-function acquireBullet(x, y) {
+function acquireBullet(x: number, y: number): Bullet {
   const bullet = bulletPool.acquire();
   Object.assign(bullet, {
     x,
@@ -56,18 +51,15 @@ function acquireBullet(x, y) {
 }
 
 /**
- * Releases a bullet back to the pool.
- * @param {import('../types/shared.js').BulletState} bullet - The bullet to release.
  */
-function releaseBullet(bullet) {
+function releaseBullet(bullet: Bullet): void {
   bulletPool.release(bullet);
 }
 
 /**
  * Removes a bullet from the array and returns it to the pool.
- * @param {number} index - Index of the bullet to despawn.
  */
-export function despawnBullet(index) {
+export function despawnBullet(index: number): void {
   if (index >= 0 && index < bullets.length) {
     const bullet = bullets[index];
     if (!bullet) return;
@@ -83,17 +75,15 @@ export function despawnBullet(index) {
 /**
  * Clears all bullets and returns them to the pool.
  */
-export function clearAllBullets() {
+export function clearAllBullets(): void {
   bullets.forEach(bullet => releaseBullet(bullet));
   bullets.length = 0;
 }
 
 /**
  * Fires a bullet from the given position.
- * @param {number} x - X position.
- * @param {number} y - Y position.
  */
-export function fireBullet(x, y) {
+export function fireBullet(x: number, y: number): void {
   if (gameState.value !== 'PLAYING') return;
 
   const bullet = acquireBullet(x, y);
@@ -111,7 +101,7 @@ export function fireBullet(x, y) {
 /**
  * Updates all bullets, removing those off-screen.
  */
-export function updateBullets() {
+export function updateBullets(): void {
   for (let i = bullets.length - 1; i >= 0; i--) {
     const b = bullets[i];
     if (!b) continue;
@@ -131,9 +121,8 @@ export function updateBullets() {
 
 /**
  * Draws all bullets on the canvas.
- * @param {CanvasRenderingContext2D} ctx - Canvas context.
  */
-export function drawBullets(ctx) {
+export function drawBullets(ctx: CanvasRenderingContext2D): void {
   bullets.forEach(b => {
     ctx.drawImage(bulletSprite, b.x - bulletRadius, b.y - bulletRadius);
   });

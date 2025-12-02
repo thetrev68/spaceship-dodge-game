@@ -302,7 +302,6 @@ export function createLogger(category) {
 }
 
 // Auto-configure based on environment (guarded for non-Vite contexts)
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const mode = typeof import.meta !== 'undefined' && import.meta && /** @type {any} */ (import.meta).env
   ? /** @type {any} */ (import.meta).env.MODE
   : 'development';

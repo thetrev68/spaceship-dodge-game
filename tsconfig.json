@@ -23,6 +23,7 @@
       "@ui/*": ["./src/ui/*"],
       "@effects/*": ["./src/effects/*"],
       "@utils/*": ["./src/utils/*"],
+      "@types": ["./src/types/index.ts"],
       "@types/*": ["./src/types/*"]
     }
   },

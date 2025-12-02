@@ -4,10 +4,9 @@
 import { CANVAS_CONSTANTS } from '@core/uiConstants.js';
 
 /**
- * Initialize canvas size based on viewport and device type
- * @param {HTMLCanvasElement} canvas - The canvas element to initialize
+ * Initialize canvas size based on viewport and device type.
  */
-export function initializeCanvas(canvas) {
+export function initializeCanvas(canvas: HTMLCanvasElement): void {
   const vw = window.innerWidth;
   const vh = window.innerHeight;
 
@@ -35,10 +34,8 @@ export function initializeCanvas(canvas) {
 
 /**
  * Set overlay dimensions to match canvas position and size
- * @param {HTMLCanvasElement} canvas - The canvas element to match
- * @param {HTMLElement[]} overlays - Array of overlay elements to position
  */
-export function setOverlayDimensions(canvas, overlays) {
+export function setOverlayDimensions(canvas: HTMLCanvasElement, overlays: HTMLElement[]): void {
   const canvasRect = canvas.getBoundingClientRect();
   overlays.forEach(overlay => {
     if (overlay) {
@@ -52,10 +49,8 @@ export function setOverlayDimensions(canvas, overlays) {
 
 /**
  * Get canvas dimensions
- * @param {HTMLCanvasElement} canvas - The canvas element
- * @returns {{width: number, height: number}}
  */
-export function getCanvasDimensions(canvas) {
+export function getCanvasDimensions(canvas: HTMLCanvasElement): { width: number; height: number } {
   return {
     width: canvas.width,
     height: canvas.height
@@ -64,10 +59,8 @@ export function getCanvasDimensions(canvas) {
 
 /**
  * Get canvas center point
- * @param {HTMLCanvasElement} canvas - The canvas element
- * @returns {{x: number, y: number}}
  */
-export function getCanvasCenter(canvas) {
+export function getCanvasCenter(canvas: HTMLCanvasElement): { x: number; y: number } {
   return {
     x: canvas.width / 2,
     y: canvas.height / 2
@@ -78,10 +71,8 @@ export function getCanvasCenter(canvas) {
  * Check if a point is within canvas bounds
  * @param {number} x - X coordinate
  * @param {number} y - Y coordinate
- * @param {HTMLCanvasElement} canvas - The canvas element
- * @returns {boolean}
  */
-export function isPointInCanvas(x, y, canvas) {
+export function isPointInCanvas(x: number, y: number, canvas: HTMLCanvasElement): boolean {
   return x >= 0 && x <= canvas.width && y >= 0 && y <= canvas.height;
 }
 
@@ -89,11 +80,13 @@ export function isPointInCanvas(x, y, canvas) {
  * Clamp a point to canvas bounds
  * @param {number} x - X coordinate
  * @param {number} y - Y coordinate
- * @param {HTMLCanvasElement} canvas - The canvas element
- * @param {number} margin - Optional margin from edges (default: 0)
- * @returns {{x: number, y: number}}
  */
-export function clampToCanvas(x, y, canvas, margin = 0) {
+export function clampToCanvas(
+  x: number,
+  y: number,
+  canvas: HTMLCanvasElement,
+  margin = 0
+): { x: number; y: number } {
   return {
     x: Math.max(margin, Math.min(x, canvas.width - margin)),
     y: Math.max(margin, Math.min(y, canvas.height - margin))

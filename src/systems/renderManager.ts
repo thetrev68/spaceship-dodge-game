@@ -12,11 +12,7 @@ import { drawScore } from '@ui/hud/scoreDisplay.js';
 import { gameState } from '@core/state.js';
 import { drawPowerupTimers } from '@ui/hud/powerupHUD.js';
 
-/**
- * Renders all game elements.
- * @param {CanvasRenderingContext2D} ctx - Canvas context.
- */
-export function renderAll(ctx) {
+export function renderAll(ctx: CanvasRenderingContext2D): void {
   if (gameState.value !== 'PLAYING') return;
 
   ctx.save();

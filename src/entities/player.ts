@@ -3,6 +3,7 @@
  * Created: 2025-05-28
  */
 
+import type { Player } from '@types';
 import { player, gameState, powerUps } from '@core/state.js';
 import { fireBullet } from '@entities/bullet.js';
 import { clamp } from '@utils/mathUtils.js';
@@ -10,13 +11,10 @@ import { isMobile } from '@utils/platform.js';
 import {
   PLAYER_CONSTANTS,
   HUD_CONSTANTS,
-  GAME_STATE_CONSTANTS
+  GAME_STATE_CONSTANTS,
 } from '@core/gameConstants.js';
 
-/**
- * Clamps player position to canvas bounds.
- */
-function clampToCanvas() {
+function clampToCanvas(): void {
     // Optimized: Use window dimensions since game is full screen
     // Avoids DOM access every frame
     player.x = clamp(player.x, 0, window.innerWidth - player.width);
@@ -24,33 +22,24 @@ function clampToCanvas() {
 }
 
 /**
- * Moves player by delta values.
- * @param {number} dx - Delta X.
- * @param {number} dy - Delta Y.
  */
-function movePlayer(dx, dy) {
+function movePlayer(dx: number, dy: number): void {
     player.x += dx;
     player.y += dy;
     clampToCanvas();
 }
 
 /**
- * Sets player position directly (for touch controls).
- * @param {number} x - X position.
- * @param {number} y - Y position.
  */
-export function setPlayerPosition(x, y) {
+export function setPlayerPosition(x: number, y: number): void {
     player.x = x;
     player.y = y;
     clampToCanvas();
 }
 
 /**
- * Resets player to initial position.
- * @param {number} canvasWidth - Canvas width.
- * @param {number} canvasHeight - Canvas height.
  */
-export function resetPlayer(canvasWidth, canvasHeight) {
+export function resetPlayer(canvasWidth: number, canvasHeight: number): void {
     player.x = canvasWidth / 2 - player.width / 2;
     player.y = canvasHeight - player.height - GAME_STATE_CONSTANTS.PLAYER_RESET_Y_OFFSET;
     player.dx = 0;
@@ -58,10 +47,7 @@ export function resetPlayer(canvasWidth, canvasHeight) {
     player.overridePosition = null;
 }
 
-/**
- * Updates player position and state.
- */
-export function updatePlayer() {
+export function updatePlayer(): void {
   if (gameState.value !== 'PLAYING') return;
 
   const override = player.overridePosition;
@@ -73,11 +59,7 @@ export function updatePlayer() {
   }
 }
 
-/**
- * Draws the player on the canvas.
- * @param {CanvasRenderingContext2D} ctx - Canvas context.
- */
-export function drawPlayer(ctx) {
+export function drawPlayer(ctx: CanvasRenderingContext2D): void {
     if (gameState.value !== 'PLAYING') return;
 
     // Draw shield glow if active (lighter on mobile to avoid blur cost)
@@ -178,43 +160,31 @@ export function drawPlayer(ctx) {
 }
 
 /**
- * Gets player dimensions.
- * @returns {{ width: number; height: number }} Object with width and height.
  */
-export function getPlayerDimensions() {
+export function getPlayerDimensions(): Pick<Player, 'width' | 'height'> {
     return { width: player.width, height: player.height };
 }
 
 /**
- * Gets player speed.
- * @returns {number} Player speed.
  */
-export function getPlayerSpeed() {
+export function getPlayerSpeed(): number {
     return player.speed;
 }
 
 /**
- * Gets player velocity.
- * @returns {{ dx: number; dy: number }} Object with dx and dy.
  */
-export function getPlayerVelocity() {
+export function getPlayerVelocity(): Pick<Player, 'dx' | 'dy'> {
     return { dx: player.dx, dy: player.dy };
 }
 
 /**
- * Sets player movement.
- * @param {number} dx - Delta X.
- * @param {number} dy - Delta Y.
  */
-export function setPlayerMovement(dx, dy) {
+export function setPlayerMovement(dx: number, dy: number): void {
     player.dx = dx;
     player.dy = dy;
 }
 
-/**
- * Fires player bullets with double blaster power-up support.
- */
-export function firePlayerBullets() {
+export function firePlayerBullets(): void {
     if (powerUps.doubleBlaster.active) {
         fireBullet(player.x + player.width * PLAYER_CONSTANTS.DOUBLE_BLASTER_OFFSET, player.y);
         fireBullet(player.x + player.width * (1 - PLAYER_CONSTANTS.DOUBLE_BLASTER_OFFSET), player.y);

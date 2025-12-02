@@ -1,62 +1,33 @@
-/**
- * @fileoverview Audio and sound management system.
- */
-
+import type { SoundKey, SoundMap, Volumes } from '@types';
 import { debug, info, warn, error } from '@core/logger.js';
 import { VOLUME_CONSTANTS } from '@core/uiConstants.js';
 
-/** @typedef {import('../types/shared.js').VolumeState} VolumeState */
-/** @typedef {import('../types/shared.js').SoundMap} SoundMap */
-
-const envBaseUrl = typeof import.meta !== 'undefined' && import.meta && typeof import.meta === 'object' && 'env' in import.meta
-  ? /** @type {any} */ (import.meta).env?.BASE_URL
+const envBaseUrl = typeof import.meta !== 'undefined' && typeof import.meta.env?.BASE_URL === 'string'
+  ? import.meta.env.BASE_URL
   : undefined;
-const BASE_URL = typeof envBaseUrl === 'string' && envBaseUrl.length > 0 ? envBaseUrl : '/spaceship-dodge-game/';
+const BASE_URL = envBaseUrl && envBaseUrl.length > 0 ? envBaseUrl : '/spaceship-dodge-game/';
 debug('audio', 'soundManager BASE_URL', BASE_URL);
 
 const SILENT_MP3 = `${BASE_URL}sounds/silence.mp3`;
 
-/**
- * Current volume levels.
- * @type {VolumeState}
- */
-export let volumes = {
+export const volumes: Volumes = {
   backgroundMusic: VOLUME_CONSTANTS.DEFAULT_BACKGROUND_MUSIC,
-  soundEffects: VOLUME_CONSTANTS.DEFAULT_SOUND_EFFECTS
+  soundEffects: VOLUME_CONSTANTS.DEFAULT_SOUND_EFFECTS,
 };
 
-/**
- * Current volume level (legacy - kept for backward compatibility).
- * @type {number}
- * @deprecated Use volumes.soundEffects instead
- */
 export let currentVolume = VOLUME_CONSTANTS.DEFAULT_SOUND_EFFECTS;
 
-/**
- * Flag for muted state.
- * @type {boolean}
- */
 let isMuted = false;
-
-/**
- * Flag for audio unlock state.
- * @type {boolean}
- */
 let isAudioUnlocked = false;
 
-/**
- * Sound effects and music.
- * @constant {SoundMap}
- */
-const sounds = /** @type {SoundMap} */ ({
-  bgm: null, // Will be created dynamically
+const sounds: SoundMap = {
+  bgm: null,
   fire: new Audio(`${BASE_URL}sounds/fire.mp3`),
   break: new Audio(`${BASE_URL}sounds/break.mp3`),
   gameover: new Audio(`${BASE_URL}sounds/gameover.mp3`),
   levelup: new Audio(`${BASE_URL}sounds/levelup.mp3`),
-});
+};
 
-// Preload all non-bgm sounds
 Object.entries(sounds).forEach(([key, audio]) => {
   if (key === 'bgm' || !(audio instanceof HTMLAudioElement)) return;
   audio.volume = currentVolume;
@@ -67,20 +38,15 @@ Object.entries(sounds).forEach(([key, audio]) => {
   audio.load();
 });
 
-/**
- * Forces audio unlock by playing a silent sound.
- * @returns {Promise<void>} Promise that resolves when unlock is attempted.
- */
-export function forceAudioUnlock() {
-  return /** @type {Promise<void>} */ (new Promise((resolve) => {
+export function forceAudioUnlock(): Promise<void> {
+  return new Promise((resolve) => {
     try {
       const silent = new Audio(SILENT_MP3);
       silent.volume = 0;
 
-      // Add error handling for audio loading
       silent.addEventListener('error', (err) => {
         warn('audio', 'Silent audio failed to load, but continuing:', err);
-        isAudioUnlocked = true; // Still consider unlocked to allow other audio
+        isAudioUnlocked = true;
         resolve();
       }, { once: true });
 
@@ -92,10 +58,10 @@ export function forceAudioUnlock() {
           isAudioUnlocked = true;
           debug('audio', 'Silent audio unlocked the audio context');
           resolve();
-        }).catch((err) => {
+        }).catch((err: unknown) => {
           warn('audio', 'Silent audio unlock failed, but continuing:', err);
-          isAudioUnlocked = true; // Still consider unlocked to allow other audio
-          resolve(); // Resolve anyway to prevent blocking
+          isAudioUnlocked = true;
+          resolve();
         });
       } else {
         warn('audio', 'Silent audio play() did not return a promise');
@@ -105,15 +71,12 @@ export function forceAudioUnlock() {
     } catch (err) {
       warn('audio', 'Audio unlock exception, but continuing:', err);
       isAudioUnlocked = true;
-      resolve(); // Resolve anyway to prevent blocking
+      resolve();
     }
-  }));
+  });
 }
 
-/**
- * Starts background music playback.
- */
-export function startMusic() {
+export function startMusic(): void {
   debug('audio', 'startMusic called');
 
   if (!isAudioUnlocked || isMuted) {
@@ -133,7 +96,6 @@ export function startMusic() {
   if (!bgm) return;
 
   bgm.currentTime = 0;
-
   bgm.volume = volumes.backgroundMusic;
   bgm.muted = isMuted;
 
@@ -141,75 +103,52 @@ export function startMusic() {
     .then(() => {
       info('audio', 'BGM playback started');
     })
-    .catch((/** @type {unknown} */ err) => {
+    .catch((err: unknown) => {
       error('audio', 'startMusic failed:', err);
     });
 }
 
-/**
- * Stops background music.
- */
-export function stopMusic() {
+export function stopMusic(): void {
   const bgm = sounds.bgm;
   if (!bgm) return;
   bgm.pause();
   bgm.currentTime = 0;
 }
 
-/**
- * Mutes all audio.
- */
-export function muteAll() {
+export function muteAll(): void {
   debug('audio', 'muteAll called');
   isMuted = true;
   applyVolumeAndMute();
 }
 
-/**
- * Unmutes all audio and starts music.
- */
-export function unmuteAll() {
+export function unmuteAll(): void {
   debug('audio', 'unmuteAll called');
   isMuted = false;
   applyVolumeAndMute();
   startMusic();
 }
 
-/**
- * Applies volume and mute settings to all sounds.
- */
-function applyVolumeAndMute() {
+function applyVolumeAndMute(): void {
   debug('audio', 'applyVolumeAndMute', { isMuted, volumes });
   Object.entries(sounds).forEach(([key, audio]) => {
     if (!audio) return;
-    // Background music uses its own volume setting
     if (key === 'bgm') {
       audio.volume = isMuted ? 0 : volumes.backgroundMusic;
     } else {
-      // Sound effects use their volume setting
       audio.volume = isMuted ? 0 : volumes.soundEffects;
     }
     audio.muted = isMuted;
   });
 }
 
-/**
- * Sets the volume level (legacy - kept for backward compatibility).
- * @param {number} val - Volume value (0-1).
- * @deprecated Use setSoundEffectsVolume instead
- */
-export function setVolume(val) {
+export function setVolume(val: number): void {
   currentVolume = val;
   volumes.soundEffects = val;
   debug('audio', 'setVolume (legacy)', { currentVolume: val });
   if (!isMuted) applyVolumeAndMute();
 }
 
-/**
- * Sets the background music volume.
- * @param {number} val - Volume value (0-1).
- */
-export function setBackgroundMusicVolume(val) {
+export function setBackgroundMusicVolume(val: number): void {
   volumes.backgroundMusic = val;
   debug('audio', 'setBackgroundMusicVolume', { backgroundMusicVolume: val });
   if (!isMuted && sounds.bgm) {
@@ -217,26 +156,18 @@ export function setBackgroundMusicVolume(val) {
   }
 }
 
-/**
- * Sets the sound effects volume.
- * @param {number} val - Volume value (0-1).
- */
-export function setSoundEffectsVolume(val) {
+export function setSoundEffectsVolume(val: number): void {
   volumes.soundEffects = val;
-  currentVolume = val; // Keep legacy variable in sync
+  currentVolume = val;
   debug('audio', 'setSoundEffectsVolume', { soundEffectsVolume: val });
   if (!isMuted) applyVolumeAndMute();
 }
 
-/**
- * Plays a sound effect.
- * @param {string} name - Sound name.
- */
-export function playSound(name) {
+export function playSound(name: SoundKey): void {
   const base = sounds[name];
   if (!isAudioUnlocked || isMuted || !base) return;
 
-  const sfx = /** @type {HTMLAudioElement} */ (base.cloneNode());
+  const sfx = base.cloneNode(true) as HTMLAudioElement;
   sfx.volume = volumes.soundEffects;
   sfx.muted = isMuted;
 
@@ -244,7 +175,7 @@ export function playSound(name) {
     .then(() => {
       debug('audio', `playSound(${name}) triggered`);
     })
-    .catch((/** @type {unknown} */ err) => {
+    .catch((err: unknown) => {
       error('audio', `playSound(${name}) failed:`, err);
     });
 }

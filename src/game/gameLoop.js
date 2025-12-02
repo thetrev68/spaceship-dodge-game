@@ -57,6 +57,7 @@ function getSpawnInterval(level) {
   return Math.max(interval, minInterval);
 }
 
+/** @type {number} */
 let obstacleSpawnInterval = ASTEROID_CONFIG.MIN_SPAWN_INTERVAL;
 
 /**

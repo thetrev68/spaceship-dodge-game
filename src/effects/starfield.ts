@@ -5,21 +5,21 @@
 
 import { isMobile } from '@utils/platform.js';
 
+type Star = { x: number; y: number; size: number; speed: number };
+
 /**
  * Sets up the starfield effect on the given canvas.
- * @param {HTMLCanvasElement} canvas - The canvas element for the starfield.
  */
-export function setupStarfield(canvas) {
+export function setupStarfield(canvas: HTMLCanvasElement): void {
   const ctx = canvas.getContext('2d');
   if (!ctx) return;
   const starCount = isMobile() ? 40 : 100; // Reduced count for mobile
-  /** @type {{ x: number; y: number; size: number; speed: number }[]} */
-  const stars = [];
+  const stars: Star[] = [];
 
   /**
    * Resizes the canvas to full window size.
    */
-  function resize() {
+  function resize(): void {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     canvas.style.width = '100vw';
@@ -42,7 +42,7 @@ export function setupStarfield(canvas) {
   /**
    * Animates the starfield by updating and drawing stars.
    */
-  function animate() {
+  function animate(): void {
     if (!ctx) return;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     

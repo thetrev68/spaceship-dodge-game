@@ -3,10 +3,11 @@
  * Adds object pooling to optimize asteroid memory reuse.
  */
 
+import type { Asteroid, Vector2 } from '@types';
 import {
   GAME_CONFIG,
   ASTEROID_CONFIG,
-  MOBILE_CONFIG
+  MOBILE_CONFIG,
 } from '@core/constants.js';
 
 import { obstacles } from '@core/state.js';
@@ -16,33 +17,29 @@ import { ObjectPool } from '@systems/poolManager.js';
 import { addScorePopup } from '@ui/hud/scorePopups.js';
 import { playSound } from '@systems/soundManager.js';
 
-let obstacleMinSpeed = ASTEROID_CONFIG.BASE_MIN_SPEED;
+const obstacleMinSpeed = ASTEROID_CONFIG.BASE_MIN_SPEED;
 let nextAsteroidId = 1;
-/** @type {Record<number, number>} */
-const fragmentTracker = {};
-let obstacleMaxSpeed = ASTEROID_CONFIG.BASE_MAX_SPEED;
+const fragmentTracker: Record<number, number> = {};
+const obstacleMaxSpeed = ASTEROID_CONFIG.BASE_MAX_SPEED;
 const MOBILE_OBSTACLE_CAP = 14;
 
 // Initialize object pool
-const obstaclePool = new ObjectPool(
-  () =>
-    /** @type {import('../types/shared.js').AsteroidState} */ ({
-      x: 0,
-      y: 0,
-      radius: 0,
-      dx: 0,
-      dy: 0,
-      id: 0,
-      level: 0,
-      parentId: null,
-      scoreValue: 0,
-      creationTime: 0,
-      rotation: 0,
-      rotationSpeed: 0,
-      speed: 0,
-      shape: [],
-    })
-);
+const obstaclePool = new ObjectPool<Asteroid>(() => ({
+  x: 0,
+  y: 0,
+  radius: 0,
+  dx: 0,
+  dy: 0,
+  id: 0,
+  level: 0,
+  parentId: null,
+  scoreValue: 0,
+  creationTime: 0,
+  rotation: 0,
+  rotationSpeed: 0,
+  speed: 0,
+  shape: [],
+}));
 
 /**
  * Count of new asteroids spawned.
@@ -53,23 +50,12 @@ export let newAsteroidsSpawned = 0;
 /**
  * Resets the count of new asteroids spawned.
  */
-export function resetNewAsteroidsSpawned() {
+export function resetNewAsteroidsSpawned(): void {
   newAsteroidsSpawned = 0;
 }
 
-/**
- * Generates asteroid shape points.
- * @param {number} radius - Asteroid radius.
- * @param {number} numPoints - Number of shape points.
- * @returns {Array<Object>} Array of point objects with x, y.
- */
-/**
- * @param {number} radius
- * @param {number} numPoints
- * @returns {{x:number,y:number}[]}
- */
-function generateAsteroidShape(radius, numPoints) {
-  const points = [];
+function generateAsteroidShape(radius: number, numPoints: number): Vector2[] {
+  const points: Vector2[] = [];
   const angleIncrement = (Math.PI * 2) / numPoints;
   for (let i = 0; i < numPoints; i++) {
     const angle = i * angleIncrement;
@@ -82,25 +68,14 @@ function generateAsteroidShape(radius, numPoints) {
   return points;
 }
 
-/**
- * Creates and spawns a single obstacle.
- * @param {number} x - X position.
- * @param {number} y - Y position.
- * @param {number} levelIndex - Asteroid level index.
- * @param {number} [initialDx=0] - Initial X velocity.
- * @param {number} [initialDy=0] - Initial Y velocity.
- * @param {number|null} [parentId=null] - Parent asteroid ID.
- */
-/**
- * @param {number} x
- * @param {number} y
- * @param {number} levelIndex
- * @param {number} [initialDx=0]
- * @param {number} [initialDy=0]
- * @param {number|null} [parentId=null]
- * @returns {import('../types/shared.js').AsteroidState}
- */
-function createObstacle(x, y, levelIndex, initialDx = 0, initialDy = 0, parentId = null) {
+function createObstacle(
+  x: number,
+  y: number,
+  levelIndex: number,
+  initialDx = 0,
+  initialDy = 0,
+  parentId: number | null = null
+): Asteroid {
   const radius = ASTEROID_CONFIG.LEVEL_SIZES[levelIndex] ?? 0;
   const scoreValue = ASTEROID_CONFIG.SCORE_VALUES[levelIndex] ?? 0;
   const basePoints = randomInt(ASTEROID_CONFIG.SHAPE_POINTS_MIN, ASTEROID_CONFIG.SHAPE_POINTS_MAX);
@@ -155,15 +130,13 @@ function createObstacle(x, y, levelIndex, initialDx = 0, initialDy = 0, parentId
   return obstacle;
 }
 
-/**
- * Updates obstacles, removes out of bounds or expired, spawns new if allowed.
- * @param {number} canvasWidth - Canvas width.
- * @param {number} canvasHeight - Canvas height.
- * @param {number} spawnInterval - Spawn interval.
- * @param {{ value: number }} lastSpawnTimeRef - Reference to last spawn time.
- * @param {boolean} [allowSpawning=true] - Whether spawning is allowed.
- */
-export function updateObstacles(canvasWidth, canvasHeight, spawnInterval, lastSpawnTimeRef, allowSpawning = true) {
+export function updateObstacles(
+  canvasWidth: number,
+  canvasHeight: number,
+  spawnInterval: number,
+  lastSpawnTimeRef: { value: number },
+  allowSpawning = true
+): void {
   const now = Date.now();
 
   for (let i = 0; i < obstacles.length; i++) {
@@ -225,12 +198,7 @@ export function updateObstacles(canvasWidth, canvasHeight, spawnInterval, lastSp
   }
 }
 
-/**
- * Draws all obstacles on the canvas.
- * Optimized to use a single draw call and manual vertex transformation.
- * @param {CanvasRenderingContext2D} ctx - Canvas context.
- */
-export function drawObstacles(ctx) {
+export function drawObstacles(ctx: CanvasRenderingContext2D): void {
   if (obstacles.length === 0) return;
 
   ctx.strokeStyle = '#ff4500';
@@ -268,12 +236,7 @@ export function drawObstacles(ctx) {
   ctx.stroke();
 }
 
-/**
- * Destroys an obstacle, releases to pool, spawns fragments if applicable.
- * @param {import('../types/shared.js').AsteroidState} obstacle - The obstacle to destroy.
- * @param {{ value: number }} scoreRef - Reference to score.
- */
-export function destroyObstacle(obstacle, scoreRef) {
+export function destroyObstacle(obstacle: Asteroid, scoreRef: { value: number }): void {
   const idx = obstacles.indexOf(obstacle);
   if (idx === -1) return;
 
