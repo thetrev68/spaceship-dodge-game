@@ -3,6 +3,7 @@ import { initializeCanvas } from '@core/init/canvasInit';
 import { initializeAudio } from '@core/init/audioInit';
 import { initializeInput } from '@core/init/inputInit';
 import { initializeUI } from '@core/init/uiInit';
+import { setupInput } from '@input/inputManager';
 
 vi.mock('@utils/dom.js', () => ({
   getById: vi.fn((id: string) => {
@@ -96,7 +97,7 @@ describe('init modules', () => {
   it('initializes input (desktop path)', () => {
     const canvas = document.createElement('canvas');
     initializeInput(canvas);
-    expect(true).toBe(true);
+    expect(setupInput).toHaveBeenCalledWith(canvas);
   });
 
   it('initializes UI components', () => {
