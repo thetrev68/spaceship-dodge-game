@@ -17,6 +17,10 @@ describe('Game Loop', () => {
 
   afterEach(() => {
     cleanup();
+    // Ensure cancelAnimationFrame is mocked before calling stopGameLoop
+    if (!global.cancelAnimationFrame) {
+      global.cancelAnimationFrame = vi.fn();
+    }
     stopGameLoop();
     vi.clearAllMocks();
   });
@@ -68,9 +72,11 @@ describe('Game Loop', () => {
     // Mock performance.now()
     vi.spyOn(performance, 'now').mockReturnValue(0);
 
-    // Mock requestAnimationFrame
+    // Mock requestAnimationFrame and cancelAnimationFrame
     const mockRaf = vi.fn((cb: FrameRequestCallback) => 1);
+    const mockCancel = vi.fn();
     global.requestAnimationFrame = mockRaf as any;
+    global.cancelAnimationFrame = mockCancel;
 
     // Start game loop
     restartGameLoop();

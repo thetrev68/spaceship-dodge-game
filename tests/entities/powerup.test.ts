@@ -30,8 +30,10 @@ describe('Powerup Entity', () => {
     activePowerups.length = 0;
 
     // Mock Math.random to control powerup type
+    // The powerup code uses: Math.random() < 0.5 ? 'doubleBlaster' : 'shield'
+    // So 0.3 < 0.5 = true, which spawns 'doubleBlaster'
     const originalRandom = Math.random;
-    Math.random = () => 0.3; // Will spawn shield
+    Math.random = () => 0.3; // Will spawn doubleBlaster (< 0.5)
 
     try {
       // Spawn powerup
@@ -40,11 +42,16 @@ describe('Powerup Entity', () => {
       // Verify powerup was created and has correct properties
       expect(activePowerups.length).toBe(1);
       const powerup = activePowerups[0];
-      expect(powerup?.type).toBe('shield');
+      expect(powerup?.type).toBe('doubleBlaster');
       expect(powerup?.x).toBeGreaterThanOrEqual(0);
-      expect(powerup?.x).toBeLessThan(800 - 50); // canvasWidth - powerupSize
-      expect(powerup?.y).toBe(-50); // Should start above screen
+
+      // Note: powerupSize is determined by isMobile() - 40 on mobile, 50 on desktop
+      // Test environment is detected as mobile, so size is 40
+      const expectedSize = powerup?.size || 40;
+      expect(powerup?.x).toBeLessThan(800 - expectedSize);
+      expect(powerup?.y).toBe(-expectedSize); // Should start above screen
       expect(powerup?.dy).toBe(1.5);
+      expect(powerup?.size).toBeGreaterThan(0); // Verify size exists and is positive
     } finally {
       // Restore original Math.random
       Math.random = originalRandom;

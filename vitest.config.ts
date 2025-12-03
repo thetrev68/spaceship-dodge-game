@@ -9,7 +9,8 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html', 'lcov'],
-      all: false, // Only report coverage for files that are actually imported/tested
+      // Note: 'all' option was removed in Vitest 4.0
+      // Use 'include' to specify patterns for coverage reporting
       include: [
         'src/core/**/*.ts',
         'src/game/**/*.ts',

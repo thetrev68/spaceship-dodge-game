@@ -20,14 +20,33 @@ export function mockWebAudio() {
   };
 
   global.AudioContext = vi.fn(() => audioContextMock) as unknown as typeof AudioContext;
-  global.Audio = vi.fn(() => ({
-    play: vi.fn().mockResolvedValue(undefined),
-    pause: vi.fn(),
-    load: vi.fn(),
-    volume: 1,
-    muted: false,
-    currentTime: 0
-  })) as unknown as typeof Audio;
+
+  // Create mock Audio constructor that properly mimics HTMLAudioElement
+  global.Audio = vi.fn(function(this: any, src?: string) {
+    const mockInstance = {
+      play: vi.fn(() => Promise.resolve(undefined)),
+      pause: vi.fn(),
+      load: vi.fn(),
+      volume: 1,
+      muted: false,
+      currentTime: 0,
+      loop: false,
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      remove: vi.fn(),
+      src: src || '',
+      cloneNode: vi.fn()
+    };
+
+    // cloneNode should return a new mock audio instance with same src
+    mockInstance.cloneNode.mockImplementation(() => {
+      const clone = new (global.Audio as any)(mockInstance.src);
+      return clone;
+    });
+
+    // Return the mock instance when used with 'new'
+    return mockInstance;
+  }) as unknown as typeof Audio;
 
   return audioContextMock;
 }
