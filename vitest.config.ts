@@ -36,10 +36,10 @@ export default defineConfig({
         'build/**' // Build artifacts
       ],
       thresholds: {
-        lines: 50,
-        functions: 50,
-        branches: 50,
-        statements: 50
+        lines: 85,
+        functions: 85,
+        branches: 80,
+        statements: 85
       }
     }
   },
