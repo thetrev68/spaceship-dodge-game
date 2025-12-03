@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { eventBus } from '@core/events/EventBus';
 import { GameEvent, type AsteroidDestroyedEvent, type BonusAwardedEvent, type PowerupCollectedEvent, type PowerupExpiredEvent } from '@core/events/GameEvents';
-import { updateScorePopups } from '@ui/hud/scorePopups';
+import { updateScorePopups, __getTestPopupCount } from '@ui/hud/scorePopups';
 
 describe('scorePopups event handling', () => {
   beforeEach(() => {
@@ -11,6 +11,7 @@ describe('scorePopups event handling', () => {
   });
 
   it('creates popups on emitted events', () => {
+    // Verify that events create popups and update doesn't throw
     eventBus.emit<AsteroidDestroyedEvent>(GameEvent.ASTEROID_DESTROYED, {
       position: { x: 10, y: 10 },
       score: 5,
@@ -34,10 +35,10 @@ describe('scorePopups event handling', () => {
       type: 'shield',
     });
 
-    // Advance animation one tick
-    updateScorePopups();
+    // Verify that popups were created
+    expect(__getTestPopupCount()).toBeGreaterThan(0);
 
-    // No direct accessor, but ensure update does not throw
-    expect(true).toBe(true);
+    // Advance animation one tick and ensure it doesn't throw
+    expect(() => updateScorePopups()).not.toThrow();
   });
 });

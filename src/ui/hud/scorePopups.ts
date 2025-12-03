@@ -84,3 +84,11 @@ export function drawScorePopups(ctx: CanvasRenderingContext2D): void {
   });
   ctx.globalAlpha = HUD_CONSTANTS.GLOBAL_ALPHA;
 }
+
+/**
+ * Test helper - returns the current number of active score popups.
+ * @internal - For test use only
+ */
+export function __getTestPopupCount(): number {
+  return scorePopups.length;
+}
