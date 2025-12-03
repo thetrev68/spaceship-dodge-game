@@ -33,6 +33,7 @@ const config: LoggerConfig = {
     powerup: true,
     level: true,
     render: false,
+    perf: true,
   },
   timestamps: true,
   colors: true,
@@ -51,6 +52,7 @@ const colors: Record<string, string> = {
   powerup: '#ffc107',
   level: '#8bc34a',
   render: '#607d8b',
+  perf: '#e91e63',
 };
 
 const log = (level: number, category: _LogCategory | string, message: string, ...args: unknown[]): void => {
