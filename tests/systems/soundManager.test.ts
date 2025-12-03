@@ -53,12 +53,17 @@ describe('Sound Manager', () => {
   });
 
   it('should control volume in 0-1 range', () => {
-    // Set volume within range
-    setSoundEffectsVolume(0.5);
-    setBackgroundMusicVolume(0.7);
+    // Test that volume setters handle valid range without throwing
+    expect(() => setSoundEffectsVolume(0.5)).not.toThrow();
+    expect(() => setBackgroundMusicVolume(0.7)).not.toThrow();
 
-    // Verify no errors thrown
-    expect(true).toBe(true);
+    // Test edge cases
+    expect(() => setSoundEffectsVolume(0)).not.toThrow(); // Minimum
+    expect(() => setBackgroundMusicVolume(1)).not.toThrow(); // Maximum
+
+    // Test that invalid values are handled (should not crash)
+    expect(() => setSoundEffectsVolume(-0.1)).not.toThrow(); // Below range
+    expect(() => setBackgroundMusicVolume(1.1)).not.toThrow(); // Above range
   });
 
   it('should handle mute and unmute', () => {
