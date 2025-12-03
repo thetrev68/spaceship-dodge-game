@@ -16,6 +16,8 @@ import {
 import { togglePerfHud } from '@ui/hud/perfHUD.js';
 import type { EventKey } from '@utils/dom.js';
 import { services } from '@services/ServiceProvider.js';
+import { eventBus } from '@core/events/EventBus.js';
+import { GameEvent } from '@core/events/GameEvents.js';
 
 let firing = false;
 let fireTimeoutId: ReturnType<typeof setTimeout> | null = null;
@@ -39,9 +41,11 @@ export function setupInput(canvas: HTMLCanvasElement): void {
     if (nextState === 'PAUSED') {
       services.audioService.muteAll();
       stopFiring();
+      eventBus.emit(GameEvent.GAME_PAUSED, undefined);
     } else if (nextState === 'PLAYING') {
       services.audioService.unmuteAll();
       restartGameLoop();
+      eventBus.emit(GameEvent.GAME_RESUMED, undefined);
     }
     setTimeout(() => { pauseLocked = false; }, 300);
   };

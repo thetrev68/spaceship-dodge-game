@@ -8,6 +8,8 @@ import { showOverlay } from '@ui/overlays/overlayManager.js';
 import { stopGameLoop } from '@game/gameLoop.js';
 import { debug, warn } from '@core/logger.js';
 import { services } from '@services/ServiceProvider.js';
+import { eventBus } from '@core/events/EventBus.js';
+import { GameEvent } from '@core/events/GameEvents.js';
 
 let touchActive = false;
 let touchX = 0;
@@ -97,6 +99,7 @@ export function setupMobileInput(canvas: HTMLCanvasElement): void {
       showOverlay('PAUSED');
       services.audioService.muteAll();
       stopGameLoop();
+      eventBus.emit(GameEvent.GAME_PAUSED, undefined);
     }
   }, { passive: false });
 

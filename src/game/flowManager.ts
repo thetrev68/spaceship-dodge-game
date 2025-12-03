@@ -54,6 +54,7 @@ export function updateLevelFlow(onLevelUpCallback: () => void): void {
       services.audioService.playSound('levelup');
       services.audioService.stopMusic();
 
+      eventBus.emit(GameEvent.LEVEL_TRANSITION_START, undefined);
       eventBus.emit<LevelUpEvent>(GameEvent.LEVEL_UP, {
         newLevel: gameLevel.value,
         difficulty: gameLevel.value,
