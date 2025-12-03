@@ -52,3 +52,6 @@ docs/
 # Test coverage reports
 coverage/
 *.lcov
+
+# AI configuration
+.claude/settings.local.json
