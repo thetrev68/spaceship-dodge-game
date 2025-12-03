@@ -58,7 +58,32 @@ function releaseBullet(bullet: Bullet): void {
 }
 
 /**
- * Removes a bullet from the array and returns it to the pool.
+ * Removes a bullet from the bullets array and returns it to the object pool.
+ *
+ * ## Performance
+ * - Uses swap-and-pop for O(1) removal (swaps with last element, then pops)
+ * - Returns bullet to pool for reuse (reduces GC pressure)
+ * - Bounds checking prevents array access errors
+ *
+ * ## Usage
+ * Called when bullet collides with asteroid or goes off-screen.
+ * Typically called from collision handler, not directly.
+ *
+ * @param index - Index of bullet to remove from bullets array
+ *
+ * @example
+ * ```typescript
+ * // In collision handler
+ * for (let i = bullets.length - 1; i >= 0; i--) {
+ *   if (bulletHitAsteroid(bullets[i], asteroid)) {
+ *     despawnBullet(i); // Remove and return to pool
+ *     destroyAsteroid(asteroid);
+ *     break;
+ *   }
+ * }
+ * ```
+ *
+ * @see bulletPool - Object pool for bullet reuse
  */
 export function despawnBullet(index: number): void {
   if (index >= 0 && index < bullets.length) {
@@ -74,7 +99,24 @@ export function despawnBullet(index: number): void {
 }
 
 /**
- * Clears all bullets and returns them to the pool.
+ * Clears all active bullets and returns them to the object pool.
+ * Called on game reset or state transitions.
+ *
+ * ## Behavior
+ * - Returns every bullet to pool for reuse
+ * - Empties bullets array
+ * - Prevents memory leaks by ensuring all bullets are pooled
+ *
+ * @example
+ * ```typescript
+ * // On game over
+ * function resetGameState() {
+ *   clearAllBullets();
+ *   clearAllAsteroids();
+ *   resetPlayer(canvas.width, canvas.height);
+ *   gameState.value = 'START';
+ * }
+ * ```
  */
 export function clearAllBullets(): void {
   bullets.forEach(bullet => releaseBullet(bullet));
@@ -82,7 +124,41 @@ export function clearAllBullets(): void {
 }
 
 /**
- * Fires a bullet from the given position.
+ * Fires a bullet from the specified position with sound effect.
+ *
+ * ## Behavior
+ * - Acquires bullet from object pool (reuses if available)
+ * - Sets initial position and upward velocity
+ * - Plays fire sound effect (throttled to prevent audio spam)
+ * - Only fires during PLAYING game state
+ *
+ * ## Sound Throttling
+ * - **Desktop:** Max 1 sound per 30ms (prevents overlap)
+ * - **Mobile:** Disabled (saves audio processing overhead)
+ * - Prevents audio channel exhaustion during rapid fire
+ *
+ * ## Object Pooling
+ * Uses `bulletPool` to reuse bullet objects instead of creating new ones.
+ * Dramatically reduces GC pressure during high fire rates (5-10 bullets/second).
+ *
+ * @param x - Horizontal spawn position (typically player center X)
+ * @param y - Vertical spawn position (typically player top Y)
+ *
+ * @example
+ * ```typescript
+ * // Single bullet fire
+ * fireBullet(player.x + player.width / 2, player.y);
+ *
+ * // Double blaster powerup
+ * if (hasDoubleBlaster) {
+ *   const spread = 10; // pixels
+ *   fireBullet(player.x + player.width / 2 - spread, player.y);
+ *   fireBullet(player.x + player.width / 2 + spread, player.y);
+ * }
+ * ```
+ *
+ * @see BULLET_CONFIG.SPEED - Bullet velocity (-8 pixels/frame)
+ * @see bulletPool - Object pool for bullet reuse
  */
 export function fireBullet(x: number, y: number): void {
   if (gameState.value !== 'PLAYING') return;
@@ -100,7 +176,37 @@ export function fireBullet(x: number, y: number): void {
 }
 
 /**
- * Updates all bullets, removing those off-screen.
+ * Updates all bullet positions and removes off-screen bullets.
+ * Called every frame during PLAYING game state.
+ *
+ * ## Update Logic
+ * 1. Apply velocity to bullet Y position (upward movement)
+ * 2. Check if bullet is off-screen (Y + radius < 0)
+ * 3. If off-screen: Remove using swap-and-pop, return to pool
+ *
+ * ## Performance
+ * - Iterates backwards to safely remove during iteration
+ * - Swap-and-pop for O(1) removal
+ * - Returns bullets to pool (reduces GC)
+ *
+ * ## Off-Screen Detection
+ * Bullet is considered off-screen when its bottom edge (`y + radius`) is above
+ * the top of the canvas (< 0). This ensures bullet is fully offscreen before removal.
+ *
+ * @example
+ * ```typescript
+ * // In game loop
+ * function gameLoop() {
+ *   if (gameState.value === 'PLAYING') {
+ *     updatePlayer();
+ *     updateBullets(); // Move and remove off-screen
+ *     updateObstacles();
+ *     checkCollisions();
+ *     renderAll();
+ *   }
+ *   requestAnimationFrame(gameLoop);
+ * }
+ * ```
  */
 export function updateBullets(): void {
   for (let i = bullets.length - 1; i >= 0; i--) {
@@ -121,7 +227,37 @@ export function updateBullets(): void {
 }
 
 /**
- * Draws all bullets on the canvas.
+ * Renders all bullets to the canvas using pre-rendered sprite.
+ *
+ * ## Rendering Technique
+ * - Uses pre-rendered canvas sprite for maximum performance
+ * - Single `drawImage()` call per bullet (faster than arc/fill)
+ * - Sprite created once at module initialization
+ *
+ * ## Performance
+ * - `drawImage()` is ~3x faster than `arc() + fill()` for circles
+ * - Pre-rendering eliminates repeated drawing operations
+ * - Ideal for high-frequency entities (10-20 bullets on screen)
+ *
+ * ## Sprite Details
+ * - Yellow filled circle (#ffff88)
+ * - Radius from BULLET_CONFIG.RADIUS (typically 3px)
+ * - Canvas size: 2 * radius (6x6px)
+ *
+ * @param ctx - Canvas 2D rendering context
+ *
+ * @example
+ * ```typescript
+ * // In render loop
+ * function renderAll(ctx: CanvasRenderingContext2D) {
+ *   ctx.clearRect(0, 0, canvas.width, canvas.height);
+ *   drawStarfield(ctx);
+ *   drawObstacles(ctx);
+ *   drawPlayer(ctx);
+ *   drawBullets(ctx); // Render bullets with sprite
+ *   drawHUD(ctx);
+ * }
+ * ```
  */
 export function drawBullets(ctx: CanvasRenderingContext2D): void {
   bullets.forEach(b => {
