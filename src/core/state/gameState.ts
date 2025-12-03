@@ -52,10 +52,10 @@ export const gameState = createReactive<GameStateValue>('START');
  * Automatically updates HUD when changed via reactive watchers.
  *
  * ## Scoring
- * - Large asteroid: 10 points
- * - Medium asteroid: 25 points
- * - Small asteroid: 50 points
- * - Fragment bonus: 100 points (all fragments from parent cleared)
+ * - Large asteroid: 20 points
+ * - Medium asteroid: 50 points
+ * - Small asteroid: 100 points
+ * - Fragment bonus: 150 points (all fragments from parent cleared)
  * - Powerup pickup: 200 points
  *
  * @example
@@ -202,10 +202,10 @@ export function resetGameState(): void {
  * Automatically triggers HUD score display update via reactive watcher.
  *
  * ## Typical Point Values
- * - 10 pts: Large asteroid destroyed
- * - 25 pts: Medium asteroid destroyed
- * - 50 pts: Small asteroid destroyed
- * - 100 pts: Fragment bonus (all fragments from parent cleared)
+ * - 20 pts: Large asteroid destroyed
+ * - 50 pts: Medium asteroid destroyed
+ * - 100 pts: Small asteroid destroyed
+ * - 150 pts: Fragment bonus (all fragments from parent cleared)
  * - 200 pts: Powerup collected
  *
  * @param points - Points to add to current score (typically 10-200)
@@ -219,7 +219,7 @@ export function resetGameState(): void {
  *
  * // Award fragment bonus
  * if (outcome.bonusAwarded) {
- *   addScore(outcome.bonusAmount); // +100 pts
+ *   addScore(outcome.bonusAmount); // +150 pts
  *   showScorePopup(outcome.bonusPosition, outcome.bonusAmount, 'bonus');
  * }
  * ```
