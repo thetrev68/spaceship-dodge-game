@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { setupTestEnvironment } from '../helpers/testUtils';
 import { player, powerUps } from '@core/state';
-import { updatePowerups, spawnPowerup } from '@entities/powerup';
+import { updatePowerups, spawnPowerup, activePowerups } from '@entities/powerup';
 
 describe('Powerup Entity', () => {
   let cleanup: () => void;
@@ -26,6 +26,9 @@ describe('Powerup Entity', () => {
   });
 
   it('should spawn random powerup types', () => {
+    // Clear any existing powerups
+    activePowerups.length = 0;
+
     // Mock Math.random to control powerup type
     const originalRandom = Math.random;
     Math.random = () => 0.3; // Will spawn shield
@@ -34,11 +37,19 @@ describe('Powerup Entity', () => {
       // Spawn powerup
       spawnPowerup(800);
 
-      // Verify powerup was created (we can't directly test the internal array)
-      expect(true).toBe(true);
+      // Verify powerup was created and has correct properties
+      expect(activePowerups.length).toBe(1);
+      const powerup = activePowerups[0];
+      expect(powerup?.type).toBe('shield');
+      expect(powerup?.x).toBeGreaterThanOrEqual(0);
+      expect(powerup?.x).toBeLessThan(800 - 50); // canvasWidth - powerupSize
+      expect(powerup?.y).toBe(-50); // Should start above screen
+      expect(powerup?.dy).toBe(1.5);
     } finally {
       // Restore original Math.random
       Math.random = originalRandom;
+      // Clean up
+      activePowerups.length = 0;
     }
   });
 
@@ -69,25 +80,29 @@ describe('Powerup Entity', () => {
   });
 
   it('should handle powerup movement', () => {
-    // Create a powerup
+    // Clear any existing powerups
+    activePowerups.length = 0;
+
+    // Create a powerup and add it to the active array
     const powerup = {
       x: 100,
       y: 100,
       size: 30,
       type: 'doubleBlaster' as const,
-      active: true,
       dy: 2
     };
 
-    // Mock the active powerups array
-    const activePowerups = [powerup];
-    // @ts-expect-error - Mocking internal module
-    globalThis.activePowerups = activePowerups;
+    activePowerups.push(powerup);
 
     // Update powerups
     updatePowerups(600);
 
-    // Verify powerup moved downward (we can't directly test internal state)
-    expect(true).toBe(true);
+    // Verify powerup moved downward
+    expect(activePowerups.length).toBe(1);
+    const movedPowerup = activePowerups[0];
+    expect(movedPowerup?.y).toBe(102); // 100 + dy(2)
+
+    // Clean up
+    activePowerups.length = 0;
   });
 });

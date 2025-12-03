@@ -27,7 +27,7 @@ const powerupSize = isMobile() ? 40 : 50;
  * Array of active power-ups.
  * @type {ActivePowerup[]}
  */
-const activePowerups: ActivePowerup[] = []; // Renamed from 'powerups' to avoid confusion with the pool
+export const activePowerups: ActivePowerup[] = []; // Renamed from 'powerups' to avoid confusion with the pool
 
 // Initialize object pool for powerups
 const powerupPool = new ObjectPool<ActivePowerup>(() => ({
