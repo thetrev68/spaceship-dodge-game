@@ -1,3 +1,6 @@
+import { stopGameLoop } from '@game/gameLoop.js';
+import { error as logError, warn as logWarn } from '@core/logger.js';
+
 /**
  * @fileoverview Custom error classes for game-specific error handling.
  *
@@ -11,7 +14,7 @@
  *   - AssetError (non-recoverable)
  *
  * ## Usage Pattern
- * ```typescript
+ * ```
  * try {
  *   // Risky operation
  *   initializeCanvas();
@@ -22,7 +25,6 @@
  *
  * @see handleError - Centralized error handler with user feedback
  */
-
 
 /**
  * Base game error class with recoverability metadata.
@@ -42,7 +44,7 @@
  * - `UNKNOWN_ERROR` - Unexpected errors
  *
  * @example
- * ```typescript
+ * ```
  * throw new GameError(
  *   'Failed to initialize audio context',
  *   'AUDIO_ERROR',
@@ -90,7 +92,7 @@ export class GameError extends Error {
  * - Show mute icon in UI
  *
  * @example
- * ```typescript
+ * ```
  * export async function forceAudioUnlock(): Promise<void> {
  *   try {
  *     const silentAudio = sounds.get('silence');
@@ -133,7 +135,7 @@ export class AudioError extends GameError {
  * - Halt game loop
  *
  * @example
- * ```typescript
+ * ```
  * const canvas = document.getElementById('gameCanvas') as HTMLCanvasElement;
  * if (!canvas) {
  *   throw new CanvasError('Canvas element #gameCanvas not found in DOM');
@@ -171,7 +173,7 @@ export class CanvasError extends GameError {
  * - Halt game initialization
  *
  * @example
- * ```typescript
+ * ```
  * export async function loadAudio(name: string, path: string): Promise<void> {
  *   try {
  *     const audio = new Audio();
@@ -212,12 +214,12 @@ export class AssetError extends GameError {
  *   |  `- Log with error code
  *   `- Unknown error -> Treat as non-recoverable
  * ```
-
+ *
  *
  * @param error - Error to handle (GameError or generic Error)
  *
  * @example
- * ```typescript
+ * ```
  * // In main initialization
  * try {
  *   await loadAllAssets();
@@ -240,25 +242,25 @@ export class AssetError extends GameError {
  * }
  * ```
  */
-export function handleError(error: Error): void {
-  if (error instanceof GameError) {
+export function handleError(err: Error): void {
+  if (err instanceof GameError) {
     // Structured error with metadata
-    console.error(`[${error.code}] ${error.message}`, {
-      recoverable: error.recoverable,
-      stack: error.stack,
+    logError('error', `[${err.code}] ${err.message}`, {
+      recoverable: err.recoverable,
+      stack: err.stack,
     });
 
-    if (!error.recoverable) {
+    if (!err.recoverable) {
       // Fatal error - show overlay and halt
-      showFatalErrorOverlay(error.message, error.code);
+      showFatalErrorOverlay(err.message, err.code);
       stopGameLoop();
     } else {
       // Recoverable - log and continue
-      console.warn(`Recoverable error: ${error.message}`);
+      logWarn('error', `Recoverable error: ${err.message}`);
     }
   } else {
     // Unknown error type - treat as fatal
-    console.error('Unexpected error:', error);
+    logError('error', 'Unexpected error:', err);
     showFatalErrorOverlay(
       'An unexpected error occurred. Please refresh the page.',
       'UNKNOWN_ERROR'
@@ -276,12 +278,4 @@ function showFatalErrorOverlay(message: string, code: string): void {
   // TODO: Implement in overlayManager.ts
   console.error(`FATAL ERROR [${code}]: ${message}`);
   alert(`Fatal Error: ${message}\n\nError Code: ${code}\n\nPlease refresh the page.`);
-}
-
-/**
- * Stops the game loop (stub - implementation in gameLoop.ts).
- */
-function stopGameLoop(): void {
-  // TODO: Implement in gameLoop.ts
-  console.warn('Game loop halted due to fatal error');
 }
