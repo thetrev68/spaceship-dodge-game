@@ -4,7 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Spaceship Dodge is a browser-based arcade game built with vanilla JavaScript, Tailwind CSS v4, and Vite. Players pilot a vector-style spaceship, dodge/shoot asteroids, and progress through increasingly difficult levels. The game supports both desktop (mouse/keyboard) and mobile (touch) controls with full audio management.
+Spaceship Dodge is a browser-based arcade game built with TypeScript, Tailwind CSS v4, and Vite. Players pilot a vector-style spaceship, dodge/shoot asteroids, and progress through increasingly difficult levels. The game supports both desktop (mouse/keyboard) and mobile (touch) controls with full audio management.
+
+**Recently refactored from vanilla JavaScript to TypeScript with a modular, domain-driven architecture for better scalability and maintainability.**
 
 ## Development Commands
 
@@ -12,7 +14,7 @@ Spaceship Dodge is a browser-based arcade game built with vanilla JavaScript, Ta
 ```bash
 npm run dev
 ```
-Runs Vite dev server on port 5173 with HTTPS (requires `localhost+2-key.pem` and `localhost+2.pem` certificates).
+Runs Vite dev server on port 5173.
 
 ### Build for Production
 ```bash
@@ -37,6 +39,12 @@ npm run build:css
 ```
 Compiles Tailwind v4 styles from `src/input.css` to `styles/tailwind.css`.
 
+### Type Checking
+```bash
+npm run typecheck         # Type check once
+npm run typecheck:watch   # Type check in watch mode
+```
+
 ### Linting and Code Quality
 ```bash
 npm run lint        # Check for ESLint issues
@@ -44,49 +52,157 @@ npm run lint:fix    # Auto-fix ESLint issues
 npm run knip        # Find unused exports and dependencies
 ```
 
-ESLint is configured for modern ES2022 modules with browser globals. Knip helps identify dead code and unused exports.
+ESLint is configured for TypeScript with typescript-eslint. Knip helps identify dead code and unused exports.
+
+### Testing
+```bash
+npm run test        # Run tests with Vitest
+```
+
+### Generate Documentation
+```bash
+npm run docs        # Generate TypeDoc documentation
+```
 
 ## Architecture
+
+### Folder Structure
+
+The codebase follows a modular, domain-driven structure with TypeScript. For detailed breakdown, see [FOLDER_STRUCTURE.md](./FOLDER_STRUCTURE.md).
+
+```
+src/
+├── core/           # Application bootstrap, global state, configuration
+│   ├── main.ts           # Entry point
+│   ├── state.ts          # Global reactive state
+│   ├── constants.ts      # All configuration constants
+│   ├── gameConstants.ts  # Game-specific constants
+│   ├── uiConstants.ts    # UI-specific constants
+│   └── logger.ts         # Logging utility
+│
+├── game/           # Game loop, state machine, level progression
+│   ├── gameLoop.ts           # Main game loop (RAF)
+│   ├── gameStateManager.ts  # State transitions
+│   └── flowManager.ts        # Level progression logic
+│
+├── entities/       # Game objects (player, asteroids, bullets, powerups)
+│   ├── player.ts
+│   ├── asteroid.ts
+│   ├── bullet.ts
+│   └── powerup.ts
+│
+├── systems/        # Cross-cutting concerns (collision, rendering, audio)
+│   ├── collisionHandler.ts  # Spatial grid collision detection
+│   ├── renderManager.ts      # Centralized rendering
+│   ├── soundManager.ts       # Audio management
+│   └── poolManager.ts        # Object pooling
+│
+├── input/          # Input handling (desktop, mobile)
+│   ├── inputManager.ts
+│   └── mobileControls.ts
+│
+├── ui/             # User interface components
+│   ├── overlays/
+│   │   └── overlayManager.ts   # Start, pause, level transition overlays
+│   ├── hud/
+│   │   ├── scoreDisplay.ts     # Score, lives, level display
+│   │   ├── scorePopups.ts      # Floating score text
+│   │   ├── powerupHUD.ts       # Active powerup indicators
+│   │   └── perfHUD.ts          # Performance metrics display
+│   ├── controls/
+│   │   └── audioControls.ts    # Volume and mute controls
+│   └── settings/
+│       ├── settingsManager.ts  # Settings persistence
+│       └── settingsUI.ts       # Settings UI components
+│
+├── effects/        # Visual effects
+│   └── starfield.ts
+│
+├── utils/          # Pure utility functions
+│   ├── mathUtils.ts
+│   ├── canvasUtils.ts
+│   ├── dom.ts
+│   └── platform.ts
+│
+└── types/          # TypeScript type definitions
+    └── index.ts
+```
 
 ### Core Game Loop Pattern
 
 The game uses a centralized game loop architecture with clear separation of concerns:
 
-1. **State Management** ([src/state.js](src/state.js))
+1. **State Management** ([src/core/state.ts](src/core/state.ts))
    - Uses a minimal reactive proxy pattern for game state
    - Centralized reactive values: `gameState`, `score`, `gameLevel`, `playerLives`
-   - Global entity arrays: `bullets`, `obstacles`
+   - Global entity arrays: `bullets`, `obstacles`, `powerups`
    - Platform detection: `isMobile` constant determines mobile vs desktop behavior
 
-2. **Game Loop** ([src/gameLoop.js](src/gameLoop.js))
+2. **Game Loop** ([src/game/gameLoop.ts](src/game/gameLoop.ts))
    - Single `requestAnimationFrame` loop with FPS throttling (60 FPS target)
    - Orchestrates update/render cycle: update entities → check collisions → render
    - Pauses completely when `gameState.value !== 'PLAYING'`
    - Spawning logic gates asteroid creation based on `allowSpawning.value` reactive flag
 
-3. **Render Manager** ([src/renderManager.js](src/renderManager.js))
+3. **Render Manager** ([src/systems/renderManager.ts](src/systems/renderManager.ts))
    - Centralized rendering in `renderAll(ctx)` function
    - Single source of truth for draw call ordering and shared canvas styles
    - Only renders when `gameState.value === 'PLAYING'`
 
+4. **Collision Detection** ([src/systems/collisionHandler.ts](src/systems/collisionHandler.ts))
+   - Uses spatial grid partitioning for O(n) collision detection
+   - Efficiently handles large numbers of entities
+   - Handles player-asteroid, bullet-asteroid, and player-powerup collisions
+
 ### Module Responsibilities
 
-- **main.js**: Entry point, initializes canvas, sets up input handlers, manages audio unlock flow
-- **gameStateManager.js**: Manages game state transitions (START → PLAYING → PAUSED → LEVEL_TRANSITION → GAME_OVER)
-- **flowManager.js**: Handles level progression timing and gating (waits for obstacles to clear before level-up)
-- **inputManager.js**: Desktop keyboard/mouse input handling
-- **mobileControls.js**: Touch input handling with drag-to-move and tap-to-shoot
-- **collisionHandler.js**: Collision detection between player/asteroids/bullets
-- **soundManager.js**: Audio unlock, playback, volume, and mute management
-- **player.js**: Player movement, drawing, and bullet firing logic
-- **asteroid.js**: Asteroid pooling, spawning, movement, fragmentation on hit
-- **bullet.js**: Bullet pool management and updates
-- **powerups.js**: Power-up spawning, pickup detection, and effects (shield, double blaster)
-- **ui.js**: Overlay management (start, pause, level transition, game over)
-- **scoreDisplay.js**: HUD rendering (lives, level, score)
-- **scorePopups.js**: Floating score text animations
-- **domCache.js**: Cached DOM element references
-- **constants.js**: All game configuration constants organized by category
+**Core**:
+- **main.ts**: Entry point, initializes canvas, sets up input handlers, manages audio unlock flow
+- **state.ts**: Reactive state management with watchers
+- **constants.ts**: Master configuration file
+- **gameConstants.ts**: Game-specific tuning values
+- **uiConstants.ts**: UI-related constants
+- **logger.ts**: Centralized logging with levels (debug, info, warn, error)
+
+**Game**:
+- **gameStateManager.ts**: Manages game state transitions (START → PLAYING → PAUSED → LEVEL_TRANSITION → GAME_OVER)
+- **flowManager.ts**: Handles level progression timing and gating (waits for obstacles to clear before level-up)
+- **gameLoop.ts**: Main RAF loop with FPS throttling
+
+**Entities**:
+- **player.ts**: Player movement, drawing, bullet firing logic
+- **asteroid.ts**: Asteroid pooling, spawning, movement, fragmentation on hit
+- **bullet.ts**: Bullet pool management and updates
+- **powerup.ts**: Power-up spawning, pickup detection, effects (shield, double blaster)
+
+**Systems**:
+- **collisionHandler.ts**: Spatial grid collision detection
+- **renderManager.ts**: Centralized rendering pipeline
+- **soundManager.ts**: Audio unlock, playback, volume, mute management
+- **poolManager.ts**: Generic object pooling system
+
+**Input**:
+- **inputManager.ts**: Desktop keyboard/mouse input handling
+- **mobileControls.ts**: Touch input handling with drag-to-move and tap-to-shoot
+
+**UI**:
+- **overlayManager.ts**: Overlay management (start, pause, level transition, game over)
+- **scoreDisplay.ts**: HUD rendering (lives, level, score)
+- **scorePopups.ts**: Floating score text animations
+- **powerupHUD.ts**: Active powerup status indicators
+- **perfHUD.ts**: FPS and performance metrics display
+- **audioControls.ts**: Volume slider and mute controls
+- **settingsManager.ts**: Settings persistence (localStorage)
+- **settingsUI.ts**: Settings UI components
+
+**Utils**:
+- **mathUtils.ts**: Math helpers (distance, angle calculations)
+- **canvasUtils.ts**: Canvas drawing utilities
+- **dom.ts**: Type-safe DOM helpers
+- **platform.ts**: Platform detection utilities
+
+**Effects**:
+- **starfield.ts**: Animated starfield background
 
 ### State Flow Diagram
 
@@ -132,6 +248,7 @@ The game adapts behavior based on `isMobile` flag:
 - Simplified asteroid shapes (max 5 points vs 11)
 - No starfield background
 - Touch overlay handlers for pause/level-transition resume
+- FPS capping for performance
 
 **Desktop**:
 - Mouse/keyboard input (WASD, arrows, spacebar)
@@ -142,17 +259,26 @@ The game adapts behavior based on `isMobile` flag:
 
 ### Configuration Constants
 
-All configuration is centralized in [src/constants.js](src/constants.js):
+All configuration is centralized in three constant files:
 
+**[src/core/constants.ts](src/core/constants.ts)** - Master configuration:
+- Re-exports from gameConstants and uiConstants
+- Central import point for all constants
+
+**[src/core/gameConstants.ts](src/core/gameConstants.ts)** - Game-specific:
 - `GAME_CONFIG`: Frame rate, spawn margins
 - `PLAYER_CONFIG`: Size, speed, shield radius
 - `BULLET_CONFIG`: Speed, fire rate, cooldown
 - `ASTEROID_CONFIG`: Sizes, speeds, score values, fragment behavior
-- `POWERUP_CONFIG`: Duration timings
+- `POWERUP_CONFIG`: Duration timings, spawn rates
 - `AUDIO_CONFIG`: Base volume, loop settings
-- `VISUAL_CONFIG`: Colors, fonts, stroke widths
 - `LEVEL_CONFIG`: Spawn intervals, difficulty scaling
-- `DEV_CONFIG`: Debug flags
+- `COLLISION_CONFIG`: Spatial grid settings
+- `DEV_CONFIG`: Debug flags, performance metrics
+
+**[src/core/uiConstants.ts](src/core/uiConstants.ts)** - UI-specific:
+- `VISUAL_CONFIG`: Colors, fonts, stroke widths
+- `UI_CONFIG`: Overlay settings, animations
 
 ### Level Progression System
 
@@ -165,41 +291,52 @@ Levels advance based on time and obstacle clearing:
    - Asteroid speed increases by 0.5 per level (capped at 3.0 max)
 4. **Spawning Control**: `allowSpawning.value` reactive flag gates asteroid creation during transitions
 
+### TypeScript Integration
+
+The project uses TypeScript throughout with:
+- Strict type checking enabled
+- JSDoc comments for documentation
+- Type definitions in `src/types/index.ts`
+- Type-safe DOM helpers in `src/utils/dom.ts`
+- Vite environment types in `src/vite-env.d.ts`
+
 ### Vite Configuration Notes
 
 - **Base Path**: `/spaceship-dodge-game/` for GitHub Pages
-- **HTTPS Dev Server**: Requires local SSL certificates (`localhost+2-key.pem`, `localhost+2.pem`)
 - **Environment**: Uses `import.meta.env.BASE_URL` for asset paths
 - **HMR**: Overlay disabled in config
+- **TypeScript**: Full TypeScript support via Vite
 
 ## Common Development Patterns
 
 ### Adding New Game Entities
 
-1. Create entity update function in new module (e.g., `updateEnemies()`)
-2. Create entity draw function (e.g., `drawEnemies()`)
-3. Import and call update function in [src/gameLoop.js](src/gameLoop.js)
-4. Import and call draw function in [src/renderManager.js](src/renderManager.js)
-5. Add entity state to [src/state.js](src/state.js) if needed
+1. Create entity module in `src/entities/` (e.g., `enemy.ts`)
+2. Define entity type in `src/types/index.ts`
+3. Create update function (e.g., `updateEnemies()`)
+4. Create draw function (e.g., `drawEnemies()`)
+5. Import and call update function in [src/game/gameLoop.ts](src/game/gameLoop.ts)
+6. Import and call draw function in [src/systems/renderManager.ts](src/systems/renderManager.ts)
+7. Add entity state to [src/core/state.ts](src/core/state.ts) if needed
+8. Add entity constants to [src/core/gameConstants.ts](src/core/gameConstants.ts)
 
 ### Adding New Sounds
 
 1. Add audio file to `public/sounds/`
-2. Add entry to `sounds` object in [src/soundManager.js](src/soundManager.js)
+2. Add entry to `sounds` object in [src/systems/soundManager.ts](src/systems/soundManager.ts)
 3. Call `playSound('soundName')` from game logic
 
 ### Modifying Game State Transitions
 
 1. Update state value: `gameState.value = 'NEW_STATE'`
-2. Call `showOverlay(stateName)` from [src/ui.js](src/ui.js)
-3. Handle new state in overlay visibility logic
-4. Add any state-specific cleanup/initialization
+2. Handle new state in [src/ui/overlays/overlayManager.ts](src/ui/overlays/overlayManager.ts)
+3. Add any state-specific cleanup/initialization in [src/game/gameStateManager.ts](src/game/gameStateManager.ts)
 
 ### Working with Reactive State
 
-The minimal reactive system in [src/state.js](src/state.js) auto-notifies watchers:
+The minimal reactive system in [src/core/state.ts](src/core/state.ts) auto-notifies watchers:
 
-```javascript
+```typescript
 // Reactive values automatically trigger listeners
 score.value = 100; // Updates HUD
 
@@ -209,7 +346,36 @@ score.watch(() => {
 });
 ```
 
+### Adding New Configuration
+
+1. Add constant to appropriate section in [src/core/gameConstants.ts](src/core/gameConstants.ts) or [src/core/uiConstants.ts](src/core/uiConstants.ts)
+2. Export from [src/core/constants.ts](src/core/constants.ts)
+3. Use TypeScript for type safety
+
+### Using the Logger
+
+The centralized logger supports multiple levels:
+
+```typescript
+import { log } from '@core/logger';
+
+log.debug('Detailed debug info');
+log.info('General information');
+log.warn('Warning message');
+log.error('Error message', errorObject);
+```
+
+See [LOGGER_USAGE.md](./LOGGER_USAGE.md) for detailed documentation.
+
 ## Critical Implementation Details
+
+### Spatial Grid Collision Detection
+
+The collision system uses spatial partitioning for efficient collision detection:
+- Grid cells divide the canvas into regions
+- Entities are binned into cells based on position
+- Only entities in same/adjacent cells are tested
+- O(n) performance instead of O(n²)
 
 ### Asteroid Fragmentation Logic
 
@@ -225,31 +391,171 @@ Two power-up types:
 - **Shield**: 5 second invulnerability, visual glow effect
 - **Double Blaster**: 10 second dual-bullet firing
 
-Power-ups spawn every 10 seconds, fall from top of screen, and expire if not collected.
+Power-ups spawn periodically, fall from top of screen, and expire if not collected.
+
+### Object Pooling
+
+The game uses object pooling for performance:
+- Bullets and asteroids are pooled and reused
+- Generic `poolManager.ts` provides pooling utilities
+- Reduces garbage collection pressure
+- Improves performance on mobile
 
 ### Canvas Sizing
 
 Canvas auto-resizes to viewport:
-```javascript
+```typescript
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 ```
 
 Overlays use `setOverlayDimensions()` to maintain proper positioning.
 
+## TypeScript Patterns
+
+### Type Definitions
+
+Core types are defined in [src/types/index.ts](src/types/index.ts):
+- `GameState`: Game state enum
+- `Asteroid`, `Bullet`, `Powerup`: Entity interfaces
+- `ReactiveValue<T>`: Reactive state type
+- Canvas and DOM types
+
+### Type-Safe DOM Access
+
+Use helpers from [src/utils/dom.ts](src/utils/dom.ts):
+
+```typescript
+import { getElementById, queryElement } from '@utils/dom';
+
+const canvas = getElementById<HTMLCanvasElement>('gameCanvas');
+const button = queryElement<HTMLButtonElement>('.start-button');
+```
+
+### Strict Null Checks
+
+The codebase uses strict null checks. Always handle nullable values:
+
+```typescript
+const element = document.getElementById('foo');
+if (element) {
+  // Safe to use element here
+  element.textContent = 'bar';
+}
+```
+
+## Performance Optimization
+
+### Mobile Performance
+
+- FPS capping when needed
+- Simplified rendering (no starfield)
+- Reduced asteroid complexity
+- Longer spawn intervals
+- Object pooling
+
+### Desktop Performance
+
+- Spatial grid collision detection
+- RequestAnimationFrame with throttling
+- Canvas clearing optimizations
+- Efficient rendering pipeline
+
+### Performance Monitoring
+
+Enable performance HUD:
+```typescript
+// Set in core/gameConstants.ts
+DEV_CONFIG: {
+  SHOW_PERFORMANCE_METRICS: true
+}
+```
+
 ## Known Technical Debt
 
 1. **Level-up Delay**: Intentional gating waits for all fragments to clear (can feel slow)
 2. **Audio Race Conditions**: Rapid pause/unpause may trigger extra SFX
 3. **Collision Scoring**: Rare overlap if paused at exact collision frame
-4. **Certificate Management**: Dev server requires manual SSL cert setup
 
-## Testing Notes
+See [TECHNICAL_DEBT_ASSESSMENT.md](./TECHNICAL_DEBT_ASSESSMENT.md) for comprehensive analysis.
 
-No automated test suite currently exists. Manual testing checklist:
+## Testing
+
+### Manual Testing Checklist
 
 - Desktop: Mouse, WASD, Arrow keys, Spacebar, P key pause
 - Mobile: Touch drag, tap to shoot, touch to resume
 - Audio: Mute/unmute, volume slider, gesture unlock
 - Collisions: Player hit, bullet hit, powerup pickup
 - Progression: Level-up timing, difficulty scaling, score tracking
+- Settings: Persistence across sessions
+
+### Automated Testing
+
+Vitest is configured for unit testing:
+
+```bash
+npm run test
+```
+
+Tests are located alongside source files or in `__tests__` directories.
+
+## Documentation
+
+- **[FOLDER_STRUCTURE.md](./FOLDER_STRUCTURE.md)**: Detailed folder structure
+- **[UPGRADE_NOTES.md](./UPGRADE_NOTES.md)**: Migration notes from JS to TS
+- **[LOGGER_USAGE.md](./LOGGER_USAGE.md)**: Logger documentation
+- **[TECHNICAL_DEBT_ASSESSMENT.md](./TECHNICAL_DEBT_ASSESSMENT.md)**: Technical debt analysis
+- **[CONTRIBUTING.md](./CONTRIBUTING.md)**: Contribution guidelines
+- **TypeDoc**: Generate with `npm run docs`
+
+## Common Tasks
+
+### Debugging
+
+1. Enable debug mode in `src/core/gameConstants.ts`:
+   ```typescript
+   DEV_CONFIG: {
+     DEBUG_MODE: true,
+     SHOW_PERFORMANCE_METRICS: true
+   }
+   ```
+
+2. Use the logger:
+   ```typescript
+   import { log } from '@core/logger';
+   log.debug('Debug message', { data });
+   ```
+
+### Adding New Powerups
+
+1. Define powerup type in `src/types/index.ts`
+2. Add configuration to `POWERUP_CONFIG` in `src/core/gameConstants.ts`
+3. Implement spawn logic in `src/entities/powerup.ts`
+4. Add effect handling in player collision logic
+5. Add visual indicator in `src/ui/hud/powerupHUD.ts`
+
+### Modifying Difficulty
+
+Adjust values in `src/core/gameConstants.ts`:
+- `LEVEL_CONFIG.BASE_SPAWN_INTERVAL_*`: Spawn rate
+- `LEVEL_CONFIG.SPAWN_INTERVAL_DECREASE_PER_LEVEL`: Difficulty ramp
+- `ASTEROID_CONFIG`: Asteroid speed/size/score
+- `PLAYER_CONFIG`: Player health/speed
+
+### Changing Visual Style
+
+1. Update colors in `src/core/uiConstants.ts` (`VISUAL_CONFIG`)
+2. Modify canvas drawing in respective entity/system files
+3. Adjust Tailwind classes in HTML/overlay management
+
+## Version History
+
+- **v1.1.0+**: TypeScript migration, modular architecture, spatial grid collisions
+- **v1.0.0**: Initial vanilla JavaScript version
+
+## Repository
+
+[https://github.com/thetrev68/spaceship-dodge-game](https://github.com/thetrev68/spaceship-dodge-game)
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for contribution guidelines.
