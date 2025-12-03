@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { setupTestEnvironment } from '../helpers/testUtils';
-import { player, powerUps, bullets } from '@core/state';
+import { player, powerUps, bullets, gameState } from '@core/state';
 import { updatePlayer, setPlayerPosition, firePlayerBullets } from '@entities/player';
 
 describe('Player Entity', () => {
@@ -9,6 +9,7 @@ describe('Player Entity', () => {
   beforeEach(() => {
     cleanup = setupTestEnvironment();
     // Reset player state
+    gameState.value = 'PLAYING'; // Required for updates to work
     player.x = 400;
     player.y = 300;
     player.width = 30;

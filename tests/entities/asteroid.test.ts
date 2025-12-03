@@ -47,15 +47,16 @@ describe('Asteroid Entity', () => {
     // Create asteroid far below canvas
     const asteroid = createTestAsteroid({
       x: 100,
-      y: 1000, // Below canvas
+      y: 1000, // Below canvas (> 600 + 100 margin)
       dx: 0,
       dy: 0,
-      speed: 0
+      speed: 0,
+      creationTime: Date.now() // Ensure creation time is set
     });
     obstacles.push(asteroid);
 
-    // Update obstacles
-    updateObstacles(800, 600, 1000, { value: 0 }, true);
+    // Update obstacles - should remove out-of-bounds asteroid
+    updateObstacles(800, 600, 1000, { value: 0 }, false); // Don't allow spawning
 
     // Verify asteroid was removed
     expect(obstacles.length).toBe(0);

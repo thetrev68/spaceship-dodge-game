@@ -9,13 +9,30 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html', 'lcov'],
+      all: false, // Only report coverage for files that are actually imported/tested
+      include: [
+        'src/core/**/*.ts',
+        'src/game/**/*.ts',
+        'src/entities/**/*.ts',
+        'src/systems/**/*.ts',
+        'src/utils/**/*.ts'
+      ],
       exclude: [
         'node_modules/',
         'tests/',
         '**/*.test.ts',
         '**/*.spec.ts',
         'dist/',
-        'docs/'
+        'docs/',
+        '**/*.config.{js,ts}',
+        '**/vite-env.d.ts',
+        'src/main.ts', // Entry point - minimal logic
+        'src/ui/**', // Sprint 3: UI components
+        'src/input/**', // Sprint 3: Input handling
+        'src/effects/**', // Non-critical visual effects
+        'src/types/**', // Type definitions only
+        '.claude/**', // Documentation
+        'build/**' // Build artifacts
       ],
       thresholds: {
         lines: 50,

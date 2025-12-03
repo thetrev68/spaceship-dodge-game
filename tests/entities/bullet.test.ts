@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { setupTestEnvironment } from '../helpers/testUtils';
-import { bullets } from '@core/state';
+import { bullets, gameState } from '@core/state';
 import { updateBullets, fireBullet, clearAllBullets } from '@entities/bullet';
 
 describe('Bullet Entity', () => {
@@ -9,6 +9,7 @@ describe('Bullet Entity', () => {
   beforeEach(() => {
     cleanup = setupTestEnvironment();
     // Clear bullets
+    gameState.value = 'PLAYING'; // Required for bullet firing
     clearAllBullets();
   });
 

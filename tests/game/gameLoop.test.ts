@@ -22,12 +22,12 @@ describe('Game Loop', () => {
   });
 
   it('should start game loop when game state is PLAYING', () => {
-    // Mock requestAnimationFrame to track calls
-    const mockRaf = vi.fn((cb) => {
-      cb(16); // Call with timestamp
+    // Mock requestAnimationFrame to track calls without executing
+    const mockRaf = vi.fn((cb: FrameRequestCallback) => {
+      // Don't execute the callback to avoid infinite loop
       return 1;
     });
-    global.requestAnimationFrame = mockRaf;
+    global.requestAnimationFrame = mockRaf as any;
 
     // Start game loop
     restartGameLoop();
@@ -37,43 +37,46 @@ describe('Game Loop', () => {
   });
 
   it('should stop game loop when game state is not PLAYING', () => {
+    // Mock requestAnimationFrame and cancelAnimationFrame
+    const mockRaf = vi.fn((cb: FrameRequestCallback) => {
+      // Don't execute the callback to avoid infinite loop
+      return 1;
+    });
+    const mockCancel = vi.fn();
+    global.requestAnimationFrame = mockRaf as any;
+    global.cancelAnimationFrame = mockCancel;
+
+    // Start with PLAYING state
+    gameState.value = 'PLAYING';
+    restartGameLoop();
+    expect(mockRaf).toHaveBeenCalledTimes(1);
+
+    // Change state to non-PLAYING should stop loop on next iteration
     gameState.value = 'PAUSED';
 
-    // Mock requestAnimationFrame
-    const mockRaf = vi.fn((cb) => {
-      cb(16);
-      return 1;
-    });
-    global.requestAnimationFrame = mockRaf;
+    // Manually trigger the loop callback to see it stop
+    const callback = mockRaf.mock.calls[0]?.[0] as FrameRequestCallback | undefined;
+    if (callback) {
+      callback(16);
+    }
 
-    // Start game loop
-    restartGameLoop();
-
-    // Change state to non-PLAYING
-    gameState.value = 'GAME_OVER';
-
-    // Advance time
-    vi.advanceTimersByTime(16);
-
-    // Verify game loop stopped (no further animation frames)
-    expect(mockRaf).toHaveBeenCalledTimes(1); // Only initial call
+    // Verify cancelAnimationFrame was called
+    expect(mockCancel).toHaveBeenCalled();
   });
 
-  it('should handle canvas rendering', () => {
-    // Mock requestAnimationFrame to allow one frame
-    const mockRaf = vi.fn((cb) => {
-      cb(16);
-      return 1;
-    });
-    global.requestAnimationFrame = mockRaf;
+  it('should call requestAnimationFrame when game loop runs', () => {
+    // Mock performance.now()
+    vi.spyOn(performance, 'now').mockReturnValue(0);
+
+    // Mock requestAnimationFrame
+    const mockRaf = vi.fn((cb: FrameRequestCallback) => 1);
+    global.requestAnimationFrame = mockRaf as any;
 
     // Start game loop
     restartGameLoop();
 
-    // Advance time
-    vi.advanceTimersByTime(16);
-
-    // Verify animation frame was requested
-    expect(mockRaf).toHaveBeenCalled();
+    // Verify requestAnimationFrame was called to schedule the loop
+    expect(mockRaf).toHaveBeenCalledTimes(1);
+    expect(mockRaf).toHaveBeenCalledWith(expect.any(Function));
   });
 });
