@@ -28,6 +28,11 @@ export const isMobile = (): boolean => __getMobileState();
 /**
  * Override mobile detection for testing.
  */
-const __setMobileOverride = (value: boolean | null): void => {
+export const setMobileOverride = (value: boolean | null): void => {
   mobileOverride = value;
+};
+
+export const __platformTestUtils = {
+  reset: () => { mobileOverride = null; },
+  getState: () => __getMobileState(),
 };

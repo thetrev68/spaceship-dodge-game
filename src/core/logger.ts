@@ -100,7 +100,7 @@ export function error(category: _LogCategory | string, message: string, ...args:
   log(LogLevel.ERROR, category, message, ...args);
 }
 
-const logger = {
+export const logger = {
   setEnabled(enabled: boolean): void {
     config.enabled = enabled;
   },
@@ -132,6 +132,9 @@ const logger = {
     Object.keys(config.categories).forEach((cat) => {
       config.categories[cat] = true;
     });
+  },
+  timer(label: string, category = 'perf'): Timer {
+    return new Timer(category, label);
   },
   LogLevel,
 };
