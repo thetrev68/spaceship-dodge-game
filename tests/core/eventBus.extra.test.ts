@@ -1,7 +1,11 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, afterEach } from 'vitest';
 import { eventBus } from '@core/events/EventBus';
 
 describe('EventBus lifecycle', () => {
+  afterEach(() => {
+    eventBus.clearAll();
+  });
+
   it('unsubscribes handlers and clears maps', () => {
     const handler = vi.fn();
     const off = eventBus.on('test', handler);
