@@ -13,10 +13,10 @@ Need reactive state management for game values (score, lives, level, game phase)
 **Options considered:**
 1. **MobX** - Full-featured observable state library
 2. **Zustand** - Lightweight React-inspired state management
-3. **Custom Proxy-based reactive system**
+3. **Custom closure-based reactive system with explicit getter/setter**
 
 ## Decision
-Implement minimal custom reactive system using ES6 Proxy (50 lines of code in `src/core/reactive.ts`).
+Implement minimal custom reactive system using closure-based ReactiveValue with explicit getter/setter pattern (50 lines of code in `src/core/reactive.ts`).
 
 ## Rationale
 
@@ -35,9 +35,42 @@ Implement minimal custom reactive system using ES6 Proxy (50 lines of code in `s
 **Why custom solution?**
 - **Size:** 50 lines (~500 bytes) vs 20KB+ for libraries
 - **Sync updates:** Value changes immediately trigger watchers (critical for game loop)
-- **Simple API:** `score.value = 100` instead of `store.set({ score: 100 })`
-- **Zero learning curve:** Proxy pattern is standard JavaScript
+- **Simple API:** `score.value = 100` with explicit getter/setter pattern
+- **Zero learning curve:** Closure-based implementation with familiar property access
 - **No build deps:** No need to configure bundler for library
+- **Full control:** Direct access to watcher management without Proxy complexity
+
+## Implementation Details
+
+The current implementation uses a closure-based approach with explicit getter/setter:
+
+```typescript
+const reactive = {
+  get value() {
+    return currentValue;
+  },
+  set value(newValue: T) {
+    const oldValue = currentValue;
+    currentValue = newValue;
+    // Notify all watchers synchronously
+    watchers.forEach(watcher => {
+      watcher(newValue, oldValue);
+    });
+  },
+  watch(callback: Watcher<T>) {
+    watchers.add(callback);
+    return () => {
+      watchers.delete(callback);
+    };
+  }
+};
+```
+
+**Key characteristics:**
+- **Reads:** O(1) direct property access via getter
+- **Writes:** O(n) where n = number of watchers (typically 1-3)
+- **Observers:** Watchers are stored in a Set and called synchronously on value change
+- **Cleanup:** Watchers return an unwatch function for manual removal
 
 ## Consequences
 
@@ -85,14 +118,21 @@ Solid.js/Preact signals have fine-grained reactivity, but we don't need dependen
 ## Performance Characteristics
 
 **Custom reactive system:**
-- Value read: O(1) - direct property access via Proxy
+- Value read: O(1) - direct property access via getter function
 - Value write: O(n) where n = watchers (typically 1-3)
 - Memory: ~100 bytes per reactive value (negligible)
+- Watcher registration: O(1) - Set.add() operation
+- Watcher removal: O(1) - Set.delete() operation
 
 **Benchmark (1000 value updates with 3 watchers each):**
-- Custom system: ~2ms
+- Custom system: ~2ms (closure-based getter/setter with direct Set iteration)
 - MobX: ~8ms (batching overhead)
 - Zustand: ~6ms (middleware overhead)
+
+**Implementation advantages:**
+- No Proxy overhead (direct property access)
+- Minimal memory footprint (Set for watchers, closure for state)
+- Predictable performance (synchronous, no async scheduling)
 
 ## Related
 - Implementation: `src/core/reactive.ts`
