@@ -33,6 +33,33 @@ function movePlayer(dx: number, dy: number): void {
 }
 
 /**
+ * Sets the player's position to specified coordinates with automatic canvas clamping.
+ *
+ * ## Behavior
+ * - Updates player x/y coordinates
+ * - Clamps position to keep player fully on screen
+ * - Used for mouse/touch control (player follows cursor)
+ *
+ * ## Clamping
+ * Player is constrained to `[0, canvas.width - player.width] × [0, canvas.height - player.height]`
+ * to ensure the entire player sprite remains visible (no partial off-screen rendering).
+ *
+ * @param x - Target X position (will be clamped to canvas bounds)
+ * @param y - Target Y position (will be clamped to canvas bounds)
+ *
+ * @example
+ * ```typescript
+ * // Mouse control
+ * canvas.addEventListener('mousemove', (e) => {
+ *   setPlayerPosition(e.clientX - player.width / 2, e.clientY - player.height / 2);
+ * });
+ *
+ * // Touch control
+ * canvas.addEventListener('touchmove', (e) => {
+ *   const touch = e.touches[0];
+ *   setPlayerPosition(touch.clientX - player.width / 2, touch.clientY - player.height / 2);
+ * });
+ * ```
  */
 export function setPlayerPosition(x: number, y: number): void {
     player.x = x;
@@ -41,6 +68,34 @@ export function setPlayerPosition(x: number, y: number): void {
 }
 
 /**
+ * Resets the player to starting position (center-bottom of screen).
+ * Called on game start and after respawn.
+ *
+ * ## Reset Behavior
+ * - Position: Centered horizontally, near bottom of screen
+ * - Velocity: Set to zero (no momentum)
+ * - Override: Clears any position override from input system
+ *
+ * ## Position Calculation
+ * - X: `canvasWidth / 2 - player.width / 2` (centered)
+ * - Y: `canvasHeight - player.height - OFFSET` (near bottom, with padding)
+ *
+ * @param canvasWidth - Canvas width for horizontal centering
+ * @param canvasHeight - Canvas height for vertical positioning
+ *
+ * @example
+ * ```typescript
+ * // On game start
+ * resetPlayer(canvas.width, canvas.height);
+ * gameState.value = 'PLAYING';
+ *
+ * // After player death (if lives remain)
+ * if (playerLives.value > 0) {
+ *   setTimeout(() => {
+ *     resetPlayer(canvas.width, canvas.height);
+ *   }, 1000); // Brief respawn delay
+ * }
+ * ```
  */
 export function resetPlayer(canvasWidth: number, canvasHeight: number): void {
     player.x = canvasWidth / 2 - player.width / 2;
@@ -50,6 +105,35 @@ export function resetPlayer(canvasWidth: number, canvasHeight: number): void {
     player.overridePosition = null;
 }
 
+/**
+ * Updates player position based on velocity or position override.
+ * Called every frame during PLAYING game state.
+ *
+ * ## Update Logic
+ * 1. If `overridePosition` set: Apply override and clear it (for input system)
+ * 2. Otherwise: Apply velocity (`dx`, `dy`) to position
+ * 3. Clamp to canvas bounds
+ *
+ * ## Position Override
+ * The input system sets `overridePosition` for direct position control:
+ * - Mouse/touch: Player follows cursor exactly
+ * - Keyboard: Uses velocity-based movement
+ *
+ * @example
+ * ```typescript
+ * // In game loop (called every frame)
+ * function gameLoop() {
+ *   if (gameState.value === 'PLAYING') {
+ *     updatePlayer(); // Update position
+ *     updateBullets();
+ *     updateObstacles();
+ *     checkCollisions();
+ *     renderAll();
+ *   }
+ *   requestAnimationFrame(gameLoop);
+ * }
+ * ```
+ */
 export function updatePlayer(): void {
   if (gameState.value !== 'PLAYING') return;
 
@@ -62,6 +146,47 @@ export function updatePlayer(): void {
   }
 }
 
+/**
+ * Renders the player spaceship to the canvas with vector graphics.
+ *
+ * ## Rendering Details
+ * - **Ship Body**: Triangular vector shape (classic spaceship silhouette)
+ * - **Engine Block**: Trapezoidal engine with exhaust detail lines
+ * - **Thruster Flame**: Pulsing radial gradient glow (animated)
+ * - **Shield Effect**: Glowing circle around player if shield powerup active
+ *
+ * ## Mobile Optimizations
+ * - Disables expensive shadow blur on shield (saves GPU)
+ * - Disables thruster gradient (uses simple circle instead)
+ * - Reduces draw calls for better performance on low-end devices
+ *
+ * ## Shield Visual
+ * When shield powerup is active:
+ * - Desktop: Glowing blue circle with shadow blur
+ * - Mobile: Simple blue stroke circle (no blur)
+ * - Radius: 1.5x player size
+ *
+ * ## Thruster Animation
+ * Pulsing flame effect using `performance.now()`:
+ * - Sine wave animation (0-1 range)
+ * - Radial gradient from cyan to transparent
+ * - Pulsates at consistent rate (independent of frame rate)
+ *
+ * @param ctx - Canvas 2D rendering context
+ *
+ * @example
+ * ```typescript
+ * // In render loop
+ * function renderAll(ctx: CanvasRenderingContext2D) {
+ *   ctx.clearRect(0, 0, canvas.width, canvas.height);
+ *   drawStarfield(ctx);
+ *   drawObstacles(ctx);
+ *   drawPlayer(ctx); // Render player
+ *   drawBullets(ctx);
+ *   drawHUD(ctx);
+ * }
+ * ```
+ */
 export function drawPlayer(ctx: CanvasRenderingContext2D): void {
     if (gameState.value !== 'PLAYING') return;
 
