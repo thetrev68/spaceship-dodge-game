@@ -161,12 +161,38 @@ npm run docs
 
 ## 📖 Documentation
 
-API & module docs live under `docs/` when generated. See also:
+### Start Here
 
-- [FOLDER_STRUCTURE.md](./FOLDER_STRUCTURE.md)
-- [UPGRADE_NOTES.md](./UPGRADE_NOTES.md)
-- [LOGGER_USAGE.md](./LOGGER_USAGE.md)
-- [TECHNICAL_DEBT_ASSESSMENT.md](./TECHNICAL_DEBT_ASSESSMENT.md)
+**New developers:** Begin with the [Developer Guide](./docs/DEVELOPER_GUIDE.md) for comprehensive onboarding covering architecture, workflows, testing, and common tasks.
+
+**Game designers:** See the [Game Design Document](./docs/GAME_DESIGN.md) for mechanics, difficulty tuning, and feature roadmap.
+
+### Architecture Decision Records (ADRs)
+
+Key architectural decisions are documented in `docs/architecture/decisions/`:
+
+- [ADR-001: Custom Reactive State](./docs/architecture/decisions/ADR-001-custom-reactive-state.md) - Why custom reactive system over MobX/Zustand
+- [ADR-002: Spatial Grid Collision](./docs/architecture/decisions/ADR-002-spatial-grid-collision.md) - Spatial grid vs quadtree for O(n) collision detection
+- [ADR-003: Object Pooling](./docs/architecture/decisions/ADR-003-object-pooling.md) - Memory management strategy for high-frequency objects
+- [ADR-004: Fixed Timestep Game Loop](./docs/architecture/decisions/ADR-004-fixed-timestep-game-loop.md) - Deterministic physics with accumulator pattern
+- [ADR-005: TypeScript Strict Mode](./docs/architecture/decisions/ADR-005-typescript-strict-mode.md) - Type safety configuration
+
+### Additional Resources
+
+- [FOLDER_STRUCTURE.md](./FOLDER_STRUCTURE.md) - Detailed module organization
+- [UPGRADE_NOTES.md](./UPGRADE_NOTES.md) - JS to TypeScript migration notes
+- [LOGGER_USAGE.md](./LOGGER_USAGE.md) - Centralized logging API
+- [TECHNICAL_DEBT_ASSESSMENT.md](./TECHNICAL_DEBT_ASSESSMENT.md) - Known technical debt
+- [CONTRIBUTING.md](./CONTRIBUTING.md) - Contribution guidelines and standards
+
+### API Documentation
+
+Generate TypeDoc API docs:
+```bash
+npm run docs
+```
+
+Output available in `docs/api/` after generation.
 
 ---
 

@@ -502,12 +502,92 @@ Tests are located alongside source files or in `__tests__` directories.
 
 ## Documentation
 
-- **[FOLDER_STRUCTURE.md](./FOLDER_STRUCTURE.md)**: Detailed folder structure
-- **[UPGRADE_NOTES.md](./UPGRADE_NOTES.md)**: Migration notes from JS to TS
-- **[LOGGER_USAGE.md](./LOGGER_USAGE.md)**: Logger documentation
-- **[TECHNICAL_DEBT_ASSESSMENT.md](./TECHNICAL_DEBT_ASSESSMENT.md)**: Technical debt analysis
-- **[CONTRIBUTING.md](./CONTRIBUTING.md)**: Contribution guidelines
-- **TypeDoc**: Generate with `npm run docs`
+### Core Documentation
+
+- **[DEVELOPER_GUIDE.md](./docs/DEVELOPER_GUIDE.md)**: **START HERE** - Comprehensive developer onboarding guide covering architecture, development workflow, testing, debugging, and common tasks
+- **[GAME_DESIGN.md](./docs/GAME_DESIGN.md)**: Game design document with mechanics, difficulty tuning, and future enhancements
+- **[FOLDER_STRUCTURE.md](./FOLDER_STRUCTURE.md)**: Detailed folder structure and module organization
+- **[CONTRIBUTING.md](./CONTRIBUTING.md)**: Contribution guidelines and code standards
+
+### Architecture Decision Records (ADRs)
+
+Located in `docs/architecture/decisions/`, these documents explain **why** key architectural decisions were made:
+
+- **[ADR-001: Custom Reactive State](./docs/architecture/decisions/ADR-001-custom-reactive-state.md)** - Why we built a custom reactive system instead of using MobX/Zustand
+- **[ADR-002: Spatial Grid Collision](./docs/architecture/decisions/ADR-002-spatial-grid-collision.md)** - Why spatial grid over quadtree for collision detection
+- **[ADR-003: Object Pooling](./docs/architecture/decisions/ADR-003-object-pooling.md)** - Object pooling strategy for bullets and asteroids
+- **[ADR-004: Fixed Timestep Game Loop](./docs/architecture/decisions/ADR-004-fixed-timestep-game-loop.md)** - Fixed timestep with accumulator pattern rationale
+- **[ADR-005: TypeScript Strict Mode](./docs/architecture/decisions/ADR-005-typescript-strict-mode.md)** - TypeScript strict mode configuration and benefits
+
+### Technical References
+
+- **[UPGRADE_NOTES.md](./UPGRADE_NOTES.md)**: Migration notes from vanilla JS to TypeScript
+- **[LOGGER_USAGE.md](./LOGGER_USAGE.md)**: Centralized logger API and usage patterns
+- **[TECHNICAL_DEBT_ASSESSMENT.md](./TECHNICAL_DEBT_ASSESSMENT.md)**: Known technical debt and mitigation strategies
+- **TypeDoc**: Generate API documentation with `npm run docs`
+
+### Documentation Standards
+
+When adding new features or modifying existing code, follow these documentation standards:
+
+#### 1. Inline Documentation
+- **Complex algorithms** must have comprehensive JSDoc explaining:
+  - Algorithm rationale (why this approach?)
+  - Performance characteristics (Big O notation, benchmarks)
+  - Trade-offs (pros/cons)
+  - Example usage
+- See [collisionHandler.ts](./src/systems/collisionHandler.ts), [gameLoop.ts](./src/game/gameLoop.ts), and [poolManager.ts](./src/systems/poolManager.ts) for examples
+
+#### 2. JSDoc for Public APIs
+All exported functions/classes must have JSDoc with:
+- **Summary** - One-line description
+- **@param** - Each parameter with type and description
+- **@returns** - Return value description
+- **@throws** - Documented exceptions (if any)
+- **@example** - Usage example (especially for complex APIs)
+
+Example:
+```typescript
+/**
+ * Spawns a new asteroid at a random edge position
+ *
+ * @param canvasWidth - Canvas width for boundary calculation
+ * @param canvasHeight - Canvas height for boundary calculation
+ * @param speedMultiplier - Velocity scale factor (increases per level)
+ * @returns The spawned asteroid, or null if pool exhausted
+ *
+ * @example
+ * ```typescript
+ * const asteroid = spawnAsteroid(800, 600, 1.5);
+ * if (asteroid) entityState.addObstacle(asteroid);
+ * ```
+ */
+export function spawnAsteroid(
+  canvasWidth: number,
+  canvasHeight: number,
+  speedMultiplier: number = 1.0
+): Asteroid | null {
+  // Implementation...
+}
+```
+
+#### 3. Architecture Decision Records (ADRs)
+When making significant architectural choices, create an ADR:
+- Use the [ADR template](./docs/architecture/decisions/ADR-TEMPLATE.md)
+- Explain **context**, **decision**, **rationale**, **consequences**, and **alternatives**
+- Link related code files and issues
+
+#### 4. Configuration Constants
+All magic numbers must be extracted to [gameConstants.ts](./src/core/gameConstants.ts) or [uiConstants.ts](./src/core/uiConstants.ts) with:
+- Descriptive constant names (ALL_CAPS_SNAKE_CASE)
+- Inline comments explaining purpose
+- Organized into logical groups
+
+#### 5. Code Comments
+- **Avoid obvious comments** ("increment i" is redundant)
+- **Explain WHY, not WHAT** - Code shows what, comments explain why
+- **Document edge cases** - Unusual conditions or workarounds
+- **Mark TODOs** - Use `// TODO: description` for future improvements
 
 ## Common Tasks
 
