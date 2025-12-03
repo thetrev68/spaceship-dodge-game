@@ -46,8 +46,13 @@ temp
 # Optional eslint cache
 .eslintcache
 
-# Generated documentation
-docs/
+# Generated TypeDoc documentation (but keep architecture docs)
+docs/api/
+docs/modules/
+docs/classes/
+docs/interfaces/
+docs/functions/
+docs/scripts/
 
 # Test coverage reports
 coverage/
