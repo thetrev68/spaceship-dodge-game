@@ -13,6 +13,8 @@ export default defineConfig({
       '@ui': path.resolve(__dirname, './src/ui'),
       '@effects': path.resolve(__dirname, './src/effects'),
       '@utils': path.resolve(__dirname, './src/utils'),
+      '@services': path.resolve(__dirname, './src/services'),
+      '@types': path.resolve(__dirname, './src/types'),
     },
   },
   server: {

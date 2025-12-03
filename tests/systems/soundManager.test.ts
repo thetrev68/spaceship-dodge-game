@@ -18,21 +18,8 @@ describe('Sound Manager', () => {
   });
 
   it('should play sound effects', () => {
-    // Note: playSound uses cloneNode on Audio elements that were created during module initialization
-    // In the test environment, these are real JSDOM Audio elements, not our mocks
-    // JSDOM doesn't implement HTMLMediaElement.prototype.play, so we can't fully test this
-    // Instead, we verify the function exists and is callable
-    expect(typeof playSound).toBe('function');
-
-    // Verify we can call it with valid sound names without crashing the test suite
-    // (The actual playback will fail in JSDOM but that's expected)
-    expect(() => {
-      try {
-        playSound('fire');
-      } catch {
-        // Expected to throw in JSDOM environment
-      }
-    }).not.toThrow();
+    // Using mocked Audio constructor from tests/setup.ts
+    expect(() => playSound('fire')).not.toThrow();
   });
 
   it('should control volume in 0-1 range', () => {

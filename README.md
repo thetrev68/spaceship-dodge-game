@@ -141,6 +141,8 @@ Quality gates:
 npm run lint
 npm run typecheck
 npm run test
+npm run test:coverage   # enforces 85/85/80/85 thresholds (lines/funcs/branches/stmts)
+npm run test:repeat     # runs suites 3x to surface flakes
 ```
 
 Build:

@@ -70,10 +70,17 @@ export default [
     },
   },
   {
+    files: ['tests/**/*.ts', '**/*.test.ts', '**/*.spec.ts'],
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'off', // Allow any in test mocks
+    },
+  },
+  {
     ignores: [
       'node_modules/**',
       'build/**',
       'dist/**',
+      'coverage/**',
       'styles/**',
       '*.config.js',
       'docs/scripts/**',

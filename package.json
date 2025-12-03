@@ -17,6 +17,7 @@
     "test": "vitest",
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
+    "test:repeat": "vitest run --repeat 3",
     "test:ui": "vitest --ui",
     "knip": "knip",
     "docs": "npx typedoc --entryPointStrategy expand src --out docs"

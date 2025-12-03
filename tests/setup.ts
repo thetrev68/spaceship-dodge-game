@@ -42,6 +42,9 @@ class MockAudio {
   pause = vi.fn();
   load = vi.fn();
   cloneNode = vi.fn(() => new MockAudio());
+  addEventListener = vi.fn();
+  removeEventListener = vi.fn();
+  remove = vi.fn();
   volume = 1;
   muted = false;
   currentTime = 0;
@@ -49,6 +52,7 @@ class MockAudio {
 }
 
 global.HTMLAudioElement = MockAudio as unknown as typeof HTMLAudioElement;
+global.Audio = MockAudio as unknown as typeof Audio;
 
 // Mock requestAnimationFrame
 global.requestAnimationFrame = vi.fn((cb) => {

@@ -197,7 +197,6 @@ export function quitGame(): void {
   const confirmed = confirm('Are you sure you want to quit the game?');
   if (!confirmed) return;
 
-  stopMusic();
   gameState.value = 'GAME_OVER';
   clearAllBullets();
   obstacles.length = 0;
