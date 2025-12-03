@@ -20,7 +20,7 @@
     "test:repeat": "vitest run --repeat 3",
     "test:ui": "vitest --ui",
     "knip": "knip",
-    "docs": "npx typedoc --entryPointStrategy expand src --out docs"
+    "docs": "npx typedoc --entryPointStrategy expand src --out docs/api"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
