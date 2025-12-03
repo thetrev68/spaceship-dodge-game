@@ -9,13 +9,13 @@ describe('soundManager branches', () => {
   });
 
   it('blocks startMusic when muted or locked and applies volumes', async () => {
-    class SpyAudio extends (global.HTMLAudioElement as any) {
-      constructor(...args: unknown[]) {
-        super(...args);
+    class SpyAudio extends (global.HTMLAudioElement as typeof HTMLAudioElement) {
+      constructor() {
+        super();
         createdAudio.push(this);
       }
     }
-    (global as any).Audio = SpyAudio as unknown as typeof Audio;
+    (global as unknown as { Audio: typeof Audio }).Audio = SpyAudio as unknown as typeof Audio;
     const soundManager = await import('@systems/soundManager.js');
     const initialCount = createdAudio.length;
 
@@ -41,13 +41,13 @@ describe('soundManager branches', () => {
   });
 
   it('stopMusic and muteAll handle absent bgm safely', async () => {
-    class SpyAudio extends (global.HTMLAudioElement as any) {
-      constructor(...args: unknown[]) {
-        super(...args);
+    class SpyAudio extends (global.HTMLAudioElement as typeof HTMLAudioElement) {
+      constructor() {
+        super();
         createdAudio.push(this);
       }
     }
-    (global as any).Audio = SpyAudio as unknown as typeof Audio;
+    (global as unknown as { Audio: typeof Audio }).Audio = SpyAudio as unknown as typeof Audio;
     const soundManager = await import('@systems/soundManager.js');
     soundManager.stopMusic(); // no bgm yet, should not throw
     soundManager.muteAll();

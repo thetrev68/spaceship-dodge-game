@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach, type MockedFunction } from 'vitest';
 
-type Fn<T extends (...args: unknown[]) => unknown> = MockedFunction<T>;
+type Fn<T extends (...args: any[]) => any> = MockedFunction<T>;
 
 // Mutable mocks so we can reconfigure between tests
 let mockIsMobile = false;
