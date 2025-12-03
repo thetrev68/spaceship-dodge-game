@@ -6,7 +6,7 @@ import { isMobile } from '@utils/platform.js';
 import { ObjectPool } from '@systems/poolManager.js';
 import { ANIMATION_CONSTANTS, HUD_CONSTANTS } from '@core/gameConstants.js';
 import { eventBus } from '@core/events/EventBus.js';
-import { GameEvent, type AsteroidDestroyedEvent, type BonusAwardedEvent, type PowerupCollectedEvent } from '@core/events/GameEvents.js';
+import { GameEvent, type AsteroidDestroyedEvent, type BonusAwardedEvent, type PowerupCollectedEvent, type PowerupExpiredEvent } from '@core/events/GameEvents.js';
 
 type ScorePopup = { text: string; x: number; y: number; opacity: number; color: string };
 
@@ -36,6 +36,10 @@ export function initializeScorePopups(): void {
 
   eventBus.on<PowerupCollectedEvent>(GameEvent.POWERUP_COLLECTED, (data) => {
     addScorePopup(`Power-up! ${data.type}`, data.position.x, data.position.y, '#00ffff');
+  });
+
+  eventBus.on<PowerupExpiredEvent>(GameEvent.POWERUP_EXPIRED, (data) => {
+    addScorePopup(`${data.type} expired`, 40, 60, '#ffaa00');
   });
 }
 

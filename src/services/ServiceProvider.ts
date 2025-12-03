@@ -29,6 +29,14 @@ class AudioServiceAdapter implements IAudioService {
     soundManager.setSoundEffectsVolume(value);
   }
 
+  setBackgroundMusicVolume(value: number): void {
+    soundManager.setBackgroundMusicVolume(value);
+  }
+
+  setSoundEffectsVolume(value: number): void {
+    soundManager.setSoundEffectsVolume(value);
+  }
+
   muteAll(): void {
     soundManager.muteAll();
   }

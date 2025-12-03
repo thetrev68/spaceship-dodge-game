@@ -87,8 +87,8 @@ function applyAudioSettings(): void {
     services.audioService.unmuteAll();
   }
 
-  services.audioService.setVolume(currentSettings.backgroundMusicVolume);
-  services.audioService.setVolume(currentSettings.soundEffectsVolume);
+  services.audioService.setBackgroundMusicVolume(currentSettings.backgroundMusicVolume);
+  services.audioService.setSoundEffectsVolume(currentSettings.soundEffectsVolume);
 }
 
 export function initializeSettings(): void {

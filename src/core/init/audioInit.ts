@@ -17,7 +17,8 @@ export async function initializeAudio(userGesture: boolean = false): Promise<voi
     }
 
     const settings = getSettings();
-    services.audioService.setVolume(settings.soundEffectsVolume);
+    services.audioService.setSoundEffectsVolume(settings.soundEffectsVolume);
+    services.audioService.setBackgroundMusicVolume(settings.backgroundMusicVolume);
 
     if (settings.isMuted) {
       services.audioService.muteAll();

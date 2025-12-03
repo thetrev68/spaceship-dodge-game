@@ -31,6 +31,16 @@ export interface IAudioService {
   setVolume(value: number): void;
 
   /**
+   * Sets background music volume
+   */
+  setBackgroundMusicVolume(value: number): void;
+
+  /**
+   * Sets sound effects volume
+   */
+  setSoundEffectsVolume(value: number): void;
+
+  /**
    * Mutes all audio
    */
   muteAll(): void;

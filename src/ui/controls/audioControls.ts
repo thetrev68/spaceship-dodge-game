@@ -78,8 +78,8 @@ export function createAudioControls(): void {
     settings.backgroundMusicVolume = value;
     setSetting('soundEffectsVolume', value);
     setSetting('backgroundMusicVolume', value);
-    services.audioService.setVolume(value);
-    services.audioService.setVolume(value);
+    services.audioService.setSoundEffectsVolume(value);
+    services.audioService.setBackgroundMusicVolume(value);
   };
 
   volumeSlider.addEventListener('input', (event: Event) => {

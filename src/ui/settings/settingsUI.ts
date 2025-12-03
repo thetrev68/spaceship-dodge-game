@@ -94,7 +94,7 @@ function createSettingsUI(): HTMLElement {
     if (!target) return;
     const value = parseFloat(target.value);
     setSetting('backgroundMusicVolume', value);
-    services.audioService.setVolume(value);
+    services.audioService.setBackgroundMusicVolume(value);
     settings.backgroundMusicVolume = value;
   });
 
@@ -118,7 +118,7 @@ function createSettingsUI(): HTMLElement {
     if (!target) return;
     const value = parseFloat(target.value);
     setSetting('soundEffectsVolume', value);
-    services.audioService.setVolume(value);
+    services.audioService.setSoundEffectsVolume(value);
     settings.soundEffectsVolume = value;
   });
 
