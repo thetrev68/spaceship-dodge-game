@@ -17,7 +17,8 @@ describe('canvasUtils', () => {
     Object.defineProperty(window, 'innerHeight', { value: 700, writable: true });
     const canvas = document.createElement('canvas');
     initializeCanvas(canvas);
-    expect(canvas.width).toBeGreaterThan(0);
+    expect(canvas.width).toBe(360); // Specific mobile width from CANVAS_CONSTANTS
+    expect(canvas.height).toBe(640); // Specific mobile height from CANVAS_CONSTANTS
     expect(canvas.style.width).toBe('100vw');
     expect(canvas.style.objectFit).toBe('contain');
   });
