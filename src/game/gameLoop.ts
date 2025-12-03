@@ -118,8 +118,8 @@ const TIME_STEP = isMobile() ? 1000 / 30 : GAME_CONFIG.FRAME_DURATION;
  *
  * Frame 3: deltaTime = 25ms (lag spike!)
  *   accumulator = 1.66ms + 25ms = 26.66ms
- *   update(16.67ms) runs TWICE (catches up)
- *   accumulator = -6.68ms (ahead now)
+ *   update(16.67ms) runs once
+ *   accumulator = 9.99ms (leftover)
  * ```
  */
 let accumulator = 0;
