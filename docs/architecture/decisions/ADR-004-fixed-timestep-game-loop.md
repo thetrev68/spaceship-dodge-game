@@ -21,7 +21,7 @@ function update(deltaTime) {
 // On slow frame (33ms): entities move 2x distance
 // On fast frame (8ms): entities move 0.5x distance
 // Result: Non-deterministic gameplay, hard to balance, different on each device
-```
+```typescript
 
 ## Decision
 Use **fixed timestep game loop with accumulator pattern** (16.67ms = 60 FPS on desktop, 33.33ms = 30 FPS on mobile).
@@ -68,10 +68,10 @@ function gameLoop(currentTime) {
 
   requestAnimationFrame(gameLoop);
 }
-```
+```typescript
 
 **Example scenario:**
-```
+```text
 Frame 1: deltaTime = 20ms
   accumulator = 20ms
   update(16.67ms) runs once
@@ -85,7 +85,7 @@ Frame 2: deltaTime = 15ms
 Frame 3: deltaTime = 25ms (lag spike!)
   accumulator = 1.66ms + 25ms = 26.66ms
   update(16.67ms) runs TWICE (catches up)
-  accumulator = -6.68ms (negative is OK, just means we're ahead)
+  accumulator = 3.32ms (small positive leftover, never negative)
 ```
 
 ## Mobile Optimization
@@ -136,6 +136,7 @@ Frame 3: deltaTime = 25ms (lag spike!)
 function update(deltaTime) {
   player.x += player.velocity * deltaTime;
 }
+```
 // Pros: Simple
 // Cons: Non-deterministic, different on each device, hard to balance
 ```
@@ -146,6 +147,7 @@ function gameLoop() {
   update(16.67); // Always use fixed delta
   render();
 }
+```
 // Pros: Simple, deterministic
 // Cons: Can't catch up if lagged, rendering tied to update rate
 ```
