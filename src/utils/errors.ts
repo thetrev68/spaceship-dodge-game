@@ -5,13 +5,10 @@
  * centralized error handling with appropriate user feedback and logging.
  *
  * ## Error Hierarchy
- * ```
- * Error (built-in)
- *   └─ GameError
- *        ├─ AudioError (recoverable)
- *        ├─ CanvasError (non-recoverable)
- *        └─ AssetError (non-recoverable)
- * ```
+ * - GameError (base)
+ *   - AudioError (recoverable)
+ *   - CanvasError (non-recoverable)
+ *   - AssetError (non-recoverable)
  *
  * ## Usage Pattern
  * ```typescript
@@ -26,15 +23,16 @@
  * @see handleError - Centralized error handler with user feedback
  */
 
+
 /**
  * Base game error class with recoverability metadata.
  * All game-specific errors should extend this class.
  *
  * ## Recoverability
  * - **Recoverable** (true): Game can continue without this feature
- *   - Example: Audio fails → Mute game, continue playing
+ *   - Example: Audio fails -> Mute game, continue playing
  * - **Non-recoverable** (false): Game cannot function
- *   - Example: Canvas fails → Show error overlay, halt game
+ *   - Example: Canvas fails -> Show error overlay, halt game
  *
  * ## Error Codes
  * Unique codes for debugging and logging:
@@ -207,13 +205,14 @@ export class AssetError extends GameError {
  * ## Error Handling Flow
  * ```
  * handleError(err)
- *   ├─ Is GameError?
- *   │  ├─ Recoverable?
- *   │  │  ├─ Yes → Log warning, continue
- *   │  │  └─ No → Show overlay, halt game
- *   │  └─ Log with error code
- *   └─ Unknown error → Treat as non-recoverable
+ *   |- Is GameError?
+ *   |  |- Recoverable?
+ *   |  |  |- Yes -> Log warning, continue
+ *   |  |  `- No -> Show overlay, halt game
+ *   |  `- Log with error code
+ *   `- Unknown error -> Treat as non-recoverable
  * ```
+
  *
  * @param error - Error to handle (GameError or generic Error)
  *

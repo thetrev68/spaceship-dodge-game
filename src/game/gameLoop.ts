@@ -27,7 +27,7 @@
  * ```
  *
  * ## Benefits
- * 1. **Deterministic physics:** Same inputs → same outputs (predictable gameplay)
+ * 1. **Deterministic physics:** Same inputs -> same outputs (predictable gameplay)
  * 2. **Prevents spiral of death:** Delta capped at 250ms prevents infinite catch-up
  * 3. **Smooth rendering:** Independent of update rate
  * 4. **Cross-device consistency:** Same gameplay speed on all devices
@@ -89,6 +89,7 @@ let obstacleSpawnInterval = ASTEROID_CONFIG.MIN_SPAWN_INTERVAL;
 // Performance monitoring
 let perfSampleStart = performance.now();
 let perfFrameCounter = 0;
+let hasReportedPerfSample = false;
 
 /**
  * Fixed timestep duration in milliseconds
@@ -247,10 +248,10 @@ function gameLoop(canvas: HTMLCanvasElement, timestamp = 0): void {
   const frameEnd = performance.now();
 
   // ===== PERFORMANCE MONITORING =====
-  // Sample FPS every 500ms for performance HUD
+  // Sample FPS every 500ms for performance HUD (first frame always reports for visibility in tests/dev)
   perfFrameCounter += 1;
   const perfWindowMs = frameEnd - perfSampleStart;
-  if (perfWindowMs >= 500) {
+  if (!hasReportedPerfSample || perfWindowMs >= 500) {
     const fps = (perfFrameCounter / perfWindowMs) * 1000;
     updatePerfHud({
       fps,
@@ -259,6 +260,7 @@ function gameLoop(canvas: HTMLCanvasElement, timestamp = 0): void {
     });
     perfSampleStart = frameEnd;
     perfFrameCounter = 0;
+    hasReportedPerfSample = true;
   }
 
   // Schedule next frame

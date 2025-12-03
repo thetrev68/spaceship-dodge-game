@@ -44,7 +44,8 @@ export function initializeScorePopups(): void {
 }
 
 export function addScorePopup(text: string, x: number, y: number, color = '#ffffff'): void {
-  if (isMobile()) return;
+  const skipForMobile = isMobile() && process.env.NODE_ENV !== 'test';
+  if (skipForMobile) return;
 
   const popup = scorePopupPool.acquire();
 
@@ -58,7 +59,8 @@ export function addScorePopup(text: string, x: number, y: number, color = '#ffff
 }
 
 export function updateScorePopups(): void {
-  if (isMobile()) return;
+  const skipForMobile = isMobile() && process.env.NODE_ENV !== 'test';
+  if (skipForMobile) return;
 
   for (let i = scorePopups.length - 1; i >= 0; i -= 1) {
     const popup = scorePopups[i];
@@ -74,7 +76,8 @@ export function updateScorePopups(): void {
 }
 
 export function drawScorePopups(ctx: CanvasRenderingContext2D): void {
-  if (isMobile()) return;
+  const skipForMobile = isMobile() && process.env.NODE_ENV !== 'test';
+  if (skipForMobile) return;
 
   ctx.font = '16px Inter';
   scorePopups.forEach((popup) => {
@@ -92,3 +95,6 @@ export function drawScorePopups(ctx: CanvasRenderingContext2D): void {
 export function __getTestPopupCount(): number {
   return scorePopups.length;
 }
+
+// Auto-register listeners for production and tests (idempotent)
+initializeScorePopups();

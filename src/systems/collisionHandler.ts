@@ -2,12 +2,12 @@
  * @fileoverview Spatial Grid Collision Detection System
  *
  * Implements optimized collision detection using uniform spatial partitioning.
- * Reduces collision checks from O(n²) to O(n) by binning entities into grid cells
+ * Reduces collision checks from O(n^2) to O(n) by binning entities into grid cells
  * and only testing entities in the same or adjacent cells.
  *
  * ## Performance Characteristics
- * - **Naive approach:** n bullets × m obstacles = O(n×m) checks
- *   - Example: 20 bullets × 50 obstacles = 1,000 checks/frame
+ * - **Naive approach:** n bullets * m obstacles = O(n*m) checks
+ *   - Example: 20 bullets * 50 obstacles = 1,000 checks/frame
  * - **Spatial grid:** ~15-75 checks/frame for 100 entities
  *   - ~100x reduction in collision checks
  *
@@ -80,7 +80,7 @@ function checkPlayerObstacleCollision(): Asteroid | null {
  * - **Time Complexity:**
  *   - Insert: O(1) - Simple hash calculation
  *   - Query: O(k) where k = entities in nearby cells (typically 3-9 cells)
- *   - Overall: O(n) for n entities (vs O(n²) for naive pairwise)
+ *   - Overall: O(n) for n entities (vs O(n^2) for naive pairwise)
  * - **Space Complexity:** O(n) - Each entity stored once
  *
  * ## Trade-offs
@@ -249,7 +249,7 @@ const obstacles = entityState.getMutableObstacles();
  * 4. Handle collision response (destroy obstacle, award score, emit events)
  *
  * ## Performance Optimization
- * - **Spatial grid:** Reduces checks from O(n×m) to O(n) where n = bullets, m = obstacles
+ * - **Spatial grid:** Reduces checks from O(n*m) to O(n) where n = bullets, m = obstacles
  * - **Reverse iteration:** Enables safe swap-and-pop bullet removal without index shifting
  * - **Early exit:** Bullet stops checking after first hit (bullets destroy on impact)
  * - **Destroyed tracking:** Prevents double-processing obstacles hit by multiple bullets
@@ -257,7 +257,7 @@ const obstacles = entityState.getMutableObstacles();
  * ## Performance Budget
  * This function runs every frame and must complete in <2ms for 60 FPS.
  * Typical measurements:
- * - 20 bullets × 50 obstacles: ~1.2ms (vs ~15ms naive approach)
+ * - 20 bullets * 50 obstacles: ~1.2ms (vs ~15ms naive approach)
  * - Grid rebuild: ~0.3ms
  * - Collision checks: ~0.9ms
  *

@@ -23,7 +23,7 @@
  * **Pros:**
  * - Lightweight (~50 lines of code)
  * - Fast (no batching overhead)
- * - Simple mental model (value changes → watchers called immediately)
+ * - Simple mental model (value changes -> watchers called immediately)
  * - Zero dependencies
  *
  * **Cons:**
