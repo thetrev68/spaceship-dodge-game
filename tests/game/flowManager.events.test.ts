@@ -47,16 +47,20 @@ describe('FlowManager events', () => {
     allowSpawning.value = false;
 
     let now = Date.now();
-    vi.spyOn(Date, 'now').mockImplementation(() => now);
+    const nowSpy = vi.spyOn(Date, 'now').mockImplementation(() => now);
 
-    updateLevelFlow(() => {});
-    // advance time to satisfy pending level-up delay
-    now += 2000;
-    updateLevelFlow(() => {});
+    try {
+      updateLevelFlow(() => {});
+      // advance time to satisfy pending level-up delay
+      now += 2000;
+      updateLevelFlow(() => {});
 
-    expect(levelEvents.length).toBe(1);
-    expect(levelEvents[0]!.newLevel).toBe(gameLevel.value);
-    expect(transitionEvents.length).toBe(1);
-    expect((services.audioService.stopMusic as ReturnType<typeof vi.fn>)).toHaveBeenCalled();
+      expect(levelEvents.length).toBe(1);
+      expect(levelEvents[0]!.newLevel).toBe(gameLevel.value);
+      expect(transitionEvents.length).toBe(1);
+      expect(services.audioService.stopMusic).toHaveBeenCalled();
+    } finally {
+      nowSpy.mockRestore();
+    }
   });
 });
