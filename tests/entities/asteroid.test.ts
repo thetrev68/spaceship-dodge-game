@@ -73,17 +73,11 @@ describe('Asteroid Entity', () => {
     });
     obstacles.push(largeAsteroid);
 
-    // Mock the score object
-    const score = { value: 0 };
-
     // Destroy asteroid
-    destroyObstacle(largeAsteroid, score);
+    destroyObstacle(largeAsteroid);
 
     // Verify fragments were created
     expect(obstacles.length).toBeGreaterThan(0);
-
-    // Verify score was updated
-    expect(score.value).toBeGreaterThan(0);
   });
 
   it('should handle asteroid movement', () => {

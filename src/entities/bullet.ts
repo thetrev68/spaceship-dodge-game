@@ -8,7 +8,7 @@ import { entityState, gameState } from '@core/state.js';
 import { isMobile } from '@utils/platform.js';
 import { BULLET_CONFIG } from '@core/constants.js';
 import { ObjectPool } from '@systems/poolManager.js';
-import { playSound } from '@systems/soundManager.js';
+import { services } from '@services/ServiceProvider.js';
 
 const bulletSpeed = BULLET_CONFIG.SPEED;
 const bulletRadius = BULLET_CONFIG.RADIUS;
@@ -94,7 +94,7 @@ export function fireBullet(x: number, y: number): void {
   const now = Date.now();
   const delay = isMobile() ? 400 : 30; // slower cadence on mobile
   if (!isMobile() && now - lastFireSoundTime > delay) {
-    playSound('fire');
+    services.audioService.playSound('fire');
     lastFireSoundTime = now;
   }
 }

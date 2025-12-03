@@ -12,12 +12,12 @@ import { setCanvas, restartGameLoop } from '@game/gameLoop.js';
 import { startGame, continueGame } from '@game/gameStateManager.js';
 import { gameState } from '@core/state.js';
 import { isMobile } from '@utils/platform.js';
-import * as soundManager from '@systems/soundManager.js';
 import { debug, warn } from '@core/logger.js';
 import { initializeSettings } from '@ui/settings/settingsManager.js';
 import { showSettings, hideSettings } from '@ui/settings/settingsUI.js';
 import { getById } from '@utils/dom.js';
 import { showOverlay, setOverlayDimensions, quitGame } from '@ui/overlays/overlayManager.js';
+import { services } from '@services/ServiceProvider.js';
 
 let audioUnlockAttempted = false;
 
@@ -30,7 +30,7 @@ function handleFirstTouch(): void {
   initializeAudio(true)
     .then(() => {
       debug('audio', 'Audio unlocked from raw touch event');
-      soundManager.unmuteAll();
+      services.audioService.unmuteAll();
     })
     .catch((err: unknown) => {
       warn('audio', 'Final audio unlock failed:', err);
@@ -76,7 +76,7 @@ function wireOverlayControls(canvas: HTMLCanvasElement): void {
     if (gameState.value !== 'START') return;
 
     debug('game', 'Starting game from overlay');
-    soundManager.unmuteAll();
+    services.audioService.unmuteAll();
     startBackgroundMusic();
     startGame(canvas);
     restartGameLoop();
@@ -91,7 +91,7 @@ function wireOverlayControls(canvas: HTMLCanvasElement): void {
       debug('game', 'Resuming game from overlay touch');
       gameState.value = 'PLAYING';
       showOverlay('PLAYING');
-      soundManager.unmuteAll();
+      services.audioService.unmuteAll();
       restartGameLoop();
     }, { passive: false });
 
@@ -153,7 +153,7 @@ function wireOverlayControls(canvas: HTMLCanvasElement): void {
       event.preventDefault();
       gameState.value = 'PLAYING';
       showOverlay('PLAYING');
-      soundManager.unmuteAll();
+      services.audioService.unmuteAll();
       restartGameLoop();
     }
   });

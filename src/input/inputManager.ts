@@ -4,7 +4,6 @@
 
 import { gameState } from '@core/state.js';
 import { showOverlay } from '@ui/overlays/overlayManager.js';
-import * as soundManager from '@systems/soundManager.js';
 import { restartGameLoop } from '@game/gameLoop.js';
 import {
   firePlayerBullets,
@@ -16,6 +15,7 @@ import {
 } from '@entities/player.js';
 import { togglePerfHud } from '@ui/hud/perfHUD.js';
 import type { EventKey } from '@utils/dom.js';
+import { services } from '@services/ServiceProvider.js';
 
 let firing = false;
 let fireTimeoutId: ReturnType<typeof setTimeout> | null = null;
@@ -37,10 +37,10 @@ export function setupInput(canvas: HTMLCanvasElement): void {
     showOverlay(nextState);
 
     if (nextState === 'PAUSED') {
-      soundManager.muteAll();
+      services.audioService.muteAll();
       stopFiring();
     } else if (nextState === 'PLAYING') {
-      soundManager.unmuteAll();
+      services.audioService.unmuteAll();
       restartGameLoop();
     }
     setTimeout(() => { pauseLocked = false; }, 300);

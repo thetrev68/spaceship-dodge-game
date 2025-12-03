@@ -2,7 +2,7 @@
  * @fileoverview Audio control UI components.
  */
 
-import * as soundManager from '@systems/soundManager.js';
+import { services } from '@services/ServiceProvider.js';
 import { getSettings, setSetting } from '@ui/settings/settingsManager.js';
 import { showSettings } from '@ui/settings/settingsUI.js';
 import { AUDIO_CONTROLS, VOLUME_CONSTANTS } from '@core/uiConstants.js';
@@ -50,9 +50,9 @@ export function createAudioControls(): void {
     setSetting('isMuted', newMutedState);
     updateMuteButtonLabel(muteBtn, newMutedState);
     if (newMutedState) {
-      soundManager.muteAll();
+      services.audioService.muteAll();
     } else {
-      soundManager.unmuteAll();
+      services.audioService.unmuteAll();
     }
   };
 
@@ -78,8 +78,8 @@ export function createAudioControls(): void {
     settings.backgroundMusicVolume = value;
     setSetting('soundEffectsVolume', value);
     setSetting('backgroundMusicVolume', value);
-    soundManager.setSoundEffectsVolume(value);
-    soundManager.setBackgroundMusicVolume(value);
+    services.audioService.setVolume(value);
+    services.audioService.setVolume(value);
   };
 
   volumeSlider.addEventListener('input', (event: Event) => {

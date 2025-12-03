@@ -4,7 +4,7 @@
  */
 
 import { debug, warn } from '@core/logger.js';
-import * as soundManager from '@systems/soundManager.js';
+import { services } from '@services/ServiceProvider.js';
 import { isMobile } from '@utils/platform.js';
 import { VOLUME_CONSTANTS, SETTINGS_CONSTANTS } from '@core/uiConstants.js';
 
@@ -82,13 +82,13 @@ function applyAudioSettings(): void {
   });
 
   if (currentSettings.isMuted) {
-    soundManager.muteAll();
+    services.audioService.muteAll();
   } else {
-    soundManager.unmuteAll();
+    services.audioService.unmuteAll();
   }
 
-  soundManager.setBackgroundMusicVolume(currentSettings.backgroundMusicVolume);
-  soundManager.setSoundEffectsVolume(currentSettings.soundEffectsVolume);
+  services.audioService.setVolume(currentSettings.backgroundMusicVolume);
+  services.audioService.setVolume(currentSettings.soundEffectsVolume);
 }
 
 export function initializeSettings(): void {

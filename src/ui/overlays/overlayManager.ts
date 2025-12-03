@@ -9,10 +9,10 @@ import {
   initializeCanvas as initCanvas,
   setOverlayDimensions as setOverlayDims,
 } from '@utils/canvasUtils.js';
-import { stopMusic, startMusic, playSound } from '@systems/soundManager.js';
 import { clearAllBullets } from '@entities/bullet.js';
 import { getPlatformText } from '@ui/settings/settingsManager.js';
 import { getById, isHTMLElement } from '@utils/dom.js';
+import { services } from '@services/ServiceProvider.js';
 
 const focusableSelector = [
   'a[href]',
@@ -143,7 +143,7 @@ export function showOverlay(state: OverlayState, scoreValue = 0, levelValue = 0)
     }
 
     case 'GAME_OVER': {
-      stopMusic();
+      services.audioService.stopMusic();
       const finalScoreDisplay = getById<HTMLElement>('finalScore');
       if (finalScoreDisplay) {
         finalScoreDisplay.textContent = `Final Score: ${scoreValue} (Level ${levelValue + 1})`;
@@ -154,7 +154,7 @@ export function showOverlay(state: OverlayState, scoreValue = 0, levelValue = 0)
     }
 
     case 'LEVEL_TRANSITION': {
-      stopMusic();
+      services.audioService.stopMusic();
       const levelUpMessage = getById<HTMLElement>('levelUpMessage');
       const currentLevelInfo = getById<HTMLElement>('currentLevelInfo');
       const currentScoreInfo = getById<HTMLElement>('currentScoreInfo');
@@ -168,7 +168,7 @@ export function showOverlay(state: OverlayState, scoreValue = 0, levelValue = 0)
     }
 
     case 'PAUSED': {
-      stopMusic();
+      services.audioService.stopMusic();
       const pauseText = getById<HTMLElement>('pauseResumeMessage');
       if (pauseText) {
         pauseText.textContent = getPlatformText('pause');
@@ -179,7 +179,7 @@ export function showOverlay(state: OverlayState, scoreValue = 0, levelValue = 0)
     }
 
     case 'PLAYING': {
-      startMusic();
+      services.audioService.startMusic();
       activeOverlay = null;
       restoreFocus();
       break;
@@ -207,7 +207,7 @@ export function quitGame(): void {
     powerUps[key].timer = 0;
   });
 
-  playSound('gameover');
+  services.audioService.playSound('gameover');
   showOverlay('GAME_OVER', score.value, gameLevel.value);
 }
 

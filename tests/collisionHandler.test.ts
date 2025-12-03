@@ -25,12 +25,15 @@ vi.mock('@core/state.js', () => {
   const bullets: unknown[] = [];
   const obstacles: unknown[] = [];
   const powerUps = { shield: { active: false, timer: 0 }, doubleBlaster: { active: false, timer: 0 } };
+  const playerLives = { value: 3 };
+  const score = { value: 0 };
   return {
     player,
     bullets,
     obstacles,
     powerUps,
-    score: { value: 0 },
+    score,
+    playerLives,
     entityState: {
       getMutableBullets: () => bullets,
       getMutableObstacles: () => obstacles,
@@ -39,10 +42,14 @@ vi.mock('@core/state.js', () => {
       player,
       powerUps,
     },
+    addScore: (points: number) => {
+      score.value += points;
+      return score.value;
+    },
   };
 });
 
-const { circleRectCollision } = await import('@systems/collisionHandler.js');
+import { circleRectCollision } from '@systems/collisionHandler.js';
 
 describe('circleRectCollision', () => {
   it('detects overlap when circle intersects rectangle', () => {

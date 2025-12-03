@@ -5,9 +5,9 @@
 import { gameState } from '@core/state.js';
 import { setPlayerPosition, firePlayerBullets, getPlayerDimensions } from '@entities/player.js';
 import { showOverlay } from '@ui/overlays/overlayManager.js';
-import * as soundManager from '@systems/soundManager.js';
 import { stopGameLoop } from '@game/gameLoop.js';
 import { debug, warn } from '@core/logger.js';
+import { services } from '@services/ServiceProvider.js';
 
 let touchActive = false;
 let touchX = 0;
@@ -95,7 +95,7 @@ export function setupMobileInput(canvas: HTMLCanvasElement): void {
       debug('input', 'Switching state to PAUSED');
       gameState.value = 'PAUSED';
       showOverlay('PAUSED');
-      soundManager.muteAll();
+      services.audioService.muteAll();
       stopGameLoop();
     }
   }, { passive: false });

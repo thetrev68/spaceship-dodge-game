@@ -1,13 +1,6 @@
-import {
-  forceAudioUnlock,
-  startMusic,
-  setBackgroundMusicVolume,
-  setSoundEffectsVolume,
-  muteAll,
-  unmuteAll,
-} from '@systems/soundManager.js';
 import { getSettings } from '@ui/settings/settingsManager.js';
 import { info, warn, error } from '@core/logger.js';
+import { services } from '@services/ServiceProvider.js';
 
 /**
  * Initializes the audio system with user settings
@@ -18,17 +11,16 @@ import { info, warn, error } from '@core/logger.js';
 export async function initializeAudio(userGesture: boolean = false): Promise<void> {
   try {
     if (userGesture) {
-      await forceAudioUnlock();
+      await services.audioService.unlock();
       info('audio', 'Audio unlocked via user gesture');
-      unmuteAll();
+      services.audioService.unmuteAll();
     }
 
     const settings = getSettings();
-    setBackgroundMusicVolume(settings.backgroundMusicVolume);
-    setSoundEffectsVolume(settings.soundEffectsVolume);
+    services.audioService.setVolume(settings.soundEffectsVolume);
 
     if (settings.isMuted) {
-      muteAll();
+      services.audioService.muteAll();
     }
 
     info('audio', 'Audio initialized', { volume: settings.soundEffectsVolume, muted: settings.isMuted });
@@ -43,7 +35,7 @@ export async function initializeAudio(userGesture: boolean = false): Promise<voi
  */
 export function startBackgroundMusic(): void {
   try {
-    startMusic();
+    services.audioService.startMusic();
     info('audio', 'Background music started');
   } catch (err) {
     warn('audio', 'Failed to start background music', err);

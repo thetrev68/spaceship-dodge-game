@@ -7,8 +7,9 @@ import type { PowerUpKey } from '@types';
 import { playerState } from '@core/state.js';
 import { isMobile } from '@utils/platform.js';
 import { ObjectPool } from '@systems/poolManager.js';
-import { addScorePopup } from '@ui/hud/scorePopups.js';
 import { POWERUP_CONFIG, GAME_CONFIG } from '@core/constants.js';
+import { eventBus } from '@core/events/EventBus.js';
+import { GameEvent, type PowerupCollectedEvent, type PowerupExpiredEvent } from '@core/events/GameEvents.js';
 
 type ActivePowerup = { x: number; y: number; size: number; type: PowerUpKey | null; dy: number };
 
@@ -89,7 +90,11 @@ export function updatePowerups(canvasHeight: number): void {
 
       if (collided && p.type) {
         activatePowerup(p.type);
-        addScorePopup(`Power-up! ${p.type}`, player.x, player.y - 20, '#00ffff');
+        eventBus.emit<PowerupCollectedEvent>(GameEvent.POWERUP_COLLECTED, {
+          type: p.type,
+          duration: POWERUP_CONFIG[p.type]?.DURATION ?? 0,
+          position: { x: player.x, y: player.y - 20 }
+        });
       }
     }
   }
@@ -101,6 +106,7 @@ export function updatePowerups(canvasHeight: number): void {
       state.timer--;
       if (state.timer <= 0) {
         state.active = false;
+        eventBus.emit<PowerupExpiredEvent>(GameEvent.POWERUP_EXPIRED, { type: typedKey });
       }
     }
   });

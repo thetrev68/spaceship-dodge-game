@@ -4,9 +4,11 @@
 
 import { allowSpawning, entityState, gameLevel, gameState, levelStartTime } from '@core/state.js';
 import { newAsteroidsSpawned } from '@entities/asteroid.js';
-import { playSound, stopMusic } from '@systems/soundManager.js';
 import { debug } from '@core/logger.js';
 import { clearAllBullets } from '@entities/bullet.js';
+import { services } from '@services/ServiceProvider.js';
+import { eventBus } from '@core/events/EventBus.js';
+import { GameEvent, type LevelUpEvent } from '@core/events/GameEvents.js';
 
 let pendingLevelUp = false;
 let levelClearTime: number | null = null;
@@ -49,8 +51,13 @@ export function updateLevelFlow(onLevelUpCallback: () => void): void {
       pendingLevelUp = false;
       levelClearTime = null;
 
-      playSound('levelup');
-      stopMusic();
+      services.audioService.playSound('levelup');
+      services.audioService.stopMusic();
+
+      eventBus.emit<LevelUpEvent>(GameEvent.LEVEL_UP, {
+        newLevel: gameLevel.value,
+        difficulty: gameLevel.value,
+      });
 
       onLevelUpCallback();
 

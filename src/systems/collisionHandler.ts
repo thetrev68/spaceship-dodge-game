@@ -7,10 +7,12 @@
  */
 
 import type { Asteroid } from '@types';
-import { entityState, playerState, score } from '@core/state.js';
+import { addScore, entityState, playerLives, playerState } from '@core/state.js';
 import { destroyObstacle } from '@entities/asteroid.js';
 import { handlePlayerHit } from '@game/gameStateManager.js';
 import { despawnBullet } from '@entities/bullet.js';
+import { eventBus } from '@core/events/EventBus.js';
+import { GameEvent, type AsteroidDestroyedEvent, type BonusAwardedEvent, type PlayerHitEvent } from '@core/events/GameEvents.js';
 
 /**
  * Checks collision between a circle and a rectangle.
@@ -152,7 +154,25 @@ function checkBulletObstacleCollisions(): void {
 
       if (distance < bullet.radius + obstacle.radius) {
         destroyedObstacles.add(obstacle);
-        destroyObstacle(obstacle, score); // Handles obstacle removal from array
+        const centerX = obstacle.x + obstacle.radius;
+        const centerY = obstacle.y + obstacle.radius;
+        const { bonusAwarded, bonusAmount, bonusPosition } = destroyObstacle(obstacle);
+        addScore(obstacle.scoreValue);
+        eventBus.emit<AsteroidDestroyedEvent>(GameEvent.ASTEROID_DESTROYED, {
+          position: { x: centerX, y: centerY },
+          score: obstacle.scoreValue,
+          size: obstacle.radius,
+          sizeLevel: obstacle.level,
+        });
+
+        if (bonusAwarded && bonusAmount > 0 && bonusPosition) {
+          addScore(bonusAmount);
+          eventBus.emit<BonusAwardedEvent>(GameEvent.BONUS_AWARDED, {
+            bonusType: 'fragment',
+            bonusAmount,
+            position: bonusPosition,
+          });
+        }
         despawnBullet(i); // Immediate removal (swap-and-pop safe with reverse iteration)
         break; // Bullet is gone, stop checking it
       }
@@ -172,6 +192,10 @@ export function checkCollisions(): void {
     if (!powerUps.shield.active) {
       // Player takes damage
       handlePlayerHit();
+      eventBus.emit<PlayerHitEvent>(GameEvent.PLAYER_HIT, {
+        livesRemaining: playerLives.value,
+        invulnerable: false,
+      });
     } else {
       // Phase shield active: ignore collision, player passes through
       // Optionally, add subtle visual or sound feedback here

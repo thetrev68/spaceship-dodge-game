@@ -22,6 +22,7 @@
       "@ui/*": ["./src/ui/*"],
       "@effects/*": ["./src/effects/*"],
       "@utils/*": ["./src/utils/*"],
+      "@services/*": ["./src/services/*"],
       "@types": ["./src/types/index.ts"],
       "@types/*": ["./src/types/*"]
     }

@@ -4,7 +4,7 @@
  */
 
 import { getSettings, setSetting } from './settingsManager.js';
-import * as soundManager from '@systems/soundManager.js';
+import { services } from '@services/ServiceProvider.js';
 import { isMobile } from '@utils/platform.js';
 import { SETTINGS_UI, VOLUME_CONSTANTS } from '@core/uiConstants.js';
 import { getById } from '@utils/dom.js';
@@ -94,7 +94,7 @@ function createSettingsUI(): HTMLElement {
     if (!target) return;
     const value = parseFloat(target.value);
     setSetting('backgroundMusicVolume', value);
-    soundManager.setBackgroundMusicVolume(value);
+    services.audioService.setVolume(value);
     settings.backgroundMusicVolume = value;
   });
 
@@ -118,7 +118,7 @@ function createSettingsUI(): HTMLElement {
     if (!target) return;
     const value = parseFloat(target.value);
     setSetting('soundEffectsVolume', value);
-    soundManager.setSoundEffectsVolume(value);
+    services.audioService.setVolume(value);
     settings.soundEffectsVolume = value;
   });
 
@@ -145,9 +145,9 @@ function createSettingsUI(): HTMLElement {
     settings.isMuted = isChecked;
     setSetting('isMuted', isChecked);
     if (isChecked) {
-      soundManager.muteAll();
+      services.audioService.muteAll();
     } else {
-      soundManager.unmuteAll();
+      services.audioService.unmuteAll();
     }
   });
 
