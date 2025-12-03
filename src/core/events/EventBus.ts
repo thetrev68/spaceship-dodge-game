@@ -68,7 +68,8 @@ class EventBus {
 
     debug('event', `Event emitted: ${event}`);
 
-    handlers.forEach(handler => {
+    const snapshot = handlers.slice();
+    snapshot.forEach(handler => {
       try {
         (handler as (payload: T) => void)(data);
       } catch (err) {

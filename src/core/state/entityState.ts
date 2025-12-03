@@ -1,4 +1,5 @@
 import type { Asteroid, Bullet } from '@types';
+import { warn } from '@core/logger.js';
 
 /**
  * Entity state management with encapsulated mutations
@@ -20,7 +21,7 @@ class EntityState {
   // Bullet management
   addBullet(bullet: Bullet): void {
     if (!bullet) {
-      console.warn('Attempted to add invalid bullet');
+      warn('entity', 'Attempted to add invalid bullet');
       return;
     }
     this._bullets.push(bullet);
@@ -49,7 +50,7 @@ class EntityState {
   // Obstacle management
   addObstacle(obstacle: Asteroid): void {
     if (!obstacle) {
-      console.warn('Attempted to add invalid obstacle');
+      warn('entity', 'Attempted to add invalid obstacle');
       return;
     }
     this._obstacles.push(obstacle);

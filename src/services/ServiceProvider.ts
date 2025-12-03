@@ -59,8 +59,11 @@ class PoolServiceAdapter<T> implements IPoolService<T> {
 
   acquire(): T | null {
     const item = this.pool.acquire();
-    this.active += 1;
-    return item ?? null;
+    if (item) {
+      this.active += 1;
+      return item;
+    }
+    return null;
   }
 
   release(item: T): void {
