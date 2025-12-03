@@ -16,7 +16,7 @@ Game creates/destroys many short-lived objects:
 - **Result:** Garbage collector runs frequently, causing 5-10ms frame pauses
 
 ## Decision
-Implement object pooling for bullets (pool size: 50) and asteroids (pool size: 100) using generic `PoolManager` utility.
+Implement object pooling for bullets and asteroids using generic `ObjectPool<T>` class with factory fallback. The implementation uses a closure-based approach where `acquire()` never returns null - if the pool is exhausted, it creates a new instance via the factory function.
 
 ## Rationale
 
@@ -33,54 +33,66 @@ Implement object pooling for bullets (pool size: 50) and asteroids (pool size: 1
 
 **Generic pool manager (`src/systems/poolManager.ts`):**
 ```typescript
-export function createPool<T>(factory: () => T, size: number): Pool<T> {
-  const available: T[] = [];
-  const active = new Set<T>();
+export class ObjectPool<T> {
+  private pool: T[] = [];
 
-  // Pre-allocate pool
-  for (let i = 0; i < size; i++) {
-    available.push(factory());
+  constructor(private readonly factory: () => T) {}
+
+  /**
+   * Acquires an object from the pool
+   * - Returns reused object if available (O(1) pop)
+   * - Creates new object via factory if pool is empty
+   * - Never returns null (always provides an object)
+   */
+  acquire(): T {
+    const item = this.pool.length > 0 ? this.pool.pop() : undefined;
+    return item !== undefined ? item : this.factory();
   }
 
-  return {
-    acquire(): T | null {
-      const obj = available.pop();
-      if (obj) active.add(obj);
-      return obj || null; // Pool exhausted
-    },
+  /**
+   * Returns an object to the pool for reuse
+   * - Object state is NOT automatically reset
+   * - Caller must reset object state before release
+   */
+  release(obj: T): void {
+    this.pool.push(obj);
+  }
 
-    release(obj: T): void {
-      active.delete(obj);
-      available.push(obj);
-    },
+  /**
+   * Clears all objects from the pool
+   * - Next acquire() will create new objects via factory
+   */
+  clear(): void {
+    this.pool.length = 0;
+  }
 
-    reset(): void {
-      available.length = 0;
-      active.clear();
-      for (let i = 0; i < size; i++) {
-        available.push(factory());
-      }
-    }
-  };
+  /**
+   * Returns current number of available objects in pool
+   */
+  size(): number {
+    return this.pool.length;
+  }
 }
 ```
 
 **Usage:**
 ```typescript
 // Create pools at startup
-const bulletPool = createPool(() => ({ x: 0, y: 0, vx: 0, vy: 0, active: false }), 50);
-const asteroidPool = createPool(() => ({ x: 0, y: 0, vx: 0, vy: 0, size: 2, active: false }), 100);
+const bulletPool = new ObjectPool<Bullet>(() => ({
+  x: 0, y: 0, vx: 0, vy: 0, active: false
+}));
+const asteroidPool = new ObjectPool<Asteroid>(() => ({
+  x: 0, y: 0, vx: 0, vy: 0, size: 2, active: false
+}));
 
-// Acquire from pool
+// Acquire from pool (never returns null)
 function fireBullet() {
-  const bullet = bulletPool.acquire();
-  if (bullet) {
-    bullet.x = player.x;
-    bullet.y = player.y;
-    bullet.active = true;
-    bullets.push(bullet);
-  }
-  // If pool exhausted, bullet simply isn't fired (graceful degradation)
+  const bullet = bulletPool.acquire(); // Always returns an object
+  bullet.x = player.x;
+  bullet.y = player.y;
+  bullet.active = true;
+  bullets.push(bullet);
+  // No null check needed - factory creates new object if pool exhausted
 }
 
 // Release back to pool
@@ -103,6 +115,13 @@ function updateBullets() {
 **Memory usage:**
 - Pool memory: 50 bullets * ~50 bytes + 100 asteroids * ~60 bytes = ~8.5KB (negligible)
 - Trade-off: Slight memory increase for massive performance gain
+- No fixed pool size limit - factory creates new objects when pool is exhausted
+
+**Implementation behavior:**
+- `acquire()`: O(1) pop from array, or O(1) factory call if empty
+- `release()`: O(1) push to array
+- No null returns - always provides an object
+- Caller must reset object state after acquire (pool doesn't auto-reset)
 
 ## Consequences
 
@@ -111,7 +130,7 @@ function updateBullets() {
 - **90% reduction** in GC frequency
 - Smooth 60 FPS on mobile (no GC pauses)
 - Predictable memory usage (pools pre-allocated)
-- Graceful degradation (pool exhaustion simply stops spawning)
+- No pool exhaustion (factory creates new objects when pool is empty)
 
 **Negative:**
 - Memory overhead (~8.5KB for pools)
