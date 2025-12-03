@@ -4,7 +4,7 @@
  */
 
 import type { Bullet } from '@types';
-import { bullets, gameState } from '@core/state.js';
+import { entityState, gameState } from '@core/state.js';
 import { isMobile } from '@utils/platform.js';
 import { BULLET_CONFIG } from '@core/constants.js';
 import { ObjectPool } from '@systems/poolManager.js';
@@ -35,6 +35,7 @@ const bulletPool = new ObjectPool<Bullet>(() => ({
   dy: 0,
   parentId: null,
 }));
+const bullets = entityState.getMutableBullets();
 
 /**
  * Acquires a bullet from the pool.

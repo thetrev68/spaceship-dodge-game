@@ -1,22 +1,23 @@
 /**
  * @fileoverview Main entry point for the spaceship dodge game.
- * Handles initialization, input setup, and game start logic.
+ * Orchestrates initialization and UI wiring.
  */
 
-import { initializeCanvas, setOverlayDimensions, showOverlay, quitGame } from '@ui/overlays/overlayManager.js';
+import { initializeCanvas } from './init/canvasInit.js';
+import { initializeAudio, startBackgroundMusic } from './init/audioInit.js';
+import { initializeInput } from './init/inputInit.js';
+import { initializeUI } from './init/uiInit.js';
 import { setupStarfield } from '@effects/starfield.js';
 import { setCanvas, restartGameLoop } from '@game/gameLoop.js';
 import { startGame, continueGame } from '@game/gameStateManager.js';
-import { setupInput } from '@input/inputManager.js';
-import { setupMobileInput } from '@input/mobileControls.js';
 import { gameState } from '@core/state.js';
 import { isMobile } from '@utils/platform.js';
 import * as soundManager from '@systems/soundManager.js';
 import { debug, warn } from '@core/logger.js';
 import { initializeSettings } from '@ui/settings/settingsManager.js';
-import { initializeSettingsUI, showSettings, hideSettings } from '@ui/settings/settingsUI.js';
-import { initPerfHud } from '@ui/hud/perfHUD.js';
+import { showSettings, hideSettings } from '@ui/settings/settingsUI.js';
 import { getById } from '@utils/dom.js';
+import { showOverlay, setOverlayDimensions, quitGame } from '@ui/overlays/overlayManager.js';
 
 let audioUnlockAttempted = false;
 
@@ -26,12 +27,14 @@ function handleFirstTouch(): void {
 
   debug('audio', 'Attempting unlock from first touch');
 
-  soundManager.forceAudioUnlock().then(() => {
-    debug('audio', 'Audio unlocked from raw touch event');
-    soundManager.unmuteAll();
-  }).catch((err: unknown) => {
-    warn('audio', 'Final audio unlock failed:', err);
-  });
+  initializeAudio(true)
+    .then(() => {
+      debug('audio', 'Audio unlocked from raw touch event');
+      soundManager.unmuteAll();
+    })
+    .catch((err: unknown) => {
+      warn('audio', 'Final audio unlock failed:', err);
+    });
 
   document.removeEventListener('touchend', handleFirstTouch);
   document.removeEventListener('click', handleFirstTouch);
@@ -40,17 +43,7 @@ function handleFirstTouch(): void {
 document.addEventListener('touchend', handleFirstTouch, { passive: true });
 document.addEventListener('click', handleFirstTouch, { passive: true });
 
-function init(): void {
-  debug('game', 'init running - DOM loaded');
-
-  initPerfHud();
-
-  const canvasEl = getById<HTMLCanvasElement>('gameCanvas');
-  if (!canvasEl) {
-    warn('ui', 'gameCanvas not found or not a canvas element.');
-    return;
-  }
-  const canvas = canvasEl;
+function wireOverlayControls(canvas: HTMLCanvasElement): void {
   const startButton = getById<HTMLButtonElement>('startButton');
   const restartButton = getById<HTMLButtonElement>('restartButton');
   const continueButton = getById<HTMLButtonElement>('continueButton');
@@ -73,10 +66,6 @@ function init(): void {
     setupStarfield(starfieldCanvas);
   }
 
-  initializeSettings();
-  initializeSettingsUI();
-
-  initializeCanvas(canvas);
   setOverlayDimensions(canvas);
   setCanvas(canvas);
 
@@ -88,6 +77,7 @@ function init(): void {
 
     debug('game', 'Starting game from overlay');
     soundManager.unmuteAll();
+    startBackgroundMusic();
     startGame(canvas);
     restartGameLoop();
   };
@@ -95,8 +85,6 @@ function init(): void {
   startButton?.addEventListener(startEvent, startGameHandler, { passive: false });
 
   if (isMobile()) {
-    setupMobileInput(canvas);
-
     pauseOverlay?.addEventListener('touchstart', (event: TouchEvent) => {
       event.preventDefault();
       if (gameState.value !== 'PAUSED') return;
@@ -115,8 +103,6 @@ function init(): void {
       restartGameLoop();
     }, { passive: false });
   } else {
-    setupInput(canvas);
-
     continueButton?.addEventListener('click', () => {
       continueGame();
       restartGameLoop();
@@ -175,4 +161,37 @@ function init(): void {
   showOverlay('START');
 }
 
-window.addEventListener('DOMContentLoaded', init);
+async function main() {
+  debug('game', 'Spaceship Dodge starting...');
+
+  initializeSettings();
+
+  const canvasSetup = initializeCanvas();
+  if (!canvasSetup) {
+    warn('game', 'Fatal: Canvas initialization failed');
+    return;
+  }
+
+  const { canvas, ctx } = canvasSetup;
+
+  initializeUI();
+  initializeInput(canvas);
+  wireOverlayControls(canvas);
+
+  await initializeAudio();
+
+  debug('game', 'Initialization complete');
+
+  // Kick off render loop context
+  if (ctx) {
+    // Start in paused/start overlay; loop begins on start
+    setCanvas(canvas);
+  }
+}
+
+// Start the application
+window.addEventListener('DOMContentLoaded', () => {
+  main().catch(err => {
+    warn('game', 'Fatal error during initialization', err);
+  });
+});

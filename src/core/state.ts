@@ -1,56 +1,45 @@
-import type {
-  Asteroid,
-  Bullet,
-  GameStateValue,
-  Player,
-  PowerUpMap,
-} from '@types';
+/**
+ * Unified state management exports
+ * Re-exports from domain-specific state modules
+ */
 
-type Watcher = () => void;
-type ReactiveState<T extends object> = T & { watch: (fn: Watcher) => void };
+import { createReactive } from './reactive.js';
+import { entityState } from './state/entityState.js';
+import { playerState } from './state/playerState.js';
 
-function reactive<T extends object>(obj: T): ReactiveState<T> {
-  const listeners = new Set<Watcher>();
+// Reactive system
+export { createReactive, type ReactiveValue } from './reactive.js';
 
-  const proxy = new Proxy(obj, {
-    set(target, key, value) {
-      (target as Record<PropertyKey, unknown>)[key] = value;
-      listeners.forEach(fn => fn());
-      return true;
-    },
-  }) as ReactiveState<T>;
+// Game state
+export {
+  gameState,
+  score,
+  gameLevel,
+  playerLives,
+  lastObstacleSpawnTime,
+  levelStartTime,
+  resetGameState,
+  addScore,
+  loseLife,
+  incrementLevel,
+} from './state/gameState.js';
 
-  proxy.watch = (fn: Watcher) => {
-    listeners.add(fn);
-  };
+// Entity state
+export { entityState } from './state/entityState.js';
 
-  return proxy;
-}
+// Player state
+export { playerState } from './state/playerState.js';
 
-export const gameState = reactive<{ value: GameStateValue }>({ value: 'START' });
-export const score = reactive<{ value: number }>({ value: 0 });
-export const gameLevel = reactive<{ value: number }>({ value: 0 });
-export const playerLives = reactive<{ value: number }>({ value: 3 });
+// Backward compatibility exports for existing callers
+export const bullets = entityState.getMutableBullets();
+export const obstacles = entityState.getMutableObstacles();
+export const powerUps = playerState.powerUps;
+export const player = playerState.player;
 
-export const lastObstacleSpawnTime: { value: number } = { value: 0 };
-export const levelStartTime: { value: number } = { value: 0 };
-export const allowSpawning = reactive<{ value: boolean }>({ value: true });
+// Flow control (kept here for backward compatibility)
+export const allowSpawning = createReactive<boolean>(true);
 
-export const bullets: Bullet[] = [];
-export const obstacles: Asteroid[] = [];
-
-export const powerUps: PowerUpMap = {
-  doubleBlaster: { active: false, timer: 0 },
-  shield: { active: false, timer: 0 },
-};
-
-export const player: Player = {
-  x: 380,
-  y: 500,
-  width: 30,
-  height: 45,
-  speed: 7,
-  dx: 0,
-  dy: 0,
-  overridePosition: null,
-};
+// Platform detection (centralized for reuse)
+export const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+  navigator.userAgent
+);

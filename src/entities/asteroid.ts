@@ -10,7 +10,7 @@ import {
   MOBILE_CONFIG,
 } from '@core/constants.js';
 
-import { obstacles } from '@core/state.js';
+import { entityState } from '@core/state.js';
 import { isMobile } from '@utils/platform.js';
 import { randomInt, randomFloat } from '@utils/mathUtils.js';
 import { ObjectPool } from '@systems/poolManager.js';
@@ -40,6 +40,7 @@ const obstaclePool = new ObjectPool<Asteroid>(() => ({
   speed: 0,
   shape: [],
 }));
+const obstacles = entityState.getMutableObstacles();
 
 /**
  * Count of new asteroids spawned.

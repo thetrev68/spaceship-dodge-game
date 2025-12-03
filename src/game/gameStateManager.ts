@@ -2,13 +2,15 @@
  * @fileoverview Game state management.
  */
 
-import { gameState, playerLives, obstacles, score, gameLevel, powerUps } from '@core/state.js';
+import { entityState, gameState, playerLives, score, gameLevel, playerState } from '@core/state.js';
 import { resetLevelFlow } from '@game/flowManager.js';
 import { showOverlay } from '@ui/overlays/overlayManager.js';
 import * as soundManager from '@systems/soundManager.js';
 import { createAudioControls } from '@ui/controls/audioControls.js';
 import { resetPlayer } from '@entities/player.js';
 import { clearAllBullets } from '@entities/bullet.js';
+
+const powerUps = playerState.powerUps;
 
 export function handlePlayerHit(): void {
   playerLives.value -= 1;
@@ -28,7 +30,7 @@ export function handlePlayerHit(): void {
 function resetForNextLevel(): void {
   resetPlayer(window.innerWidth, window.innerHeight);
   clearAllBullets();
-  obstacles.length = 0;
+  entityState.clearObstacles();
   resetLevelFlow();
   soundManager.stopMusic();
 }
@@ -45,7 +47,7 @@ export function startGame(canvas: HTMLCanvasElement): void {
   powerUps.doubleBlaster.timer = 0;
 
   clearAllBullets();
-  obstacles.length = 0;
+  entityState.clearObstacles();
 
   resetPlayer(canvas.width, canvas.height);
   resetLevelFlow();

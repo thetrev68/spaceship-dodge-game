@@ -7,7 +7,7 @@
  */
 
 import type { Asteroid } from '@types';
-import { player, bullets, obstacles, powerUps, score } from '@core/state.js';
+import { entityState, playerState, score } from '@core/state.js';
 import { destroyObstacle } from '@entities/asteroid.js';
 import { handlePlayerHit } from '@game/gameStateManager.js';
 import { despawnBullet } from '@entities/bullet.js';
@@ -113,6 +113,10 @@ class SpatialGrid {
 
 // Create spatial grid instance
 const spatialGrid = new SpatialGrid(60);
+const player = playerState.player;
+const powerUps = playerState.powerUps;
+const bullets = entityState.getMutableBullets();
+const obstacles = entityState.getMutableObstacles();
 
 /**
  */
@@ -177,4 +181,8 @@ export function checkCollisions(): void {
   checkBulletObstacleCollisions();
 
   // Powerup-player collision handled in powerups.js updatePowerups()
+}
+
+export function resetCollisionState(): void {
+  spatialGrid.clear();
 }

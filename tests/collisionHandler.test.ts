@@ -20,13 +20,27 @@ vi.mock('@game/gameStateManager.js', () => ({
   handlePlayerHit: vi.fn(),
 }));
 
-vi.mock('@core/state.js', () => ({
-  player: { x: 0, y: 0, width: 1, height: 1 },
-  bullets: [],
-  obstacles: [],
-  powerUps: { shield: { active: false, timer: 0 }, doubleBlaster: { active: false, timer: 0 } },
-  score: { value: 0 },
-}));
+vi.mock('@core/state.js', () => {
+  const player = { x: 0, y: 0, width: 1, height: 1 };
+  const bullets: unknown[] = [];
+  const obstacles: unknown[] = [];
+  const powerUps = { shield: { active: false, timer: 0 }, doubleBlaster: { active: false, timer: 0 } };
+  return {
+    player,
+    bullets,
+    obstacles,
+    powerUps,
+    score: { value: 0 },
+    entityState: {
+      getMutableBullets: () => bullets,
+      getMutableObstacles: () => obstacles,
+    },
+    playerState: {
+      player,
+      powerUps,
+    },
+  };
+});
 
 const { circleRectCollision } = await import('@systems/collisionHandler.js');
 

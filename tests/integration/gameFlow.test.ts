@@ -1,7 +1,7 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { setupTestEnvironment } from '../helpers/testUtils';
 import { gameState, player, score, playerLives, obstacles, bullets } from '@core/state';
-import { restartGameLoop, stopGameLoop, setCanvas } from '@game/gameLoop';
+import { stopGameLoop, setCanvas } from '@game/gameLoop';
 import { fireBullet } from '@entities/bullet';
 import { createTestAsteroid } from '../helpers/gameStateFactory';
 import { createMockCanvas } from '../helpers/mockCanvas';
@@ -52,7 +52,6 @@ describe('Game Flow Integration', () => {
     expect(obstacles.length).toBe(1);
 
     // Fire bullet
-    const initialScore = score.value;
     fireBullet(player.x + player.width / 2, player.y);
 
     // Verify bullet was created

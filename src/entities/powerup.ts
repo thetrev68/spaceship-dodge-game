@@ -4,7 +4,7 @@
  */
 
 import type { PowerUpKey } from '@types';
-import { powerUps, player } from '@core/state.js';
+import { playerState } from '@core/state.js';
 import { isMobile } from '@utils/platform.js';
 import { ObjectPool } from '@systems/poolManager.js';
 import { addScorePopup } from '@ui/hud/scorePopups.js';
@@ -28,6 +28,8 @@ const powerupSize = isMobile() ? 40 : 50;
  * @type {ActivePowerup[]}
  */
 export const activePowerups: ActivePowerup[] = []; // Renamed from 'powerups' to avoid confusion with the pool
+const powerUps = playerState.powerUps;
+const player = playerState.player;
 
 // Initialize object pool for powerups
 const powerupPool = new ObjectPool<ActivePowerup>(() => ({

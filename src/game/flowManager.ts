@@ -2,7 +2,7 @@
  * @fileoverview Manages game level progression and flow.
  */
 
-import { allowSpawning, gameLevel, gameState, levelStartTime, obstacles } from '@core/state.js';
+import { allowSpawning, entityState, gameLevel, gameState, levelStartTime } from '@core/state.js';
 import { newAsteroidsSpawned } from '@entities/asteroid.js';
 import { playSound, stopMusic } from '@systems/soundManager.js';
 import { debug } from '@core/logger.js';
@@ -10,6 +10,7 @@ import { clearAllBullets } from '@entities/bullet.js';
 
 let pendingLevelUp = false;
 let levelClearTime: number | null = null;
+const obstacles = entityState.getMutableObstacles();
 
 const MAX_WAIT = 5000;
 const ASTEROIDS_PER_LEVEL = 20;
