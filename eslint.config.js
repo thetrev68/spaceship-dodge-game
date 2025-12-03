@@ -77,6 +77,11 @@ export default [
       'styles/**',
       '*.config.js',
       'docs/scripts/**',
+      'docs/**',
+      '.claude/**',
+      '.github/**',
+      '.kilocode/**',
+      '.serena/**',
     ],
   },
 ];

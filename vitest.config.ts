@@ -3,11 +3,31 @@ import path from 'path';
 
 export default defineConfig({
   test: {
+    globals: true,
     environment: 'jsdom',
-    include: ['tests/**/*.test.ts'],
+    setupFiles: ['./tests/setup.ts'],
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'html', 'lcov'],
+      exclude: [
+        'node_modules/',
+        'tests/',
+        '**/*.test.ts',
+        '**/*.spec.ts',
+        'dist/',
+        'docs/'
+      ],
+      thresholds: {
+        lines: 50,
+        functions: 50,
+        branches: 50,
+        statements: 50
+      }
+    }
   },
   resolve: {
     alias: {
+      '@': path.resolve(__dirname, './src'),
       '@core': path.resolve(__dirname, './src/core'),
       '@game': path.resolve(__dirname, './src/game'),
       '@entities': path.resolve(__dirname, './src/entities'),
