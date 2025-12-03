@@ -48,3 +48,7 @@ temp
 
 # Generated documentation
 docs/
+
+# Test coverage reports
+coverage/
+*.lcov
