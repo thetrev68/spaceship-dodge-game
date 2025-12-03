@@ -52,7 +52,7 @@ import { error as logError, warn as logWarn } from '@core/logger.js';
  * );
  * ```
  */
-export class GameError extends Error {
+class GameError extends Error {
   /**
    * Creates a new game error with metadata
    *
@@ -186,16 +186,6 @@ export class CanvasError extends GameError {
  * }
  * ```
  */
-export class AssetError extends GameError {
-  /**
-   * @param message - Error description with asset path
-   */
-  constructor(message: string) {
-    super(message, 'ASSET_ERROR', false); // Always non-recoverable
-    this.name = 'AssetError';
-  }
-}
-
 /**
  * Centralized error handler with user feedback and logging.
  *

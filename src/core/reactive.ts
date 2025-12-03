@@ -61,7 +61,7 @@
  * Reactive value interface with getter/setter and watch method
  * @template T - Type of the value being stored
  */
-export type ReactiveValue<T> = {
+type ReactiveValue<T> = {
   /** Current value (reading is O(1), writing triggers watchers) */
   value: T;
 

@@ -43,12 +43,6 @@ export type AsteroidDestroyedEvent = {
   sizeLevel: number;
 };
 
-export type AsteroidFragmentedEvent = {
-  position: { x: number; y: number };
-  fragmentCount: number;
-  parentSize: number;
-};
-
 export type PlayerHitEvent = {
   livesRemaining: number;
   invulnerable: boolean;
@@ -72,12 +66,6 @@ export type PowerupCollectedEvent = {
 
 export type PowerupExpiredEvent = {
   type: 'shield' | 'doubleBlaster';
-};
-
-export type ScoreChangedEvent = {
-  oldScore: number;
-  newScore: number;
-  delta: number;
 };
 
 export type BonusAwardedEvent = {

@@ -5,10 +5,7 @@
 import type { OverlayState, PowerUpKey } from '@types';
 import { playerLives, gameState, obstacles, powerUps, score, gameLevel } from '@core/state.js';
 import { isMobile } from '@utils/platform.js';
-import {
-  initializeCanvas as initCanvas,
-  setOverlayDimensions as setOverlayDims,
-} from '@utils/canvasUtils.js';
+import { setOverlayDimensions as setOverlayDims } from '@utils/canvasUtils.js';
 import { clearAllBullets } from '@entities/bullet.js';
 import { getPlatformText } from '@ui/settings/settingsManager.js';
 import { getById, isHTMLElement } from '@utils/dom.js';
@@ -187,10 +184,6 @@ export function showOverlay(state: OverlayState, scoreValue = 0, levelValue = 0)
   }
 
   document.dispatchEvent(new Event('gameStateChange'));
-}
-
-export function initializeCanvas(canvas: HTMLCanvasElement): void {
-  initCanvas(canvas);
 }
 
 export function quitGame(): void {

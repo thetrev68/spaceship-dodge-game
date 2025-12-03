@@ -1,6 +1,7 @@
 import { getSettings } from '@ui/settings/settingsManager.js';
 import { info, warn, error } from '@core/logger.js';
 import { services } from '@services/ServiceProvider.js';
+import { AudioError, handleError } from '@utils/errors.js';
 
 /**
  * Initializes the audio system with user settings
@@ -26,7 +27,9 @@ export async function initializeAudio(userGesture: boolean = false): Promise<voi
 
     info('audio', 'Audio initialized', { volume: settings.soundEffectsVolume, muted: settings.isMuted });
   } catch (err) {
-    error('audio', 'Audio initialization failed', err as Error);
+    const wrapped = err instanceof Error ? err : new AudioError(`Audio init failed: ${String(err)}`, true);
+    error('audio', 'Audio initialization failed', wrapped);
+    handleError(wrapped);
     // Non-fatal error, game can continue without audio
   }
 }

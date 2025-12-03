@@ -7,9 +7,6 @@ import { createReactive } from './reactive.js';
 import { entityState } from './state/entityState.js';
 import { playerState } from './state/playerState.js';
 
-// Reactive system
-export { createReactive, type ReactiveValue } from './reactive.js';
-
 // Game state
 export {
   gameState,

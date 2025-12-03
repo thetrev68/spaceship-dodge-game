@@ -43,7 +43,7 @@ export function initializeScorePopups(): void {
   });
 }
 
-export function addScorePopup(text: string, x: number, y: number, color = '#ffffff'): void {
+function addScorePopup(text: string, x: number, y: number, color = '#ffffff'): void {
   const skipForMobile = isMobile() && process.env.NODE_ENV !== 'test';
   if (skipForMobile) return;
 

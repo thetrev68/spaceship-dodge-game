@@ -55,7 +55,7 @@
  * }
  * ```
  */
-export function validateBounds(
+function validateBounds(
   x: number,
   y: number,
   width: number,
@@ -97,7 +97,7 @@ export function validateBounds(
  * score.value = clamp(score.value, 0, Number.MAX_SAFE_INTEGER);
  * ```
  */
-export function clamp(value: number, min: number, max: number): number {
+function clamp(value: number, min: number, max: number): number {
   return Math.max(min, Math.min(max, value));
 }
 
@@ -197,7 +197,7 @@ export function validateAudioVolume(volume: number): number {
  * }
  * ```
  */
-export function validatePositiveInteger(value: number, name: string): number {
+function validatePositiveInteger(value: number, name: string): number {
   if (!Number.isInteger(value) || value < 1) {
     throw new TypeError(
       `${name} must be a positive integer (>= 1), got: ${value}`
@@ -245,7 +245,7 @@ export function validatePositiveInteger(value: number, name: string): number {
  * }
  * ```
  */
-export function validateNonNegative(value: number, name: string): number {
+function validateNonNegative(value: number, name: string): number {
   if (isNaN(value) || !isFinite(value) || value < 0) {
     throw new TypeError(
       `${name} must be a non-negative finite number, got: ${value}`
@@ -291,7 +291,7 @@ export function validateNonNegative(value: number, name: string): number {
  * }
  * ```
  */
-export function validateNonEmptyString(value: string, name: string): string {
+function validateNonEmptyString(value: string, name: string): string {
   const trimmed = value.trim();
   if (trimmed.length === 0) {
     throw new TypeError(

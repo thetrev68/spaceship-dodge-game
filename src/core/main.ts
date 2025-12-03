@@ -3,6 +3,7 @@
  * Orchestrates initialization and UI wiring.
  */
 
+import type { CanvasSetup } from './init/canvasInit.js';
 import { initializeCanvas } from './init/canvasInit.js';
 import { initializeAudio, startBackgroundMusic } from './init/audioInit.js';
 import { initializeInput } from './init/inputInit.js';
@@ -13,6 +14,7 @@ import { startGame, continueGame } from '@game/gameStateManager.js';
 import { gameState } from '@core/state.js';
 import { isMobile } from '@utils/platform.js';
 import { debug, warn } from '@core/logger.js';
+import { CanvasError, handleError } from '@utils/errors.js';
 import { initializeSettings } from '@ui/settings/settingsManager.js';
 import { showSettings, hideSettings } from '@ui/settings/settingsUI.js';
 import { getById } from '@utils/dom.js';
@@ -166,10 +168,9 @@ async function main() {
 
   initializeSettings();
 
-  const canvasSetup = initializeCanvas();
+  const canvasSetup: CanvasSetup | null = initializeCanvas();
   if (!canvasSetup) {
-    warn('game', 'Fatal: Canvas initialization failed');
-    return;
+    throw new CanvasError('Canvas initialization failed');
   }
 
   const { canvas, ctx } = canvasSetup;
@@ -192,6 +193,6 @@ async function main() {
 // Start the application
 window.addEventListener('DOMContentLoaded', () => {
   main().catch(err => {
-    warn('game', 'Fatal error during initialization', err);
+    handleError(err as Error);
   });
 });

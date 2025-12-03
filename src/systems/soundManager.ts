@@ -1,5 +1,6 @@
 import type { SoundKey, SoundMap, Volumes } from '@types';
 import { debug, info, warn, error } from '@core/logger.js';
+import { validateAudioVolume } from '@utils/validation.js';
 import { VOLUME_CONSTANTS } from '@core/uiConstants.js';
 
 const envBaseUrl = typeof import.meta !== 'undefined' && typeof import.meta.env?.BASE_URL === 'string'
@@ -147,7 +148,8 @@ function applyVolumeAndMute(): void {
 
 
 export function setBackgroundMusicVolume(val: number): void {
-  volumes.backgroundMusic = val;
+  const volume = validateAudioVolume(val);
+  volumes.backgroundMusic = volume;
   debug('audio', 'setBackgroundMusicVolume', { backgroundMusicVolume: val });
   if (!isMuted && sounds.bgm) {
     sounds.bgm.volume = val;
@@ -155,8 +157,9 @@ export function setBackgroundMusicVolume(val: number): void {
 }
 
 export function setSoundEffectsVolume(val: number): void {
-  volumes.soundEffects = val;
-  currentVolume = val;
+  const volume = validateAudioVolume(val);
+  volumes.soundEffects = volume;
+  currentVolume = volume;
   debug('audio', 'setSoundEffectsVolume', { soundEffectsVolume: val });
   if (!isMuted) applyVolumeAndMute();
 }
