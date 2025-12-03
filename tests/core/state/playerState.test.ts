@@ -18,7 +18,7 @@ describe('player state', () => {
     expect(playerState.powerUps.doubleBlaster.active).toBe(false);
 
     // Invalid powerup key should be ignored
-    // @ts-expect-error
+    // @ts-expect-error invalid key is intentional for guard coverage
     playerState.activatePowerup('unknown', 5);
     expect(playerState.powerUps.shield.active).toBe(false);
   });

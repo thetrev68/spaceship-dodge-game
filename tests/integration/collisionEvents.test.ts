@@ -2,7 +2,6 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { eventBus } from '@core/events/EventBus.js';
 import { GameEvent, type AsteroidDestroyedEvent, type BonusAwardedEvent } from '@core/events/GameEvents.js';
 import { entityState, addScore } from '@core/state.js';
-import { services } from '@services/ServiceProvider.js';
 import { checkCollisions } from '@systems/collisionHandler.js';
 
 vi.mock('@services/ServiceProvider.js', async (importOriginal) => {

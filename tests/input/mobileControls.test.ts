@@ -41,13 +41,14 @@ describe('mobileControls', () => {
 
     // Minimal TouchEvent mock for jsdom
     if (typeof TouchEvent === 'undefined') {
-      (global as any).TouchEvent = class extends Event {
-        touches: any[];
-        constructor(type: string, init: any = {}) {
+      type MinimalTouch = { clientX: number; clientY: number };
+      (globalThis as unknown as { TouchEvent: typeof Event }).TouchEvent = class extends Event {
+        touches: Touch[];
+        constructor(type: string, init: EventInit & { touches?: MinimalTouch[] } = {}) {
           super(type, init);
-          this.touches = init.touches || [];
+          this.touches = (init.touches as unknown as Touch[]) ?? [];
         }
-      };
+      } as unknown as typeof TouchEvent;
     }
   });
 
@@ -56,7 +57,7 @@ describe('mobileControls', () => {
     const touchStart = new TouchEvent('touchstart', {
       bubbles: true,
       cancelable: true,
-      touches: [{ clientX: 0, clientY: 0 }],
+      touches: [{ clientX: 0, clientY: 0 } as unknown as Touch],
     });
     canvas.dispatchEvent(touchStart);
 

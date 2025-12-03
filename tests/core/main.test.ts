@@ -1,54 +1,56 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach, type MockedFunction } from 'vitest';
+
+type Fn<T extends (...args: unknown[]) => unknown> = MockedFunction<T>;
 
 // Mutable mocks so we can reconfigure between tests
 let mockIsMobile = false;
-let initializeCanvasMock: ReturnType<typeof vi.fn>;
-let initializeAudioMock: ReturnType<typeof vi.fn>;
-let startBackgroundMusicMock: ReturnType<typeof vi.fn>;
-let initializeInputMock: ReturnType<typeof vi.fn>;
-let initializeUIMock: ReturnType<typeof vi.fn>;
-let setupStarfieldMock: ReturnType<typeof vi.fn>;
-let setCanvasMock: ReturnType<typeof vi.fn>;
-let restartGameLoopMock: ReturnType<typeof vi.fn>;
-let startGameMock: ReturnType<typeof vi.fn>;
-let continueGameMock: ReturnType<typeof vi.fn>;
-let showOverlayMock: ReturnType<typeof vi.fn>;
-let setOverlayDimensionsMock: ReturnType<typeof vi.fn>;
-let quitGameMock: ReturnType<typeof vi.fn>;
-let initializeSettingsMock: ReturnType<typeof vi.fn>;
-let hideSettingsMock: ReturnType<typeof vi.fn>;
+let initializeCanvasMock: Fn<() => { canvas: HTMLCanvasElement; ctx: CanvasRenderingContext2D } | null>;
+let initializeAudioMock: Fn<(gesture?: boolean) => Promise<void>>;
+let startBackgroundMusicMock: Fn<() => void>;
+let initializeInputMock: Fn<(canvas: HTMLCanvasElement) => void>;
+let initializeUIMock: Fn<() => void>;
+let setupStarfieldMock: Fn<(canvas: HTMLCanvasElement) => void>;
+let setCanvasMock: Fn<(canvas: HTMLCanvasElement) => void>;
+let restartGameLoopMock: Fn<() => void>;
+let startGameMock: Fn<(canvas: HTMLCanvasElement) => void>;
+let continueGameMock: Fn<() => void>;
+let showOverlayMock: Fn<(...args: unknown[]) => unknown>;
+let setOverlayDimensionsMock: Fn<(canvas: HTMLCanvasElement) => void>;
+let quitGameMock: Fn<() => void>;
+let initializeSettingsMock: Fn<() => void>;
+let hideSettingsMock: Fn<() => void>;
 let getByIdElements: Record<string, HTMLElement>;
 const unmuteAllMock = vi.fn();
 
 vi.mock('@core/init/canvasInit.js', () => ({
-  initializeCanvas: (...args: unknown[]) => initializeCanvasMock(...args),
+  initializeCanvas: () => initializeCanvasMock(),
 }));
 
 vi.mock('@core/init/audioInit.js', () => ({
-  initializeAudio: (...args: unknown[]) => initializeAudioMock(...args),
-  startBackgroundMusic: (...args: unknown[]) => startBackgroundMusicMock(...args),
+  initializeAudio: (gesture?: boolean) => initializeAudioMock(gesture),
+  startBackgroundMusic: () => startBackgroundMusicMock(),
 }));
 
 vi.mock('@core/init/inputInit.js', () => ({
-  initializeInput: (...args: unknown[]) => initializeInputMock(...args),
+  initializeInput: (canvas: HTMLCanvasElement) => initializeInputMock(canvas),
 }));
 
 vi.mock('@core/init/uiInit.js', () => ({
-  initializeUI: (...args: unknown[]) => initializeUIMock(...args),
+  initializeUI: () => initializeUIMock(),
 }));
 
 vi.mock('@effects/starfield.js', () => ({
-  setupStarfield: (...args: unknown[]) => setupStarfieldMock(...args),
+  setupStarfield: (canvas: HTMLCanvasElement) => setupStarfieldMock(canvas),
 }));
 
 vi.mock('@game/gameLoop.js', () => ({
-  setCanvas: (...args: unknown[]) => setCanvasMock(...args),
-  restartGameLoop: (...args: unknown[]) => restartGameLoopMock(...args),
+  setCanvas: (canvas: HTMLCanvasElement) => setCanvasMock(canvas),
+  restartGameLoop: () => restartGameLoopMock(),
 }));
 
 vi.mock('@game/gameStateManager.js', () => ({
-  startGame: (...args: unknown[]) => startGameMock(...args),
-  continueGame: (...args: unknown[]) => continueGameMock(...args),
+  startGame: (canvas: HTMLCanvasElement) => startGameMock(canvas),
+  continueGame: () => continueGameMock(),
 }));
 
 const mockState = {
@@ -71,12 +73,12 @@ vi.mock('@core/logger.js', () => ({
 }));
 
 vi.mock('@ui/settings/settingsManager.js', () => ({
-  initializeSettings: (...args: unknown[]) => initializeSettingsMock(...args),
+  initializeSettings: () => initializeSettingsMock(),
 }));
 
 vi.mock('@ui/settings/settingsUI.js', () => ({
   showSettings: vi.fn(),
-  hideSettings: (...args: unknown[]) => hideSettingsMock(...args),
+  hideSettings: () => hideSettingsMock(),
 }));
 
 vi.mock('@utils/dom.js', () => ({
@@ -85,8 +87,8 @@ vi.mock('@utils/dom.js', () => ({
 
 vi.mock('@ui/overlays/overlayManager.js', () => ({
   showOverlay: (...args: unknown[]) => showOverlayMock(...args),
-  setOverlayDimensions: (...args: unknown[]) => setOverlayDimensionsMock(...args),
-  quitGame: (...args: unknown[]) => quitGameMock(...args),
+  setOverlayDimensions: (canvas: HTMLCanvasElement) => setOverlayDimensionsMock(canvas),
+  quitGame: () => quitGameMock(),
 }));
 
 vi.mock('@services/ServiceProvider.js', () => ({
@@ -118,7 +120,7 @@ function buildDom() {
 }
 
 async function importMain() {
-  await import('@core/main.ts');
+  await import('@core/main.js');
 }
 
 describe('core/main', () => {
@@ -150,21 +152,21 @@ describe('core/main', () => {
       getContext: vi.fn(() => ctx),
     }) as HTMLCanvasElement;
 
-    initializeCanvasMock = vi.fn(() => ({ canvas, ctx }));
-    initializeAudioMock = vi.fn(() => Promise.resolve());
-    startBackgroundMusicMock = vi.fn();
-    initializeInputMock = vi.fn();
-    initializeUIMock = vi.fn();
-    setupStarfieldMock = vi.fn();
-    setCanvasMock = vi.fn();
-    restartGameLoopMock = vi.fn();
-    startGameMock = vi.fn();
-    continueGameMock = vi.fn();
-    showOverlayMock = vi.fn();
-    setOverlayDimensionsMock = vi.fn();
-    quitGameMock = vi.fn();
-    initializeSettingsMock = vi.fn();
-    hideSettingsMock = vi.fn();
+    initializeCanvasMock = vi.fn(() => ({ canvas, ctx })) as Fn<() => { canvas: HTMLCanvasElement; ctx: CanvasRenderingContext2D } | null>;
+    initializeAudioMock = vi.fn(() => Promise.resolve()) as Fn<(gesture?: boolean) => Promise<void>>;
+    startBackgroundMusicMock = vi.fn() as Fn<() => void>;
+    initializeInputMock = vi.fn() as Fn<(canvas: HTMLCanvasElement) => void>;
+    initializeUIMock = vi.fn() as Fn<() => void>;
+    setupStarfieldMock = vi.fn() as Fn<(canvas: HTMLCanvasElement) => void>;
+    setCanvasMock = vi.fn() as Fn<(canvas: HTMLCanvasElement) => void>;
+    restartGameLoopMock = vi.fn() as Fn<() => void>;
+    startGameMock = vi.fn() as Fn<(canvas: HTMLCanvasElement) => void>;
+    continueGameMock = vi.fn() as Fn<() => void>;
+    showOverlayMock = vi.fn() as Fn<(...args: unknown[]) => unknown>;
+    setOverlayDimensionsMock = vi.fn() as Fn<(canvas: HTMLCanvasElement) => void>;
+    quitGameMock = vi.fn() as Fn<() => void>;
+    initializeSettingsMock = vi.fn() as Fn<() => void>;
+    hideSettingsMock = vi.fn() as Fn<() => void>;
     unmuteAllMock.mockClear();
     mockState.gameState.value = 'START';
     mockState.score.value = 0;
@@ -187,24 +189,24 @@ describe('core/main', () => {
     expect(initializeCanvasMock).toHaveBeenCalled();
     expect(initializeUIMock).toHaveBeenCalled();
     expect(initializeInputMock).toHaveBeenCalled();
-    expect(initializeAudioMock).toHaveBeenCalledWith();
+    expect(initializeAudioMock).toHaveBeenCalled();
     expect(setOverlayDimensionsMock).toHaveBeenCalled();
     expect(setCanvasMock).toHaveBeenCalled();
 
     // Start button should trigger start logic (cover both click/touch paths)
-    getByIdElements.startButton.dispatchEvent(new Event('click', { bubbles: true, cancelable: true }));
-    getByIdElements.startButton.dispatchEvent(new Event('touchstart', { bubbles: true, cancelable: true }));
+    getByIdElements.startButton!.dispatchEvent(new Event('click', { bubbles: true, cancelable: true }));
+    getByIdElements.startButton!.dispatchEvent(new Event('touchstart', { bubbles: true, cancelable: true }));
     expect(unmuteAllMock).toHaveBeenCalled();
     expect(startBackgroundMusicMock).toHaveBeenCalled();
     expect(startGameMock).toHaveBeenCalled();
     expect(restartGameLoopMock).toHaveBeenCalled();
 
     // Restart button should re-run start flow
-    getByIdElements.restartButton.dispatchEvent(new Event('click', { bubbles: true }));
+    getByIdElements.restartButton!.dispatchEvent(new Event('click', { bubbles: true }));
     expect(startGameMock).toHaveBeenCalledTimes(2);
 
     // Quit on desktop
-    getByIdElements.quitButton.dispatchEvent(new Event('click', { bubbles: true }));
+    getByIdElements.quitButton!.dispatchEvent(new Event('click', { bubbles: true }));
     expect(quitGameMock).toHaveBeenCalled();
 
     // Keyboard Enter from GAME_OVER should restart
@@ -233,7 +235,7 @@ describe('core/main', () => {
     // Mobile pause overlay resume
     mockState.gameState.value = 'PAUSED';
     const pauseEvent = new Event('touchstart', { bubbles: true, cancelable: true });
-    getByIdElements.pauseOverlay.dispatchEvent(pauseEvent);
+    getByIdElements.pauseOverlay!.dispatchEvent(pauseEvent);
     expect(mockState.gameState.value).toBe('PLAYING');
     expect(showOverlayMock).toHaveBeenCalledWith('PLAYING');
     expect(restartGameLoopMock).toHaveBeenCalled();
@@ -241,7 +243,7 @@ describe('core/main', () => {
     // Level transition continue on touch
     mockState.gameState.value = 'LEVEL_TRANSITION';
     const levelEvent = new Event('touchstart', { bubbles: true, cancelable: true });
-    getByIdElements.levelTransitionOverlay.dispatchEvent(levelEvent);
+    getByIdElements.levelTransitionOverlay!.dispatchEvent(levelEvent);
     expect(continueGameMock).toHaveBeenCalled();
     expect(restartGameLoopMock).toHaveBeenCalled();
   });

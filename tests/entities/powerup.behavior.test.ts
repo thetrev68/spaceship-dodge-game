@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { GameEvent } from '@core/events/GameEvents.js';
 let mockIsMobile = false;
 const emitSpy = vi.fn();
 
@@ -13,7 +14,7 @@ vi.mock('@core/events/GameEvents.js', async () => {
 let state = await import('@core/state.js');
 
 async function loadPowerups() {
-  return import('@entities/powerup.ts');
+  return import('@entities/powerup.js');
 }
 
 describe('powerup behaviors', () => {
@@ -40,8 +41,9 @@ describe('powerup behaviors', () => {
 
     spawnPowerup(400);
     expect(activePowerups).toHaveLength(1);
-    expect(activePowerups[0]).toMatchObject({ type: 'shield', dy: 1.5 });
-    expect(activePowerups[0].x).toBeLessThan(400);
+    const spawned = activePowerups[0]!;
+    expect(spawned).toMatchObject({ type: 'shield', dy: 1.5 });
+    expect(spawned.x).toBeLessThan(400);
   });
 
   it('collects powerups, activates state, and emits events', async () => {

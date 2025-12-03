@@ -55,7 +55,7 @@ describe('FlowManager events', () => {
     updateLevelFlow(() => {});
 
     expect(levelEvents.length).toBe(1);
-    expect(levelEvents[0].newLevel).toBe(gameLevel.value);
+    expect(levelEvents[0]!.newLevel).toBe(gameLevel.value);
     expect(transitionEvents.length).toBe(1);
     expect((services.audioService.stopMusic as ReturnType<typeof vi.fn>)).toHaveBeenCalled();
   });

@@ -79,7 +79,7 @@ vi.mock('@ui/settings/settingsManager.js', () => ({
 
 describe('init modules', () => {
   beforeEach(() => {
-    document.body.innerHTML = `<canvas id="gameCanvas"></canvas>`;
+    document.body.innerHTML = '<canvas id="gameCanvas"></canvas>';
   });
 
   it('initializes canvas', () => {

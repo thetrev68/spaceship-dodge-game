@@ -5,7 +5,7 @@ describe('init module branches', () => {
     vi.resetModules();
     const getById = vi.fn().mockReturnValue(null);
     vi.doMock('@utils/dom.js', () => ({ getById }));
-    const { initializeCanvas } = await import('@core/init/canvasInit.ts');
+    const { initializeCanvas } = await import('@core/init/canvasInit.js');
     expect(initializeCanvas()).toBeNull();
 
     const badCtx = { getContext: vi.fn(() => null) };
@@ -28,7 +28,7 @@ describe('init module branches', () => {
       getSettings: vi.fn(() => ({ backgroundMusicVolume: 0.2, soundEffectsVolume: 0.4, isMuted: true })),
     }));
 
-    const { initializeAudio, startBackgroundMusic } = await import('@core/init/audioInit.ts');
+    const { initializeAudio, startBackgroundMusic } = await import('@core/init/audioInit.js');
     await initializeAudio(true);
     expect(audioService.unlock).toHaveBeenCalled();
     expect(audioService.muteAll).toHaveBeenCalled();
@@ -51,7 +51,7 @@ describe('init module branches', () => {
       return { ...actual, isMobile: true };
     });
 
-    const { initializeInput } = await import('@core/init/inputInit.ts');
+    const { initializeInput } = await import('@core/init/inputInit.js');
     const canvas = document.createElement('canvas');
     initializeInput(canvas);
     expect(setupMobileInput).toHaveBeenCalledWith(canvas);

@@ -52,11 +52,7 @@ class MockAudio {
 }
 
 global.HTMLAudioElement = MockAudio as unknown as typeof HTMLAudioElement;
-
-// Also mock window.Audio constructor used in soundManager
-global.Audio = vi.fn(function MockHTMLAudio(this: any) {
-  return new (global.HTMLAudioElement as any)();
-}) as unknown as typeof Audio;
+global.Audio = MockAudio as unknown as typeof Audio;
 
 // Mock requestAnimationFrame
 global.requestAnimationFrame = vi.fn((cb) => {

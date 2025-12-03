@@ -33,7 +33,7 @@ vi.mock('@entities/powerup.js', () => ({
   spawnPowerup: (...args: unknown[]) => spawnPowerup(...args),
 }));
 vi.mock('@ui/hud/scorePopups.js', () => ({ updateScorePopups: (...args: unknown[]) => updateScorePopups(...args) }));
-vi.mock('@game/flowManager.js', () => ({ updateLevelFlow: (...args: unknown[]) => updateLevelFlow(...args), resetLevelFlow: vi.fn() }));
+vi.mock('@game/flowManager.js', () => ({ updateLevelFlow: (cb: () => void) => updateLevelFlow(cb), resetLevelFlow: vi.fn() }));
 vi.mock('@systems/renderManager.js', () => ({ renderAll: (...args: unknown[]) => renderAll(...args) }));
 vi.mock('@ui/overlays/overlayManager.js', () => ({ showOverlay: (...args: unknown[]) => showOverlay(...args) }));
 vi.mock('@ui/hud/perfHUD.js', () => ({ updatePerfHud: (...args: unknown[]) => updatePerfHud(...args) }));
@@ -74,7 +74,7 @@ describe('gameLoop logic', () => {
     const perfTimes = [0, 5, 600];
     vi.spyOn(performance, 'now').mockImplementation(() => perfTimes.shift() ?? 600);
 
-    const { setCanvas, restartGameLoop } = await import('@game/gameLoop.ts');
+    const { setCanvas, restartGameLoop } = await import('@game/gameLoop.js');
     setCanvas(canvas);
     restartGameLoop();
 
@@ -106,7 +106,7 @@ describe('gameLoop logic', () => {
 
     vi.spyOn(performance, 'now').mockReturnValue(0);
 
-    const { setCanvas, restartGameLoop } = await import('@game/gameLoop.ts');
+    const { setCanvas, restartGameLoop } = await import('@game/gameLoop.js');
     setCanvas(canvas);
     restartGameLoop();
 

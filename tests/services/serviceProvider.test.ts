@@ -28,10 +28,10 @@ const poolSize = vi.fn(() => 0);
 vi.mock('@systems/poolManager.js', () => {
   return {
     ObjectPool: class MockPool {
-      acquire = (...args: unknown[]) => poolAcquire(...args);
-      release = (...args: unknown[]) => poolRelease(...args);
-      clear = (...args: unknown[]) => poolClear(...args);
-      size = (...args: unknown[]) => poolSize(...args);
+      acquire = (value?: unknown) => poolAcquire(value);
+      release = (value?: unknown) => poolRelease(value);
+      clear = () => poolClear();
+      size = () => poolSize();
     }
   };
 });
@@ -82,7 +82,7 @@ describe('ServiceProvider', () => {
 
   it('tracks pool stats across acquire and release', () => {
     poolSize.mockReturnValue(2);
-    const bullet = { id: 1 } as unknown as object;
+    const bullet = { x: 0, y: 0, radius: 1, dy: 0, parentId: null };
     poolAcquire.mockReturnValue(bullet);
 
     const acquired = services.bulletPool.acquire();

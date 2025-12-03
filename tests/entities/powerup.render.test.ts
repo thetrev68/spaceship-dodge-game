@@ -14,7 +14,7 @@ describe('powerup rendering', () => {
     const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
     if (ctx) {
       // add missing rect to mocked context
-      (ctx as any).rect = () => {};
+      (ctx as CanvasRenderingContext2D & { rect: () => void }).rect = () => {};
     }
     drawPowerups(ctx);
     updatePowerups(600);
