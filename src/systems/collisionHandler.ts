@@ -275,7 +275,8 @@ function checkBulletObstacleCollisions(): void {
 
   // Search radius: bullet radius + largest possible obstacle radius
   const maxObstacleRadius = 50; // Safe upper bound for optimization
-  const searchRadius = bullets[0]?.radius ? bullets[0].radius + maxObstacleRadius : 100;
+  const bulletRadius = 3; // All bullets have uniform radius from BULLET_CONFIG.RADIUS
+  const searchRadius = bulletRadius + maxObstacleRadius;
 
   // Track destroyed obstacles by identity to avoid double-processing
   // (Multiple bullets could hit same obstacle in one frame)
