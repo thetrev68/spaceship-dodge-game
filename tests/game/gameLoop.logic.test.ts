@@ -71,8 +71,8 @@ describe('gameLoop logic', () => {
       getContext: vi.fn(() => mockCtx),
     }) as HTMLCanvasElement;
 
-    const perfTimes = [0, 5, 600];
-    vi.spyOn(performance, 'now').mockImplementation(() => perfTimes.shift() ?? 600);
+    let perfCounter = 0;
+    vi.spyOn(performance, 'now').mockImplementation(() => perfCounter++ * 16);
 
     const { setCanvas, restartGameLoop } = await import('@game/gameLoop.js');
     setCanvas(canvas);
