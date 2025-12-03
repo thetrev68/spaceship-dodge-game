@@ -2,22 +2,30 @@
  * @fileoverview Game state management.
  */
 
-import { gameState, playerLives, obstacles, score, gameLevel, powerUps } from '@core/state.js';
+import { entityState, gameState, playerLives, score, gameLevel, playerState } from '@core/state.js';
 import { resetLevelFlow } from '@game/flowManager.js';
 import { showOverlay } from '@ui/overlays/overlayManager.js';
-import * as soundManager from '@systems/soundManager.js';
 import { createAudioControls } from '@ui/controls/audioControls.js';
 import { resetPlayer } from '@entities/player.js';
 import { clearAllBullets } from '@entities/bullet.js';
+import { services } from '@services/ServiceProvider.js';
+import { eventBus } from '@core/events/EventBus.js';
+import { GameEvent, type PlayerDiedEvent } from '@core/events/GameEvents.js';
+
+const powerUps = playerState.powerUps;
 
 export function handlePlayerHit(): void {
   playerLives.value -= 1;
-  soundManager.playSound('gameover');
+  services.audioService.playSound('gameover');
 
   if (playerLives.value <= 0) {
     gameState.value = 'GAME_OVER';
-    soundManager.stopMusic();
+    services.audioService.stopMusic();
     showOverlay('GAME_OVER', score.value, gameLevel.value);
+    eventBus.emit<PlayerDiedEvent>(GameEvent.GAME_OVER, {
+      finalScore: score.value,
+      level: gameLevel.value,
+    });
   } else {
     gameState.value = 'LEVEL_TRANSITION';
     resetForNextLevel();
@@ -28,9 +36,9 @@ export function handlePlayerHit(): void {
 function resetForNextLevel(): void {
   resetPlayer(window.innerWidth, window.innerHeight);
   clearAllBullets();
-  obstacles.length = 0;
+  entityState.clearObstacles();
   resetLevelFlow();
-  soundManager.stopMusic();
+  services.audioService.stopMusic();
 }
 
 export function startGame(canvas: HTMLCanvasElement): void {
@@ -45,7 +53,7 @@ export function startGame(canvas: HTMLCanvasElement): void {
   powerUps.doubleBlaster.timer = 0;
 
   clearAllBullets();
-  obstacles.length = 0;
+  entityState.clearObstacles();
 
   resetPlayer(canvas.width, canvas.height);
   resetLevelFlow();
@@ -53,18 +61,21 @@ export function startGame(canvas: HTMLCanvasElement): void {
 
   createAudioControls();
 
-  soundManager.unmuteAll();
-  soundManager.startMusic();
+  services.audioService.unmuteAll();
+  services.audioService.startMusic();
 
   const canvasContext = canvas.getContext('2d');
   if (canvasContext) {
     canvasContext.clearRect(0, 0, canvas.width, canvas.height);
   }
+
+  eventBus.emit(GameEvent.GAME_STARTED, undefined);
 }
 
 export function continueGame(): void {
   gameState.value = 'PLAYING';
   resetLevelFlow();
   showOverlay('PLAYING');
-  soundManager.startMusic();
+  services.audioService.startMusic();
+  eventBus.emit(GameEvent.GAME_RESUMED, undefined);
 }

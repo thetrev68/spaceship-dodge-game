@@ -5,6 +5,8 @@
 import { isMobile } from '@utils/platform.js';
 import { ObjectPool } from '@systems/poolManager.js';
 import { ANIMATION_CONSTANTS, HUD_CONSTANTS } from '@core/gameConstants.js';
+import { eventBus } from '@core/events/EventBus.js';
+import { GameEvent, type AsteroidDestroyedEvent, type BonusAwardedEvent, type PowerupCollectedEvent, type PowerupExpiredEvent } from '@core/events/GameEvents.js';
 
 type ScorePopup = { text: string; x: number; y: number; opacity: number; color: string };
 
@@ -17,6 +19,29 @@ const scorePopupPool = new ObjectPool<ScorePopup>(() => ({
   opacity: HUD_CONSTANTS.GLOBAL_ALPHA,
   color: '#ffffff',
 }));
+
+let subscribersRegistered = false;
+
+export function initializeScorePopups(): void {
+  if (subscribersRegistered) return;
+  subscribersRegistered = true;
+
+  eventBus.on<AsteroidDestroyedEvent>(GameEvent.ASTEROID_DESTROYED, (data) => {
+    addScorePopup(`+${data.score}`, data.position.x, data.position.y);
+  });
+
+  eventBus.on<BonusAwardedEvent>(GameEvent.BONUS_AWARDED, (data) => {
+    addScorePopup(`+${data.bonusAmount} (${data.bonusType})`, data.position.x, data.position.y, '#00ff00');
+  });
+
+  eventBus.on<PowerupCollectedEvent>(GameEvent.POWERUP_COLLECTED, (data) => {
+    addScorePopup(`Power-up! ${data.type}`, data.position.x, data.position.y, '#00ffff');
+  });
+
+  eventBus.on<PowerupExpiredEvent>(GameEvent.POWERUP_EXPIRED, (data) => {
+    addScorePopup(`${data.type} expired`, 40, 60, '#ffaa00');
+  });
+}
 
 export function addScorePopup(text: string, x: number, y: number, color = '#ffffff'): void {
   if (isMobile()) return;

@@ -22,8 +22,23 @@ export function mockWebAudio() {
   global.AudioContext = vi.fn(() => audioContextMock) as unknown as typeof AudioContext;
 
   // Create mock Audio constructor that properly mimics HTMLAudioElement
-  global.Audio = vi.fn(function(this: any, src?: string) {
-    const mockInstance = {
+  type MockAudioInstance = {
+    play: ReturnType<typeof vi.fn>;
+    pause: ReturnType<typeof vi.fn>;
+    load: ReturnType<typeof vi.fn>;
+    volume: number;
+    muted: boolean;
+    currentTime: number;
+    loop: boolean;
+    addEventListener: ReturnType<typeof vi.fn>;
+    removeEventListener: ReturnType<typeof vi.fn>;
+    remove: ReturnType<typeof vi.fn>;
+    src: string;
+    cloneNode: ReturnType<typeof vi.fn>;
+  };
+
+  const AudioCtor = vi.fn(function MockAudio(this: unknown, src?: string) {
+    const mockInstance: MockAudioInstance = {
       play: vi.fn(() => Promise.resolve(undefined)),
       pause: vi.fn(),
       load: vi.fn(),
@@ -38,15 +53,24 @@ export function mockWebAudio() {
       cloneNode: vi.fn()
     };
 
-    // cloneNode should return a new mock audio instance with same src
     mockInstance.cloneNode.mockImplementation(() => {
-      const clone = new (global.Audio as any)(mockInstance.src);
-      return clone;
+      const clone: MockAudioInstance = {
+        ...mockInstance,
+        play: vi.fn(() => Promise.resolve(undefined)),
+        pause: vi.fn(),
+        load: vi.fn(),
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+        remove: vi.fn(),
+        cloneNode: vi.fn()
+      };
+      return clone as unknown as HTMLAudioElement;
     });
 
-    // Return the mock instance when used with 'new'
-    return mockInstance;
+    return mockInstance as unknown as HTMLAudioElement;
   }) as unknown as typeof Audio;
+
+  global.Audio = AudioCtor;
 
   return audioContextMock;
 }

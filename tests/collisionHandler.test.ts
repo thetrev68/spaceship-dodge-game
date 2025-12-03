@@ -20,15 +20,36 @@ vi.mock('@game/gameStateManager.js', () => ({
   handlePlayerHit: vi.fn(),
 }));
 
-vi.mock('@core/state.js', () => ({
-  player: { x: 0, y: 0, width: 1, height: 1 },
-  bullets: [],
-  obstacles: [],
-  powerUps: { shield: { active: false, timer: 0 }, doubleBlaster: { active: false, timer: 0 } },
-  score: { value: 0 },
-}));
+vi.mock('@core/state.js', () => {
+  const player = { x: 0, y: 0, width: 1, height: 1 };
+  const bullets: unknown[] = [];
+  const obstacles: unknown[] = [];
+  const powerUps = { shield: { active: false, timer: 0 }, doubleBlaster: { active: false, timer: 0 } };
+  const playerLives = { value: 3 };
+  const score = { value: 0 };
+  return {
+    player,
+    bullets,
+    obstacles,
+    powerUps,
+    score,
+    playerLives,
+    entityState: {
+      getMutableBullets: () => bullets,
+      getMutableObstacles: () => obstacles,
+    },
+    playerState: {
+      player,
+      powerUps,
+    },
+    addScore: (points: number) => {
+      score.value += points;
+      return score.value;
+    },
+  };
+});
 
-const { circleRectCollision } = await import('@systems/collisionHandler.js');
+import { circleRectCollision } from '@systems/collisionHandler.js';
 
 describe('circleRectCollision', () => {
   it('detects overlap when circle intersects rectangle', () => {

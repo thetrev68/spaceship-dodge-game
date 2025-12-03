@@ -29,7 +29,7 @@ describe('Sound Manager', () => {
     expect(() => {
       try {
         playSound('fire');
-      } catch (e) {
+      } catch {
         // Expected to throw in JSDOM environment
       }
     }).not.toThrow();

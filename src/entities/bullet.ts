@@ -4,11 +4,11 @@
  */
 
 import type { Bullet } from '@types';
-import { bullets, gameState } from '@core/state.js';
+import { entityState, gameState } from '@core/state.js';
 import { isMobile } from '@utils/platform.js';
 import { BULLET_CONFIG } from '@core/constants.js';
 import { ObjectPool } from '@systems/poolManager.js';
-import { playSound } from '@systems/soundManager.js';
+import { services } from '@services/ServiceProvider.js';
 
 const bulletSpeed = BULLET_CONFIG.SPEED;
 const bulletRadius = BULLET_CONFIG.RADIUS;
@@ -35,6 +35,7 @@ const bulletPool = new ObjectPool<Bullet>(() => ({
   dy: 0,
   parentId: null,
 }));
+const bullets = entityState.getMutableBullets();
 
 /**
  * Acquires a bullet from the pool.
@@ -93,7 +94,7 @@ export function fireBullet(x: number, y: number): void {
   const now = Date.now();
   const delay = isMobile() ? 400 : 30; // slower cadence on mobile
   if (!isMobile() && now - lastFireSoundTime > delay) {
-    playSound('fire');
+    services.audioService.playSound('fire');
     lastFireSoundTime = now;
   }
 }

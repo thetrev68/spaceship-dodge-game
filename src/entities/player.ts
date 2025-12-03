@@ -4,7 +4,7 @@
  */
 
 import type { Player } from '@types';
-import { player, gameState, powerUps } from '@core/state.js';
+import { playerState, gameState } from '@core/state.js';
 import { fireBullet } from '@entities/bullet.js';
 import { clamp } from '@utils/mathUtils.js';
 import { isMobile } from '@utils/platform.js';
@@ -13,6 +13,9 @@ import {
   HUD_CONSTANTS,
   GAME_STATE_CONSTANTS,
 } from '@core/gameConstants.js';
+
+const player = playerState.player;
+const powerUps = playerState.powerUps;
 
 function clampToCanvas(): void {
     // Optimized: Use window dimensions since game is full screen

@@ -10,12 +10,11 @@ import {
   MOBILE_CONFIG,
 } from '@core/constants.js';
 
-import { obstacles } from '@core/state.js';
+import { entityState } from '@core/state.js';
 import { isMobile } from '@utils/platform.js';
 import { randomInt, randomFloat } from '@utils/mathUtils.js';
 import { ObjectPool } from '@systems/poolManager.js';
-import { addScorePopup } from '@ui/hud/scorePopups.js';
-import { playSound } from '@systems/soundManager.js';
+import { services } from '@services/ServiceProvider.js';
 
 const obstacleMinSpeed = ASTEROID_CONFIG.BASE_MIN_SPEED;
 let nextAsteroidId = 1;
@@ -40,6 +39,7 @@ const obstaclePool = new ObjectPool<Asteroid>(() => ({
   speed: 0,
   shape: [],
 }));
+const obstacles = entityState.getMutableObstacles();
 
 /**
  * Count of new asteroids spawned.
@@ -236,9 +236,15 @@ export function drawObstacles(ctx: CanvasRenderingContext2D): void {
   ctx.stroke();
 }
 
-export function destroyObstacle(obstacle: Asteroid, scoreRef: { value: number }): void {
+export type DestroyOutcome = {
+  bonusAwarded: boolean;
+  bonusAmount: number;
+  bonusPosition: { x: number; y: number } | null;
+};
+
+export function destroyObstacle(obstacle: Asteroid): DestroyOutcome {
   const idx = obstacles.indexOf(obstacle);
-  if (idx === -1) return;
+  if (idx === -1) return { bonusAwarded: false, bonusAmount: 0, bonusPosition: null };
 
   // Swap and pop for O(1) removal
   const last = obstacles.pop();
@@ -247,7 +253,11 @@ export function destroyObstacle(obstacle: Asteroid, scoreRef: { value: number })
   }
 
   obstaclePool.release(obstacle);
-  playSound('break');
+  services.audioService.playSound('break');
+
+  let bonusAwarded = false;
+  let bonusAmount = 0;
+  let bonusPosition: { x: number; y: number } | null = null;
 
   if (obstacle.level < ASTEROID_CONFIG.LEVEL_SIZES.length - 1) {
     const nextLevel = obstacle.level + 1;
@@ -273,21 +283,21 @@ export function destroyObstacle(obstacle: Asteroid, scoreRef: { value: number })
     }
   }
 
-  scoreRef.value += obstacle.scoreValue;
-  addScorePopup(`+${obstacle.scoreValue}`, obstacle.x + obstacle.radius, obstacle.y);
-
   if (obstacle.parentId !== null && obstacle.level === ASTEROID_CONFIG.LEVEL_SIZES.length - 1) {
     const parentId = obstacle.parentId;
     const count = fragmentTracker[parentId];
     if (typeof count === 'number') {
       const nextCount = count - 1;
       if (nextCount <= 0) {
-        scoreRef.value += ASTEROID_CONFIG.FRAGMENT_BONUS;
-        addScorePopup(`+${ASTEROID_CONFIG.FRAGMENT_BONUS} (All Fragments)`, obstacle.x, obstacle.y - 10, '#00ff00');
+        bonusAwarded = true;
+        bonusAmount = ASTEROID_CONFIG.FRAGMENT_BONUS;
+        bonusPosition = { x: obstacle.x, y: obstacle.y - 10 };
         delete fragmentTracker[parentId];
       } else {
         fragmentTracker[parentId] = nextCount;
       }
     }
   }
+
+  return { bonusAwarded, bonusAmount, bonusPosition };
 }

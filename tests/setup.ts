@@ -2,7 +2,7 @@ import { vi } from 'vitest';
 
 // Mock canvas globally - simplified approach
 HTMLCanvasElement.prototype.getContext = vi.fn(() => {
-  const mockContext = {
+  const mockContext: Partial<CanvasRenderingContext2D> = {
     fillRect: vi.fn(),
     clearRect: vi.fn(),
     strokeRect: vi.fn(),
@@ -23,7 +23,6 @@ HTMLCanvasElement.prototype.getContext = vi.fn(() => {
     textAlign: 'left'
   };
 
-  // Add some basic properties to make it more complete
   Object.defineProperty(mockContext, 'canvas', {
     get: () => ({ width: 800, height: 600 }),
     configurable: true
@@ -34,8 +33,8 @@ HTMLCanvasElement.prototype.getContext = vi.fn(() => {
     writable: true
   });
 
-  return mockContext;
-}) as any;
+  return mockContext as CanvasRenderingContext2D;
+}) as unknown as HTMLCanvasElement['getContext'];
 
 // Mock HTMLAudioElement to avoid jsdom audio issues
 class MockAudio {
@@ -55,6 +54,6 @@ global.HTMLAudioElement = MockAudio as unknown as typeof HTMLAudioElement;
 global.requestAnimationFrame = vi.fn((cb) => {
   setTimeout(cb, 16);
   return 0;
-});
+}) as unknown as typeof requestAnimationFrame;
 
-global.cancelAnimationFrame = vi.fn();
+global.cancelAnimationFrame = vi.fn() as unknown as typeof cancelAnimationFrame;

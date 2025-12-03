@@ -20,12 +20,12 @@ import { updateObstacles, resetNewAsteroidsSpawned } from '@entities/asteroid.js
 import { updateBullets } from '@entities/bullet.js';
 import { updatePowerups, spawnPowerup } from '@entities/powerup.js';
 import { updateScorePopups } from '@ui/hud/scorePopups.js';
-import { checkCollisions } from '@systems/collisionHandler.js';
 import { updateLevelFlow, resetLevelFlow } from '@game/flowManager.js';
 import { renderAll } from '@systems/renderManager.js';
 import { showOverlay } from '@ui/overlays/overlayManager.js';
 import { isMobile } from '@utils/platform.js';
 import { updatePerfHud } from '@ui/hud/perfHUD.js';
+import { services } from '@services/ServiceProvider.js';
 
 let lastFrameTime = 0;
 let animationId: number | null = null;
@@ -89,7 +89,7 @@ function gameLoop(canvas: HTMLCanvasElement, timestamp = 0): void {
     updatePowerups(canvas.height);
     updateScorePopups();
 
-    checkCollisions();
+    services.collisionService.checkCollisions();
 
     updateLevelFlow(() => {
       resetNewAsteroidsSpawned();

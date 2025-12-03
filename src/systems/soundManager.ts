@@ -128,6 +128,10 @@ export function unmuteAll(): void {
   startMusic();
 }
 
+export function isAudioMuted(): boolean {
+  return isMuted;
+}
+
 function applyVolumeAndMute(): void {
   debug('audio', 'applyVolumeAndMute', { isMuted, volumes });
   Object.entries(sounds).forEach(([key, audio]) => {
