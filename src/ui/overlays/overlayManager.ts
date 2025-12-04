@@ -215,7 +215,48 @@ export function setOverlayDimensions(canvas: HTMLCanvasElement): void {
     getById<HTMLElement>('gameOverOverlay'),
     getById<HTMLElement>('levelTransitionOverlay'),
     getById<HTMLElement>('pauseOverlay'),
+    getById<HTMLElement>('fatalErrorOverlay'),
   ].filter(isHTMLElement);
 
   setOverlayDims(canvas, overlays);
+}
+
+/**
+ * Shows fatal error overlay with message and error code.
+ * Used for non-recoverable errors that require page reload.
+ *
+ * @param message - User-friendly error message
+ * @param code - Error code for debugging (e.g., "CANVAS_ERROR")
+ *
+ * @example
+ * ```typescript
+ * showFatalErrorOverlay(
+ *   'Canvas element not found. Please ensure your browser supports HTML5.',
+ *   'CANVAS_ERROR'
+ * );
+ * ```
+ */
+export function showFatalErrorOverlay(message: string, code: string): void {
+  hideAllOverlays();
+
+  const errorMessageEl = getById<HTMLElement>('fatalErrorMessage');
+  const errorCodeEl = getById<HTMLElement>('fatalErrorCode');
+  const reloadButton = getById<HTMLButtonElement>('reloadButton');
+
+  if (errorMessageEl) {
+    errorMessageEl.textContent = message;
+  }
+
+  if (errorCodeEl) {
+    errorCodeEl.textContent = `Error Code: ${code}`;
+  }
+
+  if (reloadButton) {
+    reloadButton.onclick = () => {
+      window.location.reload();
+    };
+  }
+
+  announce(`Fatal error: ${message}. Error code ${code}. Please reload the page.`);
+  show(getById<HTMLElement>('fatalErrorOverlay'));
 }

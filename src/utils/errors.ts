@@ -1,5 +1,6 @@
 import { stopGameLoop } from '@game/gameLoop.js';
 import { error as logError, warn as logWarn } from '@core/logger.js';
+import { showFatalErrorOverlay as showFatalOverlay } from '@ui/overlays/overlayManager.js';
 
 /**
  * @module utils/errors
@@ -236,12 +237,13 @@ export function handleError(err: Error): void {
 }
 
 /**
- * Shows fatal error overlay to user (stub - implementation in overlayManager).
+ * Shows fatal error overlay to user.
+ * Delegates to overlayManager for proper in-game error display.
+ *
  * @param message - User-friendly error message
  * @param code - Error code for debugging
  */
 function showFatalErrorOverlay(message: string, code: string): void {
-  // TODO: Implement proper overlay in overlayManager.ts
   logError('error', `FATAL ERROR [${code}]: ${message}`);
-  alert(`Fatal Error: ${message}\n\nError Code: ${code}\n\nPlease refresh the page.`);
+  showFatalOverlay(message, code);
 }
