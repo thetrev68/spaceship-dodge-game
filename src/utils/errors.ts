@@ -241,7 +241,7 @@ export function handleError(err: Error): void {
  * @param code - Error code for debugging
  */
 function showFatalErrorOverlay(message: string, code: string): void {
-  // TODO: Implement in overlayManager.ts
-  console.error(`FATAL ERROR [${code}]: ${message}`);
+  // TODO: Implement proper overlay in overlayManager.ts
+  logError('error', `FATAL ERROR [${code}]: ${message}`);
   alert(`Fatal Error: ${message}\n\nError Code: ${code}\n\nPlease refresh the page.`);
 }
