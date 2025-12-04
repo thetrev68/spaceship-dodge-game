@@ -166,12 +166,10 @@ export function validateAudioVolume(volume: number): number {
  * @param name - Parameter name for error messages (e.g., "level", "entityId")
  * @returns The validated positive integer
  * @throws {TypeError} If value is not a positive integer
- *
+ */
 function _validatePositiveInteger(value: number, name: string): number {
   if (!Number.isInteger(value) || value < 1) {
-    throw new TypeError(
-      `${name} must be a positive integer (>= 1), got: ${value}`
-    );
+    throw new TypeError(`${name} must be a positive integer (>= 1), got: ${value}`);
   }
   return value;
 }

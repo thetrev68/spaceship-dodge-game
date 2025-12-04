@@ -37,7 +37,7 @@ npm install
 
 # Start development server
 npm run dev
-```
+```bash
 
 Visit `http://localhost:5173` to see the game running.
 
@@ -66,7 +66,7 @@ npm run docs             # Generate TypeDoc documentation
 
 # Deployment
 npm run deploy           # Deploy to GitHub Pages
-```
+```bash
 
 ---
 
@@ -74,7 +74,7 @@ npm run deploy           # Deploy to GitHub Pages
 
 ### High-Level System Architecture
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │                      User Interface Layer                    │
 │  ┌──────────┐  ┌───────────┐  ┌──────────┐  ┌────────────┐ │
@@ -113,7 +113,7 @@ npm run deploy           # Deploy to GitHub Pages
             │Collision │     │ Canvas   │
             │Detection │     │Rendering │
             └──────────┘     └──────────┘
-```
+```text
 
 ### Key Architectural Patterns
 
@@ -208,7 +208,7 @@ See [ADR-005](./architecture/decisions/ADR-005-typescript-strict-mode.md) for ra
 
 **Commit Message Format:**
 
-```
+```text
 <type>: <subject>
 
 <body>
@@ -220,7 +220,7 @@ Types: `feat`, `fix`, `refactor`, `docs`, `test`, `chore`
 
 Example:
 
-```
+```text
 feat: Add shield powerup with visual glow effect
 
 - Implements 5-second invulnerability on pickup
@@ -228,7 +228,7 @@ feat: Add shield powerup with visual glow effect
 - Updates HUD to show active shield indicator
 
 Closes #42
-```
+```typescript
 
 ---
 
@@ -369,6 +369,7 @@ export function checkCollisions(): void {
     // Search 3x3 grid around bullet (9 cells)
     for (let dx = -1; dx <= 1; dx++) {
       for (let dy = -1; dy <= 1; dy++) {
+        const neighborKey = getCellKey(bullet.x + dx * CELL_SIZE, bullet.y + dy * CELL_SIZE);
         const nearbyObstacles = spatialGrid.get(neighborKey) || [];
         for (const obstacle of nearbyObstacles) {
           if (circleCollision(bullet, obstacle)) {
@@ -522,7 +523,7 @@ The project maintains high test coverage:
 
 Tests are colocated with source files:
 
-```
+```text
 src/
 ├── core/
 │   ├── reactive.ts
@@ -628,12 +629,12 @@ export const DEV_CONFIG = {
 ### 2. Use the Logger
 
 ```typescript
-import { log } from '@core/logger';
+import { debug, info, warn, error } from '@core/logger';
 
-log.debug('Detailed debug info', { data });
-log.info('General information');
-log.warn('Warning message');
-log.error('Error occurred', error);
+debug('collision', 'Detailed debug info', { data });
+info('game', 'General information');
+warn('input', 'Warning message');
+error('game', 'Error occurred', error);
 ```
 
 ### 3. Performance Profiling

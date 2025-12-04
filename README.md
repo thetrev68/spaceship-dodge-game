@@ -35,8 +35,6 @@ A fast-paced arcade-style browser game where you pilot a glowing vector spaceshi
 
 The codebase follows a modular, domain-driven structure. Path aliases (e.g., `@core`, `@game`) are used for cleaner imports.
 
-For a detailed breakdown, see [FOLDER_STRUCTURE.md](./FOLDER_STRUCTURE.md).
-
 ```plaintext
 src/
 ├── core/           # Application bootstrap, global state, configuration
@@ -63,7 +61,7 @@ src/
 
 ## 🛠️ Technical Improvements (v1.1.0+)
 
-Recent updates focus on performance, stability, and code quality. See [UPGRADE_NOTES.md](./UPGRADE_NOTES.md) for details.
+Recent updates focus on performance, stability, and code quality.
 
 - **Modular Architecture**: Domain-specific modules (Entities, Systems, UI, etc.).
 - **Spatial Partitioning**: Spatial grid for O(n) collision detection with many objects.
@@ -180,10 +178,7 @@ Key architectural decisions are documented in `docs/architecture/decisions/`:
 
 ### Additional Resources
 
-- [FOLDER_STRUCTURE.md](./FOLDER_STRUCTURE.md) - Detailed module organization
-- [UPGRADE_NOTES.md](./UPGRADE_NOTES.md) - JS to TypeScript migration notes
 - [LOGGER_USAGE.md](./LOGGER_USAGE.md) - Centralized logging API
-- [TECHNICAL_DEBT_ASSESSMENT.md](./TECHNICAL_DEBT_ASSESSMENT.md) - Known technical debt
 - [CONTRIBUTING.md](./CONTRIBUTING.md) - Contribution guidelines and standards
 
 ### API Documentation

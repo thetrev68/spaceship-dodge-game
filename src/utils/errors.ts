@@ -163,6 +163,16 @@ export class CanvasError extends GameError {
   }
 }
 
+export class AssetError extends GameError {
+  /**
+   * @param message - Error description
+   */
+  constructor(message: string) {
+    super(message, 'ASSET_ERROR', false); // Always non-recoverable
+    this.name = 'AssetError';
+  }
+}
+
 /**
  * Asset loading errors (non-recoverable).
  * Game cannot function with missing critical assets.
