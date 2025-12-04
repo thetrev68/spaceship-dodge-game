@@ -28,7 +28,17 @@ describe('player state', () => {
     playerState.clearPowerups();
     expect(playerState.powerUps.shield.active).toBe(false);
 
-    playerState.setPlayer({ ...playerState.player, x: 10, y: 20, width: 10, height: 10, speed: 5, dx: 1, dy: 1, overridePosition: null });
+    playerState.setPlayer({
+      ...playerState.player,
+      x: 10,
+      y: 20,
+      width: 10,
+      height: 10,
+      speed: 5,
+      dx: 1,
+      dy: 1,
+      overridePosition: null,
+    });
     expect(playerState.player.x).toBe(10);
     playerState.reset();
     expect(playerState.player.x).not.toBe(10);

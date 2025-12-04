@@ -36,7 +36,8 @@ let currentSettings: _GameSettings = { ...DEFAULT_SETTINGS };
 
 function loadSettings(): _GameSettings {
   try {
-    const savedSettings = typeof localStorage !== 'undefined' ? localStorage.getItem(SETTINGS_KEY) : null;
+    const savedSettings =
+      typeof localStorage !== 'undefined' ? localStorage.getItem(SETTINGS_KEY) : null;
     if (savedSettings) {
       const parsed = JSON.parse(savedSettings) as Partial<_GameSettings>;
       currentSettings = { ...DEFAULT_SETTINGS, ...parsed };

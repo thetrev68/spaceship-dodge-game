@@ -4,11 +4,7 @@
  */
 
 import type { Asteroid, Vector2 } from '@types';
-import {
-  GAME_CONFIG,
-  ASTEROID_CONFIG,
-  MOBILE_CONFIG,
-} from '@core/constants.js';
+import { GAME_CONFIG, ASTEROID_CONFIG, MOBILE_CONFIG } from '@core/constants.js';
 
 import { entityState } from '@core/state.js';
 import { isMobile } from '@utils/platform.js';
@@ -73,7 +69,7 @@ function generateAsteroidShape(radius: number, numPoints: number): Vector2[] {
     const r = radius * (0.8 + Math.random() * 0.4);
     points.push({
       x: r * Math.cos(angle),
-      y: r * Math.sin(angle)
+      y: r * Math.sin(angle),
     });
   }
   return points;
@@ -106,9 +102,13 @@ function createObstacle(
   }
 
   const baseSpeed = randomFloat(obstacleMinSpeed, obstacleMaxSpeed);
-  const speed = parentId === null ? baseSpeed : baseSpeed * ASTEROID_CONFIG.FRAGMENT_SPEED_MULTIPLIER;
+  const speed =
+    parentId === null ? baseSpeed : baseSpeed * ASTEROID_CONFIG.FRAGMENT_SPEED_MULTIPLIER;
   const rotation = Math.random() * 2 * Math.PI;
-  const rotationSpeed = randomFloat(ASTEROID_CONFIG.ROTATION_SPEED_MIN, ASTEROID_CONFIG.ROTATION_SPEED_MAX);
+  const rotationSpeed = randomFloat(
+    ASTEROID_CONFIG.ROTATION_SPEED_MIN,
+    ASTEROID_CONFIG.ROTATION_SPEED_MAX
+  );
   const now = Date.now();
 
   // Use the pool manager
@@ -297,7 +297,7 @@ export function drawObstacles(ctx: CanvasRenderingContext2D): void {
       const py = p.x * sin + p.y * cos + cy;
       ctx.lineTo(px, py);
     }
-    
+
     // Close the shape
     ctx.lineTo(startX, startY);
   }
@@ -388,9 +388,7 @@ export function destroyObstacle(obstacle: Asteroid): DestroyOutcome {
     const numNew = randomInt(fragmentsMin, fragmentsMax);
     for (let k = 0; k < numNew; k++) {
       const angle = Math.random() * Math.PI * 2;
-      const scatterSpeed = Math.random() < 0.8
-        ? randomFloat(0.3, 1.0)
-        : randomFloat(1.0, 2.5);
+      const scatterSpeed = Math.random() < 0.8 ? randomFloat(0.3, 1.0) : randomFloat(1.0, 2.5);
       // Inherit parent velocity plus random scatter
       const dx = obstacle.dx + Math.cos(angle) * scatterSpeed;
       const dy = obstacle.dy + Math.sin(angle) * scatterSpeed;

@@ -1,5 +1,16 @@
 import { describe, expect, it, beforeEach } from 'vitest';
-import { gameState, score, gameLevel, playerLives, lastObstacleSpawnTime, levelStartTime, resetGameState, addScore, loseLife, incrementLevel } from '@core/state';
+import {
+  gameState,
+  score,
+  gameLevel,
+  playerLives,
+  lastObstacleSpawnTime,
+  levelStartTime,
+  resetGameState,
+  addScore,
+  loseLife,
+  incrementLevel,
+} from '@core/state';
 
 describe('game state helpers', () => {
   beforeEach(() => {

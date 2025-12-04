@@ -3,9 +3,10 @@ import { debug, info, warn, error } from '@core/logger.js';
 import { validateAudioVolume } from '@utils/validation.js';
 import { VOLUME_CONSTANTS } from '@core/uiConstants.js';
 
-const envBaseUrl = typeof import.meta !== 'undefined' && typeof import.meta.env?.BASE_URL === 'string'
-  ? import.meta.env.BASE_URL
-  : undefined;
+const envBaseUrl =
+  typeof import.meta !== 'undefined' && typeof import.meta.env?.BASE_URL === 'string'
+    ? import.meta.env.BASE_URL
+    : undefined;
 const BASE_URL = envBaseUrl && envBaseUrl.length > 0 ? envBaseUrl : '/spaceship-dodge-game/';
 debug('audio', 'soundManager BASE_URL', BASE_URL);
 
@@ -45,25 +46,31 @@ export function forceAudioUnlock(): Promise<void> {
       const silent = new Audio(SILENT_MP3);
       silent.volume = 0;
 
-      silent.addEventListener('error', (err) => {
-        warn('audio', 'Silent audio failed to load, but continuing:', err);
-        isAudioUnlocked = true;
-        resolve();
-      }, { once: true });
+      silent.addEventListener(
+        'error',
+        (err) => {
+          warn('audio', 'Silent audio failed to load, but continuing:', err);
+          isAudioUnlocked = true;
+          resolve();
+        },
+        { once: true }
+      );
 
       const play = silent.play();
       if (play && typeof play.then === 'function') {
-        play.then(() => {
-          silent.pause();
-          silent.remove();
-          isAudioUnlocked = true;
-          debug('audio', 'Silent audio unlocked the audio context');
-          resolve();
-        }).catch((err: unknown) => {
-          warn('audio', 'Silent audio unlock failed, but continuing:', err);
-          isAudioUnlocked = true;
-          resolve();
-        });
+        play
+          .then(() => {
+            silent.pause();
+            silent.remove();
+            isAudioUnlocked = true;
+            debug('audio', 'Silent audio unlocked the audio context');
+            resolve();
+          })
+          .catch((err: unknown) => {
+            warn('audio', 'Silent audio unlock failed, but continuing:', err);
+            isAudioUnlocked = true;
+            resolve();
+          });
       } else {
         warn('audio', 'Silent audio play() did not return a promise');
         isAudioUnlocked = true;
@@ -100,7 +107,8 @@ export function startMusic(): void {
   bgm.volume = volumes.backgroundMusic;
   bgm.muted = isMuted;
 
-  bgm.play()
+  bgm
+    .play()
     .then(() => {
       info('audio', 'BGM playback started');
     })
@@ -146,7 +154,6 @@ function applyVolumeAndMute(): void {
   });
 }
 
-
 export function setBackgroundMusicVolume(val: number): void {
   const volume = validateAudioVolume(val);
   volumes.backgroundMusic = volume;
@@ -172,7 +179,8 @@ export function playSound(name: SoundKey): void {
   sfx.volume = volumes.soundEffects;
   sfx.muted = isMuted;
 
-  sfx.play()
+  sfx
+    .play()
     .then(() => {
       debug('audio', `playSound(${name}) triggered`);
     })

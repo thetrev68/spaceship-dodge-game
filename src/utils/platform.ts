@@ -38,6 +38,8 @@ export const setMobileOverride = (value: boolean | null): void => {
  * @internal - Do not use in production code
  */
 export const __platformTestUtils = {
-  reset: () => { mobileOverride = null; },
+  reset: () => {
+    mobileOverride = null;
+  },
   getState: () => __getMobileState(),
 };

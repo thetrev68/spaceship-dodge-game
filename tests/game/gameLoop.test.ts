@@ -18,8 +18,8 @@ describe('Game Loop', () => {
   afterEach(() => {
     cleanup();
     // Ensure cancelAnimationFrame is mocked before calling stopGameLoop
-    if (!global.cancelAnimationFrame) {
-      global.cancelAnimationFrame = vi.fn();
+    if (!globalThis.cancelAnimationFrame) {
+      globalThis.cancelAnimationFrame = vi.fn();
     }
     stopGameLoop();
     vi.clearAllMocks();
@@ -27,11 +27,11 @@ describe('Game Loop', () => {
 
   it('should start game loop when game state is PLAYING', () => {
     // Mock requestAnimationFrame to track calls without executing
-    const mockRaf = vi.fn(( _cb: FrameRequestCallback) => {
+    const mockRaf = vi.fn((_cb: FrameRequestCallback) => {
       // Don't execute the callback to avoid infinite loop
       return 1;
     });
-    global.requestAnimationFrame = mockRaf as unknown as typeof requestAnimationFrame;
+    globalThis.requestAnimationFrame = mockRaf as unknown as typeof requestAnimationFrame;
 
     // Start game loop
     restartGameLoop();
@@ -42,13 +42,13 @@ describe('Game Loop', () => {
 
   it('should stop game loop when game state is not PLAYING', () => {
     // Mock requestAnimationFrame and cancelAnimationFrame
-    const mockRaf = vi.fn(( _cb: FrameRequestCallback) => {
+    const mockRaf = vi.fn((_cb: FrameRequestCallback) => {
       // Don't execute the callback to avoid infinite loop
       return 1;
     });
     const mockCancel = vi.fn();
-    global.requestAnimationFrame = mockRaf as unknown as typeof requestAnimationFrame;
-    global.cancelAnimationFrame = mockCancel as unknown as typeof cancelAnimationFrame;
+    globalThis.requestAnimationFrame = mockRaf as unknown as typeof requestAnimationFrame;
+    globalThis.cancelAnimationFrame = mockCancel as unknown as typeof cancelAnimationFrame;
 
     // Start with PLAYING state
     gameState.value = 'PLAYING';
@@ -75,8 +75,8 @@ describe('Game Loop', () => {
     // Mock requestAnimationFrame and cancelAnimationFrame
     const mockRaf = vi.fn((_cb: FrameRequestCallback) => 1);
     const mockCancel = vi.fn();
-    global.requestAnimationFrame = mockRaf as unknown as typeof requestAnimationFrame;
-    global.cancelAnimationFrame = mockCancel as unknown as typeof cancelAnimationFrame;
+    globalThis.requestAnimationFrame = mockRaf as unknown as typeof requestAnimationFrame;
+    globalThis.cancelAnimationFrame = mockCancel as unknown as typeof cancelAnimationFrame;
 
     // Start game loop
     restartGameLoop();

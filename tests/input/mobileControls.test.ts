@@ -65,6 +65,6 @@ describe('mobileControls', () => {
     document.dispatchEvent(touchEnd);
     expect(gameState.value).toBe('PAUSED');
     expect(showOverlay).toHaveBeenCalledWith('PAUSED');
-    expect((services.audioService.muteAll as ReturnType<typeof vi.fn>)).toHaveBeenCalled();
+    expect(services.audioService.muteAll as ReturnType<typeof vi.fn>).toHaveBeenCalled();
   });
 });

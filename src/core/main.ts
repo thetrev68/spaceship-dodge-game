@@ -87,23 +87,31 @@ function wireOverlayControls(canvas: HTMLCanvasElement): void {
   startButton?.addEventListener(startEvent, startGameHandler, { passive: false });
 
   if (isMobile()) {
-    pauseOverlay?.addEventListener('touchstart', (event: TouchEvent) => {
-      event.preventDefault();
-      if (gameState.value !== 'PAUSED') return;
-      debug('game', 'Resuming game from overlay touch');
-      gameState.value = 'PLAYING';
-      showOverlay('PLAYING');
-      services.audioService.unmuteAll();
-      restartGameLoop();
-    }, { passive: false });
+    pauseOverlay?.addEventListener(
+      'touchstart',
+      (event: TouchEvent) => {
+        event.preventDefault();
+        if (gameState.value !== 'PAUSED') return;
+        debug('game', 'Resuming game from overlay touch');
+        gameState.value = 'PLAYING';
+        showOverlay('PLAYING');
+        services.audioService.unmuteAll();
+        restartGameLoop();
+      },
+      { passive: false }
+    );
 
-    levelTransitionOverlay?.addEventListener('touchstart', (event: TouchEvent) => {
-      event.preventDefault();
-      if (gameState.value !== 'LEVEL_TRANSITION') return;
-      debug('game', 'Resuming from level transition overlay');
-      continueGame();
-      restartGameLoop();
-    }, { passive: false });
+    levelTransitionOverlay?.addEventListener(
+      'touchstart',
+      (event: TouchEvent) => {
+        event.preventDefault();
+        if (gameState.value !== 'LEVEL_TRANSITION') return;
+        debug('game', 'Resuming from level transition overlay');
+        continueGame();
+        restartGameLoop();
+      },
+      { passive: false }
+    );
   } else {
     continueButton?.addEventListener('click', () => {
       continueGame();
@@ -192,7 +200,7 @@ async function main() {
 
 // Start the application
 window.addEventListener('DOMContentLoaded', () => {
-  main().catch(err => {
+  main().catch((err) => {
     handleError(err as Error);
   });
 });

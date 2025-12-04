@@ -32,7 +32,7 @@ vi.mock('@systems/poolManager.js', () => {
       release = (value?: unknown) => poolRelease(value);
       clear = () => poolClear();
       size = () => poolSize();
-    }
+    },
   };
 });
 

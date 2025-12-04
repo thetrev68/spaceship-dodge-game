@@ -9,7 +9,11 @@ import { isMobile } from '@utils/platform.js';
 import { ObjectPool } from '@systems/poolManager.js';
 import { POWERUP_CONFIG, GAME_CONFIG } from '@core/constants.js';
 import { eventBus } from '@core/events/EventBus.js';
-import { GameEvent, type PowerupCollectedEvent, type PowerupExpiredEvent } from '@core/events/GameEvents.js';
+import {
+  GameEvent,
+  type PowerupCollectedEvent,
+  type PowerupExpiredEvent,
+} from '@core/events/GameEvents.js';
 
 type ActivePowerup = { x: number; y: number; size: number; type: PowerUpKey | null; dy: number };
 
@@ -40,7 +44,6 @@ const powerupPool = new ObjectPool<ActivePowerup>(() => ({
   type: null,
   dy: 0,
 }));
-
 
 /**
  * Spawns a random powerup at the top of the screen with downward movement.
@@ -78,7 +81,8 @@ const powerupPool = new ObjectPool<ActivePowerup>(() => ({
 export function spawnPowerup(canvasWidth: number): void {
   const x = Math.random() * (canvasWidth - powerupSize);
   const y = -powerupSize;
-  const type: PowerUpKey = Math.random() < 0.5 ? POWERUP_TYPES.DOUBLE_BLASTER : POWERUP_TYPES.SHIELD;
+  const type: PowerUpKey =
+    Math.random() < 0.5 ? POWERUP_TYPES.DOUBLE_BLASTER : POWERUP_TYPES.SHIELD;
 
   const p = powerupPool.acquire();
   Object.assign(p, { x, y, size: powerupSize, type, dy: 1.5 });
@@ -170,7 +174,7 @@ export function updatePowerups(canvasHeight: number): void {
         eventBus.emit<PowerupCollectedEvent>(GameEvent.POWERUP_COLLECTED, {
           type: p.type,
           duration: POWERUP_CONFIG[p.type]?.DURATION ?? 0,
-          position: { x: player.x, y: player.y - 20 }
+          position: { x: player.x, y: player.y - 20 },
         });
       }
     }
@@ -233,7 +237,7 @@ export function drawPowerups(ctx: CanvasRenderingContext2D): void {
   const pulse = isMobile() ? 1 : (Math.sin(time) + 1) / 2;
   const scale = isMobile() ? 1 : 0.75 + 0.5 * pulse;
 
-  activePowerups.forEach(p => {
+  activePowerups.forEach((p) => {
     const cx = p.x + powerupSize / 2;
     const cy = p.y + powerupSize / 2;
     const maxRadius = powerupSize / 2;
@@ -262,7 +266,7 @@ export function drawPowerups(ctx: CanvasRenderingContext2D): void {
         ctx.fillStyle = '#f9d71c';
         ctx.beginPath();
         for (let i = 0; i < spikes; i++) {
-          const rot = Math.PI / 2 * 3 + (i * Math.PI * 2) / spikes;
+          const rot = (Math.PI / 2) * 3 + (i * Math.PI * 2) / spikes;
           const xOuter = cx + Math.cos(rot) * outerRadius;
           const yOuter = cy + Math.sin(rot) * outerRadius;
           ctx.lineTo(xOuter, yOuter);

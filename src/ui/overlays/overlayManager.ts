@@ -91,7 +91,8 @@ function show(overlay: HTMLElement | null): void {
   overlay.removeAttribute('inert');
   overlay.classList.add('visible');
   const focusable = overlay.querySelector<HTMLElement>(focusableSelector);
-  lastFocusedElement = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+  lastFocusedElement =
+    document.activeElement instanceof HTMLElement ? document.activeElement : null;
 
   requestAnimationFrame(() => {
     const focusTarget = focusable ?? overlay;
@@ -145,7 +146,9 @@ export function showOverlay(state: OverlayState, scoreValue = 0, levelValue = 0)
       if (finalScoreDisplay) {
         finalScoreDisplay.textContent = `Final Score: ${scoreValue} (Level ${levelValue + 1})`;
       }
-      announce(`Game over. Final score ${scoreValue}, level ${levelValue + 1}. Press Enter to play again or open settings.`);
+      announce(
+        `Game over. Final score ${scoreValue}, level ${levelValue + 1}. Press Enter to play again or open settings.`
+      );
       show(getById<HTMLElement>('gameOverOverlay'));
       break;
     }
@@ -159,7 +162,9 @@ export function showOverlay(state: OverlayState, scoreValue = 0, levelValue = 0)
       if (levelUpMessage) levelUpMessage.textContent = `LEVEL ${levelValue + 1}`;
       if (currentLevelInfo) currentLevelInfo.textContent = 'Get Ready!';
       if (currentScoreInfo) currentScoreInfo.textContent = `Score: ${scoreValue}`;
-      announce(`Level ${levelValue + 1} ready. Current score ${scoreValue}. Press Enter or Continue to resume.`);
+      announce(
+        `Level ${levelValue + 1} ready. Current score ${scoreValue}. Press Enter or Continue to resume.`
+      );
       show(getById<HTMLElement>('levelTransitionOverlay'));
       break;
     }

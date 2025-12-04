@@ -3,15 +3,18 @@
 ## Critical Issue: Windows Drive Letter Casing Bug
 
 ### Problem
+
 Vitest 4.0.15 has a **critical bug on Windows** where it fails to find test suites if the working directory path starts with a lowercase drive letter (e.g., `c:/Repos/...` instead of `C:/Repos/...`).
 
 **Error symptoms:**
+
 ```
 Error: No test suite found in file c:/Repos/spaceship-dodge-game/tests/...
 Error: Vitest failed to find the runner. This is a bug in Vitest.
 ```
 
 ### Solution
+
 **Always navigate to your project using an uppercase drive letter in your terminal/IDE:**
 
 ```bash
@@ -25,9 +28,11 @@ npm run test
 ```
 
 ### Root Cause
+
 This is a known issue in Vitest 4.0.x where the module resolution system doesn't properly handle case-insensitive drive letters on Windows. The issue was previously fixed in PR #6779 but appears to have regressed in version 4.0.
 
 **Related GitHub Issues:**
+
 - [Issue #5772](https://github.com/vitest-dev/vitest/issues/5772) - Original drive letter bug
 - [Issue #7465](https://github.com/vitest-dev/vitest/issues/7465) - Test suite detection issues
 
@@ -38,6 +43,7 @@ This is a known issue in Vitest 4.0.x where the module resolution system doesn't
 ### 1. Coverage `all` Option Removed
 
 **Before (Vitest 2.x):**
+
 ```typescript
 coverage: {
   provider: 'v8',
@@ -47,6 +53,7 @@ coverage: {
 ```
 
 **After (Vitest 4.0):**
+
 ```typescript
 coverage: {
   provider: 'v8',
@@ -59,6 +66,7 @@ coverage: {
 **Reason:** The `coverage.all` option was removed because it was difficult to maintain and caused performance issues when coverage providers processed unexpected files like minified JavaScript.
 
 **Migration:**
+
 - Remove the `all: false` line from your config
 - Define `coverage.include` patterns explicitly
 - By default, Vitest 4 only shows files imported during test runs
@@ -68,6 +76,7 @@ coverage: {
 Vitest 4.0 requires **Vite 6 or higher**.
 
 **Current versions in this project:**
+
 - ✅ Vite: 7.2.4 (compatible)
 - ✅ Vitest: 4.0.15
 
@@ -111,11 +120,11 @@ export default defineConfig({
         'src/game/**/*.ts',
         'src/entities/**/*.ts',
         'src/systems/**/*.ts',
-        'src/utils/**/*.ts'
+        'src/utils/**/*.ts',
       ],
       // ... rest of config
-    }
-  }
+    },
+  },
 });
 ```
 
@@ -149,6 +158,7 @@ The 5 failing tests are **not** due to Vitest 4 incompatibility - they are actua
 ### For Development
 
 1. **Always use uppercase drive letters** when navigating to the project:
+
    ```bash
    cd /C/Repos/spaceship-dodge-game
    ```
@@ -160,12 +170,14 @@ The 5 failing tests are **not** due to Vitest 4 incompatibility - they are actua
 ### For CI/CD
 
 This issue should not affect CI/CD pipelines running on Linux, but if using Windows runners:
+
 - Ensure the checkout path uses uppercase drive letters
 - Set working directory explicitly with uppercase drive letter
 
 ### Future Vitest Updates
 
 Monitor these issues for fixes:
+
 - Check release notes for drive letter casing fix
 - Consider upgrading to Vitest 4.1+ when available with the fix
 

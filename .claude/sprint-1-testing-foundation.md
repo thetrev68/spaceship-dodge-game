@@ -1,9 +1,11 @@
 # Sprint 1: Testing Foundation
 
 ## Goal
+
 Achieve 50% test coverage by implementing test infrastructure and core game system tests.
 
 ## Prerequisites
+
 - Vitest is already configured in the project
 - Project uses TypeScript with strict mode
 - Existing codebase structure documented in CLAUDE.md
@@ -11,9 +13,11 @@ Achieve 50% test coverage by implementing test infrastructure and core game syst
 ## Part 1: Test Infrastructure Setup
 
 ### 1.1 Create Test Helpers Directory
+
 Create `tests/helpers/` with the following utility files:
 
 **tests/helpers/mockCanvas.ts**
+
 ```typescript
 export function createMockCanvas(): HTMLCanvasElement {
   const canvas = document.createElement('canvas');
@@ -43,6 +47,7 @@ export function createMock2DContext(): CanvasRenderingContext2D {
 ```
 
 **tests/helpers/mockAudio.ts**
+
 ```typescript
 export function mockWebAudio() {
   const audioContextMock = {
@@ -50,8 +55,8 @@ export function mockWebAudio() {
     resume: vi.fn().mockResolvedValue(undefined),
     createGain: vi.fn(() => ({
       connect: vi.fn(),
-      gain: { value: 1 }
-    }))
+      gain: { value: 1 },
+    })),
   };
 
   global.AudioContext = vi.fn(() => audioContextMock) as any;
@@ -61,7 +66,7 @@ export function mockWebAudio() {
     load: vi.fn(),
     volume: 1,
     muted: false,
-    currentTime: 0
+    currentTime: 0,
   })) as any;
 
   return audioContextMock;
@@ -69,6 +74,7 @@ export function mockWebAudio() {
 ```
 
 **tests/helpers/gameStateFactory.ts**
+
 ```typescript
 import type { Asteroid, Bullet, Powerup } from '@/types';
 
@@ -84,7 +90,7 @@ export function createTestAsteroid(overrides: Partial<Asteroid> = {}): Asteroid 
     rotation: 0,
     rotationSpeed: 0.02,
     active: true,
-    ...overrides
+    ...overrides,
   };
 }
 
@@ -95,7 +101,7 @@ export function createTestBullet(overrides: Partial<Bullet> = {}): Bullet {
     vx: 0,
     vy: -5,
     active: true,
-    ...overrides
+    ...overrides,
   };
 }
 
@@ -106,15 +112,16 @@ export function createTestPowerup(overrides: Partial<Powerup> = {}): Powerup {
     vy: 2,
     type: 'shield',
     active: true,
-    ...overrides
+    ...overrides,
   };
 }
 ```
 
 **tests/helpers/testUtils.ts**
+
 ```typescript
 export function waitForNextFrame(): Promise<void> {
-  return new Promise(resolve => requestAnimationFrame(() => resolve()));
+  return new Promise((resolve) => requestAnimationFrame(() => resolve()));
 }
 
 export function advanceTime(ms: number) {
@@ -135,6 +142,7 @@ export function setupTestEnvironment() {
 ```
 
 ### 1.2 Update vitest.config.ts
+
 Add coverage configuration:
 
 ```typescript
@@ -149,19 +157,12 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html', 'lcov'],
-      exclude: [
-        'node_modules/',
-        'tests/',
-        '**/*.test.ts',
-        '**/*.spec.ts',
-        'dist/',
-        'docs/'
-      ],
+      exclude: ['node_modules/', 'tests/', '**/*.test.ts', '**/*.spec.ts', 'dist/', 'docs/'],
       lines: 50,
       functions: 50,
       branches: 50,
-      statements: 50
-    }
+      statements: 50,
+    },
   },
   resolve: {
     alias: {
@@ -170,13 +171,14 @@ export default defineConfig({
       '@game': path.resolve(__dirname, './src/game'),
       '@entities': path.resolve(__dirname, './src/entities'),
       '@systems': path.resolve(__dirname, './src/systems'),
-      '@utils': path.resolve(__dirname, './src/utils')
-    }
-  }
+      '@utils': path.resolve(__dirname, './src/utils'),
+    },
+  },
 });
 ```
 
 ### 1.3 Create tests/setup.ts
+
 ```typescript
 import { vi } from 'vitest';
 
@@ -196,7 +198,7 @@ HTMLCanvasElement.prototype.getContext = vi.fn(() => ({
   restore: vi.fn(),
   translate: vi.fn(),
   rotate: vi.fn(),
-  scale: vi.fn()
+  scale: vi.fn(),
 })) as any;
 
 // Mock requestAnimationFrame
@@ -209,6 +211,7 @@ global.cancelAnimationFrame = vi.fn();
 ```
 
 ### 1.4 Add npm Scripts
+
 Update package.json:
 
 ```json
@@ -226,15 +229,18 @@ Update package.json:
 ## Part 2: Core Game System Tests
 
 ### 2.1 Game Loop Tests
+
 **tests/game/gameLoop.test.ts**
 
 Focus areas:
+
 - Frame rate throttling works correctly
 - Game loop updates entities when `gameState.value === 'PLAYING'`
 - Game loop does NOT update when paused
 - Proper orchestration: update → collision → render
 
 Key test cases:
+
 ```typescript
 describe('Game Loop', () => {
   it('should throttle frame rate to target FPS', () => {
@@ -258,9 +264,11 @@ describe('Game Loop', () => {
 ```
 
 ### 2.2 Collision Detection Tests
+
 **tests/systems/collisionHandler.test.ts**
 
 Focus areas:
+
 - Spatial grid correctly bins entities into cells
 - Player-asteroid collisions detected
 - Bullet-asteroid collisions detected with fragmentation
@@ -268,6 +276,7 @@ Focus areas:
 - Performance: handles 100+ entities efficiently
 
 Key test cases:
+
 ```typescript
 describe('Collision Handler', () => {
   it('should detect player-asteroid collision', () => {
@@ -303,6 +312,7 @@ describe('Collision Handler', () => {
 **tests/entities/player.test.ts**
 
 Focus areas:
+
 - Movement stays within canvas bounds
 - `fireBullet()` respects cooldown
 - Shield renders correctly
@@ -311,6 +321,7 @@ Focus areas:
 **tests/entities/asteroid.test.ts**
 
 Focus areas:
+
 - `spawnAsteroid()` uses object pooling
 - Asteroids update position correctly
 - Fragmentation creates 2-3 smaller pieces
@@ -320,6 +331,7 @@ Focus areas:
 **tests/entities/bullet.test.ts**
 
 Focus areas:
+
 - `fireBullet()` uses object pooling
 - Bullets move at correct velocity
 - Out-of-bounds bullets removed
@@ -328,15 +340,18 @@ Focus areas:
 **tests/entities/powerup.test.ts**
 
 Focus areas:
+
 - Random powerup type selection
 - Fall speed and movement
 - `activatePowerup()` applies correct effect
 - Timer expiration and cleanup
 
 ### 2.4 Sound Manager Tests
+
 **tests/systems/soundManager.test.ts**
 
 Focus areas:
+
 - Audio unlock flow (silent audio trick)
 - `playSound()` clones and plays audio
 - Volume control (0-1 range)
@@ -350,6 +365,7 @@ Mock the Web Audio API using `tests/helpers/mockAudio.ts`
 **tests/integration/gameFlow.test.ts**
 
 One comprehensive integration test:
+
 - Start game
 - Spawn asteroid
 - Fire bullet and destroy asteroid
@@ -381,7 +397,9 @@ This test verifies the full game loop works end-to-end.
 5. **Test behavior, not implementation**: Focus on observable outcomes
 
 ### Path Aliases
+
 The project uses TypeScript path aliases:
+
 - `@/` → `src/`
 - `@core/` → `src/core/`
 - `@game/` → `src/game/`
@@ -392,12 +410,14 @@ The project uses TypeScript path aliases:
 Use these in imports, they're configured in both tsconfig.json and vitest.config.ts.
 
 ### What NOT to Test Yet
+
 - UI components (overlays, HUD) - Sprint 3
 - Input handling - Sprint 3
 - Full E2E scenarios - Sprint 3
 - Performance benchmarks - Sprint 3
 
 ### Test Structure Example
+
 ```typescript
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { setupTestEnvironment } from '../helpers/testUtils';
@@ -457,7 +477,9 @@ tests/
 ```
 
 ## Estimated Effort
+
 20-30 hours of focused implementation
 
 ## Next Steps After Completion
+
 Sprint 2 will refactor the architecture to improve testability, then Sprint 3 will add remaining tests to reach 85% coverage.

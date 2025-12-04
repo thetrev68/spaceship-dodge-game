@@ -53,6 +53,7 @@ src/
 ```
 
 ### Key Modules
+
 - **Core**: `main.ts` (entry), `state.ts` (global state), `constants.ts` (config), `logger.ts`
 - **Game**: `gameLoop.ts` (loop), `gameStateManager.ts` (state machine), `flowManager.ts`
 - **Systems**: `collisionHandler.ts` (spatial grid), `renderManager.ts`, `soundManager.ts`
@@ -64,21 +65,21 @@ src/
 
 Recent updates focus on performance, stability, and code quality. See [UPGRADE_NOTES.md](./UPGRADE_NOTES.md) for details.
 
-*   **Modular Architecture**: Domain-specific modules (Entities, Systems, UI, etc.).
-*   **Spatial Partitioning**: Spatial grid for O(n) collision detection with many objects.
-*   **DOM Helpers**: Typed helpers for safer overlay/input handling.
-*   **TypeScript Migration**: Core, systems, entities, and UI/input layers now typed end-to-end.
-*   **Tailwind CSS v4**: Upgraded for smaller builds and better performance.
-*   **Constants Centralization**: All magic numbers in `core/constants.ts` for easy tuning.
-*   **Bug Fixes**: Safer audio unlocking, collision array mutations, and overlay focus handling.
+- **Modular Architecture**: Domain-specific modules (Entities, Systems, UI, etc.).
+- **Spatial Partitioning**: Spatial grid for O(n) collision detection with many objects.
+- **DOM Helpers**: Typed helpers for safer overlay/input handling.
+- **TypeScript Migration**: Core, systems, entities, and UI/input layers now typed end-to-end.
+- **Tailwind CSS v4**: Upgraded for smaller builds and better performance.
+- **Constants Centralization**: All magic numbers in `core/constants.ts` for easy tuning.
+- **Bug Fixes**: Safer audio unlocking, collision array mutations, and overlay focus handling.
 
 ---
 
 ## 🐞 Known Issues
 
-* Level-up waits until all fragments are cleared (intended but sometimes feels delayed).
-* If game is paused at exact collision frame, rare scoring overlap occurs.
-* Background music requires user interaction to start (browser policy) — handled via silent unlock, but may still be silent initially on some devices.
+- Level-up waits until all fragments are cleared (intended but sometimes feels delayed).
+- If game is paused at exact collision frame, rare scoring overlap occurs.
+- Background music requires user interaction to start (browser policy) — handled via silent unlock, but may still be silent initially on some devices.
 
 ---
 
@@ -86,28 +87,28 @@ Recent updates focus on performance, stability, and code quality. See [UPGRADE_N
 
 ### Gameplay
 
-* 🌀 Rotating asteroids with angular momentum
-* 🛡️ Shields, rapid fire, score multipliers
-* 🚀 Enemy ships with pathfinding AI
-* 💥 Explosive chain reactions
+- 🌀 Rotating asteroids with angular momentum
+- 🛡️ Shields, rapid fire, score multipliers
+- 🚀 Enemy ships with pathfinding AI
+- 💥 Explosive chain reactions
 
 ### Visual Polish
 
-* 🌌 Starfield and depth scrolling (expanded beyond `@effects/starfield.ts`)
-* ✨ Particle thrust trails
-* 📳 Screen shake on hit/death
+- 🌌 Starfield and depth scrolling (expanded beyond `@effects/starfield.ts`)
+- ✨ Particle thrust trails
+- 📳 Screen shake on hit/death
 
 ### Audio
 
-* 🎼 Layered dynamic music based on level/intensity
-* 🎚️ Per-sound sliders in audio menu
-* 🗣️ Voiceovers: "Level Up!", "Shield Activated", etc.
+- 🎼 Layered dynamic music based on level/intensity
+- 🎚️ Per-sound sliders in audio menu
+- 🗣️ Voiceovers: "Level Up!", "Shield Activated", etc.
 
 ### Technical
 
-* 📊 FPS display toggle (dev mode)
-* ♿ Accessibility: remappable keys, visual assist modes
-* 📈 Performance reporting/logging tools
+- 📊 FPS display toggle (dev mode)
+- ♿ Accessibility: remappable keys, visual assist modes
+- 📈 Performance reporting/logging tools
 
 ---
 
@@ -188,6 +189,7 @@ Key architectural decisions are documented in `docs/architecture/decisions/`:
 ### API Documentation
 
 Generate TypeDoc API docs:
+
 ```bash
 npm run docs
 ```

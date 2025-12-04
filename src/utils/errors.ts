@@ -69,8 +69,14 @@ class GameError extends Error {
     this.name = 'GameError';
 
     // Maintain proper stack trace in V8 (Chrome, Node.js)
-    if (Error.captureStackTrace) {
-      Error.captureStackTrace(this, GameError);
+    type CaptureStackTrace = (
+      target: object,
+      ctor?: abstract new (...args: unknown[]) => unknown
+    ) => void;
+    const capture = (Error as typeof Error & { captureStackTrace?: CaptureStackTrace })
+      .captureStackTrace;
+    if (typeof capture === 'function') {
+      capture(this, GameError as unknown as abstract new (...args: unknown[]) => unknown);
     }
   }
 }

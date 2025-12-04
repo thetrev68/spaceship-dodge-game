@@ -1,7 +1,7 @@
 import { vi } from 'vitest';
 
 export function waitForNextFrame(): Promise<void> {
-  return new Promise(resolve => requestAnimationFrame(() => resolve()));
+  return new Promise((resolve) => requestAnimationFrame(() => resolve()));
 }
 
 export function advanceTime(ms: number) {

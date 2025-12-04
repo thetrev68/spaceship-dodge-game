@@ -20,6 +20,7 @@ Welcome to the Spaceship Dodge Game development team! This guide will help you u
 ## Quick Start
 
 ### Prerequisites
+
 - Node.js 18+ and npm
 - Modern browser with HTML5 Canvas support
 - Git for version control
@@ -117,26 +118,31 @@ npm run deploy           # Deploy to GitHub Pages
 ### Key Architectural Patterns
 
 **1. Modular Domain-Driven Design**
+
 - Code organized by domain (entities, systems, ui, game logic)
 - Clear separation of concerns
 - Each module has single responsibility
 
 **2. Reactive State Management**
+
 - Custom lightweight reactive system ([src/core/reactive.ts](../src/core/reactive.ts))
 - Zero dependencies, synchronous updates
 - See [ADR-001](./architecture/decisions/ADR-001-custom-reactive-state.md)
 
 **3. Event-Driven Architecture**
+
 - EventBus for loose coupling between systems
 - UI components subscribe to game events
 - Enables easy testing and mocking
 
 **4. Dependency Injection**
+
 - ServiceProvider pattern for testability
 - Easy mocking of services in tests
 - Centralized service configuration
 
 **5. Object Pooling**
+
 - Bullets and asteroids use object pools
 - Reduces GC pressure by 95%
 - See [ADR-003](./architecture/decisions/ADR-003-object-pooling.md)
@@ -150,6 +156,7 @@ npm run deploy           # Deploy to GitHub Pages
 **Recommended: VS Code**
 
 Install these extensions:
+
 - **ESLint** - JavaScript/TypeScript linting
 - **TypeScript Vue Plugin (Volar)** - Enhanced TypeScript support
 - **Prettier** - Code formatting
@@ -159,6 +166,7 @@ Install these extensions:
 ### VS Code Settings
 
 `.vscode/settings.json`:
+
 ```json
 {
   "editor.formatOnSave": true,
@@ -192,12 +200,14 @@ See [ADR-005](./architecture/decisions/ADR-005-typescript-strict-mode.md) for ra
 ### Git Workflow
 
 **Branch Naming:**
+
 - `feature/description` - New features
 - `fix/description` - Bug fixes
 - `refactor/description` - Code refactoring
 - `docs/description` - Documentation updates
 
 **Commit Message Format:**
+
 ```
 <type>: <subject>
 
@@ -209,6 +219,7 @@ See [ADR-005](./architecture/decisions/ADR-005-typescript-strict-mode.md) for ra
 Types: `feat`, `fix`, `refactor`, `docs`, `test`, `chore`
 
 Example:
+
 ```
 feat: Add shield powerup with visual glow effect
 
@@ -239,6 +250,7 @@ See [FOLDER_STRUCTURE.md](../FOLDER_STRUCTURE.md) for detailed breakdown.
 ### Module Design Guidelines
 
 **✅ DO:**
+
 - Keep modules focused on single responsibility
 - Export only what's needed (prefer named exports)
 - Use TypeScript interfaces for public APIs
@@ -246,6 +258,7 @@ See [FOLDER_STRUCTURE.md](../FOLDER_STRUCTURE.md) for detailed breakdown.
 - Add JSDoc for public functions
 
 **❌ DON'T:**
+
 - Create circular dependencies
 - Export mutable state directly (use getters/setters)
 - Mix rendering and business logic
@@ -272,6 +285,7 @@ import { helper } from './utils';
 ```
 
 Use path aliases from `tsconfig.json`:
+
 - `@core/*` - Core modules
 - `@game/*` - Game logic
 - `@entities/*` - Game entities
@@ -314,6 +328,7 @@ function gameLoop(currentTime: number): void {
 ```
 
 **Why fixed timestep?**
+
 - **Deterministic physics** - Same inputs always produce same outputs
 - **Easier balancing** - Game speed consistent across devices
 - **Testable** - Physics reproducible for automated tests
@@ -367,6 +382,7 @@ export function checkCollisions(): void {
 ```
 
 **Performance:**
+
 - 100 entities: ~15 checks/frame (vs 4,950 naive)
 - 500 entities: ~75 checks/frame (vs 124,750 naive)
 - **~100x reduction** in collision checks
@@ -398,18 +414,19 @@ export function createReactive<T>(initialValue: T): ReactiveValue<T> {
     set value(newValue: T) {
       if (currentValue !== newValue) {
         currentValue = newValue;
-        watchers.forEach(fn => fn()); // Notify synchronously
+        watchers.forEach((fn) => fn()); // Notify synchronously
       }
     },
     watch(fn: () => void) {
       watchers.add(fn);
       return () => watchers.delete(fn);
-    }
+    },
   };
 }
 ```
 
 **Usage:**
+
 ```typescript
 import { score, gameState } from '@core/state';
 
@@ -426,6 +443,7 @@ gameState.value = 'PLAYING';
 ```
 
 **Why custom instead of MobX/Zustand?**
+
 - **Size:** 50 lines vs 20KB+ for libraries
 - **Sync updates:** Game loop needs immediate notifications
 - **Zero deps:** Smaller bundle, faster load
@@ -457,10 +475,15 @@ export class ObjectPool<T> {
 ```
 
 **Usage:**
+
 ```typescript
 // Create pool
 const bulletPool = new ObjectPool<Bullet>(() => ({
-  x: 0, y: 0, vx: 0, vy: 0, active: false
+  x: 0,
+  y: 0,
+  vx: 0,
+  vy: 0,
+  active: false,
 }));
 
 // Acquire from pool
@@ -476,6 +499,7 @@ bullets.splice(bullets.indexOf(bullet), 1);
 ```
 
 **Performance impact:**
+
 - Without pooling: ~100 GC collections/min, 5-10ms pauses
 - With pooling: ~5 GC collections/min, <1ms pauses
 
@@ -488,6 +512,7 @@ See [ADR-003](./architecture/decisions/ADR-003-object-pooling.md) for details.
 ### Test Coverage Goals
 
 The project maintains high test coverage:
+
 - **Statements:** 85%+
 - **Branches:** 85%+
 - **Functions:** 80%+
@@ -544,8 +569,7 @@ describe('ModuleName', () => {
     });
 
     it('should throw on invalid input', () => {
-      expect(() => functionUnderTest(invalidInput))
-        .toThrow('Expected error message');
+      expect(() => functionUnderTest(invalidInput)).toThrow('Expected error message');
     });
   });
 });
@@ -561,7 +585,7 @@ import { vi } from 'vitest';
 // Mock module
 vi.mock('@systems/soundManager', () => ({
   playSound: vi.fn(),
-  startMusic: vi.fn()
+  startMusic: vi.fn(),
 }));
 
 // Verify mock calls
@@ -597,7 +621,7 @@ Edit [src/core/gameConstants.ts](../src/core/gameConstants.ts):
 export const DEV_CONFIG = {
   DEBUG_MODE: true,
   SHOW_PERFORMANCE_METRICS: true,
-  LOG_LEVEL: 'debug'
+  LOG_LEVEL: 'debug',
 };
 ```
 
@@ -615,6 +639,7 @@ log.error('Error occurred', error);
 ### 3. Performance Profiling
 
 Enable performance HUD to see:
+
 - FPS (frames per second)
 - Frame time (ms)
 - Entity counts (bullets, asteroids, powerups)
@@ -623,17 +648,20 @@ Enable performance HUD to see:
 ### 4. Browser DevTools
 
 **Performance Tab:**
+
 - Record gameplay session
 - Identify frame drops
 - Check GC frequency
 - Profile JavaScript execution
 
 **Memory Tab:**
+
 - Take heap snapshots
 - Check for memory leaks
 - Verify object pooling is working
 
 **Network Tab:**
+
 - Verify asset loading
 - Check audio file caching
 - Monitor bundle size
@@ -641,6 +669,7 @@ Enable performance HUD to see:
 ### 5. Common Debug Scenarios
 
 **Issue: Frame rate drops**
+
 ```typescript
 // Enable performance metrics
 DEV_CONFIG.SHOW_PERFORMANCE_METRICS = true;
@@ -649,20 +678,22 @@ DEV_CONFIG.SHOW_PERFORMANCE_METRICS = true;
 log.debug('Entity count:', {
   bullets: bullets.length,
   asteroids: obstacles.length,
-  collisionChecks: collisionCheckCount
+  collisionChecks: collisionCheckCount,
 });
 ```
 
 **Issue: Objects not releasing from pool**
+
 ```typescript
 // Check pool size
 log.debug('Pool stats:', {
   bulletPool: bulletPool.size(),
-  activeBullets: bullets.length
+  activeBullets: bullets.length,
 });
 ```
 
 **Issue: State updates not triggering UI**
+
 ```typescript
 // Verify watcher is registered
 score.watch(() => {
@@ -698,7 +729,12 @@ import { Enemy } from '@types';
 import { ObjectPool } from '@systems/poolManager';
 
 const enemyPool = new ObjectPool<Enemy>(() => ({
-  x: 0, y: 0, vx: 0, vy: 0, health: 3, active: false
+  x: 0,
+  y: 0,
+  vx: 0,
+  vy: 0,
+  health: 3,
+  active: false,
 }));
 
 export function spawnEnemy(x: number, y: number): Enemy {
@@ -789,7 +825,7 @@ for (const bullet of bullets) {
 ```typescript
 const soundFiles = {
   // ... existing sounds
-  explosion: '/sounds/explosion.mp3'
+  explosion: '/sounds/explosion.mp3',
 };
 ```
 
@@ -815,15 +851,15 @@ Edit [src/core/gameConstants.ts](../src/core/gameConstants.ts):
 export const LEVEL_CONFIG = {
   // Spawn rate (lower = faster)
   BASE_SPAWN_INTERVAL_DESKTOP: 1500, // ms
-  BASE_SPAWN_INTERVAL_MOBILE: 2400,  // ms
+  BASE_SPAWN_INTERVAL_MOBILE: 2400, // ms
 
   // Difficulty scaling
-  SPAWN_INTERVAL_DECREASE_PER_LEVEL: 70,  // ms faster per level
-  MIN_SPAWN_INTERVAL: 300,                  // Cap at 300ms
+  SPAWN_INTERVAL_DECREASE_PER_LEVEL: 70, // ms faster per level
+  MIN_SPAWN_INTERVAL: 300, // Cap at 300ms
 
   // Asteroid speed scaling
   ASTEROID_SPEED_INCREASE_PER_LEVEL: 0.5,
-  MAX_ASTEROID_SPEED: 3.0
+  MAX_ASTEROID_SPEED: 3.0,
 };
 ```
 
@@ -843,7 +879,7 @@ export type PowerupType = 'shield' | 'doubleBlaster' | 'rapidFire';
 export const POWERUP_CONFIG = {
   // ... existing
   RAPID_FIRE_DURATION: 8000, // 8 seconds
-  RAPID_FIRE_COOLDOWN_MULTIPLIER: 0.5 // Half cooldown
+  RAPID_FIRE_COOLDOWN_MULTIPLIER: 0.5, // Half cooldown
 };
 ```
 
@@ -883,26 +919,31 @@ export function fireBullet(): void {
 ### Profiling Checklist
 
 **1. Enable Performance Metrics**
+
 ```typescript
 DEV_CONFIG.SHOW_PERFORMANCE_METRICS = true;
 ```
 
 **2. Check Entity Counts**
+
 - Keep bullets < 50 active
 - Keep asteroids < 100 active
 - Use object pooling for frequent spawns
 
 **3. Optimize Collision Detection**
+
 - Spatial grid should have ~60px cells
 - Collision checks should be < 100 per frame
 - Profile `checkCollisions()` function
 
 **4. Reduce Canvas Operations**
+
 - Batch draw calls when possible
 - Use `ctx.save()`/`ctx.restore()` sparingly
 - Avoid unnecessary `clearRect()` calls
 
 **5. Monitor Garbage Collection**
+
 - Check GC frequency in browser DevTools
 - Pool objects to reduce allocations
 - Avoid creating objects in hot paths
@@ -923,12 +964,14 @@ Mobile devices have lower performance. Optimizations:
 ### 1. Forgetting to Reset Pooled Objects
 
 **❌ Wrong:**
+
 ```typescript
 const bullet = bulletPool.acquire();
 bullets.push(bullet); // State from last use!
 ```
 
 **✅ Correct:**
+
 ```typescript
 const bullet = bulletPool.acquire();
 bullet.x = player.x;
@@ -942,6 +985,7 @@ bullets.push(bullet);
 ### 2. Circular Dependencies
 
 **❌ Wrong:**
+
 ```typescript
 // entityState.ts
 import { updateCollisions } from './collisionHandler';
@@ -951,9 +995,12 @@ import { entities } from './entityState'; // Circular!
 ```
 
 **✅ Correct:**
+
 ```typescript
 // entityState.ts
-export function getEntities() { return entities; }
+export function getEntities() {
+  return entities;
+}
 
 // collisionHandler.ts
 import { getEntities } from './entityState'; // No circular dep
@@ -964,12 +1011,14 @@ import { getEntities } from './entityState'; // No circular dep
 ### 3. Mutating Reactive State Directly
 
 **❌ Wrong:**
+
 ```typescript
 import { score } from '@core/state';
 score += 100; // Doesn't trigger watchers!
 ```
 
 **✅ Correct:**
+
 ```typescript
 import { score } from '@core/state';
 score.value += 100; // Triggers watchers
@@ -982,12 +1031,14 @@ score.value += 100; // Triggers watchers
 TypeScript strict mode enforces null checks:
 
 **❌ Wrong:**
+
 ```typescript
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d'); // Error: canvas might be null
 ```
 
 **✅ Correct:**
+
 ```typescript
 const canvas = getElementById<HTMLCanvasElement>('gameCanvas');
 if (!canvas) {
@@ -1002,17 +1053,20 @@ const ctx = canvas.getContext('2d');
 ### 5. Using Console Instead of Logger
 
 **❌ Wrong:**
+
 ```typescript
 console.log('Score:', score.value);
 ```
 
 **✅ Correct:**
+
 ```typescript
 import { log } from '@core/logger';
 log.info('Score:', score.value);
 ```
 
 The logger provides:
+
 - Log levels (debug/info/warn/error)
 - Structured logging
 - Easy filtering in production

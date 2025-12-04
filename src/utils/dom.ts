@@ -1,4 +1,3 @@
-
 export type EventKey =
   | 'ArrowUp'
   | 'ArrowDown'
@@ -24,5 +23,3 @@ export function getById<T extends HTMLElement = HTMLElement>(id: string): T | nu
   const el = document.getElementById(id);
   return isHTMLElement<T>(el) ? el : null;
 }
-
-

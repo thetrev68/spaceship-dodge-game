@@ -109,5 +109,3 @@ export const CANVAS_CONSTANTS: ReadonlyConfig<{
   MOBILE_HEIGHT: 640,
   MOBILE_THRESHOLD: 600,
 };
-
-

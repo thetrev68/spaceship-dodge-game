@@ -1,17 +1,21 @@
 # ADR-004: Fixed Timestep Game Loop with Accumulator Pattern
 
 ## Status
+
 Accepted (Sprint 1)
 
 ## Context
+
 Game loop must handle:
+
 - Variable frame rates (60 FPS desktop, 30 FPS mobile, unpredictable with lag)
 - Deterministic physics (same inputs → same outputs)
 - Smooth rendering across devices
 - Mobile performance constraints
 
 **Problem with variable timestep:**
-```typescript
+
+````typescript
 // BAD: Physics depend on frame rate
 function update(deltaTime) {
   player.x += player.velocity * deltaTime;
@@ -86,16 +90,18 @@ Frame 3: deltaTime = 25ms (lag spike!)
   accumulator = 1.66ms + 25ms = 26.66ms
   update(16.67ms) runs TWICE (catches up)
   accumulator = 3.32ms (small positive leftover, never negative)
-```
+````
 
 ## Mobile Optimization
 
 **30 FPS update rate (TIME_STEP = 33.33ms):**
+
 - Reduces CPU load by 50% vs 60 FPS
 - Still feels responsive (< 34ms input latency)
 - Allows budget devices to maintain stable frame rate
 
 **Render skipping (every 2nd frame):**
+
 - Saves GPU bandwidth (render is expensive on mobile)
 - Visual frame rate = 30 FPS (update rate = 30 FPS)
 - Trade-off: Slightly less smooth visuals, but maintains playable FPS
@@ -103,11 +109,13 @@ Frame 3: deltaTime = 25ms (lag spike!)
 ## Performance Characteristics
 
 **Desktop (60 FPS updates):**
+
 - Update time: ~2-4ms/frame (leaves 12ms for rendering)
 - Render time: ~6-8ms/frame
 - Total: ~10-12ms/frame (under 16.67ms budget)
 
 **Mobile (30 FPS updates):**
+
 - Update time: ~3-5ms/frame (leaves 28ms for rendering)
 - Render time: ~12-15ms/frame (heavier due to lower GPU)
 - Total: ~18-20ms/frame (under 33.33ms budget)
@@ -115,6 +123,7 @@ Frame 3: deltaTime = 25ms (lag spike!)
 ## Consequences
 
 **Positive:**
+
 - **Deterministic physics:** Same inputs always produce same outputs
 - **Easier balancing:** Tune once, works everywhere
 - **Testable:** Automated tests with predictable physics
@@ -122,24 +131,28 @@ Frame 3: deltaTime = 25ms (lag spike!)
 - **Mobile performance:** 30 FPS update + render skip maintains playable FPS
 
 **Negative:**
+
 - **Complexity:** Accumulator pattern is harder to understand than naive loop
-  - *Mitigation:* Inline documentation explains algorithm
+  - _Mitigation:_ Inline documentation explains algorithm
 - **Input latency:** 30 FPS on mobile = 33ms worst-case latency
-  - *Mitigation:* Acceptable for arcade game (fighting games use 16ms)
+  - _Mitigation:_ Acceptable for arcade game (fighting games use 16ms)
 - **Catch-up logic:** Lagged frames run multiple updates (can cause stutter)
-  - *Mitigation:* Cap max updates at 5 (spiral of death prevention)
+  - _Mitigation:_ Cap max updates at 5 (spiral of death prevention)
 
 ## Alternatives Considered
 
 ### 1. Variable Timestep (Rejected)
+
 ```typescript
 function update(deltaTime) {
   player.x += player.velocity * deltaTime;
 }
 ```
+
 // Pros: Simple
 // Cons: Non-deterministic, different on each device, hard to balance
-```
+
+````
 
 ### 2. Fixed Timestep without Accumulator (Rejected)
 ```typescript
@@ -147,9 +160,11 @@ function gameLoop() {
   update(16.67); // Always use fixed delta
   render();
 }
-```
+````
+
 // Pros: Simple, deterministic
 // Cons: Can't catch up if lagged, rendering tied to update rate
+
 ```
 
 ### 3. ECS with Parallel Updates (Considered but overkill)
@@ -162,3 +177,4 @@ Entity-Component-System with parallel update scheduling
 - Tests: `tests/game/gameLoop.logic.test.ts`
 - Reference: [Fix Your Timestep by Glenn Fiedler](https://gafferongames.com/post/fix_your_timestep/)
 - Reference: [Game Programming Patterns - Game Loop](https://gameprogrammingpatterns.com/game-loop.html)
+```

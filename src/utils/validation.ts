@@ -44,23 +44,18 @@
  * ```typescript
  * // Validate player position before setting
  * export function setPlayerPosition(x: number, y: number): void {
- *   if (!validateBounds(x, y, canvas.width, canvas.height)) {
+ *   if (!_validateBounds(x, y, canvas.width, canvas.height)) {
  *     log.warn('Player position out of bounds', { x, y });
  *     // Clamp to valid range
- *     x = clamp(x, 0, canvas.width);
- *     y = clamp(y, 0, canvas.height);
+ *     x = _clamp(x, 0, canvas.width);
+ *     y = _clamp(y, 0, canvas.height);
  *   }
  *   player.x = x;
  *   player.y = y;
  * }
  * ```
  */
-function validateBounds(
-  x: number,
-  y: number,
-  width: number,
-  height: number
-): boolean {
+function _validateBounds(x: number, y: number, width: number, height: number): boolean {
   return x >= 0 && x <= width && y >= 0 && y <= height;
 }
 
@@ -86,7 +81,7 @@ function validateBounds(
  * @example
  * ```typescript
  * // Clamp volume slider input
- * const volume = clamp(sliderValue, 0, 1);
+ * const volume = _clamp(sliderValue, 0, 1);
  * setVolume(volume);
  *
  * // Keep player on screen
@@ -97,7 +92,7 @@ function validateBounds(
  * score.value = clamp(score.value, 0, Number.MAX_SAFE_INTEGER);
  * ```
  */
-function clamp(value: number, min: number, max: number): number {
+function _clamp(value: number, min: number, max: number): number {
   return Math.max(min, Math.min(max, value));
 }
 
@@ -150,7 +145,7 @@ export function validateAudioVolume(volume: number): number {
   if (isNaN(volume)) {
     throw new RangeError('Audio volume must be a valid number, got NaN');
   }
-  return clamp(volume, 0, 1);
+  return _clamp(volume, 0, 1);
 }
 
 /**
@@ -172,32 +167,7 @@ export function validateAudioVolume(volume: number): number {
  * @returns The validated positive integer
  * @throws {TypeError} If value is not a positive integer
  *
- * @example
- * ```typescript
- * // Validate level input
- * export function setGameLevel(level: number): void {
- *   gameLevel.value = validatePositiveInteger(level, 'level');
- *   log.info(`Level set to ${gameLevel.value}`);
- * }
- *
- * // Validate entity count
- * export function spawnEntities(count: number): void {
- *   const validCount = validatePositiveInteger(count, 'entity count');
- *   for (let i = 0; i < validCount; i++) {
- *     spawnEntity();
- *   }
- * }
- *
- * // Usage with error handling
- * try {
- *   setGameLevel(-5); // Throws TypeError
- * } catch (err) {
- *   log.error('Invalid level:', err.message);
- *   setGameLevel(1); // Fallback to level 1
- * }
- * ```
- */
-function validatePositiveInteger(value: number, name: string): number {
+function _validatePositiveInteger(value: number, name: string): number {
   if (!Number.isInteger(value) || value < 1) {
     throw new TypeError(
       `${name} must be a positive integer (>= 1), got: ${value}`
@@ -222,34 +192,10 @@ function validatePositiveInteger(value: number, name: string): number {
  * @param name - Parameter name for error messages
  * @returns The validated non-negative number
  * @throws {TypeError} If value is negative, NaN, or infinite
- *
- * @example
- * ```typescript
- * // Validate score input
- * export function addScore(points: number): number {
- *   const validPoints = validateNonNegative(points, 'score points');
- *   score.value += validPoints;
- *   return score.value;
- * }
- *
- * // Validate timer duration
- * export function setPowerupDuration(ms: number): void {
- *   const duration = validateNonNegative(ms, 'powerup duration');
- *   powerupTimer = duration;
- * }
- *
- * // Validate canvas dimensions
- * export function resizeCanvas(width: number, height: number): void {
- *   canvas.width = validateNonNegative(width, 'canvas width');
- *   canvas.height = validateNonNegative(height, 'canvas height');
- * }
- * ```
  */
-function validateNonNegative(value: number, name: string): number {
+function _validateNonNegative(value: number, name: string): number {
   if (isNaN(value) || !isFinite(value) || value < 0) {
-    throw new TypeError(
-      `${name} must be a non-negative finite number, got: ${value}`
-    );
+    throw new TypeError(`${name} must be a non-negative finite number, got: ${value}`);
   }
   return value;
 }
@@ -270,33 +216,11 @@ function validateNonNegative(value: number, name: string): number {
  * @param name - Parameter name for error messages
  * @returns Trimmed non-empty string
  * @throws {TypeError} If string is empty or only whitespace
- *
- * @example
- * ```typescript
- * // Validate sound name
- * export function playSound(name: string): void {
- *   const soundName = validateNonEmptyString(name, 'sound name');
- *   const audio = sounds.get(soundName);
- *   if (audio) {
- *     audio.play();
- *   } else {
- *     log.warn(`Sound not found: ${soundName}`);
- *   }
- * }
- *
- * // Validate asset path
- * export async function loadAsset(path: string): Promise<void> {
- *   const assetPath = validateNonEmptyString(path, 'asset path');
- *   await fetch(assetPath);
- * }
- * ```
  */
-function validateNonEmptyString(value: string, name: string): string {
+function _validateNonEmptyString(value: string, name: string): string {
   const trimmed = value.trim();
   if (trimmed.length === 0) {
-    throw new TypeError(
-      `${name} must be a non-empty string, got: "${value}"`
-    );
+    throw new TypeError(`${name} must be a non-empty string, got: "${value}"`);
   }
   return trimmed;
 }

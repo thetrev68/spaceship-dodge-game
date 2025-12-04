@@ -47,7 +47,9 @@ export function setupInput(canvas: HTMLCanvasElement): void {
       restartGameLoop();
       eventBus.emit(GameEvent.GAME_RESUMED, undefined);
     }
-    setTimeout(() => { pauseLocked = false; }, 300);
+    setTimeout(() => {
+      pauseLocked = false;
+    }, 300);
   };
 
   document.addEventListener('keydown', (event: KeyboardEvent) => {

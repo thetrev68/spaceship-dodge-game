@@ -32,7 +32,7 @@ export enum GameEvent {
   GAME_STARTED = 'game:started',
   GAME_PAUSED = 'game:paused',
   GAME_RESUMED = 'game:resumed',
-  GAME_OVER = 'game:over'
+  GAME_OVER = 'game:over',
 }
 
 // Event payload types

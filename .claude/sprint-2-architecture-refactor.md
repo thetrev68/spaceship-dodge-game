@@ -1,9 +1,11 @@
 # Sprint 2: Architecture Refactoring
 
 ## Goal
+
 Eliminate tight coupling, improve modularity, and enhance testability through architectural improvements. This sprint prepares the codebase for achieving 85% test coverage in Sprint 3.
 
 ## Prerequisites
+
 - Sprint 1 completed with 50%+ test coverage
 - All existing tests passing
 - TypeScript strict mode enabled
@@ -12,6 +14,7 @@ Eliminate tight coupling, improve modularity, and enhance testability through ar
 ## Overview
 
 Sprint 2 addresses the critical architectural gaps identified in the transformation plan:
+
 1. **State management** - Split monolithic state into domain-specific modules
 2. **Main.ts decomposition** - Break down 140-line initialization into focused modules
 3. **Service layer** - Introduce interfaces for dependency injection
@@ -24,6 +27,7 @@ After this refactor, modules will be independently testable, easier to maintain,
 ## Part 1: State Management Refactor
 
 ### Problem Statement
+
 Current `src/core/state.ts` mixes reactive values with entity arrays, has no encapsulation, and allows global mutations from any module. This creates tight coupling and makes testing difficult.
 
 ### 1.1 Create Domain-Specific State Modules
@@ -289,7 +293,7 @@ export const playerState = new PlayerState();
 
 Extract the reactive system from state.ts into its own module for reusability.
 
-```typescript
+````typescript
 /**
  * Minimal reactive state system
  * Uses ES6 Proxy for transparent reactivity
@@ -328,7 +332,7 @@ export function createReactive<T>(initialValue: T): ReactiveValue<T> {
       currentValue = newValue;
 
       // Notify all watchers
-      watchers.forEach(watcher => {
+      watchers.forEach((watcher) => {
         try {
           watcher(newValue, oldValue);
         } catch (err) {
@@ -343,12 +347,12 @@ export function createReactive<T>(initialValue: T): ReactiveValue<T> {
       return () => {
         watchers.delete(callback);
       };
-    }
+    },
   };
 
   return reactive;
 }
-```
+````
 
 **Step 5: Update src/core/state.ts**
 
@@ -372,7 +376,7 @@ export {
   resetGameState,
   addScore,
   loseLife,
-  incrementLevel
+  incrementLevel,
 } from './state/gameState';
 
 // Entity state
@@ -395,6 +399,7 @@ export const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Oper
 **Update entity modules to use new state API:**
 
 Example for `src/entities/bullet.ts`:
+
 ```typescript
 // Before:
 import { bullets } from '@core/state';
@@ -406,10 +411,11 @@ entityState.addBullet(newBullet);
 ```
 
 Example for `src/entities/asteroid.ts`:
+
 ```typescript
 // Before:
 import { obstacles } from '@core/state';
-const index = obstacles.findIndex(o => !o.active);
+const index = obstacles.findIndex((o) => !o.active);
 obstacles.splice(index, 1);
 
 // After:
@@ -418,6 +424,7 @@ entityState.removeObstacle(index);
 ```
 
 **Update game modules:**
+
 ```typescript
 // Before:
 import { score, playerLives } from '@core/state';
@@ -451,6 +458,7 @@ entityState.addObstacle(testAsteroid);
 ## Part 2: Main.ts Decomposition
 
 ### Problem Statement
+
 Current `src/core/main.ts` has 140+ lines handling canvas setup, audio initialization, input setup, UI initialization, and game loop start. This violates single responsibility principle and makes initialization hard to test.
 
 ### 2.1 Create Focused Initialization Modules
@@ -639,7 +647,7 @@ async function main() {
 }
 
 // Start the application
-main().catch(err => {
+main().catch((err) => {
   log.error('Fatal error during initialization', err);
 });
 ```
@@ -649,6 +657,7 @@ main().catch(err => {
 ## Part 3: Service Layer Introduction
 
 ### Problem Statement
+
 Direct imports of `soundManager`, `poolManager`, `collisionHandler` create hard dependencies that are difficult to mock in tests. We need abstraction via interfaces.
 
 ### 3.1 Create Service Interfaces
@@ -833,7 +842,7 @@ class ServiceProvider {
       y: 0,
       vx: 0,
       vy: 0,
-      active: false
+      active: false,
     };
   }
 
@@ -848,7 +857,7 @@ class ServiceProvider {
       points: 0,
       rotation: 0,
       rotationSpeed: 0,
-      active: false
+      active: false,
     };
   }
 }
@@ -906,12 +915,14 @@ export const soundManager = new SoundManager();
 ### 3.3 Update Service Usage
 
 **Before:**
+
 ```typescript
 import { playSound } from '@systems/soundManager';
 playSound('fire');
 ```
 
 **After:**
+
 ```typescript
 import { services } from '@services/ServiceProvider';
 services.audioService.playSound('fire');
@@ -922,6 +933,7 @@ services.audioService.playSound('fire');
 ## Part 4: Event System for Decoupling
 
 ### Problem Statement
+
 Direct function calls between modules create tight coupling. For example, `collisionHandler.ts` directly calls `showScore()` from `scorePopups.ts`. This makes it impossible to test collision logic without the UI layer.
 
 ### 4.1 Create Event Bus System
@@ -997,7 +1009,7 @@ class EventBus {
 
     log.debug(`Event emitted: ${event}`, data);
 
-    handlers.forEach(handler => {
+    handlers.forEach((handler) => {
       try {
         handler(data);
       } catch (err) {
@@ -1061,7 +1073,7 @@ export enum GameEvent {
   GAME_STARTED = 'game:started',
   GAME_PAUSED = 'game:paused',
   GAME_RESUMED = 'game:resumed',
-  GAME_OVER = 'game:over'
+  GAME_OVER = 'game:over',
 }
 
 // Event payload types
@@ -1121,6 +1133,7 @@ export type BonusAwardedEvent = {
 **Example: Collision Handler Emits Events**
 
 Before:
+
 ```typescript
 // src/systems/collisionHandler.ts
 import { showScore } from '@ui/hud/scorePopups';
@@ -1132,6 +1145,7 @@ showScore(x, y, scoreValue);
 ```
 
 After:
+
 ```typescript
 // src/systems/collisionHandler.ts
 import { eventBus, GameEvent, type AsteroidDestroyedEvent } from '@core/events';
@@ -1143,7 +1157,7 @@ eventBus.emit<AsteroidDestroyedEvent>(GameEvent.ASTEROID_DESTROYED, {
   position: { x, y },
   score: scoreValue,
   size: asteroid.size,
-  sizeLevel: asteroid.sizeLevel
+  sizeLevel: asteroid.sizeLevel,
 });
 ```
 
@@ -1172,6 +1186,7 @@ export function initializeScorePopups(): void {
 ## Part 5: Migration Checklist
 
 ### Phase 1: State Refactor (2-4 hours)
+
 - [ ] Create `src/core/reactive.ts`
 - [ ] Create `src/core/state/gameState.ts`
 - [ ] Create `src/core/state/entityState.ts`
@@ -1185,6 +1200,7 @@ export function initializeScorePopups(): void {
 - [ ] Run typecheck: `npm run typecheck`
 
 ### Phase 2: Main.ts Decomposition (2-3 hours)
+
 - [ ] Create `src/core/init/canvasInit.ts`
 - [ ] Create `src/core/init/audioInit.ts`
 - [ ] Create `src/core/init/inputInit.ts`
@@ -1194,6 +1210,7 @@ export function initializeScorePopups(): void {
 - [ ] Verify all subsystems work correctly
 
 ### Phase 3: Service Layer (3-5 hours)
+
 - [ ] Create `src/services/interfaces/IAudioService.ts`
 - [ ] Create `src/services/interfaces/ICollisionService.ts`
 - [ ] Create `src/services/interfaces/IPoolService.ts`
@@ -1206,6 +1223,7 @@ export function initializeScorePopups(): void {
 - [ ] Update tests to use ServiceProvider
 
 ### Phase 4: Event System (3-4 hours)
+
 - [ ] Create `src/core/events/EventBus.ts`
 - [ ] Create `src/core/events/GameEvents.ts`
 - [ ] Update collision handler to emit events
@@ -1217,6 +1235,7 @@ export function initializeScorePopups(): void {
 - [ ] Test event flow manually
 
 ### Phase 5: Testing & Validation (2-3 hours)
+
 - [ ] Run full test suite: `npm run test`
 - [ ] Verify all tests still pass
 - [ ] Run type checking: `npm run typecheck`
@@ -1233,6 +1252,7 @@ export function initializeScorePopups(): void {
 ## Success Criteria
 
 ✅ **Architecture Goals:**
+
 - State management split into domain-specific modules
 - Main.ts reduced from 140+ lines to ~40 lines
 - Service layer with interfaces implemented
@@ -1240,17 +1260,20 @@ export function initializeScorePopups(): void {
 - All modules independently testable
 
 ✅ **Code Quality:**
+
 - All existing tests pass
 - No TypeScript errors
 - No linting errors
 - No runtime errors or warnings
 
 ✅ **Functionality:**
+
 - Game plays identically to before refactor
 - All features work (movement, shooting, collisions, audio, UI)
 - Performance unchanged (60 FPS desktop target)
 
 ✅ **Documentation:**
+
 - All new modules have JSDoc comments
 - Complex logic explained with inline comments
 - README.md updated if architecture changed
@@ -1260,6 +1283,7 @@ export function initializeScorePopups(): void {
 ## Testing the Refactor
 
 ### Unit Test Updates
+
 Update existing tests to use new APIs:
 
 ```typescript
@@ -1285,6 +1309,7 @@ it('should detect collisions using service', () => {
 ```
 
 ### Integration Test
+
 Create a comprehensive integration test to verify the refactored architecture:
 
 ```typescript
@@ -1305,6 +1330,7 @@ describe('Refactored Architecture Integration', () => {
 ## Common Pitfalls to Avoid
 
 ### ❌ Don't:
+
 1. **Mix old and new state APIs** - Migrate completely, don't leave mixed usage
 2. **Skip updating tests** - Tests must pass after refactor
 3. **Forget event cleanup** - Always unsubscribe from events when done
@@ -1312,6 +1338,7 @@ describe('Refactored Architecture Integration', () => {
 5. **Leave console.log statements** - Use the logger system
 
 ### ✅ Do:
+
 1. **Migrate incrementally** - One phase at a time
 2. **Test after each phase** - Don't accumulate breaking changes
 3. **Update documentation** - Keep CLAUDE.md in sync
@@ -1352,7 +1379,9 @@ tests/
 ---
 
 ## Estimated Effort
+
 **12-19 hours total** of focused implementation:
+
 - Phase 1 (State): 2-4 hours
 - Phase 2 (Main.ts): 2-3 hours
 - Phase 3 (Services): 3-5 hours
@@ -1364,6 +1393,7 @@ tests/
 ## Next Steps After Completion
 
 With the architecture refactored:
+
 1. **Sprint 3** will add comprehensive tests to reach 85% coverage
 2. **Sprint 4** will focus on code quality and documentation
 3. The codebase will be easier to maintain, test, and extend

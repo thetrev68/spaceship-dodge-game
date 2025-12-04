@@ -46,7 +46,7 @@ describe('inputManager', () => {
     const event = new KeyboardEvent('keydown', { key: 'p' });
     document.dispatchEvent(event);
     expect(gameState.value).toBe('PAUSED');
-    expect((services.audioService.muteAll as ReturnType<typeof vi.fn>)).toHaveBeenCalled();
+    expect(services.audioService.muteAll as ReturnType<typeof vi.fn>).toHaveBeenCalled();
     expect(showOverlay).toHaveBeenCalledWith('PAUSED');
   });
 });

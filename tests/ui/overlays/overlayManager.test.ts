@@ -60,7 +60,7 @@ describe('overlayManager showOverlay', () => {
     showOverlay('GAME_OVER', 123, 2);
     const overlay = document.getElementById('gameOverOverlay');
     expect(overlay?.classList.contains('visible')).toBe(true);
-    expect((services.audioService.stopMusic as ReturnType<typeof vi.fn>)).toHaveBeenCalled();
+    expect(services.audioService.stopMusic as ReturnType<typeof vi.fn>).toHaveBeenCalled();
     expect(document.getElementById('finalScore')?.textContent).toContain('123');
   });
 
@@ -68,6 +68,6 @@ describe('overlayManager showOverlay', () => {
     showOverlay('PAUSED');
     const overlay = document.getElementById('pauseOverlay');
     expect(overlay?.classList.contains('visible')).toBe(true);
-    expect((services.audioService.stopMusic as ReturnType<typeof vi.fn>)).toHaveBeenCalled();
+    expect(services.audioService.stopMusic as ReturnType<typeof vi.fn>).toHaveBeenCalled();
   });
 });

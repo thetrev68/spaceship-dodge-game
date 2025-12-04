@@ -1,36 +1,40 @@
 # ADR-005: TypeScript Strict Mode Configuration
 
 ## Status
+
 Accepted (Sprint 1)
 
 ## Context
+
 TypeScript offers various strictness levels from loose (default) to strict mode. Must decide configuration for game codebase balancing safety vs developer experience.
 
 **Options:**
+
 1. **Default (loose):** `strict: false`, allows `any`, implicit returns, null unsafety
 2. **Strict mode:** `strict: true`, enforces all safety checks
 3. **Custom:** Pick specific checks to enable
 
 ## Decision
+
 Enable full strict mode in `tsconfig.json`:
 
 ```json
 {
   "compilerOptions": {
-    "strict": true,              // Enable all strict checks
-    "noImplicitAny": true,       // Error on implicit 'any'
-    "strictNullChecks": true,    // Null safety (no implicit null/undefined)
+    "strict": true, // Enable all strict checks
+    "noImplicitAny": true, // Error on implicit 'any'
+    "strictNullChecks": true, // Null safety (no implicit null/undefined)
     "strictFunctionTypes": true, // Function parameter contravariance
     "strictBindCallApply": true, // Type-check bind/call/apply
     "strictPropertyInitialization": true, // Class properties must be initialized
-    "noImplicitThis": true,      // Error on implicit 'this'
-    "alwaysStrict": true,        // Emit 'use strict' in JS output
+    "noImplicitThis": true, // Error on implicit 'this'
+    "alwaysStrict": true, // Emit 'use strict' in JS output
 
     // Additional strict checks (not part of "strict" flag)
-    "noUnusedLocals": true,      // Error on unused variables
-    "noUnusedParameters": true,  // Error on unused function parameters
-    "noImplicitReturns": true,   // All code paths must return value
-    "noFallthroughCasesInSwitch": true  // Switch cases must have break/return
+    "noUnusedLocals": true, // Error on unused variables
+    "noUnusedParameters": true, // Error on unused function parameters
+    "noImplicitReturns": true, // All code paths must return value
+    "noFallthroughCasesInSwitch": true // Switch cases must have break/return
   }
 }
 ```
@@ -38,6 +42,7 @@ Enable full strict mode in `tsconfig.json`:
 ## Rationale
 
 **Why strict mode?**
+
 1. **Catch bugs at compile time** - Null checks, implicit any, unused code
 2. **Self-documenting code** - Types serve as documentation
 3. **Refactoring confidence** - Compiler catches breaking changes
@@ -46,6 +51,7 @@ Enable full strict mode in `tsconfig.json`:
 **Specific checks explained:**
 
 **`strictNullChecks: true`** (most impactful)
+
 ```typescript
 // Without strictNullChecks (BAD):
 function getPlayer() {
@@ -59,12 +65,14 @@ function getPlayer(): Player | undefined {
   return players[0];
 }
 const player = getPlayer();
-if (player) { // Compiler forces null check
+if (player) {
+  // Compiler forces null check
   player.x = 100; // Safe!
 }
 ```
 
 **`noImplicitReturns: true`**
+
 ```typescript
 // Without check (BAD):
 function getScore(level: number) {
@@ -84,6 +92,7 @@ function getScore(level: number): number {
 ```
 
 **`noUnusedLocals: true`**
+
 ```typescript
 // Without check (messy):
 function fireBullet() {
@@ -102,6 +111,7 @@ function fireBullet() {
 ## Consequences
 
 **Positive:**
+
 - **Fewer runtime errors:** Null checks, type mismatches caught at compile time
 - **Self-documenting:** Function signatures show exactly what types are used
 - **Refactoring safety:** Compiler catches breaking changes across codebase
@@ -109,16 +119,18 @@ function fireBullet() {
 - **Team alignment:** All contributors follow same strictness level
 
 **Negative:**
+
 - **Steeper learning curve:** New contributors must understand TypeScript strictness
-  - *Mitigation:* CONTRIBUTING.md explains common patterns
+  - _Mitigation:_ CONTRIBUTING.md explains common patterns
 - **More verbose:** Null checks add boilerplate (`if (x)` before every access)
-  - *Mitigation:* Use optional chaining (`x?.property`) and nullish coalescing (`x ?? default`)
+  - _Mitigation:_ Use optional chaining (`x?.property`) and nullish coalescing (`x ?? default`)
 - **Slower initial development:** Must satisfy compiler before running
-  - *Mitigation:* Type safety prevents runtime bugs, net time savings
+  - _Mitigation:_ Type safety prevents runtime bugs, net time savings
 
 ## Alternatives Considered
 
 ### 1. Loose Mode (Rejected)
+
 ```json
 { "strict": false }
 // Pros: Faster to write, fewer type errors
@@ -126,16 +138,19 @@ function fireBullet() {
 ```
 
 ### 2. Custom Strict (Rejected)
+
 Enable only some strict checks (e.g., `strictNullChecks` but not `noUnusedLocals`)
 **Pros:** Balance between safety and convenience
 **Cons:** Inconsistent strictness, team confusion on what's allowed
 
 ### 3. JSDoc with JavaScript (Rejected)
+
 Use JSDoc comments for types without TypeScript compiler
 **Pros:** No build step, gradual adoption
 **Cons:** No compile-time checks, types not enforced
 
 ## Related
+
 - Configuration: `tsconfig.json`
 - Type definitions: `src/types/index.ts`
 - Contributing guide: `CONTRIBUTING.md` (explains TypeScript usage)

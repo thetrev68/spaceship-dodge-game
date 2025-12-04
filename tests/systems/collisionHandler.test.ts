@@ -31,7 +31,7 @@ describe('Collision Handler System', () => {
     const asteroid = createTestAsteroid({
       x: player.x,
       y: player.y,
-      radius: 30
+      radius: 30,
     });
     obstacles.push(asteroid);
 
@@ -52,7 +52,7 @@ describe('Collision Handler System', () => {
     const asteroid = createTestAsteroid({
       x: player.x,
       y: player.y,
-      radius: 30
+      radius: 30,
     });
     obstacles.push(asteroid);
 
@@ -68,7 +68,7 @@ describe('Collision Handler System', () => {
     const asteroid = createTestAsteroid({
       x: 400,
       y: 200,
-      radius: 50
+      radius: 50,
     });
     obstacles.push(asteroid);
     const initialObstacleCount = obstacles.length;
@@ -78,7 +78,7 @@ describe('Collision Handler System', () => {
     const bullet = createTestBullet({
       x: asteroid.x + asteroid.radius,
       y: asteroid.y + asteroid.radius,
-      radius: 5
+      radius: 5,
     });
     bullets.push(bullet);
     const initialBulletCount = bullets.length;
@@ -88,8 +88,7 @@ describe('Collision Handler System', () => {
 
     // Verify collision was detected (bullet or asteroid count changed)
     const collisionDetected =
-      bullets.length < initialBulletCount ||
-      obstacles.length !== initialObstacleCount;
+      bullets.length < initialBulletCount || obstacles.length !== initialObstacleCount;
 
     expect(collisionDetected).toBe(true);
   });
@@ -100,7 +99,7 @@ describe('Collision Handler System', () => {
       const asteroid = createTestAsteroid({
         x: Math.random() * 800,
         y: Math.random() * 600,
-        radius: 20 + Math.random() * 30
+        radius: 20 + Math.random() * 30,
       });
       obstacles.push(asteroid);
     }

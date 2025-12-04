@@ -49,19 +49,8 @@
  * @see docs/architecture/decisions/ADR-004-fixed-timestep-game-loop.md
  */
 
-import {
-  gameState,
-  lastObstacleSpawnTime,
-  gameLevel,
-  allowSpawning,
-  score,
-} from '@core/state.js';
-import {
-  GAME_CONFIG,
-  LEVEL_CONFIG,
-  POWERUP_CONFIG,
-  ASTEROID_CONFIG,
-} from '@core/constants.js';
+import { gameState, lastObstacleSpawnTime, gameLevel, allowSpawning, score } from '@core/state.js';
+import { GAME_CONFIG, LEVEL_CONFIG, POWERUP_CONFIG, ASTEROID_CONFIG } from '@core/constants.js';
 import { updatePlayer } from '@entities/player.js';
 import { updateObstacles, resetNewAsteroidsSpawned } from '@entities/asteroid.js';
 import { updateBullets } from '@entities/bullet.js';
@@ -135,7 +124,9 @@ function getSpawnInterval(level: number): number {
     ? LEVEL_CONFIG.BASE_SPAWN_INTERVAL_MOBILE
     : LEVEL_CONFIG.BASE_SPAWN_INTERVAL_DESKTOP;
   const interval = baseInterval - level * LEVEL_CONFIG.SPAWN_INTERVAL_DECREASE_PER_LEVEL;
-  const minInterval = isMobile() ? Math.max(ASTEROID_CONFIG.MIN_SPAWN_INTERVAL, 500) : ASTEROID_CONFIG.MIN_SPAWN_INTERVAL;
+  const minInterval = isMobile()
+    ? Math.max(ASTEROID_CONFIG.MIN_SPAWN_INTERVAL, 500)
+    : ASTEROID_CONFIG.MIN_SPAWN_INTERVAL;
   return Math.max(interval, minInterval);
 }
 
@@ -201,7 +192,10 @@ function gameLoop(canvas: HTMLCanvasElement, timestamp = 0): void {
     obstacleSpawnInterval = getSpawnInterval(gameLevel.value);
 
     // Powerup spawning logic (time-based, every ~15 seconds)
-    if (!lastPowerupSpawnTime || Date.now() - lastPowerupSpawnTime > POWERUP_CONFIG.SPAWN_INTERVAL) {
+    if (
+      !lastPowerupSpawnTime ||
+      Date.now() - lastPowerupSpawnTime > POWERUP_CONFIG.SPAWN_INTERVAL
+    ) {
       spawnPowerup(canvas.width);
       lastPowerupSpawnTime = Date.now();
     }
@@ -209,7 +203,13 @@ function gameLoop(canvas: HTMLCanvasElement, timestamp = 0): void {
     // Update all game entities
     // Note: These functions don't take deltaTime because they use fixed TIME_STEP internally
     updatePlayer();
-    updateObstacles(canvas.width, canvas.height, obstacleSpawnInterval, lastObstacleSpawnTime, allowSpawning.value);
+    updateObstacles(
+      canvas.width,
+      canvas.height,
+      obstacleSpawnInterval,
+      lastObstacleSpawnTime,
+      allowSpawning.value
+    );
     updateBullets();
     updatePowerups(canvas.height);
     updateScorePopups();
@@ -255,8 +255,8 @@ function gameLoop(canvas: HTMLCanvasElement, timestamp = 0): void {
     const fps = (perfFrameCounter / perfWindowMs) * 1000;
     updatePerfHud({
       fps,
-      frameMs: frameEnd - frameStart,   // Total frame time (update + render)
-      logicMs: logicEnd - frameStart,    // Update time only
+      frameMs: frameEnd - frameStart, // Total frame time (update + render)
+      logicMs: logicEnd - frameStart, // Update time only
     });
     perfSampleStart = frameEnd;
     perfFrameCounter = 0;

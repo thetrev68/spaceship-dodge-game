@@ -17,7 +17,7 @@ export default defineConfig({
         'src/game/**/*.ts',
         'src/entities/**/*.ts',
         'src/systems/**/*.ts',
-        'src/utils/**/*.ts'
+        'src/utils/**/*.ts',
       ],
       exclude: [
         'node_modules/',
@@ -38,15 +38,15 @@ export default defineConfig({
         'src/effects/**', // Non-critical visual effects
         'src/types/**', // Type definitions only
         '.claude/**', // Documentation
-        'build/**' // Build artifacts
+        'build/**', // Build artifacts
       ],
       thresholds: {
         lines: 85,
         functions: 85,
         branches: 80,
-        statements: 85
-      }
-    }
+        statements: 85,
+      },
+    },
   },
   resolve: {
     alias: {

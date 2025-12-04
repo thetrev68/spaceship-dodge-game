@@ -77,4 +77,3 @@ export type GameConfig = {
   MAX_LIFETIME: number;
   SPAWN_MARGIN: number;
 };
-

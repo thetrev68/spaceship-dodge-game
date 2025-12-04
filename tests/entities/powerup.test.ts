@@ -96,7 +96,7 @@ describe('Powerup Entity', () => {
       y: 100,
       size: 30,
       type: 'doubleBlaster' as const,
-      dy: 2
+      dy: 2,
     };
 
     activePowerups.push(powerup);

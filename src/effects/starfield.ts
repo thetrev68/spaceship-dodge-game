@@ -45,7 +45,7 @@ export function setupStarfield(canvas: HTMLCanvasElement): void {
   function animate(): void {
     if (!ctx) return;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
+
     // Batch drawing for performance
     ctx.fillStyle = 'white';
     ctx.beginPath();
@@ -54,16 +54,16 @@ export function setupStarfield(canvas: HTMLCanvasElement): void {
       const star = stars[i];
       if (!star) continue;
       star.y += star.speed;
-      
+
       if (star.y > canvas.height) {
         star.y = 0;
         star.x = Math.random() * canvas.width;
       }
-      
+
       // Use rect instead of arc for performance, and batch them
       ctx.rect(star.x, star.y, star.size, star.size);
     }
-    
+
     ctx.fill();
 
     requestAnimationFrame(animate);

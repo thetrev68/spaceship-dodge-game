@@ -19,40 +19,40 @@ Your canvas is currently set to `width: 100%` and `height: 100%` of the viewport
 
 **Actionable Steps:**
 
-* **Set a Fixed or Scaled Internal Resolution:**
-    Draw your game content onto a smaller, fixed-size canvas (e.g., 480x854 for portrait, or 854x480 for landscape, depending on your game's orientation) and then scale that canvas to fit the screen using CSS. This significantly reduces the number of pixels the GPU has to process.
+- **Set a Fixed or Scaled Internal Resolution:**
+  Draw your game content onto a smaller, fixed-size canvas (e.g., 480x854 for portrait, or 854x480 for landscape, depending on your game's orientation) and then scale that canvas to fit the screen using CSS. This significantly reduces the number of pixels the GPU has to process.
 
-    **Example:**
+  **Example:**
 
-    ```javascript
-    // In your game's initialization (e.g., in main.js or renderManager.js)
-    const canvas = document.getElementById('gameCanvas');
-    const ctx = canvas.getContext('2d');
+  ```javascript
+  // In your game's initialization (e.g., in main.js or renderManager.js)
+  const canvas = document.getElementById('gameCanvas');
+  const ctx = canvas.getContext('2d');
 
-    // Set internal game resolution
-    const gameWidth = 480; // Or 854 for landscape, adjust as needed
-    const gameHeight = 854; // Or 480 for landscape, adjust as needed
+  // Set internal game resolution
+  const gameWidth = 480; // Or 854 for landscape, adjust as needed
+  const gameHeight = 854; // Or 480 for landscape, adjust as needed
 
-    canvas.width = gameWidth;
-    canvas.height = gameHeight;
+  canvas.width = gameWidth;
+  canvas.height = gameHeight;
 
-    // Scale the canvas element with CSS
-    canvas.style.width = '100vw'; // Use 100vw/vh for responsive scaling
-    canvas.style.height = '100vh';
-    canvas.style.objectFit = 'contain'; // Ensures aspect ratio is maintained
-    canvas.style.backgroundColor = 'black'; // To fill empty space if aspect ratio differs
+  // Scale the canvas element with CSS
+  canvas.style.width = '100vw'; // Use 100vw/vh for responsive scaling
+  canvas.style.height = '100vh';
+  canvas.style.objectFit = 'contain'; // Ensures aspect ratio is maintained
+  canvas.style.backgroundColor = 'black'; // To fill empty space if aspect ratio differs
 
-    // Adjust all drawing logic to these new gameWidth/gameHeight
-    // For example, if you're drawing a player:
-    // ctx.drawImage(playerImage, player.x, player.y, player.width, player.height);
-    // player.x, player.y, player.width, player.height should now be relative to gameWidth/gameHeight
+  // Adjust all drawing logic to these new gameWidth/gameHeight
+  // For example, if you're drawing a player:
+  // ctx.drawImage(playerImage, player.x, player.y, player.width, player.height);
+  // player.x, player.y, player.width, player.height should now be relative to gameWidth/gameHeight
 
-    // When resizing the window/device orientation changes:
-    // You'll need to re-evaluate gameWidth and gameHeight if you want to adapt to orientation.
-    // For simplicity, you might start with a fixed landscape or portrait resolution.
-    ```
+  // When resizing the window/device orientation changes:
+  // You'll need to re-evaluate gameWidth and gameHeight if you want to adapt to orientation.
+  // For simplicity, you might start with a fixed landscape or portrait resolution.
+  ```
 
-    * **Prioritize a Single Orientation:** Decide if your game is primarily portrait or landscape for mobile, and design your internal resolution accordingly. This simplifies layout.
+  - **Prioritize a Single Orientation:** Decide if your game is primarily portrait or landscape for mobile, and design your internal resolution accordingly. This simplifies layout.
 
 ### 2. Touch Controls
 
@@ -61,144 +61,145 @@ Currently, the game relies on keyboard input. On mobile, this makes it unplayabl
 
 **Actionable Steps:**
 
-* **Implement On-Screen Touch Controls:**
-    Add simple virtual buttons or a virtual joystick that respond to touch events.
+- **Implement On-Screen Touch Controls:**
+  Add simple virtual buttons or a virtual joystick that respond to touch events.
+  - **Movement (Player spaceship):**
+    - **Option A (Simple Left/Right buttons):** Create two UI buttons (e.g., `<button>` or `<div>` elements styled as buttons) for "Move Left" and "Move Right." Attach `touchstart` and `touchend` events to these. When touched, set a flag in your `inputManager` (e.g., `input.leftPressed = true`) and clear it on `touchend`.
+    - **Option B (Touch-and-Drag):** Allow the user to touch and drag their finger horizontally on the lower part of the screen to move the spaceship.
+  - **Shooting:** Create a dedicated "Shoot" button. Attach `touchstart` to trigger shooting.
 
-    * **Movement (Player spaceship):**
-        * **Option A (Simple Left/Right buttons):** Create two UI buttons (e.g., `<button>` or `<div>` elements styled as buttons) for "Move Left" and "Move Right." Attach `touchstart` and `touchend` events to these. When touched, set a flag in your `inputManager` (e.g., `input.leftPressed = true`) and clear it on `touchend`.
-        * **Option B (Touch-and-Drag):** Allow the user to touch and drag their finger horizontally on the lower part of the screen to move the spaceship.
-    * **Shooting:** Create a dedicated "Shoot" button. Attach `touchstart` to trigger shooting.
+  **Example (Conceptual for `inputManager.js` and `main.js`):**
 
-    **Example (Conceptual for `inputManager.js` and `main.js`):**
+  ```javascript
+  // In your HTML (index.html) - add these elements
+  <div id="controls">
+    <button id="moveLeftBtn">←</button>
+    <button id="moveRightBtn">→</button>
+    <button id="shootBtn">FIRE</button>
+  </div>
+  ```
 
-    ```javascript
-    // In your HTML (index.html) - add these elements
-    <div id="controls">
-        <button id="moveLeftBtn">←</button>
-        <button id="moveRightBtn">→</button>
-        <button id="shootBtn">FIRE</button>
-    </div>
-    ```
+  ```javascript
+  // In your inputManager.js (or similar)
+  import { gameState } from './state'; // Assuming state.js holds gameState
 
-    ```javascript
-    // In your inputManager.js (or similar)
-    import { gameState } from './state'; // Assuming state.js holds gameState
+  export const input = {
+    leftPressed: false,
+    rightPressed: false,
+    shootPressed: false,
+    // ... other existing properties
 
-    export const input = {
-        leftPressed: false,
-        rightPressed: false,
-        shootPressed: false,
-        // ... other existing properties
+    initTouchControls() {
+      const moveLeftBtn = document.getElementById('moveLeftBtn');
+      const moveRightBtn = document.getElementById('moveRightBtn');
+      const shootBtn = document.getElementById('shootBtn');
 
-        initTouchControls() {
-            const moveLeftBtn = document.getElementById('moveLeftBtn');
-            const moveRightBtn = document.getElementById('moveRightBtn');
-            const shootBtn = document.getElementById('shootBtn');
+      if (moveLeftBtn) {
+        moveLeftBtn.addEventListener('touchstart', (e) => {
+          e.preventDefault(); // Prevent default browser touch behavior (scrolling, zooming)
+          if (gameState.isGameActive()) {
+            this.leftPressed = true;
+          }
+        });
+        moveLeftBtn.addEventListener('touchend', (e) => {
+          e.preventDefault();
+          this.leftPressed = false;
+        });
+      }
 
-            if (moveLeftBtn) {
-                moveLeftBtn.addEventListener('touchstart', (e) => {
-                    e.preventDefault(); // Prevent default browser touch behavior (scrolling, zooming)
-                    if (gameState.isGameActive()) {
-                        this.leftPressed = true;
-                    }
-                });
-                moveLeftBtn.addEventListener('touchend', (e) => {
-                    e.preventDefault();
-                    this.leftPressed = false;
-                });
-            }
+      if (moveRightBtn) {
+        moveRightBtn.addEventListener('touchstart', (e) => {
+          e.preventDefault();
+          if (gameState.isGameActive()) {
+            this.rightPressed = true;
+          }
+        });
+        moveRightBtn.addEventListener('touchend', (e) => {
+          e.preventDefault();
+          this.rightPressed = false;
+        });
+      }
 
-            if (moveRightBtn) {
-                moveRightBtn.addEventListener('touchstart', (e) => {
-                    e.preventDefault();
-                    if (gameState.isGameActive()) {
-                        this.rightPressed = true;
-                    }
-                });
-                moveRightBtn.addEventListener('touchend', (e) => {
-                    e.preventDefault();
-                    this.rightPressed = false;
-                });
-            }
+      if (shootBtn) {
+        shootBtn.addEventListener('touchstart', (e) => {
+          e.preventDefault();
+          if (gameState.isGameActive()) {
+            this.shootPressed = true;
+          }
+        });
+        shootBtn.addEventListener('touchend', (e) => {
+          e.preventDefault();
+          this.shootPressed = false;
+        });
+      }
 
-            if (shootBtn) {
-                shootBtn.addEventListener('touchstart', (e) => {
-                    e.preventDefault();
-                    if (gameState.isGameActive()) {
-                        this.shootPressed = true;
-                    }
-                });
-                shootBtn.addEventListener('touchend', (e) => {
-                    e.preventDefault();
-                    this.shootPressed = false;
-                });
-            }
+      // Optional: for general touch input on canvas (e.g., for menus or drag controls)
+      const gameCanvas = document.getElementById('gameCanvas'); // Assuming your canvas ID
+      gameCanvas.addEventListener('touchstart', (e) => {
+        e.preventDefault(); // Prevent default for entire canvas area
+        // Handle menu interactions, or drag-to-move logic here
+        if (gameState.isGamePaused() || gameState.isGameOver()) {
+          // Check for touch on 'Play Again', 'Resume' buttons etc.
+        } else if (gameState.isGameActive() && e.touches.length > 0) {
+          // Example: Player moves to touch X position (simplified)
+          // const touchX = e.touches[0].clientX;
+          // player.x = touchX - canvas.getBoundingClientRect().left;
+          // ... you'd need to scale touchX relative to your gameWidth
+        }
+      });
+      // Add touchmove, touchend as needed
+    },
 
-            // Optional: for general touch input on canvas (e.g., for menus or drag controls)
-            const gameCanvas = document.getElementById('gameCanvas'); // Assuming your canvas ID
-            gameCanvas.addEventListener('touchstart', (e) => {
-                e.preventDefault(); // Prevent default for entire canvas area
-                // Handle menu interactions, or drag-to-move logic here
-                if (gameState.isGamePaused() || gameState.isGameOver()) {
-                    // Check for touch on 'Play Again', 'Resume' buttons etc.
-                } else if (gameState.isGameActive() && e.touches.length > 0) {
-                    // Example: Player moves to touch X position (simplified)
-                    // const touchX = e.touches[0].clientX;
-                    // player.x = touchX - canvas.getBoundingClientRect().left;
-                    // ... you'd need to scale touchX relative to your gameWidth
-                }
-            });
-            // Add touchmove, touchend as needed
-        },
+    // Make sure your updatePlayer/handleInput functions check these flags
+    // if (input.leftPressed) player.moveLeft();
+  };
+  ```
 
-        // Make sure your updatePlayer/handleInput functions check these flags
-        // if (input.leftPressed) player.moveLeft();
-    };
-    ```
+  ```javascript
+  // In your main.js (or where you initialize inputManager)
+  import { input } from './inputManager.js';
+  // ...
+  input.initKeyboardControls(); // Your existing
+  input.initTouchControls(); // <-- Add this
+  ```
 
-    ```javascript
-    // In your main.js (or where you initialize inputManager)
-    import { input } from './inputManager.js';
-    // ...
-    input.initKeyboardControls(); // Your existing
-    input.initTouchControls(); // <-- Add this
-    ```
-
-    * **CSS Styling for Controls:** Position these control buttons using CSS (`position: fixed`, `bottom`, `left`, `right` etc.) to overlay them on your game canvas.
+  - **CSS Styling for Controls:** Position these control buttons using CSS (`position: fixed`, `bottom`, `left`, `right` etc.) to overlay them on your game canvas.
 
 ### 3. General Optimizations (Reiterated & Specific to Your Game)
 
-* **Asset Sizes:**
-    * I noticed your background image (`space_background.png`) is quite large (1920x1080). While it's a good resolution for desktop, consider if a smaller version (e.g., 960x540) would suffice for mobile, especially if you're scaling down the canvas resolution.
-    * Ensure all other sprites are as small as they need to be and are compressed.
+- **Asset Sizes:**
+  - I noticed your background image (`space_background.png`) is quite large (1920x1080). While it's a good resolution for desktop, consider if a smaller version (e.g., 960x540) would suffice for mobile, especially if you're scaling down the canvas resolution.
+  - Ensure all other sprites are as small as they need to be and are compressed.
 
-* **Garbage Collection:**
-    * **Asteroids and Bullets:** You're creating `Asteroid` and `Bullet` instances frequently. While you are currently clearing `activeAsteroids` and `activeBullets` from their arrays, the JavaScript engine still needs to garbage collect those objects. Implementing **Object Pooling** for `Asteroid` and `Bullet` objects will significantly reduce garbage collection pauses, which are a major source of mobile stutter. (See my previous response for a conceptual example).
-    * **Score Popups:** The `ScorePopup` instances are also created frequently. Pool these as well.
+- **Garbage Collection:**
+  - **Asteroids and Bullets:** You're creating `Asteroid` and `Bullet` instances frequently. While you are currently clearing `activeAsteroids` and `activeBullets` from their arrays, the JavaScript engine still needs to garbage collect those objects. Implementing **Object Pooling** for `Asteroid` and `Bullet` objects will significantly reduce garbage collection pauses, which are a major source of mobile stutter. (See my previous response for a conceptual example).
+  - **Score Popups:** The `ScorePopup` instances are also created frequently. Pool these as well.
 
-* **Drawing Efficiency (`renderManager.js`):**
-    * **Avoid Repeated Context Settings:** In `renderManager.js`, you're setting `ctx.globalAlpha`, `ctx.font`, `ctx.fillStyle`, `ctx.textAlign`, etc., every frame within the loops for drawing asteroids, bullets, etc. Set these properties *once* if they are constant for a batch of draws, or only when they actually change.
-    * **Example from `renderManager.js`:**
-        ```javascript
-        // Current:
-        activeAsteroids.forEach(asteroid => {
-            ctx.drawImage(asteroid.image, asteroid.x, asteroid.y, asteroid.width, asteroid.height);
-            // ctx.globalAlpha, ctx.font, etc. for other elements here...
-        });
+- **Drawing Efficiency (`renderManager.js`):**
+  - **Avoid Repeated Context Settings:** In `renderManager.js`, you're setting `ctx.globalAlpha`, `ctx.font`, `ctx.fillStyle`, `ctx.textAlign`, etc., every frame within the loops for drawing asteroids, bullets, etc. Set these properties _once_ if they are constant for a batch of draws, or only when they actually change.
+  - **Example from `renderManager.js`:**
 
-        // Better:
-        // Set common ctx properties ONCE outside the loop if they apply to many similar elements
-        ctx.save(); // Save current state
-        // For score popups, if they all use the same font/style:
-        ctx.font = '20px Arial';
-        ctx.fillStyle = 'white';
-        activeScorePopups.forEach(popup => {
-            ctx.globalAlpha = popup.opacity; // This can change per popup, so keep inside
-            ctx.fillText(popup.text, popup.x, popup.y);
-        });
-        ctx.restore(); // Restore previous state
-        ```
-    * **Pre-render Static Text:** Elements like your "Score:" display or "Game Over" text don't change every frame. You could potentially draw them once to an off-screen canvas and then blit (copy) that off-screen canvas onto your main canvas. This is an advanced optimization but can help with text rendering overhead.
+    ```javascript
+    // Current:
+    activeAsteroids.forEach((asteroid) => {
+      ctx.drawImage(asteroid.image, asteroid.x, asteroid.y, asteroid.width, asteroid.height);
+      // ctx.globalAlpha, ctx.font, etc. for other elements here...
+    });
+
+    // Better:
+    // Set common ctx properties ONCE outside the loop if they apply to many similar elements
+    ctx.save(); // Save current state
+    // For score popups, if they all use the same font/style:
+    ctx.font = '20px Arial';
+    ctx.fillStyle = 'white';
+    activeScorePopups.forEach((popup) => {
+      ctx.globalAlpha = popup.opacity; // This can change per popup, so keep inside
+      ctx.fillText(popup.text, popup.x, popup.y);
+    });
+    ctx.restore(); // Restore previous state
+    ```
+
+  - **Pre-render Static Text:** Elements like your "Score:" display or "Game Over" text don't change every frame. You could potentially draw them once to an off-screen canvas and then blit (copy) that off-screen canvas onto your main canvas. This is an advanced optimization but can help with text rendering overhead.
 
 ### Next Steps:
 

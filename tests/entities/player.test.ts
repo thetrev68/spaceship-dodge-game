@@ -32,8 +32,8 @@ describe('Player Entity', () => {
     player.dy = 3;
 
     // Mock window dimensions
-    global.innerWidth = 800;
-    global.innerHeight = 600;
+    globalThis.innerWidth = 800;
+    globalThis.innerHeight = 600;
 
     // Update player
     updatePlayer();

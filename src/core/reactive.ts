@@ -131,7 +131,7 @@ export function createReactive<T>(initialValue: T): ReactiveValue<T> {
 
       // Notify all watchers synchronously
       // This is intentional - game loop needs immediate updates
-      watchers.forEach(watcher => {
+      watchers.forEach((watcher) => {
         try {
           watcher(newValue, oldValue);
         } catch (err) {
@@ -147,7 +147,7 @@ export function createReactive<T>(initialValue: T): ReactiveValue<T> {
       return () => {
         watchers.delete(callback);
       };
-    }
+    },
   };
 
   return reactive;

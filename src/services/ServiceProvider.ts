@@ -110,7 +110,9 @@ class ServiceProvider {
     this.audioService = new AudioServiceAdapter();
     this.collisionService = new CollisionServiceAdapter();
     this.bulletPool = new PoolServiceAdapter<Bullet>(new ObjectPool(() => this.createBullet()));
-    this.asteroidPool = new PoolServiceAdapter<Asteroid>(new ObjectPool(() => this.createAsteroid()));
+    this.asteroidPool = new PoolServiceAdapter<Asteroid>(
+      new ObjectPool(() => this.createAsteroid())
+    );
 
     debug('service', 'ServiceProvider initialized with default implementations');
   }

@@ -119,7 +119,7 @@ export function despawnBullet(index: number): void {
  * ```
  */
 export function clearAllBullets(): void {
-  bullets.forEach(bullet => releaseBullet(bullet));
+  bullets.forEach((bullet) => releaseBullet(bullet));
   bullets.length = 0;
 }
 
@@ -260,7 +260,7 @@ export function updateBullets(): void {
  * ```
  */
 export function drawBullets(ctx: CanvasRenderingContext2D): void {
-  bullets.forEach(b => {
+  bullets.forEach((b) => {
     ctx.drawImage(bulletSprite, b.x - bulletRadius, b.y - bulletRadius);
   });
 }

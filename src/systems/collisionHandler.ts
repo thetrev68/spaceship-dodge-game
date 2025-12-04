@@ -25,7 +25,12 @@ import { destroyObstacle } from '@entities/asteroid.js';
 import { handlePlayerHit } from '@game/gameStateManager.js';
 import { despawnBullet } from '@entities/bullet.js';
 import { eventBus } from '@core/events/EventBus.js';
-import { GameEvent, type AsteroidDestroyedEvent, type BonusAwardedEvent, type PlayerHitEvent } from '@core/events/GameEvents.js';
+import {
+  GameEvent,
+  type AsteroidDestroyedEvent,
+  type BonusAwardedEvent,
+  type PlayerHitEvent,
+} from '@core/events/GameEvents.js';
 
 /**
  * Checks collision between a circle and a rectangle.
@@ -43,7 +48,7 @@ export function circleRectCollision(
   const closestY = Math.max(ry, Math.min(cy, ry + rh));
   const dx = cx - closestX;
   const dy = cy - closestY;
-  return (dx * dx + dy * dy) < (radius * radius);
+  return dx * dx + dy * dy < radius * radius;
 }
 
 /**
@@ -209,7 +214,7 @@ class SpatialGrid {
     const nearbyKeys = this.getNearbyCells(x, y, radius);
     const nearbyObstacles: Asteroid[] = [];
 
-    nearbyKeys.forEach(key => {
+    nearbyKeys.forEach((key) => {
       const cellObstacles = this.grid.get(key);
       if (cellObstacles) {
         nearbyObstacles.push(...cellObstacles);
@@ -271,7 +276,7 @@ function checkBulletObstacleCollisions(): void {
   // Step 1: Build spatial grid for obstacles
   // Clearing and rebuilding grid is faster than tracking entity movement
   spatialGrid.clear();
-  obstacles.forEach(obstacle => spatialGrid.insertObstacle(obstacle));
+  obstacles.forEach((obstacle) => spatialGrid.insertObstacle(obstacle));
 
   // Search radius: bullet radius + largest possible obstacle radius
   const maxObstacleRadius = 50; // Safe upper bound for optimization

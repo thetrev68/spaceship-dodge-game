@@ -91,7 +91,9 @@ describe('init modules', () => {
   it('initializes audio with settings', async () => {
     await initializeAudio(true);
     expect(services.audioService.unlock).toHaveBeenCalled();
-    expect(services.audioService.setBackgroundMusicVolume).toHaveBeenCalledWith(getSettings().backgroundMusicVolume);
+    expect(services.audioService.setBackgroundMusicVolume).toHaveBeenCalledWith(
+      getSettings().backgroundMusicVolume
+    );
   });
 
   it('initializes input (desktop path)', () => {

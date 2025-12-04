@@ -37,7 +37,7 @@ export function initializeCanvas(canvas: HTMLCanvasElement): void {
  */
 export function setOverlayDimensions(canvas: HTMLCanvasElement, overlays: HTMLElement[]): void {
   const canvasRect = canvas.getBoundingClientRect();
-  overlays.forEach(overlay => {
+  overlays.forEach((overlay) => {
     if (overlay) {
       overlay.style.width = canvasRect.width + 'px';
       overlay.style.height = canvasRect.height + 'px';

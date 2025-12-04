@@ -25,9 +25,13 @@ export async function initializeAudio(userGesture: boolean = false): Promise<voi
       services.audioService.muteAll();
     }
 
-    info('audio', 'Audio initialized', { volume: settings.soundEffectsVolume, muted: settings.isMuted });
+    info('audio', 'Audio initialized', {
+      volume: settings.soundEffectsVolume,
+      muted: settings.isMuted,
+    });
   } catch (err) {
-    const wrapped = err instanceof Error ? err : new AudioError(`Audio init failed: ${String(err)}`, true);
+    const wrapped =
+      err instanceof Error ? err : new AudioError(`Audio init failed: ${String(err)}`, true);
     error('audio', 'Audio initialization failed', wrapped);
     handleError(wrapped);
     // Non-fatal error, game can continue without audio
