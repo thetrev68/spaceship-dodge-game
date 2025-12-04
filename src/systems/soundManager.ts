@@ -157,9 +157,9 @@ function applyVolumeAndMute(): void {
 export function setBackgroundMusicVolume(val: number): void {
   const volume = validateAudioVolume(val);
   volumes.backgroundMusic = volume;
-  debug('audio', 'setBackgroundMusicVolume', { backgroundMusicVolume: val });
+  debug('audio', 'setBackgroundMusicVolume', { backgroundMusicVolume: volume });
   if (!isMuted && sounds.bgm) {
-    sounds.bgm.volume = val;
+    sounds.bgm.volume = volume;
   }
 }
 
@@ -167,7 +167,7 @@ export function setSoundEffectsVolume(val: number): void {
   const volume = validateAudioVolume(val);
   volumes.soundEffects = volume;
   currentVolume = volume;
-  debug('audio', 'setSoundEffectsVolume', { soundEffectsVolume: val });
+  debug('audio', 'setSoundEffectsVolume', { soundEffectsVolume: volume });
   if (!isMuted) applyVolumeAndMute();
 }
 
