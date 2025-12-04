@@ -1,5 +1,6 @@
 /**
- * @fileoverview Input management for keyboard and mouse.
+ * @module input/inputManager
+ * Input management for keyboard and mouse.
  */
 
 import { gameState } from '@core/state.js';

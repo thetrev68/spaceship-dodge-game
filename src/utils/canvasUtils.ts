@@ -1,5 +1,6 @@
 /**
- * @fileoverview Canvas sizing and positioning utilities.
+ * @module utils/canvasUtils
+ * Canvas sizing and positioning utilities.
  */
 import { CANVAS_CONSTANTS } from '@core/uiConstants.js';
 

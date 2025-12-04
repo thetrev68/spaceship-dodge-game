@@ -1,5 +1,6 @@
 /**
- * @fileoverview Starfield effect for background animation.
+ * @module effects/starfield
+ * Starfield effect for background animation.
  * Optimized for performance with batch rendering and adaptive star counts.
  */
 

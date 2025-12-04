@@ -1,5 +1,6 @@
 /**
- * @fileoverview Player entity management.
+ * @module entities/player
+ * Player entity management.
  * Created: 2025-05-28
  */
 

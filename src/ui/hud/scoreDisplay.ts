@@ -1,5 +1,6 @@
 /**
- * @fileoverview Score and HUD display.
+ * @module ui/hud/scoreDisplay
+ * Score and HUD display.
  */
 
 import { score, gameLevel, playerLives } from '@core/state.js';

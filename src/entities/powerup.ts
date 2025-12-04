@@ -1,5 +1,6 @@
 /**
- * @fileoverview Power-up entity management with object pooling.
+ * @module entities/powerup
+ * Power-up entity management with object pooling.
  * Adds object pooling to optimize power-up memory reuse.
  */
 
@@ -15,6 +16,9 @@ import {
   type PowerupExpiredEvent,
 } from '@core/events/GameEvents.js';
 
+/**
+ * @internal
+ */
 type ActivePowerup = { x: number; y: number; size: number; type: PowerUpKey | null; dy: number };
 
 /**
@@ -136,8 +140,10 @@ export function spawnPowerup(canvasWidth: number): void {
  * }
  * ```
  *
- * @fires GameEvent.POWERUP_COLLECTED - When player collects powerup
- * @fires GameEvent.POWERUP_EXPIRED - When powerup duration expires
+ * @remarks
+ * This function emits the following events:
+ * - `GameEvent.POWERUP_COLLECTED` - When player collects powerup
+ * - `GameEvent.POWERUP_EXPIRED` - When powerup duration expires
  */
 export function updatePowerups(canvasHeight: number): void {
   for (let i = activePowerups.length - 1; i >= 0; i--) {

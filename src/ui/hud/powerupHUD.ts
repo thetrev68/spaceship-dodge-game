@@ -1,5 +1,6 @@
 /**
- * @fileoverview Power-up HUD display.
+ * @module ui/hud/powerupHUD
+ * Power-up HUD display.
  */
 
 import { powerUps } from '@core/state.js';

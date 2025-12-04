@@ -1,7 +1,11 @@
 /**
- * @fileoverview Centralized debug logging utility with configurable levels and categories.
+ * @module core/logger
+ * Centralized debug logging utility with configurable levels and categories.
  */
 
+/**
+ * @internal
+ */
 type _LogCategory =
   | 'audio'
   | 'game'
@@ -11,6 +15,10 @@ type _LogCategory =
   | 'powerup'
   | 'level'
   | 'render';
+
+/**
+ * @internal
+ */
 type _LogLevelKey = 'DEBUG' | 'INFO' | 'WARN' | 'ERROR' | 'NONE';
 
 const LogLevel: Record<_LogLevelKey, number> = {
@@ -21,6 +29,9 @@ const LogLevel: Record<_LogLevelKey, number> = {
   NONE: 4,
 };
 
+/**
+ * @internal
+ */
 type LoggerConfig = {
   level: number;
   enabled: boolean;
@@ -164,6 +175,9 @@ function setupDevelopment(): void {
   logger.setCategory('render', false);
 }
 
+/**
+ * @internal
+ */
 class Timer {
   private readonly startTime: number;
 

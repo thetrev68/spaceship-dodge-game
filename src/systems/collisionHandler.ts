@@ -1,5 +1,6 @@
 /**
- * @fileoverview Spatial Grid Collision Detection System
+ * @module systems/collisionHandler
+ * Spatial Grid Collision Detection System
  *
  * Implements optimized collision detection using uniform spatial partitioning.
  * Reduces collision checks from O(n^2) to O(n) by binning entities into grid cells

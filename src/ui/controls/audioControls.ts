@@ -1,5 +1,6 @@
 /**
- * @fileoverview Audio control UI components.
+ * @module ui/controls/audioControls
+ * Audio control UI components.
  */
 
 import { services } from '@services/ServiceProvider.js';

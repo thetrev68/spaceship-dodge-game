@@ -2,7 +2,8 @@ import { createReactive } from '../reactive.js';
 import type { GameStateValue } from '@types';
 
 /**
- * @fileoverview Core game state management with reactive values.
+ * @module core/state/gameState
+ * Core game state management with reactive values.
  *
  * Provides centralized state for game flow control, scoring, and progression.
  * All values are reactive and automatically notify watchers on changes.

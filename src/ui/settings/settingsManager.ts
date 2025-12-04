@@ -1,5 +1,6 @@
 /**
- * @fileoverview Game settings management system.
+ * @module ui/settings/settingsManager
+ * Game settings management system.
  * Handles user preferences, audio settings, and platform-specific configurations.
  */
 
@@ -8,8 +9,14 @@ import { services } from '@services/ServiceProvider.js';
 import { isMobile } from '@utils/platform.js';
 import { VOLUME_CONSTANTS, SETTINGS_CONSTANTS } from '@core/uiConstants.js';
 
+/**
+ * @internal
+ */
 type _SettingsContext = 'start' | 'pause' | 'controls';
 
+/**
+ * @internal
+ */
 type _GameSettings = {
   backgroundMusicVolume: number;
   soundEffectsVolume: number;

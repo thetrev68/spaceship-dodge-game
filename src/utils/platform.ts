@@ -1,5 +1,6 @@
 /**
- * @fileoverview Platform detection utilities.
+ * @module utils/platform
+ * Platform detection utilities.
  */
 
 /**

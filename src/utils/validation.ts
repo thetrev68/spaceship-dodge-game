@@ -1,5 +1,6 @@
 /**
- * @fileoverview Input validation utilities for boundary checks and range clamping.
+ * @module utils/validation
+ * Input validation utilities for boundary checks and range clamping.
  *
  * Provides defensive programming utilities to validate user input, API parameters,
  * and game state boundaries. Prevents common errors like out-of-bounds coordinates,

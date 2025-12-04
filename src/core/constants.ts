@@ -55,6 +55,9 @@ export const ASTEROID_CONFIG: ReadonlyConfig<{
   FRAGMENTS_MAX: 3,
 };
 
+/**
+ * @internal
+ */
 type PowerUpConfigShape = Record<PowerUpKey, { DURATION: number }> & { SPAWN_INTERVAL: number };
 
 export const POWERUP_CONFIG: ReadonlyConfig<PowerUpConfigShape> = {

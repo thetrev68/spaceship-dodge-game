@@ -1,5 +1,6 @@
 /**
- * @fileoverview Main entry point for the spaceship dodge game.
+ * @module core/main
+ * Main entry point for the spaceship dodge game.
  * Orchestrates initialization and UI wiring.
  */
 

@@ -1,5 +1,6 @@
 /**
- * @fileoverview Score popup display with object pooling.
+ * @module ui/hud/scorePopups
+ * Score popup display with object pooling.
  */
 
 import { isMobile } from '@utils/platform.js';

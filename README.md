@@ -6,32 +6,32 @@ A fast-paced arcade-style browser game where you pilot a glowing vector spaceshi
 
 ---
 
-## ✨ Features
+## Features
 
-- ✈️ **Vector-style spaceship** with animated thruster glow
-- ☄️ **Asteroids of multiple sizes** that break into fragments, with score bonuses
-- 📈 **Dynamic difficulty scaling** — smoother asteroid speeds and spawn rates per level
-- 💬 **Floating score popups** on hits and bonuses
-- 🔊 **Full audio management**:
+- **Vector-style spaceship** with animated thruster glow
+- **Asteroids of multiple sizes** that break into fragments, with score bonuses
+- **Dynamic difficulty scaling** — smoother asteroid speeds and spawn rates per level
+- **Floating score popups** on hits and bonuses
+- **Full audio management**:
   - Background music
   - Laser/break/levelup/gameover effects
   - Volume slider & mute/unmute toggle
-- ❤️ **3-lives system** with overlay transitions and continue support
-- 📱 **Mobile support**:
+- **3-lives system** with overlay transitions and continue support
+- **Mobile support**:
   - Tap/drag to move and shoot
   - Pause on release
   - Touch resume and floating button support
-- ⌨️ **Desktop support**:
+- **Desktop support**:
   - Mouse, WASD, arrows, spacebar
   - Right-click or `P` to pause/resume
-- 🖥️ **Responsive canvas** with fullscreen scaling
-- 🎯 **Level-up every ~15 seconds** with obstacle-clear gating
-- 🚦 **Mobile performance optimizations** — FPS capping, capped spawns
-- 🛑 **Quit confirmation** when exiting during pause
+- **Responsive canvas** with fullscreen scaling
+- **Level-up every ~15 seconds** with obstacle-clear gating
+- **Mobile performance optimizations** — FPS capping, capped spawns
+- **Quit confirmation** when exiting during pause
 
 ---
 
-## 🏗️ Architecture & File Structure
+## Architecture & File Structure
 
 The codebase follows a modular, domain-driven structure. Path aliases (e.g., `@core`, `@game`) are used for cleaner imports.
 
@@ -59,7 +59,7 @@ src/
 
 ---
 
-## 🛠️ Technical Improvements (v1.1.0+)
+## Technical Improvements (v1.1.0+)
 
 Recent updates focus on performance, stability, and code quality.
 
@@ -73,7 +73,7 @@ Recent updates focus on performance, stability, and code quality.
 
 ---
 
-## 🐞 Known Issues
+## Known Issues
 
 - Level-up waits until all fragments are cleared (intended but sometimes feels delayed).
 - If game is paused at exact collision frame, rare scoring overlap occurs.
@@ -81,36 +81,36 @@ Recent updates focus on performance, stability, and code quality.
 
 ---
 
-## 🔮 Future Enhancements
+## Future Enhancements
 
 ### Gameplay
 
-- 🌀 Rotating asteroids with angular momentum
-- 🛡️ Shields, rapid fire, score multipliers
-- 🚀 Enemy ships with pathfinding AI
-- 💥 Explosive chain reactions
+- Rotating asteroids with angular momentum
+- Shields, rapid fire, score multipliers
+- Enemy ships with pathfinding AI
+- Explosive chain reactions
 
 ### Visual Polish
 
-- 🌌 Starfield and depth scrolling (expanded beyond `@effects/starfield.ts`)
-- ✨ Particle thrust trails
-- 📳 Screen shake on hit/death
+- Starfield and depth scrolling (expanded beyond `@effects/starfield.ts`)
+- Particle thrust trails
+- Screen shake on hit/death
 
 ### Audio
 
-- 🎼 Layered dynamic music based on level/intensity
-- 🎚️ Per-sound sliders in audio menu
-- 🗣️ Voiceovers: "Level Up!", "Shield Activated", etc.
+- Layered dynamic music based on level/intensity
+- Per-sound sliders in audio menu
+- Voiceovers: "Level Up!", "Shield Activated", etc.
 
 ### Technical
 
-- 📊 FPS display toggle (dev mode)
-- ♿ Accessibility: remappable keys, visual assist modes
-- 📈 Performance reporting/logging tools
+- FPS display toggle (dev mode)
+- Accessibility: remappable keys, visual assist modes
+- Performance reporting/logging tools
 
 ---
 
-## ✅ Status
+## Status
 
 > ✅ Complete core game loop  
 > ✅ Mobile + desktop support  
@@ -120,7 +120,7 @@ Recent updates focus on performance, stability, and code quality.
 
 ---
 
-## 🧭 Getting Started
+## Getting Started
 
 Prereqs: Node 20+ recommended. Install deps:
 
@@ -158,7 +158,7 @@ npm run docs
 
 ---
 
-## 📖 Documentation
+## Documentation
 
 ### Start Here
 
@@ -193,14 +193,14 @@ Output available in `docs/api/` after generation.
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 Pull requests welcome! See [CONTRIBUTING.md](./CONTRIBUTING.md) for setup, coding standards, and testing expectations.
 
 ---
 
-## 🌐 GitHub Repository
+## GitHub Repository
 
 [https://github.com/thetrev68/spaceship-dodge-game](https://github.com/thetrev68/spaceship-dodge-game)
 
-Pull requests welcome! 🚀
+Pull requests welcome!

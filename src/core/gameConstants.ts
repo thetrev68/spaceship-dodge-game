@@ -1,5 +1,8 @@
 import type { HudTextAlign, ReadonlyConfig } from '@types';
 
+/**
+ * @internal
+ */
 type HudConstants = {
   SCORE_X: number;
   SCORE_Y: number;

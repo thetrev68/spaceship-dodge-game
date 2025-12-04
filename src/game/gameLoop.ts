@@ -1,5 +1,6 @@
 /**
- * @fileoverview Fixed Timestep Game Loop with Accumulator Pattern
+ * @module game/gameLoop
+ * Fixed Timestep Game Loop with Accumulator Pattern
  *
  * Implements a deterministic game loop with fixed update intervals (16.67ms = 60 FPS desktop,
  * 33.33ms = 30 FPS mobile) while allowing variable render rates. The accumulator pattern

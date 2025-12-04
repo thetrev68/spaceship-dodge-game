@@ -1,5 +1,6 @@
 /**
- * @fileoverview Asteroid entity management with object pooling.
+ * @module entities/asteroid
+ * Asteroid entity management with object pooling.
  * Adds object pooling to optimize asteroid memory reuse.
  */
 
@@ -307,6 +308,7 @@ export function drawObstacles(ctx: CanvasRenderingContext2D): void {
 
 /**
  * Result of destroying an asteroid, including fragment bonus information.
+ * @internal
  */
 type DestroyOutcome = {
   /** Whether fragment completion bonus was awarded */

@@ -3,6 +3,7 @@ import type { Player, PowerUpKey, PowerUpMap } from '@types';
 /**
  * Player state management
  * Tracks player entity and active powerup effects
+ * @internal
  */
 class PlayerState {
   private _player: Player;

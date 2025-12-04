@@ -1,5 +1,6 @@
 /**
- * @fileoverview Game overlay management with accessibility helpers.
+ * @module ui/overlays/overlayManager
+ * Game overlay management with accessibility helpers.
  */
 
 import type { OverlayState, PowerUpKey } from '@types';

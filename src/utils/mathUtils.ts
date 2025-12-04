@@ -1,5 +1,6 @@
 /**
- * @fileoverview Math utility functions for random number generation and value clamping.
+ * @module utils/mathUtils
+ * Math utility functions for random number generation and value clamping.
  */
 
 /**

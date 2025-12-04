@@ -1,5 +1,6 @@
 /**
- * @fileoverview Minimal Reactive State System
+ * @module core/reactive
+ * Minimal Reactive State System
  *
  * Provides observable values with automatic change notifications to watchers.
  * Custom implementation chosen over libraries (MobX, Zustand) for simplicity.

@@ -97,6 +97,7 @@ class PoolServiceAdapter<T> implements IPoolService<T> {
 /**
  * Service provider (singleton)
  * Manages service instances and allows swapping implementations (e.g., for tests)
+ * @internal
  */
 class ServiceProvider {
   private static instance: ServiceProvider | null = null;

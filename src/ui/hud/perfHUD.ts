@@ -1,5 +1,6 @@
 /**
- * @fileoverview Lightweight performance HUD for FPS and timing metrics.
+ * @module ui/hud/perfHUD
+ * Lightweight performance HUD for FPS and timing metrics.
  */
 
 let hudElement: HTMLDivElement | null = null;

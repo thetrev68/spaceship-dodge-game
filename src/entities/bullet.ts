@@ -1,5 +1,6 @@
 /**
- * @fileoverview Bullet entity management with object pooling.
+ * @module entities/bullet
+ * Bullet entity management with object pooling.
  * Adds object pooling to optimize bullet memory reuse.
  */
 

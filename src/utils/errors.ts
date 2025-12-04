@@ -2,7 +2,8 @@ import { stopGameLoop } from '@game/gameLoop.js';
 import { error as logError, warn as logWarn } from '@core/logger.js';
 
 /**
- * @fileoverview Custom error classes for game-specific error handling.
+ * @module utils/errors
+ * Custom error classes for game-specific error handling.
  *
  * Provides structured error types with recoverability metadata to enable
  * centralized error handling with appropriate user feedback and logging.
@@ -222,7 +223,7 @@ export class AssetError extends GameError {
  * ```
  *
  *
- * @param error - Error to handle (GameError or generic Error)
+ * @param err - Error to handle (GameError or generic Error)
  *
  * @example
  * ```

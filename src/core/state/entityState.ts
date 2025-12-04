@@ -4,6 +4,7 @@ import { warn } from '@core/logger.js';
 /**
  * Entity state management with encapsulated mutations
  * Prevents direct array manipulation from external modules
+ * @internal
  */
 class EntityState {
   private _bullets: Bullet[] = [];

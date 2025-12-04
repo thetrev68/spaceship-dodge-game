@@ -5,6 +5,7 @@ type EventHandler = (data: unknown) => void;
 /**
  * Event bus for decoupled communication between modules
  * Implements publish-subscribe pattern
+ * @internal
  */
 class EventBus {
   private handlers = new Map<string, EventHandler[]>();

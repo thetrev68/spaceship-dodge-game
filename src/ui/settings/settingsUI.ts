@@ -1,5 +1,6 @@
 /**
- * @fileoverview Settings UI component for the game.
+ * @module ui/settings/settingsUI
+ * Settings UI component for the game.
  * Provides a modal for adjusting game settings including audio controls.
  */
 

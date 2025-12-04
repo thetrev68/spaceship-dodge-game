@@ -1,5 +1,6 @@
 /**
- * @fileoverview Mobile touch input controls.
+ * @module input/mobileControls
+ * Mobile touch input controls.
  */
 
 import { gameState } from '@core/state.js';

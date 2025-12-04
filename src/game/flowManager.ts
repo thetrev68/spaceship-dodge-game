@@ -1,5 +1,6 @@
 /**
- * @fileoverview Manages game level progression and flow.
+ * @module game/flowManager
+ * Manages game level progression and flow.
  */
 
 import { allowSpawning, entityState, gameLevel, gameState, levelStartTime } from '@core/state.js';

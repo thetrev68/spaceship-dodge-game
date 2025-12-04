@@ -1,5 +1,6 @@
 /**
- * @fileoverview Centralized rendering manager.
+ * @module systems/renderManager
+ * Centralized rendering manager.
  * Optimized: Centralizes all draw calls and applies shared ctx styles.
  */
 
