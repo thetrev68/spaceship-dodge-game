@@ -5,7 +5,7 @@ The centralized logger utility provides structured, categorized logging with con
 ## Quick Start
 
 ```typescript
-import { debug, info, warn, error } from '@core/logger.js';
+import { debug, info, warn, error } from '@core/logger';
 
 // Basic usage with categories
 debug('audio', 'Audio system initialized');
@@ -61,7 +61,7 @@ Example output:
 Create a category-specific logger:
 
 ```typescript
-import { logger } from '@core/logger.js';
+import { logger } from '@core/logger';
 
 const log = logger.createLogger('powerup');
 
@@ -76,7 +76,7 @@ Note: The `createLogger` function is available but not exported by default. Use 
 ### Performance Timing
 
 ```typescript
-import { logger } from '@core/logger.js';
+import { logger } from '@core/logger';
 
 function processCollisions() {
   const timer = logger.timer('Collision detection', 'collision');
@@ -90,7 +90,7 @@ function processCollisions() {
 ### Configuration
 
 ```typescript
-import { logger } from '@core/logger.js';
+import { logger } from '@core/logger';
 
 // Disable all logging (production)
 logger.setEnabled(false);
@@ -119,7 +119,7 @@ logger.reset();
 The logger is fully TypeScript-native with type-safe categories and methods.
 
 ```typescript
-import { debug, info, warn, error, logger } from '@core/logger.js';
+import { debug, info, warn, error, logger } from '@core/logger';
 
 // TypeScript will autocomplete and type-check categories
 debug('audio', 'Sound loaded successfully');
@@ -153,7 +153,7 @@ console.error('[ERROR] Canvas not found');
 After:
 
 ```typescript
-import { debug, warn, error } from '@core/logger.js';
+import { debug, warn, error } from '@core/logger';
 
 debug('game', 'Starting game');
 warn('audio', 'Audio unlock failed:', err);
@@ -197,14 +197,14 @@ error('ui', 'Canvas not found');
    logger.setCategory('input', false);
    ```
 
-6. **Use path aliases**: Import from `@core/logger.js` (configured in tsconfig.json)
+6. **Use path aliases**: Import from `@core/logger` (configured in tsconfig.json)
 
 ## Module Location
 
 The logger is located at:
 
 - **Source**: [src/core/logger.ts](src/core/logger.ts)
-- **Path alias**: `@core/logger.js`
+- **Path alias**: `@core/logger`
 
 ## Current Implementation Status
 
@@ -234,7 +234,7 @@ The logger is located at:
 ### Error Handling
 
 ```typescript
-import { error as logError, warn as logWarn } from '@core/logger.js';
+import { error as logError, warn as logWarn } from '@core/logger';
 
 try {
   await loadAsset();
@@ -246,7 +246,7 @@ try {
 ### Conditional Logging with Aliases
 
 ```typescript
-import { debug, info } from '@core/logger.js';
+import { debug, info } from '@core/logger';
 
 export function initializeCanvas(): HTMLCanvasElement {
   debug('ui', 'Initializing canvas');
@@ -268,7 +268,7 @@ export function initializeCanvas(): HTMLCanvasElement {
 ### Settings Persistence
 
 ```typescript
-import { debug, warn } from '@core/logger.js';
+import { debug, warn } from '@core/logger';
 
 export function saveSettings(settings: GameSettings): void {
   try {
