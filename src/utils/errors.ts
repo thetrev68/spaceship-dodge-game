@@ -12,7 +12,6 @@ import { error as logError, warn as logWarn } from '@core/logger.js';
  * - GameError (base)
  *   - AudioError (recoverable)
  *   - CanvasError (non-recoverable)
- *   - AssetError (non-recoverable)
  *
  * ## Usage Pattern
  * ```
@@ -41,7 +40,6 @@ import { error as logError, warn as logWarn } from '@core/logger.js';
  * Unique codes for debugging and logging:
  * - `AUDIO_ERROR` - Audio system failures
  * - `CANVAS_ERROR` - Canvas rendering failures
- * - `ASSET_ERROR` - Asset loading failures
  * - `UNKNOWN_ERROR` - Unexpected errors
  *
  * @example
@@ -164,45 +162,6 @@ export class CanvasError extends GameError {
   }
 }
 
-export class AssetError extends GameError {
-  /**
-   * @param message - Error description
-   */
-  constructor(message: string) {
-    super(message, 'ASSET_ERROR', false); // Always non-recoverable
-    this.name = 'AssetError';
-  }
-}
-
-/**
- * Asset loading errors (non-recoverable).
- * Game cannot function with missing critical assets.
- *
- * ## Common Causes
- * - Missing audio files (sounds/music)
- * - 404 errors on asset URLs
- * - Network failures during asset loading
- *
- * ## Recovery Strategy
- * - Show loading error overlay
- * - Display specific missing asset
- * - Provide retry button
- * - Halt game initialization
- *
- * @example
- * ```
- * export async function loadAudio(name: string, path: string): Promise<void> {
- *   try {
- *     const audio = new Audio();
- *     audio.src = path;
- *     await audio.load();
- *     sounds.set(name, audio);
- *   } catch (err) {
- *     throw new AssetError(`Failed to load audio file: ${path}`);
- *   }
- * }
- * ```
- */
 /**
  * Centralized error handler with user feedback and logging.
  *
