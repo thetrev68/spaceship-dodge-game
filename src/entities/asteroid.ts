@@ -337,7 +337,7 @@ type DestroyOutcome = {
  *
  * ## Fragment Bonus System
  * When all fragments from a parent asteroid are destroyed:
- * - Awards +100 points bonus
+ * - Awards +150 points bonus
  * - Displays floating bonus text at last fragment position
  * - Tracked via `fragmentTracker` (parentId → remaining count)
  *
@@ -346,7 +346,7 @@ type DestroyOutcome = {
  * - 80% chance: Slow scatter (0.3-1.0 speed)
  * - 20% chance: Fast scatter (1.0-2.5 speed)
  * - Random angle (0-360°)
- * - Speed multiplier: 1.3x parent speed
+ * - Speed multiplier: 0.3x parent speed (30%)
  *
  * @param obstacle - The asteroid to destroy
  * @returns Outcome object with bonus information for score popup display
@@ -363,8 +363,8 @@ type DestroyOutcome = {
  * }
  * ```
  *
- * @see ASTEROID_CONFIG.FRAGMENT_BONUS - Bonus amount (100 pts)
- * @see ASTEROID_CONFIG.FRAGMENT_SPEED_MULTIPLIER - Fragment speed multiplier (1.3x)
+ * @see ASTEROID_CONFIG.FRAGMENT_BONUS - Bonus amount (150 pts)
+ * @see ASTEROID_CONFIG.FRAGMENT_SPEED_MULTIPLIER - Fragment speed multiplier (0.3x)
  */
 export function destroyObstacle(obstacle: Asteroid): DestroyOutcome {
   const idx = obstacles.indexOf(obstacle);
