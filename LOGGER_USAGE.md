@@ -4,8 +4,8 @@ The centralized logger utility provides structured, categorized logging with con
 
 ## Quick Start
 
-```javascript
-import { debug, info, warn, error } from './logger.js';
+```typescript
+import { debug, info, warn, error } from '@core/logger.js';
 
 // Basic usage with categories
 debug('audio', 'Audio system initialized');
@@ -18,9 +18,9 @@ error('network', 'Failed to load asset', err);
 
 ### Log Levels
 
-- **DEBUG**: Detailed diagnostic information
+- **DEBUG**: Detailed diagnostic information (disabled in production by default)
 - **INFO**: General informational messages
-- **WARN**: Warning messages for potential issues
+- **WARN**: Warning messages for potential issues (default minimum level)
 - **ERROR**: Error messages for failures
 
 ### Categories
@@ -35,6 +35,8 @@ Predefined categories for organized logging:
 - `powerup` - Power-up system (yellow)
 - `level` - Level progression (light green)
 - `render` - Rendering operations (gray, disabled by default)
+- `perf` - Performance metrics (pink)
+- `error` - Error handling (custom category)
 
 ### Browser Console Output
 
@@ -58,10 +60,10 @@ Example output:
 
 Create a category-specific logger:
 
-```javascript
-import { createLogger } from './logger.js';
+```typescript
+import { logger } from '@core/logger.js';
 
-const log = createLogger('powerup');
+const log = logger.createLogger('powerup');
 
 log.debug('Shield spawned');
 log.info('Double blaster activated');
@@ -69,30 +71,26 @@ log.warn('Power-up expired');
 log.error('Failed to apply effect');
 ```
 
+Note: The `createLogger` function is available but not exported by default. Use direct imports for most cases.
+
 ### Performance Timing
 
-```javascript
-import { Timer } from './logger.js';
+```typescript
+import { logger } from '@core/logger.js';
 
 function processCollisions() {
-  const timer = new Timer('collision', 'Collision detection');
+  const timer = logger.timer('Collision detection', 'collision');
 
   // ... your code ...
 
   timer.end(); // Logs: [collision][DEBUG] Collision detection took 2.34ms
 }
-
-// Or with scoped logger:
-const log = createLogger('render');
-const timer = log.timer('Draw asteroids');
-// ... rendering code ...
-timer.end();
 ```
 
 ### Configuration
 
-```javascript
-import { logger } from './logger.js';
+```typescript
+import { logger } from '@core/logger.js';
 
 // Disable all logging (production)
 logger.setEnabled(false);
@@ -109,20 +107,30 @@ logger.setCategory('audio', true); // Enable audio logs
 logger.setTimestamps(false);
 logger.setColors(false);
 
+// Get current configuration
+const config = logger.getConfig();
+
 // Reset to defaults
 logger.reset();
 ```
 
-### Quick Setups
+## TypeScript Support
 
-```javascript
-import { setupProduction, setupDevelopment } from './logger.js';
+The logger is fully TypeScript-native with type-safe categories and methods.
 
-// Production mode: logging disabled
-setupProduction();
+```typescript
+import { debug, info, warn, error, logger } from '@core/logger.js';
 
-// Development mode: all logs enabled, render disabled
-setupDevelopment();
+// TypeScript will autocomplete and type-check categories
+debug('audio', 'Sound loaded successfully');
+info('game', 'Player scored', { points: 100 });
+warn('collision', 'High collision count detected');
+error('ui', 'Failed to render overlay', errorObject);
+
+// Access logger configuration with full type safety
+const config = logger.getConfig();
+console.log(config.level); // number
+console.log(config.enabled); // boolean
 ```
 
 ## Environment Auto-Configuration
@@ -130,7 +138,7 @@ setupDevelopment();
 The logger automatically configures based on Vite environment:
 
 - **Production** (`import.meta.env.MODE === 'production'`): Logging disabled
-- **Development**: All logging enabled, render category disabled by default
+- **Development**: Logging enabled, minimum level WARN, render category disabled
 
 ## Migration from console.log
 
@@ -144,8 +152,8 @@ console.error('[ERROR] Canvas not found');
 
 After:
 
-```javascript
-import { debug, warn, error } from './logger.js';
+```typescript
+import { debug, warn, error } from '@core/logger.js';
 
 debug('game', 'Starting game');
 warn('audio', 'Audio unlock failed:', err);
@@ -155,7 +163,7 @@ error('ui', 'Canvas not found');
 ## Best Practices
 
 1. **Choose appropriate levels**:
-   - `debug()` for detailed tracing
+   - `debug()` for detailed tracing (development only)
    - `info()` for significant events
    - `warn()` for recoverable issues
    - `error()` for failures
@@ -164,7 +172,7 @@ error('ui', 'Canvas not found');
 
 3. **Include context**: Pass objects as additional parameters
 
-   ```javascript
+   ```typescript
    debug('game', 'Player hit', {
      lives: playerLives.value,
      position: { x: player.x, y: player.y },
@@ -173,52 +181,101 @@ error('ui', 'Canvas not found');
 
 4. **Avoid logging in tight loops**: Use timers instead
 
-   ```javascript
+   ```typescript
    // Bad
    obstacles.forEach((o) => debug('render', 'Drawing obstacle', o));
 
    // Good
-   const timer = new Timer('render', `Drawing ${obstacles.length} obstacles`);
+   const timer = logger.timer('Drawing obstacles', 'render');
    obstacles.forEach((o) => drawObstacle(o));
    timer.end();
    ```
 
 5. **Disable verbose categories in production**:
-   ```javascript
+   ```typescript
    logger.setCategory('render', false);
    logger.setCategory('input', false);
    ```
 
-## TypeScript Support
+6. **Use path aliases**: Import from `@core/logger.js` (configured in tsconfig.json)
 
-The logger is written in vanilla JavaScript but provides clear patterns for TypeScript projects:
+## Module Location
 
-```typescript
-import { debug, info, warn, error, createLogger, Timer } from './logger.js';
+The logger is located at:
 
-type LogCategory = 'audio' | 'game' | 'input' | 'collision' | 'ui' | 'powerup' | 'level' | 'render';
-
-const log = createLogger('game' as LogCategory);
-```
+- **Source**: [src/core/logger.ts](src/core/logger.ts)
+- **Path alias**: `@core/logger.js`
 
 ## Current Implementation Status
 
-✅ Logger module created ([src/logger.js](src/logger.js))
-✅ Integrated into:
+✅ Logger module fully TypeScript-native
+✅ Integrated throughout the codebase:
 
-- [src/soundManager.js](src/soundManager.js) - Audio category
-- [src/main.js](src/main.js) - Game and UI categories
-- [src/player.js](src/player.js) - Game category
+- [src/systems/soundManager.ts](src/systems/soundManager.ts) - Audio category
+- [src/core/main.ts](src/core/main.ts) - Game and UI categories
+- [src/game/flowManager.ts](src/game/flowManager.ts) - Level category
+- [src/input/mobileControls.ts](src/input/mobileControls.ts) - Input category
+- [src/utils/errors.ts](src/utils/errors.ts) - Error handling
+- [src/core/state/entityState.ts](src/core/state/entityState.ts) - Entity warnings
+- [src/ui/settings/settingsManager.ts](src/ui/settings/settingsManager.ts) - Settings
+- [src/services/ServiceProvider.ts](src/services/ServiceProvider.ts) - Service initialization
 
-⏳ Pending integration:
-
-- Flow manager (level category)
-- Mobile controls (input category)
-- Collision handler (collision category)
-- Other modules as needed
+✅ **All modules now use TypeScript logger**
 
 ## Bundle Impact
 
 - **Size**: ~2.5 KB minified (~1 KB gzipped)
 - **Performance**: Negligible overhead when logging disabled
 - **Tree-shaking**: Unused functions eliminated in production builds
+- **Type safety**: Full TypeScript type checking at compile time
+
+## Example Usage Patterns
+
+### Error Handling
+
+```typescript
+import { error as logError, warn as logWarn } from '@core/logger.js';
+
+try {
+  await loadAsset();
+} catch (err) {
+  logError('audio', 'Failed to load sound', err);
+}
+```
+
+### Conditional Logging with Aliases
+
+```typescript
+import { debug, info } from '@core/logger.js';
+
+export function initializeCanvas(): HTMLCanvasElement {
+  debug('ui', 'Initializing canvas');
+  const canvas = document.getElementById('gameCanvas') as HTMLCanvasElement;
+
+  if (!canvas) {
+    throw new CanvasError('Canvas element not found');
+  }
+
+  info('ui', 'Canvas initialized successfully', {
+    width: canvas.width,
+    height: canvas.height
+  });
+
+  return canvas;
+}
+```
+
+### Settings Persistence
+
+```typescript
+import { debug, warn } from '@core/logger.js';
+
+export function saveSettings(settings: GameSettings): void {
+  try {
+    localStorage.setItem('gameSettings', JSON.stringify(settings));
+    debug('ui', 'Settings saved', settings);
+  } catch (err) {
+    warn('ui', 'Failed to save settings to localStorage', err);
+  }
+}
+```
