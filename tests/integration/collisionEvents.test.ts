@@ -1,6 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { eventBus } from '@core/events/EventBus.js';
-import { GameEvent, type AsteroidDestroyedEvent, type BonusAwardedEvent } from '@core/events/GameEvents.js';
+import {
+  GameEvent,
+  type AsteroidDestroyedEvent,
+  type BonusAwardedEvent,
+} from '@core/events/GameEvents.js';
 import { entityState, addScore } from '@core/state.js';
 import { checkCollisions } from '@systems/collisionHandler.js';
 
@@ -37,8 +41,12 @@ describe('Collision events integration', () => {
     addScore(-addScore(0)); // reset score to 0
 
     eventBus.clearAll();
-    eventBus.on<AsteroidDestroyedEvent>(GameEvent.ASTEROID_DESTROYED, (payload) => emittedDestroyed.push(payload));
-    eventBus.on<BonusAwardedEvent>(GameEvent.BONUS_AWARDED, (payload) => emittedBonus.push(payload));
+    eventBus.on<AsteroidDestroyedEvent>(GameEvent.ASTEROID_DESTROYED, (payload) =>
+      emittedDestroyed.push(payload)
+    );
+    eventBus.on<BonusAwardedEvent>(GameEvent.BONUS_AWARDED, (payload) =>
+      emittedBonus.push(payload)
+    );
   });
 
   it('emits ASTEROID_DESTROYED with position and score', () => {

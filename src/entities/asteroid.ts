@@ -1,14 +1,11 @@
 /**
- * @fileoverview Asteroid entity management with object pooling.
+ * @module entities/asteroid
+ * Asteroid entity management with object pooling.
  * Adds object pooling to optimize asteroid memory reuse.
  */
 
 import type { Asteroid, Vector2 } from '@types';
-import {
-  GAME_CONFIG,
-  ASTEROID_CONFIG,
-  MOBILE_CONFIG,
-} from '@core/constants.js';
+import { GAME_CONFIG, ASTEROID_CONFIG, MOBILE_CONFIG } from '@core/constants.js';
 
 import { entityState } from '@core/state.js';
 import { isMobile } from '@utils/platform.js';
@@ -42,13 +39,24 @@ const obstaclePool = new ObjectPool<Asteroid>(() => ({
 const obstacles = entityState.getMutableObstacles();
 
 /**
- * Count of new asteroids spawned.
+ * Counter tracking the number of new (top-level) asteroids spawned this session.
+ * Does not include fragments - only asteroids spawned from screen edges.
+ * Used for level progression gating (wait until asteroids clear before level-up).
+ *
  * @type {number}
  */
 export let newAsteroidsSpawned = 0;
 
 /**
- * Resets the count of new asteroids spawned.
+ * Resets the new asteroid spawn counter to zero.
+ * Called when starting a new game or resetting level progression state.
+ *
+ * @example
+ * ```typescript
+ * // On game start
+ * resetNewAsteroidsSpawned();
+ * startGame();
+ * ```
  */
 export function resetNewAsteroidsSpawned(): void {
   newAsteroidsSpawned = 0;
@@ -62,7 +70,7 @@ function generateAsteroidShape(radius: number, numPoints: number): Vector2[] {
     const r = radius * (0.8 + Math.random() * 0.4);
     points.push({
       x: r * Math.cos(angle),
-      y: r * Math.sin(angle)
+      y: r * Math.sin(angle),
     });
   }
   return points;
@@ -95,9 +103,13 @@ function createObstacle(
   }
 
   const baseSpeed = randomFloat(obstacleMinSpeed, obstacleMaxSpeed);
-  const speed = parentId === null ? baseSpeed : baseSpeed * ASTEROID_CONFIG.FRAGMENT_SPEED_MULTIPLIER;
+  const speed =
+    parentId === null ? baseSpeed : baseSpeed * ASTEROID_CONFIG.FRAGMENT_SPEED_MULTIPLIER;
   const rotation = Math.random() * 2 * Math.PI;
-  const rotationSpeed = randomFloat(ASTEROID_CONFIG.ROTATION_SPEED_MIN, ASTEROID_CONFIG.ROTATION_SPEED_MAX);
+  const rotationSpeed = randomFloat(
+    ASTEROID_CONFIG.ROTATION_SPEED_MIN,
+    ASTEROID_CONFIG.ROTATION_SPEED_MAX
+  );
   const now = Date.now();
 
   // Use the pool manager
@@ -130,6 +142,40 @@ function createObstacle(
   return obstacle;
 }
 
+/**
+ * Updates all asteroid positions, handles off-screen removal, and spawns new asteroids.
+ *
+ * ## Update Logic
+ * 1. Move asteroids (apply velocity and rotation)
+ * 2. Remove off-screen or expired asteroids
+ * 3. Spawn new asteroids from top edge (if spawn conditions met)
+ *
+ * ## Spawning Conditions
+ * - `allowSpawning` flag is true (gates spawning during level transitions)
+ * - Enough time elapsed since last spawn (`spawnInterval`)
+ * - Mobile cap not exceeded (14 asteroids max on mobile)
+ *
+ * ## Performance
+ * - Uses swap-and-pop for O(1) removal from obstacles array
+ * - Returns removed asteroids to object pool for reuse
+ * - Mobile cap prevents performance degradation on low-end devices
+ *
+ * @param canvasWidth - Canvas width for boundary checking
+ * @param canvasHeight - Canvas height for boundary checking
+ * @param spawnInterval - Milliseconds between asteroid spawns (decreases per level)
+ * @param lastSpawnTimeRef - Mutable reference to last spawn timestamp
+ * @param allowSpawning - Whether new asteroids can spawn (gates during level transitions)
+ *
+ * @example
+ * ```typescript
+ * // In game loop
+ * const spawnInterval = Math.max(
+ *   BASE_SPAWN_INTERVAL - (level * 70),
+ *   MIN_SPAWN_INTERVAL
+ * );
+ * updateObstacles(canvas.width, canvas.height, spawnInterval, lastSpawnTime, allowSpawning.value);
+ * ```
+ */
 export function updateObstacles(
   canvasWidth: number,
   canvasHeight: number,
@@ -198,6 +244,30 @@ export function updateObstacles(
   }
 }
 
+/**
+ * Renders all asteroids to the canvas as rotated polygon shapes.
+ *
+ * ## Rendering Technique
+ * - Batches all asteroids into a single path for performance
+ * - Applies rotation transformation to each asteroid's shape
+ * - Uses single stroke call for all asteroids (reduces draw calls)
+ *
+ * ## Performance
+ * - Batched rendering: 1 stroke() call for all asteroids (vs N calls)
+ * - Early exit if no asteroids (avoids unnecessary canvas operations)
+ * - Manual rotation math (faster than ctx.rotate() for many objects)
+ *
+ * @param ctx - Canvas 2D rendering context
+ *
+ * @example
+ * ```typescript
+ * // In render loop
+ * ctx.clearRect(0, 0, canvas.width, canvas.height);
+ * drawStarfield(ctx);
+ * drawObstacles(ctx); // Render all asteroids
+ * drawPlayer(ctx);
+ * ```
+ */
 export function drawObstacles(ctx: CanvasRenderingContext2D): void {
   if (obstacles.length === 0) return;
 
@@ -228,7 +298,7 @@ export function drawObstacles(ctx: CanvasRenderingContext2D): void {
       const py = p.x * sin + p.y * cos + cy;
       ctx.lineTo(px, py);
     }
-    
+
     // Close the shape
     ctx.lineTo(startX, startY);
   }
@@ -236,12 +306,66 @@ export function drawObstacles(ctx: CanvasRenderingContext2D): void {
   ctx.stroke();
 }
 
-export type DestroyOutcome = {
+/**
+ * Result of destroying an asteroid, including fragment bonus information.
+ * @internal
+ */
+type DestroyOutcome = {
+  /** Whether fragment completion bonus was awarded */
   bonusAwarded: boolean;
+  /** Bonus points amount (100 pts for fragment completion) */
   bonusAmount: number;
+  /** Position to display floating bonus text (null if no bonus) */
   bonusPosition: { x: number; y: number } | null;
 };
 
+/**
+ * Destroys an asteroid, spawns fragments if applicable, and awards fragment bonus.
+ *
+ * ## Destruction Logic
+ * 1. Remove asteroid from obstacles array (O(1) swap-and-pop)
+ * 2. Return asteroid to object pool for reuse
+ * 3. Play destruction sound effect
+ * 4. If not smallest size: Spawn 2-3 smaller fragments
+ * 5. If smallest fragment: Check for fragment completion bonus
+ *
+ * ## Fragmentation Rules
+ * - **Large (level 0)**: Spawns 2-3 medium fragments (level 1)
+ * - **Medium (level 1)**: Spawns 2-3 small fragments (level 2)
+ * - **Small (level 2)**: No fragments (destroyed completely)
+ * - **Mobile**: Spawns 1-2 fragments (reduced for performance)
+ *
+ * ## Fragment Bonus System
+ * When all fragments from a parent asteroid are destroyed:
+ * - Awards +150 points bonus
+ * - Displays floating bonus text at last fragment position
+ * - Tracked via `fragmentTracker` (parentId → remaining count)
+ *
+ * ## Fragment Physics
+ * Fragments inherit parent velocity plus random scatter:
+ * - 80% chance: Slow scatter (0.3-1.0 speed)
+ * - 20% chance: Fast scatter (1.0-2.5 speed)
+ * - Random angle (0-360°)
+ * - Speed multiplier: 0.3x parent speed (30%)
+ *
+ * @param obstacle - The asteroid to destroy
+ * @returns Outcome object with bonus information for score popup display
+ *
+ * @example
+ * ```typescript
+ * // On bullet collision
+ * const outcome = destroyObstacle(asteroid);
+ * addScore(asteroid.scoreValue);
+ *
+ * if (outcome.bonusAwarded && outcome.bonusPosition) {
+ *   addScore(outcome.bonusAmount);
+ *   showScorePopup(outcome.bonusPosition, outcome.bonusAmount, 'bonus');
+ * }
+ * ```
+ *
+ * @see ASTEROID_CONFIG.FRAGMENT_BONUS - Bonus amount (150 pts)
+ * @see ASTEROID_CONFIG.FRAGMENT_SPEED_MULTIPLIER - Fragment speed multiplier (0.3x)
+ */
 export function destroyObstacle(obstacle: Asteroid): DestroyOutcome {
   const idx = obstacles.indexOf(obstacle);
   if (idx === -1) return { bonusAwarded: false, bonusAmount: 0, bonusPosition: null };
@@ -266,9 +390,7 @@ export function destroyObstacle(obstacle: Asteroid): DestroyOutcome {
     const numNew = randomInt(fragmentsMin, fragmentsMax);
     for (let k = 0; k < numNew; k++) {
       const angle = Math.random() * Math.PI * 2;
-      const scatterSpeed = Math.random() < 0.8
-        ? randomFloat(0.3, 1.0)
-        : randomFloat(1.0, 2.5);
+      const scatterSpeed = Math.random() < 0.8 ? randomFloat(0.3, 1.0) : randomFloat(1.0, 2.5);
       // Inherit parent velocity plus random scatter
       const dx = obstacle.dx + Math.cos(angle) * scatterSpeed;
       const dy = obstacle.dy + Math.sin(angle) * scatterSpeed;

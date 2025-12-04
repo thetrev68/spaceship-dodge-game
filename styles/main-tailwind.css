@@ -9,105 +9,105 @@
     Uses Tailwind utility classes with custom CSS for v4 compatibility.
 */
 
-@import "tailwindcss";
+@import 'tailwindcss';
 
 body {
-    position: relative;
-    background-color: black;
-    color: white;
-    font-family: 'Inter', sans-serif;
-    min-height: 100vh;
-    margin: 0;
-    overflow: hidden;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  position: relative;
+  background-color: black;
+  color: white;
+  font-family: 'Inter', sans-serif;
+  min-height: 100vh;
+  margin: 0;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 canvas {
-    position: absolute;
-    z-index: 1;
-    background-color: transparent !important;
-    pointer-events: auto !important;
-    touch-action: auto !important;
-    cursor: none;
-    border-radius: 0.75rem;
-    box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+  position: absolute;
+  z-index: 1;
+  background-color: transparent !important;
+  pointer-events: auto !important;
+  touch-action: auto !important;
+  cursor: none;
+  border-radius: 0.75rem;
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
 }
 
 .game-overlay {
-    position: absolute;
-    inset: 0;
-    z-index: 10;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    background-color: rgba(0, 0, 0, 0.7);
-    border-radius: 0.75rem;
-    pointer-events: auto;
-    transition: opacity 0.3s ease-in-out;
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.7);
+  border-radius: 0.75rem;
+  pointer-events: auto;
+  transition: opacity 0.3s ease-in-out;
 }
 
 .game-overlay h1 {
-    font-size: 3rem;
-    margin-bottom: 1rem;
-    color: #00ffff;
-    text-shadow: 0 0 10px #00ffff;
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  color: #00ffff;
+  text-shadow: 0 0 10px #00ffff;
 }
 
 .game-overlay p {
-    font-size: 1.5rem;
-    margin-bottom: 2rem;
-    color: white;
+  font-size: 1.5rem;
+  margin-bottom: 2rem;
+  color: white;
 }
 
 .game-overlay button {
-    padding: 0.75rem 2rem;
-    font-size: 1.25rem;
-    background-color: #2563eb;
-    color: white;
-    border: none;
-    border-radius: 0.5rem;
-    cursor: pointer;
-    transition: all 0.3s;
-    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.4);
-    touch-action: manipulation;
+  padding: 0.75rem 2rem;
+  font-size: 1.25rem;
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 4px 15px rgba(0, 123, 255, 0.4);
+  touch-action: manipulation;
 }
 
 .game-overlay button:hover {
-    background-color: #1d4ed8;
-    transform: translateY(-2px);
+  background-color: #1d4ed8;
+  transform: translateY(-2px);
 }
 
 .game-overlay button:active {
-    transform: translateY(0);
+  transform: translateY(0);
 }
 
 .score-display {
-    position: absolute;
-    top: 1.25rem;
-    left: 1.25rem;
-    font-size: 1.5rem;
-    color: white;
-    z-index: 10;
-    text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+  position: absolute;
+  top: 1.25rem;
+  left: 1.25rem;
+  font-size: 1.5rem;
+  color: white;
+  z-index: 10;
+  text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
 }
 
 /* Mobile Pause Button */
 #mobilePauseBtn {
-    position: fixed;
-    top: 1rem;
-    left: 1rem;
-    z-index: 50;
-    padding: 0.5rem;
-    background-color: rgba(0, 0, 0, 0.5);
-    border-radius: 0.25rem;
-    color: white;
-    cursor: pointer;
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: 50;
+  padding: 0.5rem;
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 0.25rem;
+  color: white;
+  cursor: pointer;
 }
 
 /* Hidden utility */
 .hidden {
-    display: none !important;
+  display: none !important;
 }

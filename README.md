@@ -6,36 +6,34 @@ A fast-paced arcade-style browser game where you pilot a glowing vector spaceshi
 
 ---
 
-## ✨ Features
+## Features
 
-- ✈️ **Vector-style spaceship** with animated thruster glow
-- ☄️ **Asteroids of multiple sizes** that break into fragments, with score bonuses
-- 📈 **Dynamic difficulty scaling** — smoother asteroid speeds and spawn rates per level
-- 💬 **Floating score popups** on hits and bonuses
-- 🔊 **Full audio management**:
+- **Vector-style spaceship** with animated thruster glow
+- **Asteroids of multiple sizes** that break into fragments, with score bonuses
+- **Dynamic difficulty scaling** — smoother asteroid speeds and spawn rates per level
+- **Floating score popups** on hits and bonuses
+- **Full audio management**:
   - Background music
   - Laser/break/levelup/gameover effects
   - Volume slider & mute/unmute toggle
-- ❤️ **3-lives system** with overlay transitions and continue support
-- 📱 **Mobile support**:
+- **3-lives system** with overlay transitions and continue support
+- **Mobile support**:
   - Tap/drag to move and shoot
   - Pause on release
   - Touch resume and floating button support
-- ⌨️ **Desktop support**:
+- **Desktop support**:
   - Mouse, WASD, arrows, spacebar
   - Right-click or `P` to pause/resume
-- 🖥️ **Responsive canvas** with fullscreen scaling
-- 🎯 **Level-up every ~15 seconds** with obstacle-clear gating
-- 🚦 **Mobile performance optimizations** — FPS capping, capped spawns
-- 🛑 **Quit confirmation** when exiting during pause
+- **Responsive canvas** with fullscreen scaling
+- **Level-up every ~15 seconds** with obstacle-clear gating
+- **Mobile performance optimizations** — FPS capping, capped spawns
+- **Quit confirmation** when exiting during pause
 
 ---
 
-## 🏗️ Architecture & File Structure
+## Architecture & File Structure
 
 The codebase follows a modular, domain-driven structure. Path aliases (e.g., `@core`, `@game`) are used for cleaner imports.
-
-For a detailed breakdown, see [FOLDER_STRUCTURE.md](./FOLDER_STRUCTURE.md).
 
 ```plaintext
 src/
@@ -53,6 +51,7 @@ src/
 ```
 
 ### Key Modules
+
 - **Core**: `main.ts` (entry), `state.ts` (global state), `constants.ts` (config), `logger.ts`
 - **Game**: `gameLoop.ts` (loop), `gameStateManager.ts` (state machine), `flowManager.ts`
 - **Systems**: `collisionHandler.ts` (spatial grid), `renderManager.ts`, `soundManager.ts`
@@ -60,58 +59,58 @@ src/
 
 ---
 
-## 🛠️ Technical Improvements (v1.1.0+)
+## Technical Improvements (v1.1.0+)
 
-Recent updates focus on performance, stability, and code quality. See [UPGRADE_NOTES.md](./UPGRADE_NOTES.md) for details.
+Recent updates focus on performance, stability, and code quality.
 
-*   **Modular Architecture**: Domain-specific modules (Entities, Systems, UI, etc.).
-*   **Spatial Partitioning**: Spatial grid for O(n) collision detection with many objects.
-*   **DOM Helpers**: Typed helpers for safer overlay/input handling.
-*   **TypeScript Migration**: Core, systems, entities, and UI/input layers now typed end-to-end.
-*   **Tailwind CSS v4**: Upgraded for smaller builds and better performance.
-*   **Constants Centralization**: All magic numbers in `core/constants.ts` for easy tuning.
-*   **Bug Fixes**: Safer audio unlocking, collision array mutations, and overlay focus handling.
-
----
-
-## 🐞 Known Issues
-
-* Level-up waits until all fragments are cleared (intended but sometimes feels delayed).
-* If game is paused at exact collision frame, rare scoring overlap occurs.
-* Background music requires user interaction to start (browser policy) — handled via silent unlock, but may still be silent initially on some devices.
+- **Modular Architecture**: Domain-specific modules (Entities, Systems, UI, etc.).
+- **Spatial Partitioning**: Spatial grid for O(n) collision detection with many objects.
+- **DOM Helpers**: Typed helpers for safer overlay/input handling.
+- **TypeScript Migration**: Core, systems, entities, and UI/input layers now typed end-to-end.
+- **Tailwind CSS v4**: Upgraded for smaller builds and better performance.
+- **Constants Centralization**: All magic numbers in `core/constants.ts` for easy tuning.
+- **Bug Fixes**: Safer audio unlocking, collision array mutations, and overlay focus handling.
 
 ---
 
-## 🔮 Future Enhancements
+## Known Issues
+
+- Level-up waits until all fragments are cleared (intended but sometimes feels delayed).
+- If game is paused at exact collision frame, rare scoring overlap occurs.
+- Background music requires user interaction to start (browser policy) — handled via silent unlock, but may still be silent initially on some devices.
+
+---
+
+## Future Enhancements
 
 ### Gameplay
 
-* 🌀 Rotating asteroids with angular momentum
-* 🛡️ Shields, rapid fire, score multipliers
-* 🚀 Enemy ships with pathfinding AI
-* 💥 Explosive chain reactions
+- Rotating asteroids with angular momentum
+- Shields, rapid fire, score multipliers
+- Enemy ships with pathfinding AI
+- Explosive chain reactions
 
 ### Visual Polish
 
-* 🌌 Starfield and depth scrolling (expanded beyond `@effects/starfield.ts`)
-* ✨ Particle thrust trails
-* 📳 Screen shake on hit/death
+- Starfield and depth scrolling (expanded beyond `@effects/starfield.ts`)
+- Particle thrust trails
+- Screen shake on hit/death
 
 ### Audio
 
-* 🎼 Layered dynamic music based on level/intensity
-* 🎚️ Per-sound sliders in audio menu
-* 🗣️ Voiceovers: "Level Up!", "Shield Activated", etc.
+- Layered dynamic music based on level/intensity
+- Per-sound sliders in audio menu
+- Voiceovers: "Level Up!", "Shield Activated", etc.
 
 ### Technical
 
-* 📊 FPS display toggle (dev mode)
-* ♿ Accessibility: remappable keys, visual assist modes
-* 📈 Performance reporting/logging tools
+- FPS display toggle (dev mode)
+- Accessibility: remappable keys, visual assist modes
+- Performance reporting/logging tools
 
 ---
 
-## ✅ Status
+## Status
 
 > ✅ Complete core game loop  
 > ✅ Mobile + desktop support  
@@ -121,7 +120,7 @@ Recent updates focus on performance, stability, and code quality. See [UPGRADE_N
 
 ---
 
-## 🧭 Getting Started
+## Getting Started
 
 Prereqs: Node 20+ recommended. Install deps:
 
@@ -159,25 +158,49 @@ npm run docs
 
 ---
 
-## 📖 Documentation
+## Documentation
 
-API & module docs live under `docs/` when generated. See also:
+### Start Here
 
-- [FOLDER_STRUCTURE.md](./FOLDER_STRUCTURE.md)
-- [UPGRADE_NOTES.md](./UPGRADE_NOTES.md)
-- [LOGGER_USAGE.md](./LOGGER_USAGE.md)
-- [TECHNICAL_DEBT_ASSESSMENT.md](./TECHNICAL_DEBT_ASSESSMENT.md)
+**New developers:** Begin with the [Developer Guide](./docs/DEVELOPER_GUIDE.md) for comprehensive onboarding covering architecture, workflows, testing, and common tasks.
+
+**Game designers:** See the [Game Design Document](./docs/GAME_DESIGN.md) for mechanics, difficulty tuning, and feature roadmap.
+
+### Architecture Decision Records (ADRs)
+
+Key architectural decisions are documented in `docs/architecture/decisions/`:
+
+- [ADR-001: Custom Reactive State](./docs/architecture/decisions/ADR-001-custom-reactive-state.md) - Why custom reactive system over MobX/Zustand
+- [ADR-002: Spatial Grid Collision](./docs/architecture/decisions/ADR-002-spatial-grid-collision.md) - Spatial grid vs quadtree for O(n) collision detection
+- [ADR-003: Object Pooling](./docs/architecture/decisions/ADR-003-object-pooling.md) - Memory management strategy for high-frequency objects
+- [ADR-004: Fixed Timestep Game Loop](./docs/architecture/decisions/ADR-004-fixed-timestep-game-loop.md) - Deterministic physics with accumulator pattern
+- [ADR-005: TypeScript Strict Mode](./docs/architecture/decisions/ADR-005-typescript-strict-mode.md) - Type safety configuration
+
+### Additional Resources
+
+- [LOGGER_USAGE.md](./LOGGER_USAGE.md) - Centralized logging API
+- [CONTRIBUTING.md](./CONTRIBUTING.md) - Contribution guidelines and standards
+
+### API Documentation
+
+Generate TypeDoc API docs:
+
+```bash
+npm run docs
+```
+
+Output available in `docs/api/` after generation.
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 Pull requests welcome! See [CONTRIBUTING.md](./CONTRIBUTING.md) for setup, coding standards, and testing expectations.
 
 ---
 
-## 🌐 GitHub Repository
+## GitHub Repository
 
 [https://github.com/thetrev68/spaceship-dodge-game](https://github.com/thetrev68/spaceship-dodge-game)
 
-Pull requests welcome! 🚀
+Pull requests welcome!

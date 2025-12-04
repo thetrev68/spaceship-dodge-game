@@ -1,9 +1,11 @@
 # Sprint 4: Documentation Excellence & Code Quality
 
 ## Goal
+
 Transform the codebase into a **professional showcase project** through comprehensive documentation, inline explanations of complex algorithms, Architecture Decision Records (ADRs), and code quality hardening. Target: world-class maintainability and developer experience.
 
 ## Prerequisites
+
 - Sprint 1-3 completed (85%+ test coverage, refactored architecture, quality gates)
 - All tests passing (`npm run test`)
 - TypeScript + ESLint clean
@@ -12,6 +14,7 @@ Transform the codebase into a **professional showcase project** through comprehe
 ## Overview
 
 Sprint 4 addresses two critical areas:
+
 1. **Documentation Excellence** - Inline docs, ADRs, JSDoc, developer guides
 2. **Code Quality Hardening** - Error handling, input validation, code smell removal
 
@@ -154,7 +157,7 @@ export function checkCollisions(): void {
 
 **Add comprehensive JSDoc:**
 
-```typescript
+````typescript
 /**
  * Fixed Timestep Game Loop with Accumulator Pattern
  *
@@ -243,7 +246,7 @@ function gameLoop(currentTime: number): void {
   const MAX_UPDATES_PER_FRAME = 5; // Prevent infinite loop if game can't keep up
 
   while (accumulator >= TIME_STEP && updatesThisFrame < MAX_UPDATES_PER_FRAME) {
-    updateGameState(TIME_STEP);  // Always use fixed TIME_STEP for consistency
+    updateGameState(TIME_STEP); // Always use fixed TIME_STEP for consistency
     accumulator -= TIME_STEP;
     updatesThisFrame++;
   }
@@ -258,7 +261,7 @@ function gameLoop(currentTime: number): void {
   frameCount++;
   animationFrameId = requestAnimationFrame(gameLoop);
 }
-```
+````
 
 ---
 
@@ -270,7 +273,7 @@ function gameLoop(currentTime: number): void {
 
 **Add comprehensive JSDoc:**
 
-```typescript
+````typescript
 /**
  * Minimal Reactive State System
  *
@@ -362,7 +365,7 @@ export function createReactive<T>(initialValue: T): ReactiveValue<T> {
         currentValue = newValue;
         // Notify all watchers synchronously
         // This is intentional - game loop needs immediate updates
-        watchers.forEach(fn => fn());
+        watchers.forEach((fn) => fn());
       }
     },
 
@@ -370,10 +373,10 @@ export function createReactive<T>(initialValue: T): ReactiveValue<T> {
       watchers.add(fn);
       // Return cleanup function
       return () => watchers.delete(fn);
-    }
+    },
   };
 }
-```
+````
 
 ---
 
@@ -383,7 +386,7 @@ export function createReactive<T>(initialValue: T): ReactiveValue<T> {
 
 **Add algorithm explanation:**
 
-```typescript
+````typescript
 /**
  * Generic Object Pool Manager
  *
@@ -451,7 +454,7 @@ export interface Pool<T> {
   /** Returns pool statistics for debugging */
   getStats(): { total: number; active: number; available: number };
 }
-```
+````
 
 ---
 
@@ -469,30 +472,39 @@ mkdir -p docs/architecture/decisions
 # ADR-XXX: [Title]
 
 ## Status
+
 [Proposed | Accepted | Deprecated | Superseded]
 
 ## Context
+
 What is the issue that we're seeing that is motivating this decision or change?
 
 ## Decision
+
 What is the change that we're proposing and/or doing?
 
 ## Rationale
+
 Why did we choose this approach over alternatives?
 
 ## Consequences
+
 What becomes easier or more difficult to do because of this change?
 
 **Positive:**
+
 - List benefits
 
 **Negative:**
+
 - List drawbacks
 
 ## Alternatives Considered
+
 What other options were evaluated and why were they rejected?
 
 ## Related
+
 - Links to related ADRs
 - Links to issues/PRs
 - Links to external resources
@@ -504,42 +516,50 @@ What other options were evaluated and why were they rejected?
 
 **File:** `docs/architecture/decisions/ADR-001-custom-reactive-state.md`
 
-```markdown
+````markdown
 # ADR-001: Custom Reactive State Over External Libraries
 
 ## Status
+
 Accepted (Sprint 1)
 
 ## Context
+
 Need reactive state management for game values (score, lives, level, game phase) that automatically update UI components when values change. Must handle:
+
 - Score updates triggering HUD re-render
 - Lives changes updating hearts display
 - Level progression showing level-up overlay
 - Game phase transitions (START → PLAYING → PAUSED → GAME_OVER)
 
 **Options considered:**
+
 1. **MobX** - Full-featured observable state library
 2. **Zustand** - Lightweight React-inspired state management
 3. **Custom Proxy-based reactive system**
 
 ## Decision
+
 Implement minimal custom reactive system using ES6 Proxy (50 lines of code in `src/core/reactive.ts`).
 
 ## Rationale
 
 **Why not MobX?**
+
 - Bundle size: 52KB minified (20KB gzipped)
 - Features we don't need: computed values, transactions, decorators, reactions
 - Our state is simple: 5 primitive values (score: number, lives: number, etc.)
 - Overkill for game with no complex derived state
 
 **Why not Zustand?**
+
 - Async-first API (`set()` callbacks, middleware)
 - Game loop needs synchronous updates (no batching delay)
 - React-centric design (we're vanilla TypeScript)
 - Middleware overhead not needed
 
 **Why custom solution?**
+
 - **Size:** 50 lines (~500 bytes) vs 20KB+ for libraries
 - **Sync updates:** Value changes immediately trigger watchers (critical for game loop)
 - **Simple API:** `score.value = 100` instead of `store.set({ score: 100 })`
@@ -549,6 +569,7 @@ Implement minimal custom reactive system using ES6 Proxy (50 lines of code in `s
 ## Consequences
 
 **Positive:**
+
 - Zero external dependencies (smaller bundle, faster load)
 - Synchronous updates match game loop requirements
 - Simple mental model (value changes → watchers called immediately)
@@ -557,18 +578,20 @@ Implement minimal custom reactive system using ES6 Proxy (50 lines of code in `s
 - Easy to debug (no library internals to trace)
 
 **Negative:**
+
 - **No computed values** - Must manually derive state (e.g., `isGameOver = lives === 0`)
-  - *Mitigation:* Computed logic is simple (1-2 lines), not worth framework
+  - _Mitigation:_ Computed logic is simple (1-2 lines), not worth framework
 - **No batched updates** - Each value change triggers watchers separately
-  - *Mitigation:* We have 1-3 watchers per value, overhead is <1ms
+  - _Mitigation:_ We have 1-3 watchers per value, overhead is <1ms
 - **No time-travel debugging** - Can't replay state history
-  - *Mitigation:* Game state is ephemeral, replay not needed
+  - _Mitigation:_ Game state is ephemeral, replay not needed
 - **Manual watch cleanup** - Must call `unwatch()` to remove listeners
-  - *Mitigation:* Watchers live for game session, cleanup rarely needed
+  - _Mitigation:_ Watchers live for game session, cleanup rarely needed
 
 ## Alternatives Considered
 
 ### MobX (Rejected)
+
 ```typescript
 import { observable } from 'mobx';
 const state = observable({ score: 0, lives: 3 });
@@ -576,36 +599,43 @@ const state = observable({ score: 0, lives: 3 });
 // Pros: Computed values, rich ecosystem, battle-tested
 // Cons: 52KB bundle, async reactions, complex API, overkill for our needs
 ```
+````
 
 ### Zustand (Rejected)
+
 ```typescript
 import create from 'zustand';
-const useStore = create(set => ({ score: 0, addScore: () => set(/* ... */) }));
+const useStore = create((set) => ({ score: 0, addScore: () => set(/* ... */) }));
 
 // Pros: Lightweight (3KB), simple API, middleware support
 // Cons: Async-first (bad for game loop), React-centric, middleware overhead
 ```
 
 ### Signals (Considered but not needed)
+
 Solid.js/Preact signals have fine-grained reactivity, but we don't need dependency tracking for our simple state.
 
 ## Performance Characteristics
 
 **Custom reactive system:**
+
 - Value read: O(1) - direct property access via Proxy
 - Value write: O(n) where n = watchers (typically 1-3)
 - Memory: ~100 bytes per reactive value (negligible)
 
 **Benchmark (1000 value updates with 3 watchers each):**
+
 - Custom system: ~2ms
 - MobX: ~8ms (batching overhead)
 - Zustand: ~6ms (middleware overhead)
 
 ## Related
+
 - Implementation: `src/core/reactive.ts`
 - Tests: `tests/core/state/gameState.test.ts`
 - Usage examples: `src/ui/hud/scoreDisplay.ts` (score.watch)
-```
+
+````
 
 ---
 
@@ -742,9 +772,10 @@ class Quadtree {
 
 // Pros: Adaptive, efficient for non-uniform distributions
 // Cons: 200+ lines, tree rebalancing overhead, complex debugging
-```
+````
 
 ### Sweep and Prune (Pseudo-code)
+
 ```typescript
 entities.sort((a, b) => a.x - b.x); // O(n log n)
 for (let i = 0; i < entities.length; i++) {
@@ -759,10 +790,12 @@ for (let i = 0; i < entities.length; i++) {
 ```
 
 ## Related
+
 - Implementation: `src/systems/collisionHandler.ts`
 - Tests: `tests/systems/collisionHandler.test.ts`
 - Reference: [Game Programming Patterns - Spatial Partition](https://gameprogrammingpatterns.com/spatial-partition.html)
-```
+
+````
 
 ---
 
@@ -836,9 +869,10 @@ export function createPool<T>(factory: () => T, size: number): Pool<T> {
     }
   };
 }
-```
+````
 
 **Usage:**
+
 ```typescript
 // Create pools at startup
 const bulletPool = createPool(() => ({ x: 0, y: 0, vx: 0, vy: 0, active: false }), 50);
@@ -870,16 +904,19 @@ function updateBullets() {
 ## Performance Impact
 
 **Measured GC frequency (1 minute gameplay session):**
+
 - **Without pooling:** ~30 GC cycles, avg 8ms pause, 15 FPS drops
 - **With pooling:** ~3 GC cycles, avg 2ms pause, 0 FPS drops
 
 **Memory usage:**
-- Pool memory: 50 bullets * ~50 bytes + 100 asteroids * ~60 bytes = ~8.5KB (negligible)
+
+- Pool memory: 50 bullets _ ~50 bytes + 100 asteroids _ ~60 bytes = ~8.5KB (negligible)
 - Trade-off: Slight memory increase for massive performance gain
 
 ## Consequences
 
 **Positive:**
+
 - **95% reduction** in object allocations
 - **90% reduction** in GC frequency
 - Smooth 60 FPS on mobile (no GC pauses)
@@ -887,33 +924,39 @@ function updateBullets() {
 - Graceful degradation (pool exhaustion simply stops spawning)
 
 **Negative:**
+
 - Memory overhead (~8.5KB for pools)
-  - *Mitigation:* Negligible compared to total game assets (~2MB)
+  - _Mitigation:_ Negligible compared to total game assets (~2MB)
 - Must remember to release objects back to pool
-  - *Mitigation:* Enforced by `PoolAdapter` service wrappers
+  - _Mitigation:_ Enforced by `PoolAdapter` service wrappers
 - Pool size must be tuned per entity type
-  - *Mitigation:* Pools report usage stats for tuning
+  - _Mitigation:_ Pools report usage stats for tuning
 
 ## Alternatives Considered
 
 ### 1. No Pooling (Rejected)
+
 **Pros:** Simpler code (no acquire/release logic)
 **Cons:** GC pauses cause FPS drops, unacceptable on mobile
 
 ### 2. WeakMap-based Caching (Rejected)
+
 **Pros:** Automatic cleanup when objects no longer referenced
 **Cons:** GC still collects objects (no reduction in GC frequency), complex lifetime tracking
 
 ### 3. Larger Pool Sizes (e.g., 1000 bullets)
+
 **Pros:** Never run out of objects
 **Cons:** Wasted memory (99% of pool unused), slower pool resets
 
 ## Related
+
 - Implementation: `src/systems/poolManager.ts`
 - Service adapters: `src/services/PoolAdapter.ts`
 - Tests: `tests/poolManager.test.ts`
 - Usage: `src/entities/bullet.ts`, `src/entities/asteroid.ts`
-```
+
+````
 
 ---
 
@@ -945,20 +988,23 @@ function update(deltaTime) {
 // On slow frame (33ms): entities move 2x distance
 // On fast frame (8ms): entities move 0.5x distance
 // Result: Non-deterministic gameplay, hard to balance, different on each device
-```
+````
 
 ## Decision
+
 Use **fixed timestep game loop with accumulator pattern** (16.67ms = 60 FPS on desktop, 33.33ms = 30 FPS on mobile).
 
 ## Rationale
 
 **Fixed timestep solves:**
+
 1. **Determinism:** Physics always use same delta (16.67ms), guarantees repeatable behavior
 2. **Balancing:** Can tune game difficulty without worrying about frame rate
 3. **Testing:** Reproducible physics for automated tests
 4. **Cross-device:** Same gameplay speed on all devices
 
 **Accumulator pattern solves:**
+
 - Handles variable frame rates without compromising determinism
 - Can "catch up" if game lags (runs multiple updates in one frame)
 - Prevents "spiral of death" (caps max catch-up updates)
@@ -995,6 +1041,7 @@ function gameLoop(currentTime) {
 ```
 
 **Example scenario:**
+
 ```
 Frame 1: deltaTime = 20ms
   accumulator = 20ms
@@ -1015,11 +1062,13 @@ Frame 3: deltaTime = 25ms (lag spike!)
 ## Mobile Optimization
 
 **30 FPS update rate (TIME_STEP = 33.33ms):**
+
 - Reduces CPU load by 50% vs 60 FPS
 - Still feels responsive (< 34ms input latency)
 - Allows budget devices to maintain stable frame rate
 
 **Render skipping (every 2nd frame):**
+
 - Saves GPU bandwidth (render is expensive on mobile)
 - Visual frame rate = 30 FPS (update rate = 30 FPS)
 - Trade-off: Slightly less smooth visuals, but maintains playable FPS
@@ -1027,11 +1076,13 @@ Frame 3: deltaTime = 25ms (lag spike!)
 ## Performance Characteristics
 
 **Desktop (60 FPS updates):**
+
 - Update time: ~2-4ms/frame (leaves 12ms for rendering)
 - Render time: ~6-8ms/frame
 - Total: ~10-12ms/frame (under 16.67ms budget)
 
 **Mobile (30 FPS updates):**
+
 - Update time: ~3-5ms/frame (leaves 28ms for rendering)
 - Render time: ~12-15ms/frame (heavier due to lower GPU)
 - Total: ~18-20ms/frame (under 33.33ms budget)
@@ -1039,6 +1090,7 @@ Frame 3: deltaTime = 25ms (lag spike!)
 ## Consequences
 
 **Positive:**
+
 - **Deterministic physics:** Same inputs always produce same outputs
 - **Easier balancing:** Tune once, works everywhere
 - **Testable:** Automated tests with predictable physics
@@ -1046,16 +1098,18 @@ Frame 3: deltaTime = 25ms (lag spike!)
 - **Mobile performance:** 30 FPS update + render skip maintains playable FPS
 
 **Negative:**
+
 - **Complexity:** Accumulator pattern is harder to understand than naive loop
-  - *Mitigation:* Inline documentation explains algorithm
+  - _Mitigation:_ Inline documentation explains algorithm
 - **Input latency:** 30 FPS on mobile = 33ms worst-case latency
-  - *Mitigation:* Acceptable for arcade game (fighting games use 16ms)
+  - _Mitigation:_ Acceptable for arcade game (fighting games use 16ms)
 - **Catch-up logic:** Lagged frames run multiple updates (can cause stutter)
-  - *Mitigation:* Cap max updates at 5 (spiral of death prevention)
+  - _Mitigation:_ Cap max updates at 5 (spiral of death prevention)
 
 ## Alternatives Considered
 
 ### 1. Variable Timestep (Rejected)
+
 ```typescript
 function update(deltaTime) {
   player.x += player.velocity * deltaTime;
@@ -1065,6 +1119,7 @@ function update(deltaTime) {
 ```
 
 ### 2. Fixed Timestep without Accumulator (Rejected)
+
 ```typescript
 function gameLoop() {
   update(16.67); // Always use fixed delta
@@ -1075,16 +1130,19 @@ function gameLoop() {
 ```
 
 ### 3. ECS with Parallel Updates (Considered but overkill)
+
 Entity-Component-System with parallel update scheduling
 **Pros:** Maximum performance on multi-core
 **Cons:** Massive complexity, overkill for 100-entity game
 
 ## Related
+
 - Implementation: `src/game/gameLoop.ts`
 - Tests: `tests/game/gameLoop.logic.test.ts`
 - Reference: [Fix Your Timestep by Glenn Fiedler](https://gafferongames.com/post/fix_your_timestep/)
 - Reference: [Game Programming Patterns - Game Loop](https://gameprogrammingpatterns.com/game-loop.html)
-```
+
+````
 
 ---
 
@@ -1128,11 +1186,12 @@ Enable full strict mode in `tsconfig.json`:
     "noFallthroughCasesInSwitch": true  // Switch cases must have break/return
   }
 }
-```
+````
 
 ## Rationale
 
 **Why strict mode?**
+
 1. **Catch bugs at compile time** - Null checks, implicit any, unused code
 2. **Self-documenting code** - Types serve as documentation
 3. **Refactoring confidence** - Compiler catches breaking changes
@@ -1141,6 +1200,7 @@ Enable full strict mode in `tsconfig.json`:
 **Specific checks explained:**
 
 **`strictNullChecks: true`** (most impactful)
+
 ```typescript
 // Without strictNullChecks (BAD):
 function getPlayer() {
@@ -1154,12 +1214,14 @@ function getPlayer(): Player | undefined {
   return players[0];
 }
 const player = getPlayer();
-if (player) { // Compiler forces null check
+if (player) {
+  // Compiler forces null check
   player.x = 100; // Safe!
 }
 ```
 
 **`noImplicitReturns: true`**
+
 ```typescript
 // Without check (BAD):
 function getScore(level: number) {
@@ -1179,6 +1241,7 @@ function getScore(level: number): number {
 ```
 
 **`noUnusedLocals: true`**
+
 ```typescript
 // Without check (messy):
 function fireBullet() {
@@ -1197,6 +1260,7 @@ function fireBullet() {
 ## Consequences
 
 **Positive:**
+
 - **Fewer runtime errors:** Null checks, type mismatches caught at compile time
 - **Self-documenting:** Function signatures show exactly what types are used
 - **Refactoring safety:** Compiler catches breaking changes across codebase
@@ -1204,16 +1268,18 @@ function fireBullet() {
 - **Team alignment:** All contributors follow same strictness level
 
 **Negative:**
+
 - **Steeper learning curve:** New contributors must understand TypeScript strictness
-  - *Mitigation:* CONTRIBUTING.md explains common patterns
+  - _Mitigation:_ CONTRIBUTING.md explains common patterns
 - **More verbose:** Null checks add boilerplate (`if (x)` before every access)
-  - *Mitigation:* Use optional chaining (`x?.property`) and nullish coalescing (`x ?? default`)
+  - _Mitigation:_ Use optional chaining (`x?.property`) and nullish coalescing (`x ?? default`)
 - **Slower initial development:** Must satisfy compiler before running
-  - *Mitigation:* Type safety prevents runtime bugs, net time savings
+  - _Mitigation:_ Type safety prevents runtime bugs, net time savings
 
 ## Alternatives Considered
 
 ### 1. Loose Mode (Rejected)
+
 ```json
 { "strict": false }
 // Pros: Faster to write, fewer type errors
@@ -1221,20 +1287,24 @@ function fireBullet() {
 ```
 
 ### 2. Custom Strict (Rejected)
+
 Enable only some strict checks (e.g., `strictNullChecks` but not `noUnusedLocals`)
 **Pros:** Balance between safety and convenience
 **Cons:** Inconsistent strictness, team confusion on what's allowed
 
 ### 3. JSDoc with JavaScript (Rejected)
+
 Use JSDoc comments for types without TypeScript compiler
 **Pros:** No build step, gradual adoption
 **Cons:** No compile-time checks, types not enforced
 
 ## Related
+
 - Configuration: `tsconfig.json`
 - Type definitions: `src/types/index.ts`
 - Contributing guide: `CONTRIBUTING.md` (explains TypeScript usage)
-```
+
+````
 
 ---
 
@@ -1330,7 +1400,7 @@ export function spawnAsteroidFragment(
 ): Asteroid | null {
   // Implementation...
 }
-```
+````
 
 ---
 
@@ -1338,7 +1408,7 @@ export function spawnAsteroidFragment(
 
 **File:** `src/core/state/gameState.ts`
 
-```typescript
+````typescript
 /**
  * Increments score by the specified amount and emits SCORE_CHANGED event
  *
@@ -1373,7 +1443,7 @@ export function addScore(points: number): number {
   score.value += points;
   eventBus.emit<ScoreChangedEvent>(GameEvent.SCORE_CHANGED, {
     newScore: score.value,
-    pointsAdded: points
+    pointsAdded: points,
   });
   return score.value;
 }
@@ -1412,11 +1482,11 @@ export function addScore(points: number): number {
 export function loseLife(): number {
   playerLives.value = Math.max(0, playerLives.value - 1);
   eventBus.emit<PlayerHitEvent>(GameEvent.PLAYER_HIT, {
-    livesRemaining: playerLives.value
+    livesRemaining: playerLives.value,
   });
   return playerLives.value;
 }
-```
+````
 
 ---
 
@@ -1424,7 +1494,7 @@ export function loseLife(): number {
 
 **File:** `src/services/ServiceProvider.ts`
 
-```typescript
+````typescript
 /**
  * Centralized Service Provider for Dependency Injection
  *
@@ -1511,7 +1581,7 @@ export class ServiceProvider {
 
 /** Singleton export for easy access */
 export const services = ServiceProvider.getInstance();
-```
+````
 
 ---
 
@@ -1584,7 +1654,7 @@ export function handleError(error: Error): void {
   if (error instanceof GameError) {
     log.error(`[${error.code}] ${error.message}`, {
       recoverable: error.recoverable,
-      stack: error.stack
+      stack: error.stack,
     });
 
     if (!error.recoverable) {
@@ -1657,7 +1727,7 @@ export function startMusic(): void {
 
     bgm.loop = true;
     bgm.volume = currentVolume;
-    bgm.play().catch(err => {
+    bgm.play().catch((err) => {
       log.warn(`Background music playback failed: ${err.message}`);
     });
 
@@ -1674,7 +1744,7 @@ export function startMusic(): void {
 
 **File:** `src/utils/validation.ts` (NEW)
 
-```typescript
+````typescript
 /**
  * Input Validation Utilities for Boundary Checks and Range Clamping
  *
@@ -1700,12 +1770,7 @@ export function startMusic(): void {
  * }
  * ```
  */
-export function validateBounds(
-  x: number,
-  y: number,
-  width: number,
-  height: number
-): boolean {
+export function validateBounds(x: number, y: number, width: number, height: number): boolean {
   return x >= 0 && x <= width && y >= 0 && y <= height;
 }
 
@@ -1769,13 +1834,13 @@ export function validatePositiveInteger(value: number, name: string): number {
   }
   return value;
 }
-```
+````
 
 **Apply validation to public APIs:**
 
 **File:** `src/systems/soundManager.ts`
 
-```typescript
+````typescript
 import { validateAudioVolume } from '@utils/validation';
 
 /**
@@ -1793,17 +1858,17 @@ export function setVolume(volume: number): void {
   currentVolume = validateAudioVolume(volume); // Clamps to [0, 1]
 
   // Apply to all loaded sounds
-  sounds.forEach(audio => {
+  sounds.forEach((audio) => {
     audio.volume = currentVolume;
   });
 
   log.debug(`Volume set to ${(currentVolume * 100).toFixed(0)}%`);
 }
-```
+````
 
 **File:** `src/entities/player.ts`
 
-```typescript
+````typescript
 import { validateBounds, clamp } from '@utils/validation';
 
 /**
@@ -1839,11 +1904,11 @@ export function setPlayerPosition(x: number, y: number): void {
   if (!validateBounds(x, y, canvas.width, canvas.height)) {
     log.warn('Player position clamped to bounds', {
       requested: { x, y },
-      clamped: { x: player.x, y: player.y }
+      clamped: { x: player.x, y: player.y },
     });
   }
 }
-```
+````
 
 ---
 
@@ -1852,6 +1917,7 @@ export function setPlayerPosition(x: number, y: number): void {
 **File:** `src/core/main.ts`
 
 **Before (redundant assignment):**
+
 ```typescript
 const canvasEl = getElementById<HTMLCanvasElement>('gameCanvas');
 if (!canvasEl) {
@@ -1862,6 +1928,7 @@ const canvas = canvasEl; // Redundant assignment!
 ```
 
 **After:**
+
 ```typescript
 const canvas = getElementById<HTMLCanvasElement>('gameCanvas');
 if (!canvas) {
@@ -1899,10 +1966,11 @@ export const CSS_CLASSES = {
 } as const;
 
 // Type for intellisense
-export type CSSClassName = typeof CSS_CLASSES[keyof typeof CSS_CLASSES];
+export type CSSClassName = (typeof CSS_CLASSES)[keyof typeof CSS_CLASSES];
 ```
 
 **Usage:**
+
 ```typescript
 import { CSS_CLASSES } from '@core/constants/cssClasses';
 
@@ -1919,7 +1987,7 @@ export function showOverlay(overlayId: string): void {
 
 ### 4.4 Console Call Cleanup
 
-**Search and replace console.* with logger:**
+**Search and replace console.\* with logger:**
 
 ```bash
 # Find all console.warn/error calls
@@ -1932,6 +2000,7 @@ npm run grep "console\\.(warn|error|log|debug)" --output_mode=content
 ```
 
 **Files to update:**
+
 - `src/ui/overlays/overlayManager.ts` - console.warn → log.warn
 - `src/input/inputManager.ts` - console.log → log.debug
 - `src/entities/asteroid.ts` - console.error → log.error
@@ -1950,6 +2019,7 @@ npm run grep "console\\.(warn|error|log|debug)" --output_mode=content
 Welcome to the Spaceship Dodge Game development team! This guide will help you understand the codebase architecture, development workflow, and best practices.
 
 ## Table of Contents
+
 1. [Architecture Overview](#architecture-overview)
 2. [Development Environment Setup](#development-environment-setup)
 3. [Code Organization Principles](#code-organization-principles)
@@ -1962,49 +2032,50 @@ Welcome to the Spaceship Dodge Game development team! This guide will help you u
 ## Architecture Overview
 
 ### High-Level Architecture Diagram
+```
 
-```
 ┌─────────────────────────────────────────────────────────────┐
-│                      User Interface                          │
-│  ┌──────────┐  ┌───────────┐  ┌──────────┐  ┌────────────┐│
-│  │ Overlays │  │    HUD    │  │ Controls │  │  Settings  ││
-│  │ Manager  │  │ (Score,   │  │ (Audio,  │  │    UI      ││
-│  │          │  │  Lives)   │  │  Volume) │  │            ││
-│  └────┬─────┘  └─────┬─────┘  └────┬─────┘  └──────┬─────┘│
+│ User Interface │
+│ ┌──────────┐ ┌───────────┐ ┌──────────┐ ┌────────────┐│
+│ │ Overlays │ │ HUD │ │ Controls │ │ Settings ││
+│ │ Manager │ │ (Score, │ │ (Audio, │ │ UI ││
+│ │ │ │ Lives) │ │ Volume) │ │ ││
+│ └────┬─────┘ └─────┬─────┘ └────┬─────┘ └──────┬─────┘│
 └───────┼──────────────┼─────────────┼────────────────┼──────┘
-        │              │             │                │
-        └──────────────┴─────────────┴────────────────┘
-                       │
-                  ┌────▼────┐
-                  │ Event   │◄──────────────────────┐
-                  │  Bus    │                       │
-                  └────┬────┘                       │
-                       │                            │
-        ┌──────────────┴─────────────┬──────────────┴─────┐
-        │                            │                    │
-   ┌────▼────┐                 ┌────▼────┐         ┌────▼────┐
-   │  Game   │                 │ Entity  │         │ Service │
-   │ State   │                 │ State   │         │Provider │
-   │Manager  │                 │ Manager │         │         │
-   └────┬────┘                 └────┬────┘         └────┬────┘
-        │                           │                   │
-        ├───► Game Loop ────────────┤                   │
-        │         │                 │                   │
-        │         ▼                 ▼                   │
-        │    ┌─────────┐      ┌─────────┐              │
-        │    │ Update  │      │ Render  │              │
-        │    │Systems  │      │Manager  │              │
-        │    └────┬────┘      └────┬────┘              │
-        │         │                │                   │
-        └─────────┴────────────────┴───────────────────┘
-                  │                │
-          ┌───────┴────────┬───────┴────────┐
-          │                │                │
-     ┌────▼────┐     ┌────▼────┐     ┌────▼─────┐
-     │Collision│     │ Sound   │     │  Pool    │
-     │ Handler │     │ Manager │     │ Manager  │
-     └─────────┘     └─────────┘     └──────────┘
-```
+│ │ │ │
+└──────────────┴─────────────┴────────────────┘
+│
+┌────▼────┐
+│ Event │◄──────────────────────┐
+│ Bus │ │
+└────┬────┘ │
+│ │
+┌──────────────┴─────────────┬──────────────┴─────┐
+│ │ │
+┌────▼────┐ ┌────▼────┐ ┌────▼────┐
+│ Game │ │ Entity │ │ Service │
+│ State │ │ State │ │Provider │
+│Manager │ │ Manager │ │ │
+└────┬────┘ └────┬────┘ └────┬────┘
+│ │ │
+├───► Game Loop ────────────┤ │
+│ │ │ │
+│ ▼ ▼ │
+│ ┌─────────┐ ┌─────────┐ │
+│ │ Update │ │ Render │ │
+│ │Systems │ │Manager │ │
+│ └────┬────┘ └────┬────┘ │
+│ │ │ │
+└─────────┴────────────────┴───────────────────┘
+│ │
+┌───────┴────────┬───────┴────────┐
+│ │ │
+┌────▼────┐ ┌────▼────┐ ┌────▼─────┐
+│Collision│ │ Sound │ │ Pool │
+│ Handler │ │ Manager │ │ Manager │
+└─────────┘ └─────────┘ └──────────┘
+
+````
 
 ### Key Architectural Patterns
 
@@ -2047,14 +2118,16 @@ Welcome to the Spaceship Dodge Game development team! This guide will help you u
    ```bash
    git clone https://github.com/thetrev68/spaceship-dodge-game.git
    cd spaceship-dodge-game
-   ```
+````
 
 2. **Install dependencies:**
+
    ```bash
    npm install
    ```
 
 3. **Verify setup:**
+
    ```bash
    npm run typecheck  # Should pass with 0 errors
    npm run lint       # Should pass with 0 warnings
@@ -2068,6 +2141,7 @@ Welcome to the Spaceship Dodge Game development team! This guide will help you u
    Open [http://localhost:5173](http://localhost:5173)
 
 ### Recommended VS Code Extensions
+
 - **ESLint** - Lint errors inline
 - **TypeScript + JavaScript** - Type checking
 - **Vitest** - Run tests in sidebar
@@ -2080,13 +2154,16 @@ Welcome to the Spaceship Dodge Game development team! This guide will help you u
 ### Module Structure
 
 Each module follows consistent structure:
+
 ```typescript
 // 1. Imports (grouped by category)
 import { foo } from '@core/...';
 import { bar } from '@utils/...';
 
 // 2. Types and interfaces
-interface MyModuleState { /* ... */ }
+interface MyModuleState {
+  /* ... */
+}
 
 // 3. Constants (private)
 const PRIVATE_CONSTANT = 42;
@@ -2095,10 +2172,14 @@ const PRIVATE_CONSTANT = 42;
 let internalState: MyModuleState;
 
 // 5. Public API (exported functions)
-export function publicFunction() { /* ... */ }
+export function publicFunction() {
+  /* ... */
+}
 
 // 6. Private helpers (not exported)
-function privateHelper() { /* ... */ }
+function privateHelper() {
+  /* ... */
+}
 ```
 
 ### Naming Conventions
@@ -2113,6 +2194,7 @@ function privateHelper() { /* ... */ }
 ### Barrel Exports
 
 Use index files to simplify imports:
+
 ```typescript
 // src/core/state/index.ts
 export * from './gameState';
@@ -2144,6 +2226,7 @@ import { gameState, score, entityState } from '@core/state';
 ### Writing Tests
 
 **Template for new test file:**
+
 ```typescript
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { setupTestEnvironment } from '../helpers/testUtils';
@@ -2191,11 +2274,13 @@ npm run test:repeat       # Run 3x to detect flakes
 - **Statements:** 85%+ required
 
 Focus coverage on:
+
 - Core game logic (game loop, collisions, state)
 - Public APIs (exported functions)
 - Error paths (catch blocks, null checks)
 
 Skip coverage for:
+
 - Render-heavy code (tested via integration)
 - UI components (tested via jsdom)
 - Type definitions (no runtime behavior)
@@ -2207,6 +2292,7 @@ Skip coverage for:
 ### Enable Debug Mode
 
 **File:** `src/core/gameConstants.ts`
+
 ```typescript
 DEV_CONFIG: {
   DEBUG_MODE: true,  // ← Enable debug logging
@@ -2220,19 +2306,20 @@ DEV_CONFIG: {
 import { log } from '@core/logger';
 
 // Hierarchical logging
-log.debug('Detailed debug info', { data });  // Only if DEBUG_MODE
+log.debug('Detailed debug info', { data }); // Only if DEBUG_MODE
 log.info('General information');
 log.warn('Warning message', { context });
 log.error('Error message', errorObject);
 
 // Category-specific logging
-log.enableCategory('collision');  // Only show collision logs
-log.disableCategory('audio');    // Hide audio logs
+log.enableCategory('collision'); // Only show collision logs
+log.disableCategory('audio'); // Hide audio logs
 ```
 
 ### Performance Profiling
 
 **Browser DevTools:**
+
 1. Open Chrome DevTools → Performance tab
 2. Click Record
 3. Play game for 10 seconds
@@ -2240,6 +2327,7 @@ log.disableCategory('audio');    // Hide audio logs
 5. Analyze flame graph for hot paths
 
 **Typical frame budget:**
+
 - Total: 16.67ms (60 FPS)
 - Update: 2-4ms
 - Collision: 0.5-2ms
@@ -2249,6 +2337,7 @@ log.disableCategory('audio');    // Hide audio logs
 ### Common Debug Scenarios
 
 **Scenario:** Asteroids not spawning
+
 ```typescript
 // Check spawn gating
 console.log('allowSpawning:', allowSpawning.value);
@@ -2259,6 +2348,7 @@ console.log('asteroidPool stats:', services.asteroidPool.getStats());
 ```
 
 **Scenario:** Audio not playing
+
 ```typescript
 // Check audio unlock
 console.log('isAudioUnlocked:', soundManager.isAudioUnlocked);
@@ -2276,6 +2366,7 @@ console.log('AudioContext state:', audio.context?.state);
 ### 1. Forgetting to Cleanup Event Listeners
 
 **Problem:**
+
 ```typescript
 // BAD: Event listener not removed
 function initGame() {
@@ -2285,6 +2376,7 @@ function initGame() {
 ```
 
 **Solution:**
+
 ```typescript
 // GOOD: Store cleanup function
 let unsubscribe: () => void;
@@ -2301,29 +2393,33 @@ function cleanupGame() {
 ### 2. Mutating Reactive State Incorrectly
 
 **Problem:**
+
 ```typescript
 // BAD: Modifies array without triggering watchers
 bullets.push(newBullet);
 ```
 
 **Solution:**
+
 ```typescript
 // GOOD: Use entity state methods
-entityState.addBullet(newBullet);  // Triggers validation and events
+entityState.addBullet(newBullet); // Triggers validation and events
 ```
 
 ### 3. Circular Dependencies
 
 **Problem:**
+
 ```typescript
 // File A imports B
 import { foo } from './B';
 
 // File B imports A
-import { bar } from './A';  // Circular dependency!
+import { bar } from './A'; // Circular dependency!
 ```
 
 **Solution:**
+
 - Extract shared types to `@types`
 - Use dependency injection via ServiceProvider
 - Emit events instead of direct calls
@@ -2331,13 +2427,15 @@ import { bar } from './A';  // Circular dependency!
 ### 4. Forgetting Null Checks (strictNullChecks)
 
 **Problem:**
+
 ```typescript
 // BAD: TypeScript allows this, but crashes at runtime
 const player = getPlayer();
-player.x = 100;  // Error if player is undefined!
+player.x = 100; // Error if player is undefined!
 ```
 
 **Solution:**
+
 ```typescript
 // GOOD: Always check nullable values
 const player = getPlayer();
@@ -2349,21 +2447,23 @@ if (player) {
 ### 5. Using `any` Type
 
 **Problem:**
+
 ```typescript
 // BAD: Loses type safety
 function process(data: any) {
-  return data.foo.bar.baz;  // No compile-time checks!
+  return data.foo.bar.baz; // No compile-time checks!
 }
 ```
 
 **Solution:**
+
 ```typescript
 // GOOD: Use specific types
 interface Data {
   foo: { bar: { baz: string } };
 }
 function process(data: Data) {
-  return data.foo.bar.baz;  // Type-safe!
+  return data.foo.bar.baz; // Type-safe!
 }
 ```
 
@@ -2372,16 +2472,17 @@ function process(data: Data) {
 ## Performance Best Practices
 
 1. **Avoid Allocations in Hot Paths**
+
    ```typescript
    // BAD: Creates new array every frame
    function update() {
-     const nearby = obstacles.filter(o => distance(player, o) < 100);
+     const nearby = obstacles.filter((o) => distance(player, o) < 100);
    }
 
    // GOOD: Reuse pre-allocated array
    const nearbyBuffer: Asteroid[] = [];
    function update() {
-     nearbyBuffer.length = 0;  // Clear without allocating
+     nearbyBuffer.length = 0; // Clear without allocating
      for (const o of obstacles) {
        if (distance(player, o) < 100) {
          nearbyBuffer.push(o);
@@ -2391,6 +2492,7 @@ function process(data: Data) {
    ```
 
 2. **Batch DOM Updates**
+
    ```typescript
    // BAD: Multiple DOM writes (triggers reflow each time)
    scoreEl.textContent = score.value.toString();
@@ -2426,7 +2528,8 @@ function process(data: Data) {
 - Check [CONTRIBUTING.md](../CONTRIBUTING.md) for Git workflow
 
 Happy coding! 🚀
-```
+
+````
 
 ---
 
@@ -2479,15 +2582,17 @@ LEVEL_CONFIG: {
   SPAWN_INTERVAL_DECREASE_PER_LEVEL: 70,  // ← Increase for faster ramp
   MIN_SPAWN_INTERVAL: 300,  // ← Floor for max difficulty
 }
-```
+````
 
 **Example tuning:**
+
 - Level 1: 1500ms between asteroids
-- Level 5: 1500ms - (5 * 70ms) = 1150ms
-- Level 10: 1500ms - (10 * 70ms) = 800ms
+- Level 5: 1500ms - (5 \* 70ms) = 1150ms
+- Level 10: 1500ms - (10 \* 70ms) = 800ms
 - Level 20: 300ms (capped at MIN_SPAWN_INTERVAL)
 
 **Speed Scaling:**
+
 ```typescript
 LEVEL_CONFIG: {
   SPEED_INCREASE_PER_LEVEL: 0.5,  // ← Increase for faster asteroids
@@ -2496,10 +2601,12 @@ LEVEL_CONFIG: {
 ```
 
 **Example tuning:**
+
 - Level 1: 1.0x speed (base velocity)
-- Level 5: 1.0x + (5 * 0.5) = 3.5x (capped at 3.0x)
+- Level 5: 1.0x + (5 \* 0.5) = 3.5x (capped at 3.0x)
 
 **Player Tuning:**
+
 ```typescript
 PLAYER_CONFIG: {
   SPEED: 5,           // ← Pixels per frame (higher = faster movement)
@@ -2510,6 +2617,7 @@ PLAYER_CONFIG: {
 ```
 
 **Bullet Tuning:**
+
 ```typescript
 BULLET_CONFIG: {
   SPEED: 10,          // ← Pixels per frame (higher = faster bullets)
@@ -2522,6 +2630,7 @@ BULLET_CONFIG: {
 **Example: Adding Enemy Ships**
 
 1. **Create entity type (`src/types/index.ts`):**
+
    ```typescript
    export interface Enemy {
      x: number;
@@ -2530,18 +2639,19 @@ BULLET_CONFIG: {
      vy: number;
      size: number;
      active: boolean;
-     health: number;  // New property
+     health: number; // New property
    }
    ```
 
 2. **Create entity module (`src/entities/enemy.ts`):**
+
    ```typescript
    import { createPool } from '@systems/poolManager';
    import type { Enemy } from '@/types';
 
    const enemyPool = createPool<Enemy>(
      () => ({ x: 0, y: 0, vx: 0, vy: 0, size: 30, active: false, health: 3 }),
-     20  // Pool size
+     20 // Pool size
    );
 
    export function spawnEnemy(canvasWidth: number, canvasHeight: number): Enemy | null {
@@ -2550,9 +2660,9 @@ BULLET_CONFIG: {
 
      // Initialize position, velocity, etc.
      enemy.x = Math.random() * canvasWidth;
-     enemy.y = 0;  // Spawn from top
+     enemy.y = 0; // Spawn from top
      enemy.vx = 0;
-     enemy.vy = 2;  // Move down
+     enemy.vy = 2; // Move down
      enemy.health = 3;
      enemy.active = true;
 
@@ -2585,6 +2695,7 @@ BULLET_CONFIG: {
    ```
 
 3. **Add to entity state (`src/core/state/entityState.ts`):**
+
    ```typescript
    private _enemies: Enemy[] = [];
 
@@ -2600,6 +2711,7 @@ BULLET_CONFIG: {
    ```
 
 4. **Add to game loop (`src/game/gameLoop.ts`):**
+
    ```typescript
    import { updateEnemies } from '@entities/enemy';
 
@@ -2607,7 +2719,7 @@ BULLET_CONFIG: {
      updatePlayer(deltaTime);
      updateBullets(deltaTime);
      updateAsteroids(deltaTime);
-     updateEnemies(entityState.getEnemies(), deltaTime);  // ← Add here
+     updateEnemies(entityState.getEnemies(), deltaTime); // ← Add here
      updatePowerups(deltaTime);
 
      checkCollisions();
@@ -2615,6 +2727,7 @@ BULLET_CONFIG: {
    ```
 
 5. **Add to render manager (`src/systems/renderManager.ts`):**
+
    ```typescript
    import { drawEnemy } from '@entities/enemy';
 
@@ -2635,6 +2748,7 @@ BULLET_CONFIG: {
    ```
 
 6. **Add collision detection (`src/systems/collisionHandler.ts`):**
+
    ```typescript
    // Check bullet-enemy collisions
    for (const bullet of entityState.getBullets()) {
@@ -2643,7 +2757,7 @@ BULLET_CONFIG: {
          enemy.health--;
          if (enemy.health <= 0) {
            enemy.active = false;
-           addScore(150);  // Award points
+           addScore(150); // Award points
            eventBus.emit(GameEvent.ENEMY_DESTROYED, { enemy });
          }
          bullet.active = false;
@@ -2654,9 +2768,10 @@ BULLET_CONFIG: {
    ```
 
 7. **Add spawn logic (`src/game/flowManager.ts` or dedicated spawner):**
+
    ```typescript
    let enemySpawnTimer = 0;
-   const ENEMY_SPAWN_INTERVAL = 5000;  // Every 5 seconds
+   const ENEMY_SPAWN_INTERVAL = 5000; // Every 5 seconds
 
    export function updateSpawning(deltaTime: number): void {
      if (!allowSpawning.value) return;
@@ -2673,6 +2788,7 @@ BULLET_CONFIG: {
    ```
 
 8. **Add tests (`tests/entities/enemy.test.ts`):**
+
    ```typescript
    import { describe, it, expect } from 'vitest';
    import { spawnEnemy, updateEnemies } from '@entities/enemy';
@@ -2700,23 +2816,25 @@ BULLET_CONFIG: {
 ### Web Audio API Constraints
 
 **Autoplay Policy:**
+
 - Browsers block audio until user gesture
 - Requires silent audio trick on first click
 - Audio context states: `suspended` → `running`
 
 **Implementation:**
+
 ```typescript
 // 1. Create silent audio file (silence.mp3 - 0.1 seconds)
 // 2. On first user gesture, play silent audio
 export async function forceAudioUnlock(): Promise<void> {
   const silentAudio = sounds.get('silence');
-  await silentAudio.play();  // Unlocks audio context
+  await silentAudio.play(); // Unlocks audio context
   isAudioUnlocked = true;
 }
 
 // 3. Now background music can play
 export function startMusic(): void {
-  if (!isAudioUnlocked) return;  // Must wait for unlock
+  if (!isAudioUnlocked) return; // Must wait for unlock
   const bgm = sounds.get('bg-music');
   bgm.play();
 }
@@ -2725,6 +2843,7 @@ export function startMusic(): void {
 ### Audio File Format
 
 **Recommended formats:**
+
 - **Web:** MP3 (universal browser support)
 - **Quality:** 128kbps (balance size vs quality)
 - **Loop tracks:** Ensure seamless loop points
@@ -2732,21 +2851,24 @@ export function startMusic(): void {
 **Adding new sounds:**
 
 1. **Add audio file to `public/sounds/`:**
+
    ```
    public/sounds/
    ├── new-sound.mp3
    ```
 
 2. **Register in soundManager (`src/systems/soundManager.ts`):**
+
    ```typescript
    const soundFiles = {
-     'fire': 'sounds/fire.mp3',
-     'break': 'sounds/break.mp3',
-     'new-sound': 'sounds/new-sound.mp3',  // ← Add here
+     fire: 'sounds/fire.mp3',
+     break: 'sounds/break.mp3',
+     'new-sound': 'sounds/new-sound.mp3', // ← Add here
    };
    ```
 
 3. **Play sound in game code:**
+
    ```typescript
    import { services } from '@services/ServiceProvider';
 
@@ -2758,6 +2880,7 @@ export function startMusic(): void {
 ### Volume Management
 
 **Master volume hierarchy:**
+
 ```
 User Volume Slider (0-1)
     ↓
@@ -2767,14 +2890,15 @@ Individual Sound Volumes
 ```
 
 **Implementation:**
+
 ```typescript
-let currentVolume = 0.5;  // 50% default
+let currentVolume = 0.5; // 50% default
 
 export function setVolume(volume: number): void {
   currentVolume = clamp(volume, 0, 1);
 
   // Apply to all loaded sounds
-  sounds.forEach(audio => {
+  sounds.forEach((audio) => {
     audio.volume = currentVolume;
   });
 }
@@ -2783,7 +2907,7 @@ export function playSound(name: string): void {
   const audio = sounds.get(name);
   if (audio) {
     const clone = audio.cloneNode() as HTMLAudioElement;
-    clone.volume = currentVolume;  // Inherit master volume
+    clone.volume = currentVolume; // Inherit master volume
     clone.play();
   }
 }
@@ -2796,11 +2920,13 @@ export function playSound(name: string): void {
 ### 1. Profile Before Optimizing
 
 **Use browser DevTools Performance tab:**
+
 1. Record 10 seconds of gameplay
 2. Identify hot paths (functions taking >1ms/frame)
 3. Optimize only the slowest functions
 
 **Common hot paths:**
+
 - `checkCollisions()` - Spatial grid optimization already applied
 - `renderAll()` - Canvas rendering (use `ctx.save`/`restore` sparingly)
 - `updateAsteroids()` - Minimize allocations in loop
@@ -2808,12 +2934,14 @@ export function playSound(name: string): void {
 ### 2. Mobile Performance Budget
 
 **Frame time budget (33.33ms at 30 FPS):**
+
 - Update: 3-5ms
 - Collision: 1-2ms
 - Render: 12-15ms
 - Overhead: 10-15ms
 
 **Optimizations:**
+
 - Render every 2nd frame (saves 50% GPU)
 - Simplify asteroid shapes (5 points vs 11)
 - No starfield background on mobile
@@ -2821,19 +2949,21 @@ export function playSound(name: string): void {
 ### 3. Reduce Garbage Collection
 
 **Bad (allocates array every frame):**
+
 ```typescript
 function checkCollisions() {
-  const nearby = obstacles.filter(o => distance(player, o) < 100);
+  const nearby = obstacles.filter((o) => distance(player, o) < 100);
   // ...
 }
 ```
 
 **Good (reuses pool):**
+
 ```typescript
 const nearbyBuffer: Asteroid[] = [];
 
 function checkCollisions() {
-  nearbyBuffer.length = 0;  // Clear without allocating
+  nearbyBuffer.length = 0; // Clear without allocating
   for (const o of obstacles) {
     if (distance(player, o) < 100) {
       nearbyBuffer.push(o);
@@ -2846,10 +2976,12 @@ function checkCollisions() {
 ### 4. Use Object Pools
 
 **Always pool:**
+
 - Bullets (created/destroyed constantly)
 - Asteroids (fragmentation creates bursts)
 
 **Don't pool:**
+
 - Player (only 1 instance)
 - Powerups (max 2 on screen)
 
@@ -2858,6 +2990,7 @@ function checkCollisions() {
 ## Accessibility Considerations
 
 ### Keyboard Navigation
+
 - **Arrows / WASD:** Move player
 - **Spacebar:** Fire bullets
 - **P:** Pause game
@@ -2865,12 +2998,15 @@ function checkCollisions() {
 - **?:** Show keyboard shortcuts (future)
 
 ### Screen Reader Support
+
 **ARIA live regions announce:**
+
 - Level progression: "Level 3 reached"
 - Game over: "Game Over. Final score: 5,200"
 - Lives lost: "Lives remaining: 2"
 
 **Implementation:**
+
 ```html
 <div id="aria-live-region" aria-live="assertive" aria-atomic="true" class="sr-only"></div>
 ```
@@ -2880,12 +3016,15 @@ export function announceToScreenReader(message: string): void {
   const liveRegion = document.getElementById('aria-live-region');
   if (liveRegion) {
     liveRegion.textContent = message;
-    setTimeout(() => { liveRegion.textContent = ''; }, 1000);
+    setTimeout(() => {
+      liveRegion.textContent = '';
+    }, 1000);
   }
 }
 ```
 
 ### Color Contrast
+
 - Player spaceship: White on dark background (contrast ratio 21:1)
 - Asteroids: Light gray (contrast ratio 15:1)
 - HUD text: White on semi-transparent black (contrast ratio 12:1)
@@ -2905,6 +3044,7 @@ npm run build
 **Output:** `dist/` directory with optimized assets
 
 **Build optimizations:**
+
 - Code minification (Terser)
 - Tree shaking (remove unused code)
 - Asset hashing for cache busting
@@ -2917,21 +3057,24 @@ npm run deploy
 ```
 
 **What this does:**
+
 1. Runs `npm run build`
 2. Pushes `dist/` to `gh-pages` branch
 3. GitHub serves site at `https://thetrev68.github.io/spaceship-dodge-game`
 
 **Base path configuration:**
+
 ```javascript
 // vite.config.js
 export default {
-  base: '/spaceship-dodge-game/',  // ← Match repo name
-}
+  base: '/spaceship-dodge-game/', // ← Match repo name
+};
 ```
 
 ### Performance Checklist
 
 Before deploying, verify:
+
 - [ ] Lighthouse score ≥90 performance
 - [ ] Bundle size ≤200KB gzipped
 - [ ] 60 FPS desktop, 30 FPS mobile
@@ -2943,28 +3086,35 @@ Before deploying, verify:
 ## Troubleshooting
 
 ### Issue: "Audio not playing on mobile"
+
 **Solution:** User must interact with page first (tap anywhere).
 Audio context remains locked until gesture.
 
 ### Issue: "Frame rate drops with 100+ asteroids"
+
 **Solution:** Enable mobile optimizations:
+
 - 30 FPS update rate
 - Render every 2nd frame
 - Simplify asteroid shapes
 
 ### Issue: "Tests failing with 'Canvas not found'"
+
 **Solution:** Use `createMockCanvas()` from test helpers:
+
 ```typescript
 import { createMockCanvas } from '../helpers/mockCanvas';
 const canvas = createMockCanvas();
 ```
 
 ### Issue: "TypeScript error: Property 'foo' does not exist"
+
 **Solution:** Enable strict null checks and add type guard:
+
 ```typescript
 const obj = getPotentiallyNullValue();
 if (obj && 'foo' in obj) {
-  obj.foo;  // Type-safe
+  obj.foo; // Type-safe
 }
 ```
 
@@ -2976,7 +3126,8 @@ if (obj && 'foo' in obj) {
 - [Fix Your Timestep](https://gafferongames.com/post/fix_your_timestep/)
 - [Web Audio API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API)
 - [Canvas Optimization](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Optimizing_canvas)
-```
+
+````
 
 ---
 
@@ -3020,12 +3171,14 @@ Public functions use comprehensive JSDoc with:
 Generate full API docs with:
 ```bash
 npm run docs
-```
+````
 
 ### Developer Guides
+
 - [DEVELOPER_GUIDE.md](docs/DEVELOPER_GUIDE.md) - Architecture, setup, debugging
 - [GAME_DESIGN.md](docs/GAME_DESIGN.md) - Mechanics, tuning, adding entities
-```
+
+````
 
 ---
 
@@ -3040,21 +3193,21 @@ Add badges and documentation links:
 - **[Game Design](docs/GAME_DESIGN.md)** - Mechanics, tuning, adding features
 - **[Architecture Decisions](docs/architecture/decisions/)** - ADRs for key design choices
 - **[API Documentation](docs/)** - Generated TypeDoc API reference
-```
+````
 
 ---
 
 ## Estimated Effort
 
-| Task | Estimated Hours |
-|------|----------------|
-| **Part 1:** Inline Documentation (4 files) | 6-8 hours |
-| **Part 2:** ADRs (5 documents) | 8-10 hours |
-| **Part 3:** Enhanced JSDoc (3 modules) | 4-5 hours |
-| **Part 4:** Code Quality Hardening | 6-8 hours |
-| **Part 5:** Developer Guides (2 documents) | 8-10 hours |
-| **Part 6:** Documentation Updates | 2-3 hours |
-| **Total** | **34-44 hours** |
+| Task                                       | Estimated Hours |
+| ------------------------------------------ | --------------- |
+| **Part 1:** Inline Documentation (4 files) | 6-8 hours       |
+| **Part 2:** ADRs (5 documents)             | 8-10 hours      |
+| **Part 3:** Enhanced JSDoc (3 modules)     | 4-5 hours       |
+| **Part 4:** Code Quality Hardening         | 6-8 hours       |
+| **Part 5:** Developer Guides (2 documents) | 8-10 hours      |
+| **Part 6:** Documentation Updates          | 2-3 hours       |
+| **Total**                                  | **34-44 hours** |
 
 ---
 
@@ -3110,6 +3263,7 @@ src/
 ## Next Steps After Completion
 
 Sprint 4 completion achieves **professional-grade documentation and code quality**. The codebase will:
+
 - Self-document complex algorithms with rationale
 - Maintain historical context via ADRs
 - Provide clear onboarding for new developers

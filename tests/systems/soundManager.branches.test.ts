@@ -9,14 +9,14 @@ describe('soundManager branches', () => {
   });
 
   it('blocks startMusic when muted or locked and applies volumes', async () => {
-    const originalAudio = global.Audio;
-    class SpyAudio extends (global.HTMLAudioElement as typeof HTMLAudioElement) {
+    const originalAudio = globalThis.Audio;
+    class SpyAudio extends (globalThis.HTMLAudioElement as typeof HTMLAudioElement) {
       constructor() {
         super();
         createdAudio.push(this);
       }
     }
-    (global as unknown as { Audio: typeof Audio }).Audio = SpyAudio as unknown as typeof Audio;
+    (globalThis as unknown as { Audio: typeof Audio }).Audio = SpyAudio as unknown as typeof Audio;
     try {
       const soundManager = await import('@systems/soundManager.js');
       const initialCount = createdAudio.length;
@@ -45,26 +45,26 @@ describe('soundManager branches', () => {
       soundManager.playSound('break'); // muted path should skip
       expect(createdAudio.length).toBe(beforeMuted);
     } finally {
-      (global as unknown as { Audio: typeof Audio }).Audio = originalAudio;
+      (globalThis as unknown as { Audio: typeof Audio }).Audio = originalAudio;
     }
   });
 
   it('stopMusic and muteAll handle absent bgm safely', async () => {
-    const originalAudio = global.Audio;
-    class SpyAudio extends (global.HTMLAudioElement as typeof HTMLAudioElement) {
+    const originalAudio = globalThis.Audio;
+    class SpyAudio extends (globalThis.HTMLAudioElement as typeof HTMLAudioElement) {
       constructor() {
         super();
         createdAudio.push(this);
       }
     }
-    (global as unknown as { Audio: typeof Audio }).Audio = SpyAudio as unknown as typeof Audio;
+    (globalThis as unknown as { Audio: typeof Audio }).Audio = SpyAudio as unknown as typeof Audio;
     try {
       const soundManager = await import('@systems/soundManager.js');
       soundManager.stopMusic(); // no bgm yet, should not throw
       soundManager.muteAll();
       expect(soundManager.isAudioMuted()).toBe(true);
     } finally {
-      (global as unknown as { Audio: typeof Audio }).Audio = originalAudio;
+      (globalThis as unknown as { Audio: typeof Audio }).Audio = originalAudio;
     }
   });
 });

@@ -4,7 +4,9 @@ type Fn<T extends (...args: any[]) => any> = MockedFunction<T>;
 
 // Mutable mocks so we can reconfigure between tests
 let mockIsMobile = false;
-let initializeCanvasMock: Fn<() => { canvas: HTMLCanvasElement; ctx: CanvasRenderingContext2D } | null>;
+let initializeCanvasMock: Fn<
+  () => { canvas: HTMLCanvasElement; ctx: CanvasRenderingContext2D } | null
+>;
 let initializeAudioMock: Fn<(gesture?: boolean) => Promise<void>>;
 let startBackgroundMusicMock: Fn<() => void>;
 let initializeInputMock: Fn<(canvas: HTMLCanvasElement) => void>;
@@ -54,7 +56,9 @@ vi.mock('@game/gameStateManager.js', () => ({
 }));
 
 const mockState = {
-  gameState: { value: 'START' as 'START' | 'PLAYING' | 'PAUSED' | 'LEVEL_TRANSITION' | 'GAME_OVER' },
+  gameState: {
+    value: 'START' as 'START' | 'PLAYING' | 'PAUSED' | 'LEVEL_TRANSITION' | 'GAME_OVER',
+  },
   score: { value: 0 },
   gameLevel: { value: 1 },
   allowSpawning: { value: true },
@@ -152,8 +156,12 @@ describe('core/main', () => {
       getContext: vi.fn(() => ctx),
     }) as HTMLCanvasElement;
 
-    initializeCanvasMock = vi.fn(() => ({ canvas, ctx })) as Fn<() => { canvas: HTMLCanvasElement; ctx: CanvasRenderingContext2D } | null>;
-    initializeAudioMock = vi.fn(() => Promise.resolve()) as Fn<(gesture?: boolean) => Promise<void>>;
+    initializeCanvasMock = vi.fn(() => ({ canvas, ctx })) as Fn<
+      () => { canvas: HTMLCanvasElement; ctx: CanvasRenderingContext2D } | null
+    >;
+    initializeAudioMock = vi.fn(() => Promise.resolve()) as Fn<
+      (gesture?: boolean) => Promise<void>
+    >;
     startBackgroundMusicMock = vi.fn() as Fn<() => void>;
     initializeInputMock = vi.fn() as Fn<(canvas: HTMLCanvasElement) => void>;
     initializeUIMock = vi.fn() as Fn<() => void>;
@@ -194,8 +202,12 @@ describe('core/main', () => {
     expect(setCanvasMock).toHaveBeenCalled();
 
     // Start button should trigger start logic (cover both click/touch paths)
-    getByIdElements.startButton!.dispatchEvent(new Event('click', { bubbles: true, cancelable: true }));
-    getByIdElements.startButton!.dispatchEvent(new Event('touchstart', { bubbles: true, cancelable: true }));
+    getByIdElements.startButton!.dispatchEvent(
+      new Event('click', { bubbles: true, cancelable: true })
+    );
+    getByIdElements.startButton!.dispatchEvent(
+      new Event('touchstart', { bubbles: true, cancelable: true })
+    );
     expect(unmuteAllMock).toHaveBeenCalled();
     expect(startBackgroundMusicMock).toHaveBeenCalled();
     expect(startGameMock).toHaveBeenCalled();

@@ -32,7 +32,7 @@ export enum GameEvent {
   GAME_STARTED = 'game:started',
   GAME_PAUSED = 'game:paused',
   GAME_RESUMED = 'game:resumed',
-  GAME_OVER = 'game:over'
+  GAME_OVER = 'game:over',
 }
 
 // Event payload types
@@ -41,12 +41,6 @@ export type AsteroidDestroyedEvent = {
   score: number;
   size: number;
   sizeLevel: number;
-};
-
-export type AsteroidFragmentedEvent = {
-  position: { x: number; y: number };
-  fragmentCount: number;
-  parentSize: number;
 };
 
 export type PlayerHitEvent = {
@@ -72,12 +66,6 @@ export type PowerupCollectedEvent = {
 
 export type PowerupExpiredEvent = {
   type: 'shield' | 'doubleBlaster';
-};
-
-export type ScoreChangedEvent = {
-  oldScore: number;
-  newScore: number;
-  delta: number;
 };
 
 export type BonusAwardedEvent = {

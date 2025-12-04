@@ -1,5 +1,6 @@
 /**
- * @fileoverview Game settings management system.
+ * @module ui/settings/settingsManager
+ * Game settings management system.
  * Handles user preferences, audio settings, and platform-specific configurations.
  */
 
@@ -8,8 +9,14 @@ import { services } from '@services/ServiceProvider.js';
 import { isMobile } from '@utils/platform.js';
 import { VOLUME_CONSTANTS, SETTINGS_CONSTANTS } from '@core/uiConstants.js';
 
+/**
+ * @internal
+ */
 type _SettingsContext = 'start' | 'pause' | 'controls';
 
+/**
+ * @internal
+ */
 type _GameSettings = {
   backgroundMusicVolume: number;
   soundEffectsVolume: number;
@@ -36,7 +43,8 @@ let currentSettings: _GameSettings = { ...DEFAULT_SETTINGS };
 
 function loadSettings(): _GameSettings {
   try {
-    const savedSettings = typeof localStorage !== 'undefined' ? localStorage.getItem(SETTINGS_KEY) : null;
+    const savedSettings =
+      typeof localStorage !== 'undefined' ? localStorage.getItem(SETTINGS_KEY) : null;
     if (savedSettings) {
       const parsed = JSON.parse(savedSettings) as Partial<_GameSettings>;
       currentSettings = { ...DEFAULT_SETTINGS, ...parsed };

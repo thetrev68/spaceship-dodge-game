@@ -15,8 +15,13 @@ export function createTestAsteroid(overrides: Partial<Asteroid> = {}): Asteroid 
     rotation: 0,
     rotationSpeed: 0.02,
     speed: 2,
-    shape: [{ x: 40, y: 0 }, { x: 0, y: 40 }, { x: -40, y: 0 }, { x: 0, y: -40 }],
-    ...overrides
+    shape: [
+      { x: 40, y: 0 },
+      { x: 0, y: 40 },
+      { x: -40, y: 0 },
+      { x: 0, y: -40 },
+    ],
+    ...overrides,
   };
 }
 
@@ -27,18 +32,20 @@ export function createTestBullet(overrides: Partial<Bullet> = {}): Bullet {
     radius: 5,
     dy: -5,
     parentId: null,
-    ...overrides
+    ...overrides,
   };
 }
 
-export function createTestPowerup(overrides: Partial<{
-  x: number;
-  y: number;
-  size: number;
-  type: 'shield' | 'doubleBlaster';
-  active: boolean;
-  dy: number;
-}> = {}): {
+export function createTestPowerup(
+  overrides: Partial<{
+    x: number;
+    y: number;
+    size: number;
+    type: 'shield' | 'doubleBlaster';
+    active: boolean;
+    dy: number;
+  }> = {}
+): {
   x: number;
   y: number;
   size: number;
@@ -53,6 +60,6 @@ export function createTestPowerup(overrides: Partial<{
     type: 'shield',
     active: true,
     dy: 2,
-    ...overrides
+    ...overrides,
   };
 }

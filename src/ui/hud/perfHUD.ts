@@ -1,5 +1,6 @@
 /**
- * @fileoverview Lightweight performance HUD for FPS and timing metrics.
+ * @module ui/hud/perfHUD
+ * Lightweight performance HUD for FPS and timing metrics.
  */
 
 let hudElement: HTMLDivElement | null = null;
@@ -46,7 +47,15 @@ function setPerfHudEnabled(state: boolean): void {
   el.style.display = enabled ? 'inline-flex' : 'none';
 }
 
-export function updatePerfHud({ fps, frameMs, logicMs }: { fps: number; frameMs: number; logicMs: number }): void {
+export function updatePerfHud({
+  fps,
+  frameMs,
+  logicMs,
+}: {
+  fps: number;
+  frameMs: number;
+  logicMs: number;
+}): void {
   if (!enabled) return;
   const el = ensureHudElement();
   const text = `FPS ${fps.toFixed(0)} | frame ${frameMs.toFixed(1)}ms | logic ${logicMs.toFixed(1)}ms`;

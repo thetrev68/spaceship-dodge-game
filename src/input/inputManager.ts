@@ -1,5 +1,6 @@
 /**
- * @fileoverview Input management for keyboard and mouse.
+ * @module input/inputManager
+ * Input management for keyboard and mouse.
  */
 
 import { gameState } from '@core/state.js';
@@ -47,7 +48,9 @@ export function setupInput(canvas: HTMLCanvasElement): void {
       restartGameLoop();
       eventBus.emit(GameEvent.GAME_RESUMED, undefined);
     }
-    setTimeout(() => { pauseLocked = false; }, 300);
+    setTimeout(() => {
+      pauseLocked = false;
+    }, 300);
   };
 
   document.addEventListener('keydown', (event: KeyboardEvent) => {

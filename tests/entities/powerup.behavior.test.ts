@@ -4,9 +4,13 @@ let mockIsMobile = false;
 const emitSpy = vi.fn();
 
 vi.mock('@utils/platform.js', () => ({ isMobile: () => mockIsMobile }));
-vi.mock('@core/events/EventBus.js', () => ({ eventBus: { emit: (...args: unknown[]) => emitSpy(...args) } }));
+vi.mock('@core/events/EventBus.js', () => ({
+  eventBus: { emit: (...args: unknown[]) => emitSpy(...args) },
+}));
 vi.mock('@core/events/GameEvents.js', async () => {
-  const actual = await vi.importActual<typeof import('@core/events/GameEvents.js')>('@core/events/GameEvents.js');
+  const actual = await vi.importActual<typeof import('@core/events/GameEvents.js')>(
+    '@core/events/GameEvents.js'
+  );
   return actual;
 });
 
@@ -55,7 +59,9 @@ describe('powerup behaviors', () => {
 
     await updatePowerups(200);
 
-    const collectedCall = emitSpy.mock.calls.find((args) => args[0] === 'powerup:collected') as [GameEvent, unknown] | undefined;
+    const collectedCall = emitSpy.mock.calls.find((args) => args[0] === 'powerup:collected') as
+      | [GameEvent, unknown]
+      | undefined;
     expect(collectedCall).toBeTruthy();
     expect(state.playerState.powerUps.doubleBlaster.active).toBe(true);
     expect(activePowerups).toHaveLength(0);

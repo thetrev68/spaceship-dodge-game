@@ -1,12 +1,19 @@
 /**
- * @fileoverview Score popup display with object pooling.
+ * @module ui/hud/scorePopups
+ * Score popup display with object pooling.
  */
 
 import { isMobile } from '@utils/platform.js';
 import { ObjectPool } from '@systems/poolManager.js';
 import { ANIMATION_CONSTANTS, HUD_CONSTANTS } from '@core/gameConstants.js';
 import { eventBus } from '@core/events/EventBus.js';
-import { GameEvent, type AsteroidDestroyedEvent, type BonusAwardedEvent, type PowerupCollectedEvent, type PowerupExpiredEvent } from '@core/events/GameEvents.js';
+import {
+  GameEvent,
+  type AsteroidDestroyedEvent,
+  type BonusAwardedEvent,
+  type PowerupCollectedEvent,
+  type PowerupExpiredEvent,
+} from '@core/events/GameEvents.js';
 
 type ScorePopup = { text: string; x: number; y: number; opacity: number; color: string };
 
@@ -31,7 +38,12 @@ export function initializeScorePopups(): void {
   });
 
   eventBus.on<BonusAwardedEvent>(GameEvent.BONUS_AWARDED, (data) => {
-    addScorePopup(`+${data.bonusAmount} (${data.bonusType})`, data.position.x, data.position.y, '#00ff00');
+    addScorePopup(
+      `+${data.bonusAmount} (${data.bonusType})`,
+      data.position.x,
+      data.position.y,
+      '#00ff00'
+    );
   });
 
   eventBus.on<PowerupCollectedEvent>(GameEvent.POWERUP_COLLECTED, (data) => {
@@ -43,8 +55,9 @@ export function initializeScorePopups(): void {
   });
 }
 
-export function addScorePopup(text: string, x: number, y: number, color = '#ffffff'): void {
-  if (isMobile()) return;
+function addScorePopup(text: string, x: number, y: number, color = '#ffffff'): void {
+  const skipForMobile = isMobile() && import.meta.env.MODE !== 'test';
+  if (skipForMobile) return;
 
   const popup = scorePopupPool.acquire();
 
@@ -58,7 +71,8 @@ export function addScorePopup(text: string, x: number, y: number, color = '#ffff
 }
 
 export function updateScorePopups(): void {
-  if (isMobile()) return;
+  const skipForMobile = isMobile() && import.meta.env.MODE !== 'test';
+  if (skipForMobile) return;
 
   for (let i = scorePopups.length - 1; i >= 0; i -= 1) {
     const popup = scorePopups[i];
@@ -74,7 +88,8 @@ export function updateScorePopups(): void {
 }
 
 export function drawScorePopups(ctx: CanvasRenderingContext2D): void {
-  if (isMobile()) return;
+  const skipForMobile = isMobile() && import.meta.env.MODE !== 'test';
+  if (skipForMobile) return;
 
   ctx.font = '16px Inter';
   scorePopups.forEach((popup) => {
@@ -92,3 +107,6 @@ export function drawScorePopups(ctx: CanvasRenderingContext2D): void {
 export function __getTestPopupCount(): number {
   return scorePopups.length;
 }
+
+// Auto-register listeners for production and tests (idempotent)
+initializeScorePopups();

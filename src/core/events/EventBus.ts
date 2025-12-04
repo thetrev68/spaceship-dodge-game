@@ -5,6 +5,7 @@ type EventHandler = (data: unknown) => void;
 /**
  * Event bus for decoupled communication between modules
  * Implements publish-subscribe pattern
+ * @internal
  */
 class EventBus {
   private handlers = new Map<string, EventHandler[]>();
@@ -47,7 +48,7 @@ class EventBus {
     const handlers = this.handlers.get(event);
     if (!handlers) return;
 
-    const idx = handlers.findIndex(fn => (fn as { _orig?: (data: T) => void })._orig === handler);
+    const idx = handlers.findIndex((fn) => (fn as { _orig?: (data: T) => void })._orig === handler);
     if (idx !== -1) {
       handlers.splice(idx, 1);
       debug('event', `Event handler unregistered for: ${event}`);
@@ -69,7 +70,7 @@ class EventBus {
     debug('event', `Event emitted: ${event}`);
 
     const snapshot = handlers.slice();
-    snapshot.forEach(handler => {
+    snapshot.forEach((handler) => {
       try {
         (handler as (payload: T) => void)(data);
       } catch (err) {

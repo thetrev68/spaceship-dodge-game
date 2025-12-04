@@ -24,7 +24,10 @@ vi.mock('@core/state.js', () => {
   const player = { x: 0, y: 0, width: 1, height: 1 };
   const bullets: unknown[] = [];
   const obstacles: unknown[] = [];
-  const powerUps = { shield: { active: false, timer: 0 }, doubleBlaster: { active: false, timer: 0 } };
+  const powerUps = {
+    shield: { active: false, timer: 0 },
+    doubleBlaster: { active: false, timer: 0 },
+  };
   const playerLives = { value: 3 };
   const score = { value: 0 };
   return {

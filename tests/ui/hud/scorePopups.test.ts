@@ -1,6 +1,12 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { eventBus } from '@core/events/EventBus';
-import { GameEvent, type AsteroidDestroyedEvent, type BonusAwardedEvent, type PowerupCollectedEvent, type PowerupExpiredEvent } from '@core/events/GameEvents';
+import {
+  GameEvent,
+  type AsteroidDestroyedEvent,
+  type BonusAwardedEvent,
+  type PowerupCollectedEvent,
+  type PowerupExpiredEvent,
+} from '@core/events/GameEvents';
 import { updateScorePopups, __getTestPopupCount } from '@ui/hud/scorePopups';
 
 describe('scorePopups event handling', () => {

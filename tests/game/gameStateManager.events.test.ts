@@ -59,6 +59,6 @@ describe('GameStateManager events', () => {
 
     expect(over.length).toBe(1);
     expect(over[0]).toMatchObject({ finalScore: expect.any(Number), level: expect.any(Number) });
-    expect((services.audioService.stopMusic as ReturnType<typeof vi.fn>)).toHaveBeenCalled();
+    expect(services.audioService.stopMusic as ReturnType<typeof vi.fn>).toHaveBeenCalled();
   });
 });

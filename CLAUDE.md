@@ -11,41 +11,52 @@ Spaceship Dodge is a browser-based arcade game built with TypeScript, Tailwind C
 ## Development Commands
 
 ### Start Development Server
+
 ```bash
 npm run dev
 ```
+
 Runs Vite dev server on port 5173.
 
 ### Build for Production
+
 ```bash
 npm run build
 ```
+
 Outputs to `dist/` directory. Base path is set to `/spaceship-dodge-game/` for GitHub Pages deployment.
 
 ### Preview Production Build
+
 ```bash
 npm run preview
 ```
 
 ### Deploy to GitHub Pages
+
 ```bash
 npm run deploy
 ```
+
 Builds and deploys to `gh-pages` branch.
 
 ### Build Tailwind CSS
+
 ```bash
 npm run build:css
 ```
+
 Compiles Tailwind v4 styles from `src/input.css` to `styles/tailwind.css`.
 
 ### Type Checking
+
 ```bash
 npm run typecheck         # Type check once
 npm run typecheck:watch   # Type check in watch mode
 ```
 
 ### Linting and Code Quality
+
 ```bash
 npm run lint        # Check for ESLint issues
 npm run lint:fix    # Auto-fix ESLint issues
@@ -55,11 +66,13 @@ npm run knip        # Find unused exports and dependencies
 ESLint is configured for TypeScript with typescript-eslint. Knip helps identify dead code and unused exports.
 
 ### Testing
+
 ```bash
 npm run test        # Run tests with Vitest
 ```
 
 ### Generate Documentation
+
 ```bash
 npm run docs        # Generate TypeDoc documentation
 ```
@@ -157,6 +170,7 @@ The game uses a centralized game loop architecture with clear separation of conc
 ### Module Responsibilities
 
 **Core**:
+
 - **main.ts**: Entry point, initializes canvas, sets up input handlers, manages audio unlock flow
 - **state.ts**: Reactive state management with watchers
 - **constants.ts**: Master configuration file
@@ -165,27 +179,32 @@ The game uses a centralized game loop architecture with clear separation of conc
 - **logger.ts**: Centralized logging with levels (debug, info, warn, error)
 
 **Game**:
+
 - **gameStateManager.ts**: Manages game state transitions (START → PLAYING → PAUSED → LEVEL_TRANSITION → GAME_OVER)
 - **flowManager.ts**: Handles level progression timing and gating (waits for obstacles to clear before level-up)
 - **gameLoop.ts**: Main RAF loop with FPS throttling
 
 **Entities**:
+
 - **player.ts**: Player movement, drawing, bullet firing logic
 - **asteroid.ts**: Asteroid pooling, spawning, movement, fragmentation on hit
 - **bullet.ts**: Bullet pool management and updates
 - **powerup.ts**: Power-up spawning, pickup detection, effects (shield, double blaster)
 
 **Systems**:
+
 - **collisionHandler.ts**: Spatial grid collision detection
 - **renderManager.ts**: Centralized rendering pipeline
 - **soundManager.ts**: Audio unlock, playback, volume, mute management
 - **poolManager.ts**: Generic object pooling system
 
 **Input**:
+
 - **inputManager.ts**: Desktop keyboard/mouse input handling
 - **mobileControls.ts**: Touch input handling with drag-to-move and tap-to-shoot
 
 **UI**:
+
 - **overlayManager.ts**: Overlay management (start, pause, level transition, game over)
 - **scoreDisplay.ts**: HUD rendering (lives, level, score)
 - **scorePopups.ts**: Floating score text animations
@@ -196,12 +215,14 @@ The game uses a centralized game loop architecture with clear separation of conc
 - **settingsUI.ts**: Settings UI components
 
 **Utils**:
+
 - **mathUtils.ts**: Math helpers (distance, angle calculations)
 - **canvasUtils.ts**: Canvas drawing utilities
 - **dom.ts**: Type-safe DOM helpers
 - **platform.ts**: Platform detection utilities
 
 **Effects**:
+
 - **starfield.ts**: Animated starfield background
 
 ### State Flow Diagram
@@ -243,6 +264,7 @@ The audio system requires gesture-based unlock due to browser autoplay policies:
 The game adapts behavior based on `isMobile` flag:
 
 **Mobile**:
+
 - Touch events for movement/shooting/pause
 - Increased spawn intervals (`BASE_SPAWN_INTERVAL_MOBILE: 2400ms`)
 - Simplified asteroid shapes (max 5 points vs 11)
@@ -251,6 +273,7 @@ The game adapts behavior based on `isMobile` flag:
 - FPS capping for performance
 
 **Desktop**:
+
 - Mouse/keyboard input (WASD, arrows, spacebar)
 - Faster spawn intervals (`BASE_SPAWN_INTERVAL_DESKTOP: 1500ms`)
 - More complex asteroid shapes
@@ -262,10 +285,12 @@ The game adapts behavior based on `isMobile` flag:
 All configuration is centralized in three constant files:
 
 **[src/core/constants.ts](src/core/constants.ts)** - Master configuration:
+
 - Re-exports from gameConstants and uiConstants
 - Central import point for all constants
 
 **[src/core/gameConstants.ts](src/core/gameConstants.ts)** - Game-specific:
+
 - `GAME_CONFIG`: Frame rate, spawn margins
 - `PLAYER_CONFIG`: Size, speed, shield radius
 - `BULLET_CONFIG`: Speed, fire rate, cooldown
@@ -277,6 +302,7 @@ All configuration is centralized in three constant files:
 - `DEV_CONFIG`: Debug flags, performance metrics
 
 **[src/core/uiConstants.ts](src/core/uiConstants.ts)** - UI-specific:
+
 - `VISUAL_CONFIG`: Colors, fonts, stroke widths
 - `UI_CONFIG`: Overlay settings, animations
 
@@ -294,6 +320,7 @@ Levels advance based on time and obstacle clearing:
 ### TypeScript Integration
 
 The project uses TypeScript throughout with:
+
 - Strict type checking enabled
 - JSDoc comments for documentation
 - Type definitions in `src/types/index.ts`
@@ -372,6 +399,7 @@ See [LOGGER_USAGE.md](./LOGGER_USAGE.md) for detailed documentation.
 ### Spatial Grid Collision Detection
 
 The collision system uses spatial partitioning for efficient collision detection:
+
 - Grid cells divide the canvas into regions
 - Entities are binned into cells based on position
 - Only entities in same/adjacent cells are tested
@@ -380,6 +408,7 @@ The collision system uses spatial partitioning for efficient collision detection
 ### Asteroid Fragmentation Logic
 
 When an asteroid is hit:
+
 1. If size level > 0, spawns 2-3 smaller fragments
 2. Fragments inherit parent velocity + random angle offset
 3. Fragments have increased speed multiplier (0.3x parent speed)
@@ -388,6 +417,7 @@ When an asteroid is hit:
 ### Power-up System
 
 Two power-up types:
+
 - **Shield**: 5 second invulnerability, visual glow effect
 - **Double Blaster**: 10 second dual-bullet firing
 
@@ -396,6 +426,7 @@ Power-ups spawn periodically, fall from top of screen, and expire if not collect
 ### Object Pooling
 
 The game uses object pooling for performance:
+
 - Bullets and asteroids are pooled and reused
 - Generic `poolManager.ts` provides pooling utilities
 - Reduces garbage collection pressure
@@ -404,6 +435,7 @@ The game uses object pooling for performance:
 ### Canvas Sizing
 
 Canvas auto-resizes to viewport:
+
 ```typescript
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
@@ -416,6 +448,7 @@ Overlays use `setOverlayDimensions()` to maintain proper positioning.
 ### Type Definitions
 
 Core types are defined in [src/types/index.ts](src/types/index.ts):
+
 - `GameState`: Game state enum
 - `Asteroid`, `Bullet`, `Powerup`: Entity interfaces
 - `ReactiveValue<T>`: Reactive state type
@@ -464,10 +497,11 @@ if (element) {
 ### Performance Monitoring
 
 Enable performance HUD:
+
 ```typescript
 // Set in core/gameConstants.ts
 DEV_CONFIG: {
-  SHOW_PERFORMANCE_METRICS: true
+  SHOW_PERFORMANCE_METRICS: true;
 }
 ```
 
@@ -502,18 +536,108 @@ Tests are located alongside source files or in `__tests__` directories.
 
 ## Documentation
 
-- **[FOLDER_STRUCTURE.md](./FOLDER_STRUCTURE.md)**: Detailed folder structure
-- **[UPGRADE_NOTES.md](./UPGRADE_NOTES.md)**: Migration notes from JS to TS
-- **[LOGGER_USAGE.md](./LOGGER_USAGE.md)**: Logger documentation
-- **[TECHNICAL_DEBT_ASSESSMENT.md](./TECHNICAL_DEBT_ASSESSMENT.md)**: Technical debt analysis
-- **[CONTRIBUTING.md](./CONTRIBUTING.md)**: Contribution guidelines
-- **TypeDoc**: Generate with `npm run docs`
+### Core Documentation
+
+- **[DEVELOPER_GUIDE.md](./docs/DEVELOPER_GUIDE.md)**: **START HERE** - Comprehensive developer onboarding guide covering architecture, development workflow, testing, debugging, and common tasks
+- **[GAME_DESIGN.md](./docs/GAME_DESIGN.md)**: Game design document with mechanics, difficulty tuning, and future enhancements
+- **[FOLDER_STRUCTURE.md](./FOLDER_STRUCTURE.md)**: Detailed folder structure and module organization
+- **[CONTRIBUTING.md](./CONTRIBUTING.md)**: Contribution guidelines and code standards
+
+### Architecture Decision Records (ADRs)
+
+Located in `docs/architecture/decisions/`, these documents explain **why** key architectural decisions were made:
+
+- **[ADR-001: Custom Reactive State](./docs/architecture/decisions/ADR-001-custom-reactive-state.md)** - Why we built a custom reactive system instead of using MobX/Zustand
+- **[ADR-002: Spatial Grid Collision](./docs/architecture/decisions/ADR-002-spatial-grid-collision.md)** - Why spatial grid over quadtree for collision detection
+- **[ADR-003: Object Pooling](./docs/architecture/decisions/ADR-003-object-pooling.md)** - Object pooling strategy for bullets and asteroids
+- **[ADR-004: Fixed Timestep Game Loop](./docs/architecture/decisions/ADR-004-fixed-timestep-game-loop.md)** - Fixed timestep with accumulator pattern rationale
+- **[ADR-005: TypeScript Strict Mode](./docs/architecture/decisions/ADR-005-typescript-strict-mode.md)** - TypeScript strict mode configuration and benefits
+
+### Technical References
+
+- **[UPGRADE_NOTES.md](./UPGRADE_NOTES.md)**: Migration notes from vanilla JS to TypeScript
+- **[LOGGER_USAGE.md](./LOGGER_USAGE.md)**: Centralized logger API and usage patterns
+- **[TECHNICAL_DEBT_ASSESSMENT.md](./TECHNICAL_DEBT_ASSESSMENT.md)**: Known technical debt and mitigation strategies
+- **TypeDoc**: Generate API documentation with `npm run docs`
+
+### Documentation Standards
+
+When adding new features or modifying existing code, follow these documentation standards:
+
+#### 1. Inline Documentation
+
+- **Complex algorithms** must have comprehensive JSDoc explaining:
+  - Algorithm rationale (why this approach?)
+  - Performance characteristics (Big O notation, benchmarks)
+  - Trade-offs (pros/cons)
+  - Example usage
+- See [collisionHandler.ts](./src/systems/collisionHandler.ts), [gameLoop.ts](./src/game/gameLoop.ts), and [poolManager.ts](./src/systems/poolManager.ts) for examples
+
+#### 2. JSDoc for Public APIs
+
+All exported functions/classes must have JSDoc with:
+
+- **Summary** - One-line description
+- **@param** - Each parameter with type and description
+- **@returns** - Return value description
+- **@throws** - Documented exceptions (if any)
+- **@example** - Usage example (especially for complex APIs)
+
+Example:
+
+````typescript
+/**
+ * Spawns a new asteroid at a random edge position
+ *
+ * @param canvasWidth - Canvas width for boundary calculation
+ * @param canvasHeight - Canvas height for boundary calculation
+ * @param speedMultiplier - Velocity scale factor (increases per level)
+ * @returns The spawned asteroid, or null if pool exhausted
+ *
+ * @example
+ * ```typescript
+ * const asteroid = spawnAsteroid(800, 600, 1.5);
+ * if (asteroid) entityState.addObstacle(asteroid);
+ * ```
+ */
+export function spawnAsteroid(
+  canvasWidth: number,
+  canvasHeight: number,
+  speedMultiplier: number = 1.0
+): Asteroid | null {
+  // Implementation...
+}
+````
+
+#### 3. Architecture Decision Records (ADRs)
+
+When making significant architectural choices, create an ADR:
+
+- Use the [ADR template](./docs/architecture/decisions/ADR-TEMPLATE.md)
+- Explain **context**, **decision**, **rationale**, **consequences**, and **alternatives**
+- Link related code files and issues
+
+#### 4. Configuration Constants
+
+All magic numbers must be extracted to [gameConstants.ts](./src/core/gameConstants.ts) or [uiConstants.ts](./src/core/uiConstants.ts) with:
+
+- Descriptive constant names (ALL_CAPS_SNAKE_CASE)
+- Inline comments explaining purpose
+- Organized into logical groups
+
+#### 5. Code Comments
+
+- **Avoid obvious comments** ("increment i" is redundant)
+- **Explain WHY, not WHAT** - Code shows what, comments explain why
+- **Document edge cases** - Unusual conditions or workarounds
+- **Mark TODOs** - Use `// TODO: description` for future improvements
 
 ## Common Tasks
 
 ### Debugging
 
 1. Enable debug mode in `src/core/gameConstants.ts`:
+
    ```typescript
    DEV_CONFIG: {
      DEBUG_MODE: true,
@@ -538,6 +662,7 @@ Tests are located alongside source files or in `__tests__` directories.
 ### Modifying Difficulty
 
 Adjust values in `src/core/gameConstants.ts`:
+
 - `LEVEL_CONFIG.BASE_SPAWN_INTERVAL_*`: Spawn rate
 - `LEVEL_CONFIG.SPAWN_INTERVAL_DECREASE_PER_LEVEL`: Difficulty ramp
 - `ASTEROID_CONFIG`: Asteroid speed/size/score

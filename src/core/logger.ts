@@ -1,8 +1,24 @@
 /**
- * @fileoverview Centralized debug logging utility with configurable levels and categories.
+ * @module core/logger
+ * Centralized debug logging utility with configurable levels and categories.
  */
 
-type _LogCategory = 'audio' | 'game' | 'input' | 'collision' | 'ui' | 'powerup' | 'level' | 'render';
+/**
+ * @internal
+ */
+type _LogCategory =
+  | 'audio'
+  | 'game'
+  | 'input'
+  | 'collision'
+  | 'ui'
+  | 'powerup'
+  | 'level'
+  | 'render';
+
+/**
+ * @internal
+ */
 type _LogLevelKey = 'DEBUG' | 'INFO' | 'WARN' | 'ERROR' | 'NONE';
 
 const LogLevel: Record<_LogLevelKey, number> = {
@@ -13,6 +29,9 @@ const LogLevel: Record<_LogLevelKey, number> = {
   NONE: 4,
 };
 
+/**
+ * @internal
+ */
 type LoggerConfig = {
   level: number;
   enabled: boolean;
@@ -55,12 +74,18 @@ const colors: Record<string, string> = {
   perf: '#e91e63',
 };
 
-const log = (level: number, category: _LogCategory | string, message: string, ...args: unknown[]): void => {
+const log = (
+  level: number,
+  category: _LogCategory | string,
+  message: string,
+  ...args: unknown[]
+): void => {
   if (!config.enabled) return;
   if (level < config.level) return;
   if (category && config.categories[category] === false) return;
 
-  const levelName = (Object.keys(LogLevel) as _LogLevelKey[]).find((key) => LogLevel[key] === level) ?? 'DEBUG';
+  const levelName =
+    (Object.keys(LogLevel) as _LogLevelKey[]).find((key) => LogLevel[key] === level) ?? 'DEBUG';
   const timestamp = config.timestamps ? `[${getTimestamp()}]` : '';
   const categoryTag = category ? `[${category}]` : '';
 
@@ -74,7 +99,7 @@ const log = (level: number, category: _LogCategory | string, message: string, ..
       `color: ${categoryColor}; font-weight: bold`,
       `color: ${levelColor}; font-weight: bold`,
       'color: inherit',
-      ...args,
+      ...args
     );
   } else {
     console.log(`${timestamp}${categoryTag}[${levelName}] ${message}`, ...args);
@@ -150,10 +175,16 @@ function setupDevelopment(): void {
   logger.setCategory('render', false);
 }
 
+/**
+ * @internal
+ */
 class Timer {
   private readonly startTime: number;
 
-  constructor(private readonly category: string, private readonly label: string) {
+  constructor(
+    private readonly category: string,
+    private readonly label: string
+  ) {
     this.startTime = performance.now();
   }
 
@@ -174,9 +205,10 @@ function _createLogger(category: string) {
   };
 }
 
-const mode = typeof import.meta !== 'undefined' && typeof import.meta.env?.MODE === 'string'
-  ? import.meta.env.MODE
-  : 'development';
+const mode =
+  typeof import.meta !== 'undefined' && typeof import.meta.env?.MODE === 'string'
+    ? import.meta.env.MODE
+    : 'development';
 
 if (mode === 'production') {
   setupProduction();

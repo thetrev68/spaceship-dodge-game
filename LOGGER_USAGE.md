@@ -17,13 +17,16 @@ error('network', 'Failed to load asset', err);
 ## Features
 
 ### Log Levels
+
 - **DEBUG**: Detailed diagnostic information
 - **INFO**: General informational messages
 - **WARN**: Warning messages for potential issues
 - **ERROR**: Error messages for failures
 
 ### Categories
+
 Predefined categories for organized logging:
+
 - `audio` - Audio system events (purple)
 - `game` - Game state and flow (green)
 - `input` - User input events (blue)
@@ -36,11 +39,13 @@ Predefined categories for organized logging:
 ### Browser Console Output
 
 Logs are formatted with:
+
 - **Timestamps** - `[HH:MM:SS.mmm]`
 - **Color-coded categories** - Visual identification
 - **Level indicators** - `[DEBUG]`, `[INFO]`, `[WARN]`, `[ERROR]`
 
 Example output:
+
 ```
 [19:30:15.342][audio][DEBUG] soundManager BASE_URL /spaceship-dodge-game/
 [19:30:15.445][game][DEBUG] init running — DOM loaded
@@ -98,7 +103,7 @@ logger.setLevel(logger.LogLevel.WARN); // or use enum
 
 // Enable/disable specific categories
 logger.setCategory('render', false); // Disable verbose render logs
-logger.setCategory('audio', true);   // Enable audio logs
+logger.setCategory('audio', true); // Enable audio logs
 
 // Toggle timestamps and colors
 logger.setTimestamps(false);
@@ -130,6 +135,7 @@ The logger automatically configures based on Vite environment:
 ## Migration from console.log
 
 Before:
+
 ```javascript
 console.log('[DEBUG] Starting game');
 console.warn('[WARN] Audio unlock failed:', err);
@@ -137,6 +143,7 @@ console.error('[ERROR] Canvas not found');
 ```
 
 After:
+
 ```javascript
 import { debug, warn, error } from './logger.js';
 
@@ -156,18 +163,23 @@ error('ui', 'Canvas not found');
 2. **Use meaningful categories**: Match the system component
 
 3. **Include context**: Pass objects as additional parameters
+
    ```javascript
-   debug('game', 'Player hit', { lives: playerLives.value, position: { x: player.x, y: player.y } });
+   debug('game', 'Player hit', {
+     lives: playerLives.value,
+     position: { x: player.x, y: player.y },
+   });
    ```
 
 4. **Avoid logging in tight loops**: Use timers instead
+
    ```javascript
    // Bad
-   obstacles.forEach(o => debug('render', 'Drawing obstacle', o));
+   obstacles.forEach((o) => debug('render', 'Drawing obstacle', o));
 
    // Good
    const timer = new Timer('render', `Drawing ${obstacles.length} obstacles`);
-   obstacles.forEach(o => drawObstacle(o));
+   obstacles.forEach((o) => drawObstacle(o));
    timer.end();
    ```
 
@@ -193,11 +205,13 @@ const log = createLogger('game' as LogCategory);
 
 ✅ Logger module created ([src/logger.js](src/logger.js))
 ✅ Integrated into:
+
 - [src/soundManager.js](src/soundManager.js) - Audio category
 - [src/main.js](src/main.js) - Game and UI categories
 - [src/player.js](src/player.js) - Game category
 
 ⏳ Pending integration:
+
 - Flow manager (level category)
 - Mobile controls (input category)
 - Collision handler (collision category)

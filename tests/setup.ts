@@ -20,17 +20,17 @@ HTMLCanvasElement.prototype.getContext = vi.fn(() => {
     scale: vi.fn(),
     fillText: vi.fn(),
     font: '',
-    textAlign: 'left'
+    textAlign: 'left',
   };
 
   Object.defineProperty(mockContext, 'canvas', {
     get: () => ({ width: 800, height: 600 }),
-    configurable: true
+    configurable: true,
   });
 
   Object.defineProperty(mockContext, 'globalAlpha', {
     value: 1,
-    writable: true
+    writable: true,
   });
 
   return mockContext as CanvasRenderingContext2D;
@@ -51,13 +51,13 @@ class MockAudio {
   loop = false;
 }
 
-global.HTMLAudioElement = MockAudio as unknown as typeof HTMLAudioElement;
-global.Audio = MockAudio as unknown as typeof Audio;
+globalThis.HTMLAudioElement = MockAudio as unknown as typeof HTMLAudioElement;
+globalThis.Audio = MockAudio as unknown as typeof Audio;
 
 // Mock requestAnimationFrame
-global.requestAnimationFrame = vi.fn((cb) => {
+globalThis.requestAnimationFrame = vi.fn((cb) => {
   setTimeout(cb, 16);
   return 0;
 }) as unknown as typeof requestAnimationFrame;
 
-global.cancelAnimationFrame = vi.fn() as unknown as typeof cancelAnimationFrame;
+globalThis.cancelAnimationFrame = vi.fn() as unknown as typeof cancelAnimationFrame;

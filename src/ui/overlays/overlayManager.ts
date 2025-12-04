@@ -1,14 +1,12 @@
 /**
- * @fileoverview Game overlay management with accessibility helpers.
+ * @module ui/overlays/overlayManager
+ * Game overlay management with accessibility helpers.
  */
 
 import type { OverlayState, PowerUpKey } from '@types';
 import { playerLives, gameState, obstacles, powerUps, score, gameLevel } from '@core/state.js';
 import { isMobile } from '@utils/platform.js';
-import {
-  initializeCanvas as initCanvas,
-  setOverlayDimensions as setOverlayDims,
-} from '@utils/canvasUtils.js';
+import { setOverlayDimensions as setOverlayDims } from '@utils/canvasUtils.js';
 import { clearAllBullets } from '@entities/bullet.js';
 import { getPlatformText } from '@ui/settings/settingsManager.js';
 import { getById, isHTMLElement } from '@utils/dom.js';
@@ -94,7 +92,8 @@ function show(overlay: HTMLElement | null): void {
   overlay.removeAttribute('inert');
   overlay.classList.add('visible');
   const focusable = overlay.querySelector<HTMLElement>(focusableSelector);
-  lastFocusedElement = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+  lastFocusedElement =
+    document.activeElement instanceof HTMLElement ? document.activeElement : null;
 
   requestAnimationFrame(() => {
     const focusTarget = focusable ?? overlay;
@@ -148,7 +147,9 @@ export function showOverlay(state: OverlayState, scoreValue = 0, levelValue = 0)
       if (finalScoreDisplay) {
         finalScoreDisplay.textContent = `Final Score: ${scoreValue} (Level ${levelValue + 1})`;
       }
-      announce(`Game over. Final score ${scoreValue}, level ${levelValue + 1}. Press Enter to play again or open settings.`);
+      announce(
+        `Game over. Final score ${scoreValue}, level ${levelValue + 1}. Press Enter to play again or open settings.`
+      );
       show(getById<HTMLElement>('gameOverOverlay'));
       break;
     }
@@ -162,7 +163,9 @@ export function showOverlay(state: OverlayState, scoreValue = 0, levelValue = 0)
       if (levelUpMessage) levelUpMessage.textContent = `LEVEL ${levelValue + 1}`;
       if (currentLevelInfo) currentLevelInfo.textContent = 'Get Ready!';
       if (currentScoreInfo) currentScoreInfo.textContent = `Score: ${scoreValue}`;
-      announce(`Level ${levelValue + 1} ready. Current score ${scoreValue}. Press Enter or Continue to resume.`);
+      announce(
+        `Level ${levelValue + 1} ready. Current score ${scoreValue}. Press Enter or Continue to resume.`
+      );
       show(getById<HTMLElement>('levelTransitionOverlay'));
       break;
     }
@@ -187,10 +190,6 @@ export function showOverlay(state: OverlayState, scoreValue = 0, levelValue = 0)
   }
 
   document.dispatchEvent(new Event('gameStateChange'));
-}
-
-export function initializeCanvas(canvas: HTMLCanvasElement): void {
-  initCanvas(canvas);
 }
 
 export function quitGame(): void {

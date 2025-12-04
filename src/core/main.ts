@@ -1,8 +1,10 @@
 /**
- * @fileoverview Main entry point for the spaceship dodge game.
+ * @module core/main
+ * Main entry point for the spaceship dodge game.
  * Orchestrates initialization and UI wiring.
  */
 
+import type { CanvasSetup } from './init/canvasInit.js';
 import { initializeCanvas } from './init/canvasInit.js';
 import { initializeAudio, startBackgroundMusic } from './init/audioInit.js';
 import { initializeInput } from './init/inputInit.js';
@@ -13,6 +15,7 @@ import { startGame, continueGame } from '@game/gameStateManager.js';
 import { gameState } from '@core/state.js';
 import { isMobile } from '@utils/platform.js';
 import { debug, warn } from '@core/logger.js';
+import { CanvasError, handleError } from '@utils/errors.js';
 import { initializeSettings } from '@ui/settings/settingsManager.js';
 import { showSettings, hideSettings } from '@ui/settings/settingsUI.js';
 import { getById } from '@utils/dom.js';
@@ -85,23 +88,31 @@ function wireOverlayControls(canvas: HTMLCanvasElement): void {
   startButton?.addEventListener(startEvent, startGameHandler, { passive: false });
 
   if (isMobile()) {
-    pauseOverlay?.addEventListener('touchstart', (event: TouchEvent) => {
-      event.preventDefault();
-      if (gameState.value !== 'PAUSED') return;
-      debug('game', 'Resuming game from overlay touch');
-      gameState.value = 'PLAYING';
-      showOverlay('PLAYING');
-      services.audioService.unmuteAll();
-      restartGameLoop();
-    }, { passive: false });
+    pauseOverlay?.addEventListener(
+      'touchstart',
+      (event: TouchEvent) => {
+        event.preventDefault();
+        if (gameState.value !== 'PAUSED') return;
+        debug('game', 'Resuming game from overlay touch');
+        gameState.value = 'PLAYING';
+        showOverlay('PLAYING');
+        services.audioService.unmuteAll();
+        restartGameLoop();
+      },
+      { passive: false }
+    );
 
-    levelTransitionOverlay?.addEventListener('touchstart', (event: TouchEvent) => {
-      event.preventDefault();
-      if (gameState.value !== 'LEVEL_TRANSITION') return;
-      debug('game', 'Resuming from level transition overlay');
-      continueGame();
-      restartGameLoop();
-    }, { passive: false });
+    levelTransitionOverlay?.addEventListener(
+      'touchstart',
+      (event: TouchEvent) => {
+        event.preventDefault();
+        if (gameState.value !== 'LEVEL_TRANSITION') return;
+        debug('game', 'Resuming from level transition overlay');
+        continueGame();
+        restartGameLoop();
+      },
+      { passive: false }
+    );
   } else {
     continueButton?.addEventListener('click', () => {
       continueGame();
@@ -166,10 +177,9 @@ async function main() {
 
   initializeSettings();
 
-  const canvasSetup = initializeCanvas();
+  const canvasSetup: CanvasSetup | null = initializeCanvas();
   if (!canvasSetup) {
-    warn('game', 'Fatal: Canvas initialization failed');
-    return;
+    throw new CanvasError('Canvas initialization failed');
   }
 
   const { canvas, ctx } = canvasSetup;
@@ -191,7 +201,7 @@ async function main() {
 
 // Start the application
 window.addEventListener('DOMContentLoaded', () => {
-  main().catch(err => {
-    warn('game', 'Fatal error during initialization', err);
+  main().catch((err) => {
+    handleError(err as Error);
   });
 });

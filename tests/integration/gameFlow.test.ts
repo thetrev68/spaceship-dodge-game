@@ -44,7 +44,7 @@ describe('Game Flow Integration', () => {
       x: 400,
       y: 100,
       radius: 40,
-      level: 0
+      level: 0,
     });
     obstacles.push(asteroid);
 

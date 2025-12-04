@@ -24,7 +24,7 @@ describe('Asteroid Entity', () => {
       y: 100,
       dx: 1,
       dy: 2,
-      speed: 1
+      speed: 1,
     });
     obstacles.push(asteroid);
 
@@ -51,7 +51,7 @@ describe('Asteroid Entity', () => {
       dx: 0,
       dy: 0,
       speed: 0,
-      creationTime: Date.now() // Ensure creation time is set
+      creationTime: Date.now(), // Ensure creation time is set
     });
     obstacles.push(asteroid);
 
@@ -69,7 +69,7 @@ describe('Asteroid Entity', () => {
       y: 300,
       radius: 50,
       level: 0, // Large asteroid
-      speed: 1
+      speed: 1,
     });
     obstacles.push(largeAsteroid);
 
@@ -87,7 +87,7 @@ describe('Asteroid Entity', () => {
       y: 100,
       dx: 1,
       dy: 0,
-      speed: 1
+      speed: 1,
     });
     obstacles.push(asteroid);
 

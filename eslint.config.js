@@ -1,5 +1,6 @@
 import js from '@eslint/js';
 import tseslint from 'typescript-eslint';
+import prettierPlugin from 'eslint-plugin-prettier/recommended';
 
 const sharedGlobals = {
   window: 'readonly',
@@ -44,17 +45,21 @@ export default [
       'no-console': 'off', // Allow console for game debugging
       'no-constant-condition': 'warn',
       'no-case-declarations': 'off', // Allow lexical declarations in case blocks
-      'semi': ['warn', 'always'],
-      'quotes': ['warn', 'single', { avoidEscape: true }],
+      // Delegate formatting to Prettier
+      semi: 'off',
+      quotes: 'off',
     },
   },
   {
     files: ['**/*.js'],
     rules: {
-      'no-unused-vars': ['warn', {
-        argsIgnorePattern: '^_',
-        varsIgnorePattern: '^_',
-      }],
+      'no-unused-vars': [
+        'warn',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+        },
+      ],
       'no-undef': 'error',
     },
   },
@@ -63,10 +68,13 @@ export default [
     rules: {
       'no-unused-vars': 'off',
       'no-undef': 'off',
-      '@typescript-eslint/no-unused-vars': ['warn', {
-        argsIgnorePattern: '^_',
-        varsIgnorePattern: '^_',
-      }],
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+        },
+      ],
     },
   },
   {
@@ -91,4 +99,6 @@ export default [
       '.serena/**',
     ],
   },
+  // Run Prettier last so it can report formatting issues
+  prettierPlugin,
 ];

@@ -2,10 +2,21 @@
  * Centralized TypeScript types shared across the game.
  */
 
+/**
+ * @internal
+ */
 type _Nullable<T> = T | null;
+
+/**
+ * @internal
+ */
 type _Optional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
+/**
+ * @internal
+ */
 type Primitive = string | number | boolean | bigint | symbol | undefined | null;
+
 export type ReadonlyConfig<T> = T extends Primitive
   ? T
   : T extends Array<infer U>
@@ -20,7 +31,12 @@ export type OverlayState = GameStateValue;
 export type HudTextAlign = 'left' | 'center' | 'right';
 
 export type PowerUpKey = 'doubleBlaster' | 'shield';
+
+/**
+ * @internal
+ */
 type _PowerUp = { active: boolean; timer: number };
+
 export type PowerUpMap = Record<PowerUpKey, _PowerUp>;
 
 export type Player = {
@@ -77,4 +93,3 @@ export type GameConfig = {
   MAX_LIFETIME: number;
   SPAWN_MARGIN: number;
 };
-

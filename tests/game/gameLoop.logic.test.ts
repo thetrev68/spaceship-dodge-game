@@ -22,23 +22,40 @@ const state = {
   score: { value: 0 },
 };
 
-vi.mock('@entities/player.js', () => ({ updatePlayer: (...args: unknown[]) => updatePlayer(...args) }));
+vi.mock('@entities/player.js', () => ({
+  updatePlayer: (...args: unknown[]) => updatePlayer(...args),
+}));
 vi.mock('@entities/asteroid.js', () => ({
   updateObstacles: (...args: unknown[]) => updateObstacles(...args),
   resetNewAsteroidsSpawned: (...args: unknown[]) => resetNewAsteroidsSpawned(...args),
 }));
-vi.mock('@entities/bullet.js', () => ({ updateBullets: (...args: unknown[]) => updateBullets(...args) }));
+vi.mock('@entities/bullet.js', () => ({
+  updateBullets: (...args: unknown[]) => updateBullets(...args),
+}));
 vi.mock('@entities/powerup.js', () => ({
   updatePowerups: (...args: unknown[]) => updatePowerups(...args),
   spawnPowerup: (...args: unknown[]) => spawnPowerup(...args),
 }));
-vi.mock('@ui/hud/scorePopups.js', () => ({ updateScorePopups: (...args: unknown[]) => updateScorePopups(...args) }));
-vi.mock('@game/flowManager.js', () => ({ updateLevelFlow: (cb: () => void) => updateLevelFlow(cb), resetLevelFlow: vi.fn() }));
-vi.mock('@systems/renderManager.js', () => ({ renderAll: (...args: unknown[]) => renderAll(...args) }));
-vi.mock('@ui/overlays/overlayManager.js', () => ({ showOverlay: (...args: unknown[]) => showOverlay(...args) }));
-vi.mock('@ui/hud/perfHUD.js', () => ({ updatePerfHud: (...args: unknown[]) => updatePerfHud(...args) }));
+vi.mock('@ui/hud/scorePopups.js', () => ({
+  updateScorePopups: (...args: unknown[]) => updateScorePopups(...args),
+}));
+vi.mock('@game/flowManager.js', () => ({
+  updateLevelFlow: (cb: () => void) => updateLevelFlow(cb),
+  resetLevelFlow: vi.fn(),
+}));
+vi.mock('@systems/renderManager.js', () => ({
+  renderAll: (...args: unknown[]) => renderAll(...args),
+}));
+vi.mock('@ui/overlays/overlayManager.js', () => ({
+  showOverlay: (...args: unknown[]) => showOverlay(...args),
+}));
+vi.mock('@ui/hud/perfHUD.js', () => ({
+  updatePerfHud: (...args: unknown[]) => updatePerfHud(...args),
+}));
 vi.mock('@services/ServiceProvider.js', () => ({
-  services: { collisionService: { checkCollisions: (...args: unknown[]) => checkCollisions(...args) } },
+  services: {
+    collisionService: { checkCollisions: (...args: unknown[]) => checkCollisions(...args) },
+  },
 }));
 vi.mock('@utils/platform.js', () => ({ isMobile: () => mockIsMobile }));
 vi.mock('@core/state.js', () => state);
@@ -52,11 +69,11 @@ describe('gameLoop logic', () => {
     mockIsMobile = false;
     state.gameState.value = 'PLAYING';
     requestCallback = null;
-    global.requestAnimationFrame = vi.fn((cb: FrameRequestCallback) => {
+    globalThis.requestAnimationFrame = vi.fn((cb: FrameRequestCallback) => {
       requestCallback = cb;
       return 1;
     }) as unknown as typeof requestAnimationFrame;
-    global.cancelAnimationFrame = vi.fn() as unknown as typeof cancelAnimationFrame;
+    globalThis.cancelAnimationFrame = vi.fn() as unknown as typeof cancelAnimationFrame;
     // Deterministic Date and performance for spawn/perf HUD timing
     vi.spyOn(Date, 'now').mockReturnValue(1_000);
   });
@@ -83,14 +100,22 @@ describe('gameLoop logic', () => {
     requestCallback?.(50);
 
     expect(updatePlayer).toHaveBeenCalled();
-    expect(updateObstacles).toHaveBeenCalledWith(canvas.width, canvas.height, expect.any(Number), state.lastObstacleSpawnTime, state.allowSpawning.value);
+    expect(updateObstacles).toHaveBeenCalledWith(
+      canvas.width,
+      canvas.height,
+      expect.any(Number),
+      state.lastObstacleSpawnTime,
+      state.allowSpawning.value
+    );
     expect(updateBullets).toHaveBeenCalled();
     expect(updatePowerups).toHaveBeenCalledWith(canvas.height);
     expect(spawnPowerup).toHaveBeenCalledWith(canvas.width);
     expect(checkCollisions).toHaveBeenCalled();
     expect(updateLevelFlow).toHaveBeenCalled();
     expect(renderAll).toHaveBeenCalledWith(mockCtx);
-    expect(updatePerfHud).toHaveBeenCalledWith(expect.objectContaining({ fps: expect.any(Number) }));
+    expect(updatePerfHud).toHaveBeenCalledWith(
+      expect.objectContaining({ fps: expect.any(Number) })
+    );
   });
 
   it('skips render every other frame on mobile', async () => {

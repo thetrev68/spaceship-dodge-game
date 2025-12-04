@@ -1,6 +1,10 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { eventBus } from '@core/events/EventBus.js';
-import { GameEvent, type PowerupCollectedEvent, type PowerupExpiredEvent } from '@core/events/GameEvents.js';
+import {
+  GameEvent,
+  type PowerupCollectedEvent,
+  type PowerupExpiredEvent,
+} from '@core/events/GameEvents.js';
 import { playerState } from '@core/state.js';
 import { activePowerups, updatePowerups, spawnPowerup } from '@entities/powerup';
 

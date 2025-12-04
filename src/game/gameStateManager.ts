@@ -1,5 +1,6 @@
 /**
- * @fileoverview Game state management.
+ * @module game/gameStateManager
+ * Game state management.
  */
 
 import { entityState, gameState, playerLives, score, gameLevel, playerState } from '@core/state.js';

@@ -15,11 +15,11 @@ export function mockWebAudio() {
     resume: vi.fn().mockResolvedValue(undefined),
     createGain: vi.fn(() => ({
       connect: vi.fn(),
-      gain: { value: 1 }
-    }))
+      gain: { value: 1 },
+    })),
   };
 
-  global.AudioContext = vi.fn(() => audioContextMock) as unknown as typeof AudioContext;
+  globalThis.AudioContext = vi.fn(() => audioContextMock) as unknown as typeof AudioContext;
 
   // Create mock Audio constructor that properly mimics HTMLAudioElement
   type MockAudioInstance = {
@@ -50,7 +50,7 @@ export function mockWebAudio() {
       removeEventListener: vi.fn(),
       remove: vi.fn(),
       src: src || '',
-      cloneNode: vi.fn()
+      cloneNode: vi.fn(),
     };
 
     mockInstance.cloneNode.mockImplementation(() => {
@@ -62,7 +62,7 @@ export function mockWebAudio() {
         addEventListener: vi.fn(),
         removeEventListener: vi.fn(),
         remove: vi.fn(),
-        cloneNode: vi.fn()
+        cloneNode: vi.fn(),
       };
       return clone as unknown as HTMLAudioElement;
     });
@@ -70,7 +70,7 @@ export function mockWebAudio() {
     return mockInstance as unknown as HTMLAudioElement;
   }) as unknown as typeof Audio;
 
-  global.Audio = AudioCtor;
+  globalThis.Audio = AudioCtor;
 
   return audioContextMock;
 }

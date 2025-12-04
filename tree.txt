@@ -3,85 +3,161 @@ spaceship-dodge-game/
 ├── assets/
 ├── src/
 │   ├── core/
+│   │   ├── events/
+│   │   │   ├── EventBus.ts (82 lines)
+│   │   │   └── GameEvents.ts (62 lines)
+│   │   ├── init/
+│   │   │   ├── audioInit.ts (46 lines)
+│   │   │   ├── canvasInit.ts (33 lines)
+│   │   │   ├── inputInit.ts (18 lines)
+│   │   │   └── uiInit.ts (15 lines)
+│   │   ├── state/
+│   │   │   ├── entityState.ts (82 lines)
+│   │   │   ├── gameState.ts (297 lines)
+│   │   │   └── playerState.ts (73 lines)
 │   │   ├── constants.ts (79 lines)
-│   │   ├── gameConstants.ts (227 lines)
-│   │   ├── logger.ts (157 lines)
-│   │   ├── main.ts (147 lines)
-│   │   ├── state.ts (46 lines)
-│   │   └── uiConstants.ts (120 lines)
+│   │   ├── gameConstants.ts (100 lines)
+│   │   ├── logger.ts (180 lines)
+│   │   ├── main.ts (172 lines)
+│   │   ├── reactive.ts (146 lines)
+│   │   ├── state.ts (35 lines)
+│   │   └── uiConstants.ts (106 lines)
 │   ├── effects/
 │   │   └── starfield.ts (59 lines)
 │   ├── entities/
-│   │   ├── asteroid.ts (254 lines)
-│   │   ├── bullet.ts (114 lines)
-│   │   ├── player.ts (169 lines)
-│   │   └── powerup.ts (170 lines)
+│   │   ├── asteroid.ts (382 lines)
+│   │   ├── bullet.ts (251 lines)
+│   │   ├── player.ts (300 lines)
+│   │   └── powerup.ts (295 lines)
 │   ├── game/
-│   │   ├── flowManager.ts (47 lines)
-│   │   ├── gameLoop.ts (118 lines)
-│   │   └── gameStateManager.ts (58 lines)
+│   │   ├── flowManager.ts (55 lines)
+│   │   ├── gameLoop.ts (247 lines)
+│   │   └── gameStateManager.ts (67 lines)
 │   ├── input/
-│   │   ├── inputManager.ts (143 lines)
-│   │   └── mobileControls.ts (97 lines)
+│   │   ├── inputManager.ts (149 lines)
+│   │   └── mobileControls.ts (105 lines)
+│   ├── services/
+│   │   ├── interfaces/
+│   │   │   ├── IAudioService.ts (48 lines)
+│   │   │   ├── ICollisionService.ts (15 lines)
+│   │   │   └── IPoolService.ts (24 lines)
+│   │   └── ServiceProvider.ts (155 lines)
 │   ├── systems/
-│   │   ├── collisionHandler.ts (152 lines)
-│   │   ├── poolManager.ts (17 lines)
+│   │   ├── collisionHandler.ts (357 lines)
+│   │   ├── poolManager.ts (222 lines)
 │   │   ├── renderManager.ts (28 lines)
-│   │   └── soundManager.ts (155 lines)
+│   │   └── soundManager.ts (164 lines)
 │   ├── types/
-│   │   ├── index.ts (74 lines)
-│   │   └── shared.ts (2 lines)
+│   │   └── index.ts (67 lines)
 │   ├── ui/
 │   │   ├── controls/
-│   │   │   └── audioControls.ts (106 lines)
+│   │   │   └── audioControls.ts (114 lines)
 │   │   ├── hud/
-│   │   │   ├── perfHUD.ts (49 lines)
+│   │   │   ├── perfHUD.ts (57 lines)
 │   │   │   ├── powerupHUD.ts (22 lines)
 │   │   │   ├── scoreDisplay.ts (13 lines)
-│   │   │   └── scorePopups.ts (48 lines)
+│   │   │   └── scorePopups.ts (90 lines)
 │   │   ├── overlays/
-│   │   │   └── overlayManager.ts (187 lines)
+│   │   │   └── overlayManager.ts (185 lines)
 │   │   └── settings/
-│   │       ├── settingsManager.ts (112 lines)
+│   │       ├── settingsManager.ts (113 lines)
 │   │       └── settingsUI.ts (226 lines)
 │   ├── utils/
-│   │   ├── canvasUtils.ts (84 lines)
-│   │   ├── dom.ts (34 lines)
-│   │   ├── mathUtils.ts (42 lines)
-│   │   └── platform.ts (36 lines)
+│   │   ├── canvasUtils.ts (47 lines)
+│   │   ├── dom.ts (23 lines)
+│   │   ├── errors.ts (269 lines)
+│   │   ├── mathUtils.ts (44 lines)
+│   │   ├── platform.ts (39 lines)
+│   │   └── validation.ts (220 lines)
 │   ├── javascript.svg
 │   └── vite-env.d.ts (1 lines)
 ├── styles/
 │   ├── main-tailwind.css (100 lines)
-│   └── main.css (90 lines)
+│   └── main.css (92 lines)
 ├── tests/
-│   ├── collisionHandler.test.ts (35 lines)
+│   ├── core/
+│   │   ├── init/
+│   │   │   ├── initBranches.test.ts (59 lines)
+│   │   │   └── initModules.test.ts (98 lines)
+│   │   ├── state/
+│   │   │   ├── entityState.test.ts (54 lines)
+│   │   │   ├── gameState.test.ts (42 lines)
+│   │   │   └── playerState.test.ts (41 lines)
+│   │   ├── eventBus.contract.test.ts (31 lines)
+│   │   ├── eventBus.extra.test.ts (25 lines)
+│   │   ├── eventBus.test.ts (30 lines)
+│   │   ├── logger.test.ts (54 lines)
+│   │   ├── main.test.ts (223 lines)
+│   │   └── stateModules.test.ts (65 lines)
+│   ├── entities/
+│   │   ├── asteroid.test.ts (87 lines)
+│   │   ├── bullet.test.ts (62 lines)
+│   │   ├── player.render.test.ts (25 lines)
+│   │   ├── player.test.ts (79 lines)
+│   │   ├── powerup.behavior.test.ts (107 lines)
+│   │   ├── powerup.events.test.ts (37 lines)
+│   │   ├── powerup.render.test.ts (43 lines)
+│   │   └── powerup.test.ts (95 lines)
+│   ├── game/
+│   │   ├── flowManager.events.test.ts (58 lines)
+│   │   ├── gameLoop.logic.test.ts (130 lines)
+│   │   ├── gameLoop.test.ts (73 lines)
+│   │   └── gameStateManager.events.test.ts (56 lines)
+│   ├── helpers/
+│   │   ├── gameStateFactory.ts (62 lines)
+│   │   ├── mockAudio.ts (67 lines)
+│   │   ├── mockCanvas.ts (23 lines)
+│   │   └── testUtils.ts (16 lines)
+│   ├── input/
+│   │   ├── inputManager.test.ts (47 lines)
+│   │   └── mobileControls.test.ts (63 lines)
+│   ├── integration/
+│   │   ├── collisionEvents.test.ts (75 lines)
+│   │   └── gameFlow.test.ts (61 lines)
+│   ├── perf/
+│   ├── services/
+│   │   └── serviceProvider.test.ts (88 lines)
+│   ├── systems/
+│   │   ├── collisionHandler.test.ts (97 lines)
+│   │   ├── renderManager.test.ts (43 lines)
+│   │   ├── soundManager.branches.test.ts (61 lines)
+│   │   └── soundManager.test.ts (66 lines)
+│   ├── ui/
+│   │   ├── hud/
+│   │   │   └── scorePopups.test.ts (43 lines)
+│   │   └── overlays/
+│   │       └── overlayManager.test.ts (68 lines)
+│   ├── utils/
+│   │   ├── canvasUtils.test.ts (35 lines)
+│   │   └── platform.test.ts (18 lines)
+│   ├── collisionHandler.test.ts (59 lines)
 │   ├── mathUtils.test.ts (25 lines)
-│   └── poolManager.test.ts (24 lines)
+│   ├── poolManager.test.ts (24 lines)
+│   └── setup.ts (55 lines)
 ├── .gitattributes
+├── .prettierrc.json
 ├── CLAUDE.md
-├── FOLDER_STRUCTURE.md
-├── Gemini_Rec.md
-├── index.html (127 lines)
+├── CONTRIBUTING.md
+├── index.html (214 lines)
 ├── localhost+2-key.pem
 ├── localhost+2.pem
 ├── LOGGER_USAGE.md
 ├── postcss.config.js (6 lines)
 ├── README.md
 ├── settings.json
-├── tailwind.config.js (8 lines)
-├── TECHNICAL_DEBT_ASSESSMENT.md
+├── tailwind.config.js (4 lines)
+├── TEST_FIXES_SUMMARY.md
 ├── tsconfig.json
-├── UPGRADE_NOTES.md
-└── vitest.config.ts (21 lines)
+├── vitest.config.ts (65 lines)
+└── VITEST_4_MIGRATION.md
 
 ==================================================
 DIRECTORY TREE STATISTICS
 ==================================================
-Total directories: 18
-Total files: 57
-Files with line counts: 44
-Total lines of code: 3,829
+Total directories: 38
+Total files: 113
+Files with line counts: 100
+Total lines of code: 9,130
 
 Configuration:
   Excluded directories: .archive, .claude, .geminiignore, .git, .github, .gitignore, .idea, .kilocode, .pytest_cache, .ruff_cache, .serena, .vite, .vscode, __pycache__, agents.md, backlog.md, build, claude.md, coverage, dist, docs, eslint.config.js, gemini.md, jules-scratch, knip.json, legacy, logs, node_modules, package-lock.json, package.json, playwright-report, public, test-results, tree.txt, tree_scanner.py, venv, vite.config.js

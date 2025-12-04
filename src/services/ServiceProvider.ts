@@ -97,6 +97,7 @@ class PoolServiceAdapter<T> implements IPoolService<T> {
 /**
  * Service provider (singleton)
  * Manages service instances and allows swapping implementations (e.g., for tests)
+ * @internal
  */
 class ServiceProvider {
   private static instance: ServiceProvider | null = null;
@@ -110,7 +111,9 @@ class ServiceProvider {
     this.audioService = new AudioServiceAdapter();
     this.collisionService = new CollisionServiceAdapter();
     this.bulletPool = new PoolServiceAdapter<Bullet>(new ObjectPool(() => this.createBullet()));
-    this.asteroidPool = new PoolServiceAdapter<Asteroid>(new ObjectPool(() => this.createAsteroid()));
+    this.asteroidPool = new PoolServiceAdapter<Asteroid>(
+      new ObjectPool(() => this.createAsteroid())
+    );
 
     debug('service', 'ServiceProvider initialized with default implementations');
   }

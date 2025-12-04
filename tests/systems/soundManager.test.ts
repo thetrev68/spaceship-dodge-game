@@ -1,7 +1,14 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { setupTestEnvironment } from '../helpers/testUtils';
 import { mockWebAudio } from '../helpers/mockAudio';
-import { playSound, setSoundEffectsVolume, setBackgroundMusicVolume, muteAll, unmuteAll, forceAudioUnlock } from '@systems/soundManager';
+import {
+  playSound,
+  setSoundEffectsVolume,
+  setBackgroundMusicVolume,
+  muteAll,
+  unmuteAll,
+  forceAudioUnlock,
+} from '@systems/soundManager';
 
 describe('Sound Manager', () => {
   let cleanup: () => void;
@@ -45,7 +52,7 @@ describe('Sound Manager', () => {
 
   it('should handle mute and unmute', () => {
     // Get the mock Audio constructor
-    const mockAudio = global.Audio as unknown as ReturnType<typeof vi.fn>;
+    const mockAudio = globalThis.Audio as unknown as ReturnType<typeof vi.fn>;
 
     // Mute all sounds
     muteAll();

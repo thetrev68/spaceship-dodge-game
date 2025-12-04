@@ -1,5 +1,6 @@
 /**
- * @fileoverview Math utility functions for random number generation and value clamping.
+ * @module utils/mathUtils
+ * Math utility functions for random number generation and value clamping.
  */
 
 /**
@@ -41,7 +42,9 @@ export function mapRange(
   outMax: number
 ): number {
   if (inMin === inMax) {
-    throw new RangeError(`Invalid input range: inMin (${inMin}) cannot equal inMax (${inMax}) when mapping value ${value}`);
+    throw new RangeError(
+      `Invalid input range: inMin (${inMin}) cannot equal inMax (${inMax}) when mapping value ${value}`
+    );
   }
   return ((value - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin;
 }

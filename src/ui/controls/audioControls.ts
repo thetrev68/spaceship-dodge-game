@@ -1,5 +1,6 @@
 /**
- * @fileoverview Audio control UI components.
+ * @module ui/controls/audioControls
+ * Audio control UI components.
  */
 
 import { services } from '@services/ServiceProvider.js';
@@ -56,10 +57,14 @@ export function createAudioControls(): void {
     }
   };
 
-  muteBtn.addEventListener('touchstart', (event: TouchEvent) => {
-    event.preventDefault();
-    toggleMute();
-  }, { passive: false });
+  muteBtn.addEventListener(
+    'touchstart',
+    (event: TouchEvent) => {
+      event.preventDefault();
+      toggleMute();
+    },
+    { passive: false }
+  );
 
   muteBtn.addEventListener('click', () => {
     toggleMute();
@@ -107,10 +112,14 @@ export function createAudioControls(): void {
     showSettings();
   };
 
-  settingsBtn.addEventListener('touchstart', (event: TouchEvent) => {
-    event.preventDefault();
-    openSettings();
-  }, { passive: false });
+  settingsBtn.addEventListener(
+    'touchstart',
+    (event: TouchEvent) => {
+      event.preventDefault();
+      openSettings();
+    },
+    { passive: false }
+  );
 
   settingsBtn.addEventListener('click', () => {
     openSettings();

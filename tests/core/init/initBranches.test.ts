@@ -25,7 +25,11 @@ describe('init module branches', () => {
     };
     vi.doMock('@services/ServiceProvider.js', () => ({ services: { audioService } }));
     vi.doMock('@ui/settings/settingsManager.js', () => ({
-      getSettings: vi.fn(() => ({ backgroundMusicVolume: 0.2, soundEffectsVolume: 0.4, isMuted: true })),
+      getSettings: vi.fn(() => ({
+        backgroundMusicVolume: 0.2,
+        soundEffectsVolume: 0.4,
+        isMuted: true,
+      })),
     }));
 
     const { initializeAudio, startBackgroundMusic } = await import('@core/init/audioInit.js');
@@ -34,7 +38,9 @@ describe('init module branches', () => {
     expect(audioService.muteAll).toHaveBeenCalled();
 
     // Trigger catch path
-    audioService.setSoundEffectsVolume.mockImplementation(() => { throw new Error('fail'); });
+    audioService.setSoundEffectsVolume.mockImplementation(() => {
+      throw new Error('fail');
+    });
     await initializeAudio(true);
     startBackgroundMusic();
     expect(audioService.startMusic).toHaveBeenCalled();
