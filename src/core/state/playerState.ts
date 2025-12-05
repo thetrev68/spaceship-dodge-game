@@ -5,7 +5,7 @@ import type { Player, PowerUpKey, PowerUpMap } from '@types';
  * Tracks player entity and active powerup effects
  * @internal
  */
-export class PlayerState {
+class PlayerState {
   private _player: Player;
   private _powerUps: PowerUpMap;
 
