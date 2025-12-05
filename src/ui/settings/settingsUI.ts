@@ -9,6 +9,8 @@ import { services } from '@services/ServiceProvider.js';
 import { isMobile } from '@utils/platform.js';
 import { SETTINGS_UI, VOLUME_CONSTANTS } from '@core/uiConstants.js';
 import { getById } from '@utils/dom.js';
+import { getCurrentTheme, setTheme, getAvailableThemes } from '@core/themes';
+import type { Theme } from '@types';
 
 const focusableSelector = [
   'button',
@@ -220,8 +222,80 @@ function createSettingsUI(): HTMLElement {
   gameplaySection.appendChild(platformTextLabel);
   gameplaySection.appendChild(platformTextCheckbox);
 
+  // Theme Section
+  const themeSection = document.createElement('div');
+  themeSection.style.marginBottom = SETTINGS_UI.SECTION_MARGIN_BOTTOM;
+
+  const themeTitle = document.createElement('h3');
+  themeTitle.textContent = 'Theme';
+  themeTitle.style.color = 'white';
+  themeTitle.style.marginBottom = SETTINGS_UI.SUBTITLE_MARGIN_BOTTOM;
+  themeTitle.style.fontSize = SETTINGS_UI.SUBTITLE_FONT_SIZE;
+
+  const themeGroup = document.createElement('div');
+  themeGroup.setAttribute('role', 'radiogroup');
+  themeGroup.setAttribute('aria-label', 'Theme selection');
+  themeGroup.style.display = 'flex';
+  themeGroup.style.flexDirection = 'column';
+  themeGroup.style.gap = '0.75rem';
+
+  const currentTheme = getCurrentTheme();
+  const availableThemes = getAvailableThemes();
+
+  /**
+   * Creates a theme option element for the theme selection UI.
+   */
+  function createThemeOption(theme: Theme, isCurrentTheme: boolean): HTMLElement {
+    const themeOption = document.createElement('label');
+    themeOption.style.display = 'flex';
+    themeOption.style.alignItems = 'center';
+    themeOption.style.color = 'white';
+    themeOption.style.cursor = 'pointer';
+    themeOption.style.fontSize = SETTINGS_UI.LABEL_FONT_SIZE;
+
+    const radio = document.createElement('input');
+    radio.type = 'radio';
+    radio.name = 'theme';
+    radio.value = theme.id;
+    radio.checked = isCurrentTheme;
+    radio.style.width = '20px';
+    radio.style.height = '20px';
+    radio.style.marginRight = '0.75rem';
+    radio.style.cursor = 'pointer';
+    radio.setAttribute('aria-label', `${theme.name} theme`);
+
+    radio.addEventListener('change', () => {
+      if (radio.checked) {
+        setTheme(theme.id);
+      }
+    });
+
+    const labelText = document.createElement('span');
+    labelText.textContent = theme.name;
+
+    const description = document.createElement('span');
+    description.textContent = ` - ${theme.description}`;
+    description.style.fontSize = '0.9em';
+    description.style.opacity = '0.8';
+    description.style.marginLeft = '0.5rem';
+
+    themeOption.appendChild(radio);
+    themeOption.appendChild(labelText);
+    themeOption.appendChild(description);
+
+    return themeOption;
+  }
+
+  availableThemes.forEach((theme) => {
+    themeGroup.appendChild(createThemeOption(theme, theme.id === currentTheme.id));
+  });
+
+  themeSection.appendChild(themeTitle);
+  themeSection.appendChild(themeGroup);
+
   container.appendChild(audioSection);
   container.appendChild(gameplaySection);
+  container.appendChild(themeSection);
 
   return container;
 }

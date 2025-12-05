@@ -2,23 +2,28 @@ import { log } from '@core/logger';
 import { DEV_CONFIG } from '@core/constants';
 
 /**
- * Simple performance profiler for development
- * @internal
+ * Simple performance profiler for development.
+ *
+ * Captures named timing spans, aggregates statistics, and logs measurements
+ * when DEBUG_MODE is enabled. Lightweight and dependency-free.
  */
-class Profiler {
+/**
+ * Development profiler for lightweight timing instrumentation.
+ */
+export class Profiler {
   private timers = new Map<string, number>();
   private measurements = new Map<string, number[]>();
 
-  /**
-   * Start timing a section
-   */
+  /** Start timing a labeled section. */
   public start(label: string): void {
     if (!DEV_CONFIG.DEBUG_MODE) return;
     this.timers.set(label, performance.now());
   }
 
   /**
-   * End timing and record measurement
+   * End timing and record measurement.
+   *
+   * Logs a warning if called without a matching start.
    */
   public end(label: string): void {
     if (!DEV_CONFIG.DEBUG_MODE) return;
@@ -41,9 +46,9 @@ class Profiler {
   }
 
   /**
-   * Get statistics for a label
+   * Get statistics for a label (avg/min/max/count) or null if none recorded.
    */
-  public getStats(label: string): { avg: number; min: number; max: number; count: number } | null {
+  public getStats(label: string): ProfileStats | null {
     const measurements = this.measurements.get(label);
     if (!measurements || measurements.length === 0) return null;
 
@@ -55,9 +60,7 @@ class Profiler {
     };
   }
 
-  /**
-   * Log all statistics
-   */
+  /** Log all recorded statistics to the logger. */
   public logStats(): void {
     if (!DEV_CONFIG.DEBUG_MODE) return;
 
@@ -75,13 +78,28 @@ class Profiler {
     });
   }
 
-  /**
-   * Clear all measurements
-   */
+  /** Clear all recorded timers and measurements. */
   public clear(): void {
     this.timers.clear();
     this.measurements.clear();
   }
 }
 
+/**
+ * Singleton profiler for development use.
+ */
 export const profiler = new Profiler();
+
+/**
+ * Snapshot of profiler statistics for a given label.
+ */
+export type ProfileStats = {
+  /** Average duration across all samples (ms). */
+  avg: number;
+  /** Minimum recorded duration (ms). */
+  min: number;
+  /** Maximum recorded duration (ms). */
+  max: number;
+  /** Number of samples recorded. */
+  count: number;
+};

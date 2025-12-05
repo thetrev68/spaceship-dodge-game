@@ -163,6 +163,26 @@ export const logger = {
   timer(label: string, category = 'perf'): Timer {
     return new Timer(category, label);
   },
+  /**
+   * Creates a category-specific logger instance with debug, info, warn, error, and timer methods.
+   *
+   * @param {string} category - The logging category (e.g., 'game', 'audio', 'input')
+   * @returns {Logger} A logger instance with category-bound methods
+   *
+   * @example
+   * ```typescript
+   * const gameLogger = logger.createLogger('game');
+   * gameLogger.info('Game started');
+   * gameLogger.debug('Player position:', x, y);
+   * ```
+   */
+  createLogger(category: string) {
+    return _createLogger(category);
+  },
+  /** @internal - exposed for tests and advanced scenarios */
+  __log(level: number, category: _LogCategory | string, message: string, ...args: unknown[]) {
+    _log(level, category, message, ...args);
+  },
   LogLevel,
 };
 

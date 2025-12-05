@@ -20,20 +20,25 @@ import { log } from '@core/logger';
  */
 
 /**
- * @internal
+ * Analytics event payload tracked by the analytics system.
  */
-type AnalyticsEvent = {
+export type AnalyticsEvent = {
+  /** Category bucket for the event (performance/gameplay/user-interaction). */
   category: 'performance' | 'gameplay' | 'user-interaction';
+  /** Action identifier (e.g., 'level-completed'). */
   action: string;
+  /** Optional label for further segmentation. */
   label?: string;
+  /** Optional numeric value for the event. */
   value?: number;
+  /** Timestamp (ms since epoch) when the event was recorded. */
   timestamp: number;
 };
 
 /**
- * @internal
+ * Analytics collector for Core Web Vitals and game events.
  */
-class Analytics {
+export class Analytics {
   private events: AnalyticsEvent[] = [];
   private sessionStart: number;
 
@@ -151,16 +156,7 @@ class Analytics {
   /**
    * Export analytics data for analysis
    */
-  public exportData(): {
-    sessionDuration: number;
-    events: AnalyticsEvent[];
-    summary: {
-      totalEvents: number;
-      performanceEvents: number;
-      gameplayEvents: number;
-      interactionEvents: number;
-    };
-  } {
+  public exportData(): AnalyticsExport {
     return {
       sessionDuration: this.getSessionDuration(),
       events: this.events,
@@ -182,5 +178,28 @@ class Analytics {
   }
 }
 
-// Singleton instance
+/**
+ * Singleton analytics tracker for performance and gameplay events.
+ */
 export const analytics = new Analytics();
+
+/**
+ * Exportable analytics snapshot including summaries.
+ */
+export type AnalyticsExport = {
+  /** Session duration in seconds. */
+  sessionDuration: number;
+  /** Raw analytics events captured. */
+  events: AnalyticsEvent[];
+  /** Aggregate counts by category. */
+  summary: {
+    /** Total number of events recorded. */
+    totalEvents: number;
+    /** Number of performance events recorded. */
+    performanceEvents: number;
+    /** Number of gameplay events recorded. */
+    gameplayEvents: number;
+    /** Number of user interaction events recorded. */
+    interactionEvents: number;
+  };
+};

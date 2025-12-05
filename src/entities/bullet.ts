@@ -10,22 +10,49 @@ import { isMobile } from '@utils/platform.js';
 import { BULLET_CONFIG } from '@core/constants.js';
 import { ObjectPool } from '@systems/poolManager.js';
 import { services } from '@services/ServiceProvider.js';
+import { getCurrentTheme } from '@core/themes';
 
 const bulletSpeed = BULLET_CONFIG.SPEED;
 const bulletRadius = BULLET_CONFIG.RADIUS;
 
 let lastFireSoundTime = 0;
 
-// Pre-rendered bullet sprite canvas
-const bulletSprite = document.createElement('canvas');
-bulletSprite.width = bulletRadius * 2;
-bulletSprite.height = bulletRadius * 2;
-const bctx = bulletSprite.getContext('2d');
-if (bctx) {
-  bctx.fillStyle = '#ffff88';
-  bctx.beginPath();
-  bctx.arc(bulletRadius, bulletRadius, bulletRadius, 0, 2 * Math.PI);
-  bctx.fill();
+// Pre-rendered bullet sprite canvas (will be regenerated when theme changes)
+let bulletSprite: HTMLCanvasElement | null = null;
+let currentBulletColor: string | null = null;
+
+/**
+ * Creates or updates the pre-rendered bullet sprite based on current theme.
+ * Called lazily on first render or when theme changes.
+ */
+function ensureBulletSprite(): HTMLCanvasElement {
+  const theme = getCurrentTheme();
+  const bulletColor = theme.colors.bullet;
+
+  // Regenerate sprite if theme changed
+  if (!bulletSprite || currentBulletColor !== bulletColor) {
+    if (!bulletSprite) {
+      bulletSprite = document.createElement('canvas');
+      bulletSprite.width = bulletRadius * 2;
+      bulletSprite.height = bulletRadius * 2;
+    }
+
+    const bctx = bulletSprite.getContext('2d');
+    if (bctx) {
+      // Clear previous sprite
+      bctx.clearRect(0, 0, bulletSprite.width, bulletSprite.height);
+
+      // Render new sprite with theme color
+      bctx.fillStyle = bulletColor;
+      bctx.beginPath();
+      bctx.arc(bulletRadius, bulletRadius, bulletRadius, 0, 2 * Math.PI);
+      bctx.fill();
+
+      currentBulletColor = bulletColor;
+    }
+  }
+
+  return bulletSprite;
 }
 
 // Initialize object pool for bullets
@@ -271,7 +298,8 @@ export function updateBullets(): void {
  * ```
  */
 export function drawBullets(ctx: CanvasRenderingContext2D): void {
+  const sprite = ensureBulletSprite();
   bullets.forEach((b) => {
-    ctx.drawImage(bulletSprite, b.x - bulletRadius, b.y - bulletRadius);
+    ctx.drawImage(sprite, b.x - bulletRadius, b.y - bulletRadius);
   });
 }

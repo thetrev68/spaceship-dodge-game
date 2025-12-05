@@ -104,7 +104,7 @@ npm run docs        # Generate TypeDoc documentation
 
 The codebase follows a modular, domain-driven structure with TypeScript. For detailed breakdown, see [FOLDER_STRUCTURE.md](./FOLDER_STRUCTURE.md).
 
-```
+````
 src/
 ├── core/           # Application bootstrap, global state, configuration
 │   ├── main.ts           # Entry point
@@ -114,61 +114,132 @@ src/
 │   ├── uiConstants.ts    # UI-specific constants
 │   └── logger.ts         # Logging utility
 │
-├── game/           # Game loop, state machine, level progression
-│   ├── gameLoop.ts           # Main game loop (RAF)
-│   ├── gameStateManager.ts  # State transitions
-│   └── flowManager.ts        # Level progression logic
+## Theme System
+
+### Overview
+The game now features a comprehensive theme system that allows players to customize the visual appearance. The system supports color-only themes in Phase 1, with extensibility for asset-based themes in future phases.
+
+### Architecture
+The theme system consists of:
+
+1. **Theme Manager** (`src/core/themes/themeManager.ts`): Centralized theme state management
+2. **Theme Constants** (`src/core/themes/themeConstants.ts`): Theme definitions and registry
+3. **Settings UI Integration** (`src/ui/settings/settingsUI.ts`): Theme selection interface
+
+### Available Themes
+
+#### Default Theme (Space Explorer)
+- Classic space arcade aesthetic
+- Neon colors with glowing effects
+- Original game color palette
+
+#### Monochrome Theme
+- Minimalist off-white aesthetic
+- Clean, high-contrast design
+- Reduced visual complexity
+
+### Usage in Code
+
+```typescript
+import { getCurrentTheme, setTheme } from '@core/themes';
+
+// Get current theme for rendering
+const theme = getCurrentTheme();
+ctx.fillStyle = theme.colors.player;
+
+// Change theme
+setTheme('monochrome');
+````
+
+### Adding New Themes
+
+To add a new theme:
+
+1. Define theme in `themeConstants.ts`
+2. Add to `THEME_REGISTRY` and `VALID_THEME_IDS`
+3. Theme automatically appears in settings UI
+
+### Testing
+
+Comprehensive test coverage includes:
+
+- Theme initialization and switching
+- localStorage persistence
+- Validation and error handling
+- Reactive updates
+
+See `tests/core/themes/` for complete test suite.
+
+### Documentation
+
+- [ADR-006: Theme System Architecture](docs/architecture/decisions/ADR-006-theme-system.md)
+- [Developer Guide - Theme System Section](docs/DEVELOPER_GUIDE.md#theme-system)
+
+### Future Extensibility
+
+Phase 2 will add support for asset-based themes with:
+
+- Image-based sprites
+- Custom fonts
+- Animated elements
+- Loading states
+
+├── game/ # Game loop, state machine, level progression
+│ ├── gameLoop.ts # Main game loop (RAF)
+│ ├── gameStateManager.ts # State transitions
+│ └── flowManager.ts # Level progression logic
 │
-├── entities/       # Game objects (player, asteroids, bullets, powerups)
-│   ├── player.ts
-│   ├── asteroid.ts
-│   ├── bullet.ts
-│   └── powerup.ts
+├── entities/ # Game objects (player, asteroids, bullets, powerups)
+│ ├── player.ts
+│ ├── asteroid.ts
+│ ├── bullet.ts
+│ └── powerup.ts
 │
-├── systems/        # Cross-cutting concerns (collision, rendering, audio)
-│   ├── collisionHandler.ts  # Spatial grid collision detection
-│   ├── renderManager.ts      # Centralized rendering
-│   ├── soundManager.ts       # Audio management
-│   └── poolManager.ts        # Object pooling
+├── systems/ # Cross-cutting concerns (collision, rendering, audio)
+│ ├── collisionHandler.ts # Spatial grid collision detection
+│ ├── renderManager.ts # Centralized rendering
+│ ├── soundManager.ts # Audio management
+│ └── poolManager.ts # Object pooling
 │
-├── input/          # Input handling (desktop, mobile)
-│   ├── inputManager.ts
-│   └── mobileControls.ts
+├── input/ # Input handling (desktop, mobile)
+│ ├── inputManager.ts
+│ └── mobileControls.ts
 │
-├── ui/             # User interface components
-│   ├── overlays/
-│   │   └── overlayManager.ts   # Start, pause, level transition overlays
-│   ├── hud/
-│   │   ├── scoreDisplay.ts     # Score, lives, level display
-│   │   ├── scorePopups.ts      # Floating score text
-│   │   ├── powerupHUD.ts       # Active powerup indicators
-│   │   └── perfHUD.ts          # Performance metrics display
-│   ├── controls/
-│   │   └── audioControls.ts    # Volume and mute controls
-│   ├── settings/
-│   │   ├── settingsManager.ts  # Settings persistence
-│   │   └── settingsUI.ts       # Settings UI components
-│   └── accessibility/
-│       ├── announcer.ts        # ARIA live region announcer
-│       └── keyboardHelp.ts     # Keyboard shortcuts guide
+├── ui/ # User interface components
+│ ├── overlays/
+│ │ └── overlayManager.ts # Start, pause, level transition overlays
+│ ├── hud/
+│ │ ├── scoreDisplay.ts # Score, lives, level display
+│ │ ├── scorePopups.ts # Floating score text
+│ │ ├── powerupHUD.ts # Active powerup indicators
+│ │ └── perfHUD.ts # Performance metrics display
+│ ├── controls/
+│ │ └── audioControls.ts # Volume and mute controls
+│ ├── settings/
+│ │ ├── settingsManager.ts # Settings persistence
+│ │ └── settingsUI.ts # Settings UI components
+│ └── accessibility/
+│ ├── announcer.ts # ARIA live region announcer
+│ └── keyboardHelp.ts # Keyboard shortcuts guide
 │
-├── effects/        # Visual effects
-│   └── starfield.ts
+├── effects/ # Visual effects
+│ └── starfield.ts
 │
-├── utils/          # Pure utility functions
-│   ├── mathUtils.ts
-│   ├── canvasUtils.ts
-│   ├── dom.ts
-│   ├── platform.ts
-│   ├── analytics.ts            # Web Vitals tracking
-│   ├── performanceBudget.ts    # Performance monitoring
-│   ├── gameMetrics.ts          # Game analytics
-│   ├── memoize.ts              # Memoization utilities
-│   ├── assertions.ts           # Development assertions
-│   └── profiler.ts             # Performance profiler
+├── utils/ # Pure utility functions
+│ ├── mathUtils.ts
+│ ├── canvasUtils.ts
+│ ├── dom.ts
+│ ├── platform.ts
+│ ├── analytics.ts # Web Vitals tracking
+│ ├── performanceBudget.ts # Performance monitoring
+│ ├── gameMetrics.ts # Game analytics
+│ ├── memoize.ts # Memoization utilities
+│ ├── assertions.ts # Development assertions
+│ └── profiler.ts # Performance profiler
 │
-└── types/          # TypeScript type definitions
-    └── index.ts
+└── types/ # TypeScript type definitions
+└── index.ts
+
 ```
 
 ### Core Game Loop Pattern
@@ -258,12 +329,14 @@ The game uses a centralized game loop architecture with clear separation of conc
 ### State Flow Diagram
 
 ```
+
 START → PLAYING → PAUSED → PLAYING
-              ↓           ↗
-        LEVEL_TRANSITION
-              ↓
-          GAME_OVER → START
-```
+↓ ↗
+LEVEL_TRANSITION
+↓
+GAME_OVER → START
+
+````
 
 ### Audio System Architecture
 
@@ -466,7 +539,7 @@ analytics.trackInteraction('audio-unlock-attempted');
 // Export data for analysis
 const data = analytics.exportData();
 console.log(data.summary);
-```
+````
 
 **ARIA Announcements:**
 

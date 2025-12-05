@@ -1,26 +1,19 @@
 /**
- * Generic memoization utility
+ * Generic memoization utilities for development and performance-sensitive paths.
  *
- * Caches function results based on arguments to avoid recalculation.
- * Useful for expensive calculations called frequently with same inputs.
+ * These helpers are intentionally lightweight and dependency-free so they can be
+ * dropped into hot paths without pulling in a larger library.
  */
 
 /**
- * @internal
- */
-type Func = (...args: readonly unknown[]) => unknown;
-
-/**
- * Memoizes a function to cache results based on arguments.
+ * Memoizes a function using a simple argument serialization cache.
  *
- * Uses JSON.stringify to generate cache keys from arguments. Falls back to
- * non-cached execution if arguments contain circular references or other
- * non-serializable values. Note that argument order affects caching, and
- * object keys are not sorted, so equivalent objects with different key orders
- * will not match.
+ * Use this when the argument list is small and serializable; falls back to
+ * non-cached execution if arguments cannot be stringified.
  *
- * @param fn - The function to memoize
- * @returns The memoized function with the same signature
+ * @param fn - Function to memoize
+ * @returns A memoized version of the provided function
+ * @typeParam TFunc - Function signature being memoized
  *
  * @example
  * ```typescript
@@ -31,7 +24,7 @@ type Func = (...args: readonly unknown[]) => unknown;
  * console.log(memoizedCalc(3, 4)); // Returns cached: 15
  * ```
  */
-export function memoize<TFunc extends Func>(fn: TFunc): TFunc {
+export function memoize<TFunc extends (...args: readonly unknown[]) => unknown>(fn: TFunc): TFunc {
   const cache = new Map<string, ReturnType<TFunc>>();
 
   return ((...args: Parameters<TFunc>): ReturnType<TFunc> => {
@@ -55,22 +48,42 @@ export function memoize<TFunc extends Func>(fn: TFunc): TFunc {
 }
 
 /**
- * Memoizes a function with a size-limited LRU cache.
+ * Memoizes a function with an LRU cache bounded by `limit`.
  *
- * @param fn - The function to memoize
- * @param limit - Maximum number of cached results (must be a positive integer)
- * @returns The memoized function with LRU cache eviction
+ * Use this when unbounded caching could grow too large or when the input space
+ * is wide but recent results are most valuable.
+ *
+ * **Performance characteristics:**
+ * - Cache access: O(1) lookup, O(1) eviction
+ * - Serialization: O(n) where n is argument size (JSON.stringify cost)
+ *
+ * **Trade-offs:**
+ * - JSON serialization overhead vs simplicity (faster key generation than custom hash)
+ * - Memory bounded by `limit` vs cache hit rate (tune limit based on access patterns)
+ * - LRU appropriate for temporal locality; use unbounded `memoize` if all results needed
+ *
+ * @param fn - Function to memoize
+ * @param limit - Maximum number of cached entries (must be positive)
+ * @returns A memoized function with LRU eviction
+ * @typeParam TFunc - Function signature being memoized
  *
  * @example
  * ```typescript
- * const fibonacci = (n: number): number => n <= 1 ? n : fibonacci(n-1) + fibonacci(n-2);
- * const memoizedFib = memoizeWithLimit(fibonacci, 50);
+ * const heavyCalc = (a: number, b: number) => {
+ *   // Expensive computation
+ *   return Math.pow(a, b) + Math.sqrt(a * b);
+ * };
+ * const memoizedCalc = memoizeWithLimit(heavyCalc, 50);
  *
- * console.log(memoizedFib(10)); // Computes and caches
- * console.log(memoizedFib(10)); // Returns cached result
+ * console.log(memoizedCalc(2, 10)); // Computes and caches
+ * console.log(memoizedCalc(2, 10)); // Returns cached result
+ * // After 50 unique calls, least recently used entry evicted
  * ```
  */
-export function memoizeWithLimit<TFunc extends Func>(fn: TFunc, limit = 100): TFunc {
+export function memoizeWithLimit<TFunc extends (...args: readonly unknown[]) => unknown>(
+  fn: TFunc,
+  limit = 100
+): TFunc {
   if (!Number.isInteger(limit) || limit <= 0) {
     throw new RangeError(`Limit must be a positive integer, got ${limit}`);
   }

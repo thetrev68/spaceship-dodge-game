@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; media-src 'self'; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none'; frame-ancestors 'none';"
+      content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; media-src 'self'; font-src 'self'; connect-src %VITE_CSP_CONNECT_SRC%; object-src 'none'; base-uri 'self'; form-action 'none';"
     />
     <title>Spaceship Dodge</title>
     <link rel="icon" href="data:;base64,iVBORw0KGgo=" />
@@ -47,18 +47,8 @@
       <p id="startHint" class="mb-4 text-lg">Tap Screen to Begin</p>
       <p id="livesInfoStart" class="mb-4 text-lg">Lives: 3</p>
       <div class="flex gap-4">
-        <button
-          id="startButton"
-          class="px-6 py-3 bg-blue-600 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400"
-        >
-          Start Game
-        </button>
-        <button
-          id="settingsButtonStart"
-          class="px-6 py-3 bg-gray-600 rounded hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-400"
-        >
-          Settings
-        </button>
+        <button id="startButton" class="game-button">Start Game</button>
+        <button id="settingsButtonStart" class="game-button">Settings</button>
       </div>
     </div>
 
@@ -77,18 +67,8 @@
       <p id="livesInfoLevel" class="mb-4 text-lg"></p>
       <p id="tapToContinueMobile" class="text-lg mt-4 hidden">Tap Anywhere to Continue</p>
       <div class="flex gap-4">
-        <button
-          id="continueButton"
-          class="px-6 py-3 bg-green-600 rounded hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-400"
-        >
-          Continue
-        </button>
-        <button
-          id="settingsButtonLevel"
-          class="px-6 py-3 bg-gray-600 rounded hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-400"
-        >
-          Settings
-        </button>
+        <button id="continueButton" class="game-button">Continue</button>
+        <button id="settingsButtonLevel" class="game-button">Settings</button>
       </div>
     </div>
 
@@ -105,18 +85,13 @@
       <div class="flex gap-4">
         <button
           id="quitButton"
-          class="px-6 py-3 bg-blue-600 rounded hover:bg-blue-700 focus:outline-none focus:ring-blue-400 hidden"
+          class="game-button hidden"
           aria-label="Quit current game and return to main menu"
           title="Quit Game"
         >
           Quit Game
         </button>
-        <button
-          id="settingsButtonPause"
-          class="px-6 py-3 bg-gray-600 rounded hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-400"
-        >
-          Settings
-        </button>
+        <button id="settingsButtonPause" class="game-button">Settings</button>
       </div>
       <p id="pauseResumeMessage">Tap to Resume</p>
     </div>
@@ -133,18 +108,8 @@
       <h1 id="gameOverOverlayTitle" class="text-4xl font-bold mb-4">GAME OVER</h1>
       <p id="finalScore" class="mb-4">Final Score: 0</p>
       <div class="flex gap-4">
-        <button
-          id="restartButton"
-          class="px-6 py-3 bg-blue-600 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400"
-        >
-          Play Again
-        </button>
-        <button
-          id="settingsButtonGameOver"
-          class="px-6 py-3 bg-gray-600 rounded hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-400"
-        >
-          Settings
-        </button>
+        <button id="restartButton" class="game-button">Play Again</button>
+        <button id="settingsButtonGameOver" class="game-button">Settings</button>
       </div>
     </div>
 
@@ -160,12 +125,7 @@
       <h1 id="fatalErrorTitle" class="text-4xl font-bold mb-4 text-red-500">Fatal Error</h1>
       <p id="fatalErrorMessage" class="mb-4 text-center max-w-md">An unexpected error occurred</p>
       <p id="fatalErrorCode" class="mb-4 text-sm text-gray-400">Error Code: UNKNOWN</p>
-      <button
-        id="reloadButton"
-        class="px-6 py-3 bg-red-600 rounded hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-400"
-      >
-        Reload Game
-      </button>
+      <button id="reloadButton" class="game-button">Reload Game</button>
     </div>
 
     <script type="module" src="/src/core/main.ts"></script>
