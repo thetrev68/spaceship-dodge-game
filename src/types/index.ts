@@ -5,7 +5,7 @@
 /**
  * @internal
  */
-export type _Nullable<T> = T | null;
+type _Nullable<T> = T | null;
 
 /**
  * @internal
@@ -15,7 +15,7 @@ type _Optional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 /**
  * @internal
  */
-export type Primitive = string | number | boolean | bigint | symbol | undefined | null;
+type Primitive = string | number | boolean | bigint | symbol | undefined | null;
 
 export type ReadonlyConfig<T> = T extends Primitive
   ? T
@@ -35,7 +35,7 @@ export type PowerUpKey = 'doubleBlaster' | 'shield';
 /**
  * @internal
  */
-export type _PowerUp = { active: boolean; timer: number };
+type _PowerUp = { active: boolean; timer: number };
 
 export type PowerUpMap = Record<PowerUpKey, _PowerUp>;
 
