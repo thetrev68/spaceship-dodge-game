@@ -3,7 +3,7 @@ import type { HudTextAlign, ReadonlyConfig } from '@types';
 /**
  * @internal
  */
-type HudConstants = {
+export type HudConstants = {
   SCORE_X: number;
   SCORE_Y: number;
   LEVEL_Y: number;

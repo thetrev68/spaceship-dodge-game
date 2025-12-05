@@ -14,7 +14,10 @@ import { DEV_CONFIG } from '@core/constants';
  * - Real-time alerts in dev mode for performance regression detection
  */
 
-interface PerformanceBudgetConfig {
+/**
+ * @internal
+ */
+export interface PerformanceBudgetConfig {
   targetFrameTime: number; // ms (16.67ms = 60 FPS)
   maxFrameTime: number; // ms (33.33ms = 30 FPS)
   windowSize: number; // Number of frames to average

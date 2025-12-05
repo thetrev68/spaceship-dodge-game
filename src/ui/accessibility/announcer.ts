@@ -18,7 +18,10 @@ import { log } from '@core/logger';
  * @see https://www.w3.org/WAI/WCAG21/Understanding/status-messages.html
  */
 
-type AnnounceOptions = {
+/**
+ * @internal
+ */
+export type AnnounceOptions = {
   priority?: 'polite' | 'assertive';
   clearAfter?: number; // ms
 };
@@ -28,7 +31,10 @@ const DEFAULT_OPTIONS: AnnounceOptions = {
   clearAfter: 1000,
 };
 
-class Announcer {
+/**
+ * @internal
+ */
+export class Announcer {
   private liveRegion: HTMLElement | null = null;
 
   constructor() {

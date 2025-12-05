@@ -3,9 +3,9 @@ import { DEV_CONFIG } from '@core/constants';
 
 /**
  * Simple performance profiler for development
+ * @internal
  */
-
-class Profiler {
+export class Profiler {
   private timers = new Map<string, number>();
   private measurements = new Map<string, number[]>();
 

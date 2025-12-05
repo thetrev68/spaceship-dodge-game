@@ -7,7 +7,10 @@ import { log } from '@core/logger';
  * and game balance tuning.
  */
 
-interface GameSession {
+/**
+ * @internal
+ */
+export interface GameSession {
   sessionId: string;
   startTime: number;
   endTime?: number;
@@ -21,7 +24,10 @@ interface GameSession {
   survivalTime: number; // seconds
 }
 
-class GameMetrics {
+/**
+ * @internal
+ */
+export class GameMetrics {
   private currentSession: Partial<GameSession> | null = null;
   private sessions: GameSession[] = [];
 

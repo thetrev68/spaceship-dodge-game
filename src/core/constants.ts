@@ -58,7 +58,9 @@ export const ASTEROID_CONFIG: ReadonlyConfig<{
 /**
  * @internal
  */
-type PowerUpConfigShape = Record<PowerUpKey, { DURATION: number }> & { SPAWN_INTERVAL: number };
+export type PowerUpConfigShape = Record<PowerUpKey, { DURATION: number }> & {
+  SPAWN_INTERVAL: number;
+};
 
 export const POWERUP_CONFIG: ReadonlyConfig<PowerUpConfigShape> = {
   doubleBlaster: {

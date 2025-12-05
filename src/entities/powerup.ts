@@ -19,7 +19,13 @@ import {
 /**
  * @internal
  */
-type ActivePowerup = { x: number; y: number; size: number; type: PowerUpKey | null; dy: number };
+export type ActivePowerup = {
+  x: number;
+  y: number;
+  size: number;
+  type: PowerUpKey | null;
+  dy: number;
+};
 
 /**
  * Power-up types enumeration.

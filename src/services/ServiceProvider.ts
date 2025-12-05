@@ -99,7 +99,7 @@ class PoolServiceAdapter<T> implements IPoolService<T> {
  * Manages service instances and allows swapping implementations (e.g., for tests)
  * @internal
  */
-class ServiceProvider {
+export class ServiceProvider {
   private static instance: ServiceProvider | null = null;
 
   public audioService: IAudioService;

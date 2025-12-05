@@ -19,7 +19,10 @@ import { log } from '@core/logger';
  * @see https://web.dev/vitals/
  */
 
-type AnalyticsEvent = {
+/**
+ * @internal
+ */
+export type AnalyticsEvent = {
   category: 'performance' | 'gameplay' | 'user-interaction';
   action: string;
   label?: string;
@@ -27,7 +30,10 @@ type AnalyticsEvent = {
   timestamp: number;
 };
 
-class Analytics {
+/**
+ * @internal
+ */
+export class Analytics {
   private events: AnalyticsEvent[] = [];
   private sessionStart: number;
 

@@ -5,7 +5,10 @@
  * Useful for expensive calculations called frequently with same inputs.
  */
 
-type Func = (...args: readonly unknown[]) => unknown;
+/**
+ * @internal
+ */
+export type Func = (...args: readonly unknown[]) => unknown;
 
 export function memoize<TFunc extends Func>(fn: TFunc): TFunc {
   const cache = new Map<string, ReturnType<TFunc>>();

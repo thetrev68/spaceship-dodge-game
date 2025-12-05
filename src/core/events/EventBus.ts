@@ -7,7 +7,7 @@ type EventHandler = (data: unknown) => void;
  * Implements publish-subscribe pattern
  * @internal
  */
-class EventBus {
+export class EventBus {
   private handlers = new Map<string, EventHandler[]>();
 
   /**
