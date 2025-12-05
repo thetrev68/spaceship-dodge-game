@@ -10,6 +10,7 @@ import { fireBullet } from '@entities/bullet.js';
 import { clamp } from '@utils/mathUtils.js';
 import { isMobile } from '@utils/platform.js';
 import { PLAYER_CONSTANTS, HUD_CONSTANTS, GAME_STATE_CONSTANTS } from '@core/gameConstants.js';
+import { getCurrentTheme } from '@core/themes';
 
 const player = playerState.player;
 const powerUps = playerState.powerUps;
@@ -187,6 +188,8 @@ export function updatePlayer(): void {
 export function drawPlayer(ctx: CanvasRenderingContext2D): void {
   if (gameState.value !== 'PLAYING') return;
 
+  const theme = getCurrentTheme();
+
   // Draw shield glow if active (lighter on mobile to avoid blur cost)
   if (powerUps.shield.active) {
     const cx = player.x + player.width / 2;
@@ -194,10 +197,10 @@ export function drawPlayer(ctx: CanvasRenderingContext2D): void {
     const radius = Math.max(player.width, player.height) * PLAYER_CONSTANTS.SHIELD_RADIUS_FACTOR;
     ctx.save();
     if (!isMobile()) {
-      ctx.shadowColor = HUD_CONSTANTS.SHIELD_SHADOW_COLOR;
+      ctx.shadowColor = theme.colors.playerShield;
       ctx.shadowBlur = HUD_CONSTANTS.SHIELD_SHADOW_BLUR;
     }
-    ctx.strokeStyle = HUD_CONSTANTS.SHIELD_STROKE_STYLE;
+    ctx.strokeStyle = theme.colors.playerShield;
     ctx.lineWidth = HUD_CONSTANTS.SHIELD_LINE_WIDTH;
     ctx.beginPath();
     ctx.arc(cx, cy, radius, 0, Math.PI * 2);
@@ -205,7 +208,7 @@ export function drawPlayer(ctx: CanvasRenderingContext2D): void {
     ctx.restore();
   }
 
-  ctx.strokeStyle = '#00ffff';
+  ctx.strokeStyle = theme.colors.player;
   ctx.lineWidth = 2;
 
   const w = player.width;
@@ -265,7 +268,7 @@ export function drawPlayer(ctx: CanvasRenderingContext2D): void {
   if (!isMobile()) {
     // High-quality gradient glow for desktop
     const gradient = ctx.createRadialGradient(flameX, flameY, 0, flameX, flameY, flameRadius * 3);
-    gradient.addColorStop(0, `rgba(0, 255, 255, ${0.6 * pulse})`);
+    gradient.addColorStop(0, theme.colors.playerEngine);
     gradient.addColorStop(1, 'rgba(0, 255, 255, 0)');
 
     ctx.fillStyle = gradient;
@@ -283,7 +286,7 @@ export function drawPlayer(ctx: CanvasRenderingContext2D): void {
   }
 
   // Core flame shape (simple solid color for mobile)
-  ctx.fillStyle = `rgba(0, 255, 255, ${0.7 * pulse})`;
+  ctx.fillStyle = theme.colors.playerEngine;
   ctx.beginPath();
   ctx.moveTo(flameX - flameRadius * 0.6, engineBottomY);
   ctx.lineTo(flameX + flameRadius * 0.6, engineBottomY);

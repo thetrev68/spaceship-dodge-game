@@ -93,3 +93,53 @@ export type GameConfig = {
   MAX_LIFETIME: number;
   SPAWN_MARGIN: number;
 };
+
+/**
+ * Color palette for theming all game visuals
+ */
+export type ColorPalette = {
+  // Entity colors
+  player: string;
+  playerEngine: string;
+  playerShield: string;
+  bullet: string;
+  asteroid: string;
+
+  // UI colors
+  hudText: string;
+  hudAccent: string;
+  scorePopup: string;
+  bonusPopup: string;
+  powerupPopup: string;
+
+  // Effects
+  starfield: string;
+
+  // Powerup specific
+  powerupShield: string;
+  powerupBlaster: string;
+};
+
+/**
+ * Font configuration for themed typography
+ */
+export type FontConfig = {
+  family: string;
+  hudSize: string;
+};
+
+/**
+ * Complete theme definition
+ */
+export type Theme = {
+  id: string;
+  name: string;
+  description: string;
+  colors: ColorPalette;
+  fonts: FontConfig;
+};
+
+/**
+ * Valid theme identifiers
+ */
+export type ThemeId = 'default' | 'monochrome';

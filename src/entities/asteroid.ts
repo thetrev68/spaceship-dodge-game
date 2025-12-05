@@ -12,6 +12,7 @@ import { isMobile } from '@utils/platform.js';
 import { randomInt, randomFloat } from '@utils/mathUtils.js';
 import { ObjectPool } from '@systems/poolManager.js';
 import { services } from '@services/ServiceProvider.js';
+import { getCurrentTheme } from '@core/themes';
 
 const obstacleMinSpeed = ASTEROID_CONFIG.BASE_MIN_SPEED;
 let nextAsteroidId = 1;
@@ -283,7 +284,8 @@ export function updateObstacles(
 export function drawObstacles(ctx: CanvasRenderingContext2D): void {
   if (obstacles.length === 0) return;
 
-  ctx.strokeStyle = '#ff4500';
+  const theme = getCurrentTheme();
+  ctx.strokeStyle = theme.colors.asteroid;
   ctx.lineWidth = 2;
   ctx.beginPath();
 

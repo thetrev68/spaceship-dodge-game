@@ -14,6 +14,7 @@ import {
   type PowerupCollectedEvent,
   type PowerupExpiredEvent,
 } from '@core/events/GameEvents.js';
+import { getCurrentTheme } from '@core/themes';
 
 type ScorePopup = { text: string; x: number; y: number; opacity: number; color: string };
 
@@ -24,7 +25,7 @@ const scorePopupPool = new ObjectPool<ScorePopup>(() => ({
   x: 0,
   y: 0,
   opacity: HUD_CONSTANTS.GLOBAL_ALPHA,
-  color: '#ffffff',
+  color: getCurrentTheme().colors.scorePopup,
 }));
 
 let subscribersRegistered = false;
@@ -34,38 +35,48 @@ export function initializeScorePopups(): void {
   subscribersRegistered = true;
 
   eventBus.on<AsteroidDestroyedEvent>(GameEvent.ASTEROID_DESTROYED, (data) => {
-    addScorePopup(`+${data.score}`, data.position.x, data.position.y);
+    const theme = getCurrentTheme();
+    addScorePopup(`+${data.score}`, data.position.x, data.position.y, theme.colors.scorePopup);
   });
 
   eventBus.on<BonusAwardedEvent>(GameEvent.BONUS_AWARDED, (data) => {
+    const theme = getCurrentTheme();
     addScorePopup(
       `+${data.bonusAmount} (${data.bonusType})`,
       data.position.x,
       data.position.y,
-      '#00ff00'
+      theme.colors.bonusPopup
     );
   });
 
   eventBus.on<PowerupCollectedEvent>(GameEvent.POWERUP_COLLECTED, (data) => {
-    addScorePopup(`Power-up! ${data.type}`, data.position.x, data.position.y, '#00ffff');
+    const theme = getCurrentTheme();
+    addScorePopup(
+      `Power-up! ${data.type}`,
+      data.position.x,
+      data.position.y,
+      theme.colors.powerupPopup
+    );
   });
 
   eventBus.on<PowerupExpiredEvent>(GameEvent.POWERUP_EXPIRED, (data) => {
-    addScorePopup(`${data.type} expired`, 40, 60, '#ffaa00');
+    const theme = getCurrentTheme();
+    addScorePopup(`${data.type} expired`, 40, 60, theme.colors.powerupPopup);
   });
 }
 
-function addScorePopup(text: string, x: number, y: number, color = '#ffffff'): void {
+function addScorePopup(text: string, x: number, y: number, color?: string): void {
   const skipForMobile = isMobile() && import.meta.env.MODE !== 'test';
   if (skipForMobile) return;
 
   const popup = scorePopupPool.acquire();
+  const theme = getCurrentTheme();
 
   popup.text = text;
   popup.x = x;
   popup.y = y;
   popup.opacity = HUD_CONSTANTS.GLOBAL_ALPHA;
-  popup.color = color;
+  popup.color = color ?? theme.colors.scorePopup;
 
   scorePopups.push(popup);
 }

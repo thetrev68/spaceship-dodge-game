@@ -24,6 +24,7 @@ import { services } from '@services/ServiceProvider.js';
 import { analytics } from '@utils/analytics.js';
 import { initializeKeyboardHelp } from '@ui/accessibility/keyboardHelp.js';
 import { announcer } from '@ui/accessibility/announcer.js';
+import { initializeThemeSystem } from '@core/themes';
 
 let audioUnlockAttempted = false;
 
@@ -185,6 +186,9 @@ async function main() {
     action: 'app-initialized',
     value: Date.now(),
   });
+
+  // Initialize theme system before rendering
+  initializeThemeSystem();
 
   initializeSettings();
 

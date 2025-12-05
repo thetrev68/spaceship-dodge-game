@@ -5,6 +5,7 @@
  */
 
 import { isMobile } from '@utils/platform.js';
+import { getCurrentTheme } from '@core/themes';
 
 type Star = { x: number; y: number; size: number; speed: number };
 
@@ -48,7 +49,8 @@ export function setupStarfield(canvas: HTMLCanvasElement): void {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     // Batch drawing for performance
-    ctx.fillStyle = 'white';
+    const theme = getCurrentTheme();
+    ctx.fillStyle = theme.colors.starfield;
     ctx.beginPath();
 
     for (let i = 0; i < starCount; i++) {

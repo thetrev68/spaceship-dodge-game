@@ -15,6 +15,7 @@ import {
   type PowerupCollectedEvent,
   type PowerupExpiredEvent,
 } from '@core/events/GameEvents.js';
+import { getCurrentTheme } from '@core/themes';
 
 /**
  * @internal
@@ -253,6 +254,7 @@ export function drawPowerups(ctx: CanvasRenderingContext2D): void {
     const cx = p.x + powerupSize / 2;
     const cy = p.y + powerupSize / 2;
     const maxRadius = powerupSize / 2;
+    const theme = getCurrentTheme();
 
     ctx.save();
     if (!isMobile()) {
@@ -263,7 +265,7 @@ export function drawPowerups(ctx: CanvasRenderingContext2D): void {
 
     if (p.type === POWERUP_TYPES.DOUBLE_BLASTER) {
       if (isMobile()) {
-        ctx.fillStyle = '#f9d71c';
+        ctx.fillStyle = theme.colors.powerupBlaster;
         ctx.beginPath();
         ctx.rect(p.x + maxRadius * 0.4, p.y + maxRadius * 0.2, maxRadius * 1.2, maxRadius * 1.2);
         ctx.fill();
@@ -272,10 +274,10 @@ export function drawPowerups(ctx: CanvasRenderingContext2D): void {
         const outerRadius = maxRadius * 0.8;
         const innerRadius = outerRadius / 2.5;
 
-        ctx.shadowColor = '#f9d71c';
+        ctx.shadowColor = theme.colors.powerupBlaster;
         ctx.shadowBlur = 15 * pulse;
 
-        ctx.fillStyle = '#f9d71c';
+        ctx.fillStyle = theme.colors.powerupBlaster;
         ctx.beginPath();
         for (let i = 0; i < spikes; i++) {
           const rot = (Math.PI / 2) * 3 + (i * Math.PI * 2) / spikes;
@@ -292,7 +294,7 @@ export function drawPowerups(ctx: CanvasRenderingContext2D): void {
       }
     } else if (p.type === POWERUP_TYPES.SHIELD) {
       if (isMobile()) {
-        ctx.fillStyle = '#0ff';
+        ctx.fillStyle = theme.colors.powerupShield;
         ctx.beginPath();
         ctx.arc(cx, cy, maxRadius * 0.6, 0, Math.PI * 2);
         ctx.fill();
@@ -306,7 +308,7 @@ export function drawPowerups(ctx: CanvasRenderingContext2D): void {
         ctx.arc(cx, cy, radius, 0, Math.PI * 2);
         ctx.fill();
 
-        ctx.fillStyle = '#0ff';
+        ctx.fillStyle = theme.colors.powerupShield;
         ctx.beginPath();
         ctx.arc(cx, cy, radius * 0.6, 0, Math.PI * 2);
         ctx.fill();
