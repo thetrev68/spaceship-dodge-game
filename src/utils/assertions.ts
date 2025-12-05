@@ -19,7 +19,9 @@ export function assertNumber(value: unknown, name: string): asserts value is num
   if (!DEV_CONFIG.DEBUG_MODE) return;
 
   if (typeof value !== 'number' || Number.isNaN(value)) {
-    throw new Error(`Expected ${name} to be a number, got ${typeof value}`);
+    const message = `Expected ${name} to be a number, got ${typeof value}`;
+    log.error(message);
+    throw new Error(message);
   }
 }
 
