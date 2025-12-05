@@ -55,9 +55,26 @@ export function memoize<TFunc extends Func>(fn: TFunc): TFunc {
 }
 
 /**
- * Memoize with size limit (LRU cache)
+ * Memoizes a function with a size-limited LRU cache.
+ *
+ * @param fn - The function to memoize
+ * @param limit - Maximum number of cached results (must be a positive integer)
+ * @returns The memoized function with LRU cache eviction
+ *
+ * @example
+ * ```typescript
+ * const fibonacci = (n: number): number => n <= 1 ? n : fibonacci(n-1) + fibonacci(n-2);
+ * const memoizedFib = memoizeWithLimit(fibonacci, 50);
+ *
+ * console.log(memoizedFib(10)); // Computes and caches
+ * console.log(memoizedFib(10)); // Returns cached result
+ * ```
  */
 export function memoizeWithLimit<TFunc extends Func>(fn: TFunc, limit = 100): TFunc {
+  if (!Number.isInteger(limit) || limit <= 0) {
+    throw new RangeError(`Limit must be a positive integer, got ${limit}`);
+  }
+
   const cache = new Map<string, ReturnType<TFunc>>();
 
   return ((...args: Parameters<TFunc>): ReturnType<TFunc> => {
