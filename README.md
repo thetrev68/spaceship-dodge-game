@@ -44,7 +44,7 @@ A fast-paced arcade-style browser game where you pilot a glowing vector spaceshi
 
 The codebase follows a modular, domain-driven structure. Path aliases (e.g., `@core`, `@game`) are used for cleaner imports.
 
-```
+```text
 src/
 ├── core/           # Application bootstrap, global state, configuration
 ├── game/           # Game loop, state machine, level progression
