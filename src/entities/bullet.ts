@@ -24,6 +24,7 @@ let currentBulletColor: string | null = null;
 /**
  * Creates or updates the pre-rendered bullet sprite based on current theme.
  * Called lazily on first render or when theme changes.
+ * Renders laser bolt style for modern spaceship aesthetic.
  */
 function ensureBulletSprite(): HTMLCanvasElement {
   const theme = getCurrentTheme();
@@ -31,10 +32,18 @@ function ensureBulletSprite(): HTMLCanvasElement {
 
   // Regenerate sprite if theme changed
   if (!bulletSprite || currentBulletColor !== bulletColor) {
+    // Laser bolt dimensions: elongated vertical rectangle with tapered ends
+    const boltWidth = bulletRadius * 1.2;
+    const boltHeight = bulletRadius * 4;
+
     if (!bulletSprite) {
       bulletSprite = document.createElement('canvas');
-      bulletSprite.width = bulletRadius * 2;
-      bulletSprite.height = bulletRadius * 2;
+      bulletSprite.width = boltWidth * 2;
+      bulletSprite.height = boltHeight;
+    } else {
+      // Update canvas size if needed
+      bulletSprite.width = boltWidth * 2;
+      bulletSprite.height = boltHeight;
     }
 
     const bctx = bulletSprite.getContext('2d');
@@ -42,10 +51,30 @@ function ensureBulletSprite(): HTMLCanvasElement {
       // Clear previous sprite
       bctx.clearRect(0, 0, bulletSprite.width, bulletSprite.height);
 
-      // Render new sprite with theme color
+      const cx = bulletSprite.width / 2;
+
+      // Laser bolt shape - elongated diamond/bolt
       bctx.fillStyle = bulletColor;
       bctx.beginPath();
-      bctx.arc(bulletRadius, bulletRadius, bulletRadius, 0, 2 * Math.PI);
+      bctx.moveTo(cx, 0); // Top point
+      bctx.lineTo(cx + boltWidth / 2, boltHeight * 0.3); // Right side upper
+      bctx.lineTo(cx + boltWidth / 2, boltHeight * 0.7); // Right side lower
+      bctx.lineTo(cx, boltHeight); // Bottom point
+      bctx.lineTo(cx - boltWidth / 2, boltHeight * 0.7); // Left side lower
+      bctx.lineTo(cx - boltWidth / 2, boltHeight * 0.3); // Left side upper
+      bctx.closePath();
+      bctx.fill();
+
+      // Bright core (inner glow)
+      bctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+      bctx.beginPath();
+      bctx.moveTo(cx, boltHeight * 0.1); // Top
+      bctx.lineTo(cx + boltWidth / 4, boltHeight * 0.4);
+      bctx.lineTo(cx + boltWidth / 4, boltHeight * 0.6);
+      bctx.lineTo(cx, boltHeight * 0.9); // Bottom
+      bctx.lineTo(cx - boltWidth / 4, boltHeight * 0.6);
+      bctx.lineTo(cx - boltWidth / 4, boltHeight * 0.4);
+      bctx.closePath();
       bctx.fill();
 
       currentBulletColor = bulletColor;
@@ -269,18 +298,18 @@ export function updateBullets(): void {
  *
  * ## Rendering Technique
  * - Uses pre-rendered canvas sprite for maximum performance
- * - Single `drawImage()` call per bullet (faster than arc/fill)
- * - Sprite created once at module initialization
+ * - Single `drawImage()` call per bullet (faster than drawing shapes)
+ * - Sprite created once and cached until theme changes
  *
  * ## Performance
- * - `drawImage()` is ~3x faster than `arc() + fill()` for circles
+ * - `drawImage()` is ~3x faster than manual shape drawing
  * - Pre-rendering eliminates repeated drawing operations
  * - Ideal for high-frequency entities (10-20 bullets on screen)
  *
  * ## Sprite Details
- * - Yellow filled circle (#ffff88)
- * - Radius from BULLET_CONFIG.RADIUS (typically 3px)
- * - Canvas size: 2 * radius (6x6px)
+ * - Laser bolt shape with theme-based color
+ * - Elongated diamond with bright white core
+ * - Width: bulletRadius * 1.2, Height: bulletRadius * 4
  *
  * @param ctx - Canvas 2D rendering context
  *
@@ -292,14 +321,18 @@ export function updateBullets(): void {
  *   drawStarfield(ctx);
  *   drawObstacles(ctx);
  *   drawPlayer(ctx);
- *   drawBullets(ctx); // Render bullets with sprite
+ *   drawBullets(ctx); // Render laser bolts with sprite
  *   drawHUD(ctx);
  * }
  * ```
  */
 export function drawBullets(ctx: CanvasRenderingContext2D): void {
   const sprite = ensureBulletSprite();
+  const boltWidth = bulletRadius * 1.2;
+  const boltHeight = bulletRadius * 4;
+
   bullets.forEach((b) => {
-    ctx.drawImage(sprite, b.x - bulletRadius, b.y - bulletRadius);
+    // Center the bolt horizontally and position vertically at bullet.y
+    ctx.drawImage(sprite, b.x - boltWidth, b.y - boltHeight / 2);
   });
 }
