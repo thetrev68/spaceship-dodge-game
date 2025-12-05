@@ -19,7 +19,7 @@ import {
 /**
  * @internal
  */
-export type ActivePowerup = {
+type ActivePowerup = {
   x: number;
   y: number;
   size: number;
