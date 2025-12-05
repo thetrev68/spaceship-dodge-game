@@ -9,19 +9,48 @@ import { log } from '@core/logger';
 
 /**
  * @internal
+ * Represents a complete game session with detailed statistics.
+ *
+ * @example
+ * ```typescript
+ * const session: GameSession = {
+ *   sessionId: "session_1234567890_abc123",
+ *   startTime: 1640995200000,
+ *   endTime: 1640995260000,
+ *   finalScore: 12500,
+ *   finalLevel: 5,
+ *   totalHits: 3,
+ *   totalKills: 42,
+ *   powerupsCollected: 2,
+ *   bulletsFired: 150,
+ *   accuracy: 28,
+ *   survivalTime: 60
+ * };
+ * ```
  */
-export interface GameSession {
+interface GameSession {
+  /** Unique identifier for the game session */
   sessionId: string;
+  /** Session start time in milliseconds since epoch */
   startTime: number;
+  /** Session end time in milliseconds since epoch (undefined if ongoing) */
   endTime?: number;
+  /** Final score achieved in the session */
   finalScore: number;
+  /** Final level reached in the session */
   finalLevel: number;
+  /** Total number of times the player was hit */
   totalHits: number;
+  /** Total number of asteroids destroyed */
   totalKills: number;
+  /** Total number of power-ups collected */
   powerupsCollected: number;
+  /** Total number of bullets fired */
   bulletsFired: number;
-  accuracy: number; // percentage
-  survivalTime: number; // seconds
+  /** Shooting accuracy as a percentage (0-100) */
+  accuracy: number;
+  /** Total survival time in seconds */
+  survivalTime: number;
 }
 
 /**
