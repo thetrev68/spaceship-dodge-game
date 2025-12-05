@@ -31,11 +31,13 @@ body {
   touch-action: none;
   pointer-events: auto;
   position: absolute;
-  top: 0;
-  left: 0;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   width: 100vw;
   height: 100vh;
   display: block;
+  object-fit: contain;
 }
 
 #gameCanvas {
@@ -49,26 +51,50 @@ body {
 }
 
 .game-overlay {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   z-index: 50;
-  background-color: var(--overlay-background, rgba(0, 0, 0, 0.8));
-  padding: 1.5rem;
-  border-radius: 0.5rem;
-  /* Remove box-shadow for transparent overlays to look cleaner */
+
+  /* Centered box with max dimensions */
+  max-width: min(600px, 90vw);
+  min-width: 400px;
+  padding: 3rem 2rem;
+
+  background-color: var(--overlay-background, rgba(0, 0, 0, 0.9));
   color: var(--overlay-text, white);
+
+  /* Classy border with theme color */
+  border: 3px solid var(--overlay-title, rgba(0, 255, 255, 0.6));
+  border-radius: 12px;
+  box-shadow:
+    0 0 40px rgba(0, 0, 0, 0.8),
+    0 0 80px var(--overlay-title, rgba(0, 255, 255, 0.3)),
+    inset 0 0 60px rgba(0, 0, 0, 0.4);
 
   opacity: 0;
   pointer-events: none;
   transition:
     opacity 0.3s ease,
-    color 0.3s ease;
+    transform 0.3s ease,
+    color 0.3s ease,
+    border-color 0.3s ease;
 
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 1rem;
+}
 
-  max-width: 90%;
-  max-height: 90%;
+/* Mobile responsive */
+@media (max-width: 480px) {
+  .game-overlay {
+    min-width: 320px;
+    max-width: 95vw;
+    padding: 2rem 1.5rem;
+  }
 }
 
 .game-overlay.visible {

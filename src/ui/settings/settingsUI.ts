@@ -163,25 +163,6 @@ function createSettingsUI(): HTMLElement {
   gameplayTitle.style.marginBottom = SETTINGS_UI.SUBTITLE_MARGIN_BOTTOM;
   gameplayTitle.style.fontSize = SETTINGS_UI.SUBTITLE_FONT_SIZE;
 
-  const platformTextLabel = document.createElement('label');
-  platformTextLabel.textContent = 'Use Platform-Specific Text';
-  platformTextLabel.style.display = 'block';
-  platformTextLabel.style.color = 'white';
-  platformTextLabel.style.marginBottom = SETTINGS_UI.LABEL_MARGIN_BOTTOM;
-  platformTextLabel.style.fontSize = SETTINGS_UI.LABEL_FONT_SIZE;
-
-  const platformTextCheckbox = document.createElement('input');
-  platformTextCheckbox.type = 'checkbox';
-  platformTextCheckbox.checked = settings.platformSpecificText;
-  platformTextCheckbox.style.width = '20px';
-  platformTextCheckbox.style.height = '20px';
-  platformTextCheckbox.addEventListener('change', (event: Event) => {
-    const target = event.target instanceof HTMLInputElement ? event.target : null;
-    if (!target) return;
-    settings.platformSpecificText = target.checked;
-    setSetting('platformSpecificText', target.checked);
-  });
-
   if (isMobile()) {
     const vibrationLabel = document.createElement('label');
     vibrationLabel.textContent = 'Enable Vibration';
@@ -219,8 +200,6 @@ function createSettingsUI(): HTMLElement {
   muteToggle.appendChild(muteCheckbox);
 
   gameplaySection.appendChild(gameplayTitle);
-  gameplaySection.appendChild(platformTextLabel);
-  gameplaySection.appendChild(platformTextCheckbox);
 
   // Theme Section
   const themeSection = document.createElement('div');
@@ -293,9 +272,30 @@ function createSettingsUI(): HTMLElement {
   themeSection.appendChild(themeTitle);
   themeSection.appendChild(themeGroup);
 
+  // OK button to close settings
+  const buttonContainer = document.createElement('div');
+  buttonContainer.style.display = 'flex';
+  buttonContainer.style.justifyContent = 'center';
+  buttonContainer.style.marginTop = '1.5rem';
+  buttonContainer.style.gap = '1rem';
+
+  const okButton = document.createElement('button');
+  okButton.textContent = 'OK';
+  okButton.className = 'game-button';
+  okButton.style.padding = '0.5rem 2rem';
+  okButton.style.fontSize = '1rem';
+  okButton.style.cursor = 'pointer';
+  okButton.setAttribute('aria-label', 'Close settings');
+  okButton.addEventListener('click', () => {
+    hideSettings();
+  });
+
+  buttonContainer.appendChild(okButton);
+
   container.appendChild(audioSection);
   container.appendChild(gameplaySection);
   container.appendChild(themeSection);
+  container.appendChild(buttonContainer);
 
   return container;
 }
@@ -303,6 +303,13 @@ function createSettingsUI(): HTMLElement {
 export function showSettings(): void {
   const container = getById<HTMLElement>('settingsContainer');
   if (!container) return;
+
+  // Sync checkbox states with current settings
+  const settings = getSettings();
+  const muteCheckbox = container.querySelector<HTMLInputElement>('input[type="checkbox"]');
+  if (muteCheckbox) {
+    muteCheckbox.checked = settings.isMuted;
+  }
 
   container.style.display = 'block';
   container.setAttribute('aria-hidden', 'false');

@@ -4,6 +4,7 @@
  */
 
 import { performanceBudget } from '@utils/performanceBudget.js';
+import { getCurrentTheme } from '@core/themes';
 
 let hudElement: HTMLDivElement | null = null;
 let enabled = false;
@@ -11,6 +12,9 @@ let lastRenderedText = '';
 
 function ensureHudElement(): HTMLDivElement {
   if (hudElement) return hudElement;
+
+  const theme = getCurrentTheme();
+
   hudElement = document.createElement('div');
   hudElement.id = 'perfHud';
   hudElement.style.position = 'fixed';
@@ -19,16 +23,28 @@ function ensureHudElement(): HTMLDivElement {
   hudElement.style.transform = 'translateX(-50%)';
   hudElement.style.padding = '6px 10px';
   hudElement.style.background = 'rgba(0, 0, 0, 0.7)';
-  hudElement.style.color = '#00e7ff';
+  hudElement.style.color = theme.colors.hudAccent;
   hudElement.style.fontFamily = 'monospace';
   hudElement.style.fontSize = '12px';
   hudElement.style.zIndex = '999';
-  hudElement.style.border = '1px solid rgba(0, 231, 255, 0.4)';
+  hudElement.style.border = `1px solid ${theme.colors.hudAccent}40`;
   hudElement.style.borderRadius = '6px';
   hudElement.style.display = 'none';
   hudElement.setAttribute('aria-hidden', 'true');
   document.body.appendChild(hudElement);
   return hudElement;
+}
+
+/**
+ * Updates the performance HUD styling when theme changes.
+ * Called by theme manager when theme is switched.
+ */
+export function updatePerfHudTheme(): void {
+  if (!hudElement) return;
+
+  const theme = getCurrentTheme();
+  hudElement.style.color = theme.colors.hudAccent;
+  hudElement.style.border = `1px solid ${theme.colors.hudAccent}40`;
 }
 
 export function initPerfHud(): void {

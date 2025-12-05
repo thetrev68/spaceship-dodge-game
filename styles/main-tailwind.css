@@ -49,12 +49,7 @@ canvas {
   transition: opacity 0.3s ease-in-out;
 }
 
-.game-overlay h1 {
-  font-size: 3rem;
-  margin-bottom: 1rem;
-  color: #00ffff;
-  text-shadow: 0 0 10px #00ffff;
-}
+/* Overlay title styles moved to inline.css for theme system compatibility */
 
 .game-overlay p {
   font-size: 1.5rem;
@@ -62,27 +57,7 @@ canvas {
   color: white;
 }
 
-.game-overlay button {
-  padding: 0.75rem 2rem;
-  font-size: 1.25rem;
-  background-color: #2563eb;
-  color: white;
-  border: none;
-  border-radius: 0.5rem;
-  cursor: pointer;
-  transition: all 0.3s;
-  box-shadow: 0 4px 15px rgba(0, 123, 255, 0.4);
-  touch-action: manipulation;
-}
-
-.game-overlay button:hover {
-  background-color: #1d4ed8;
-  transform: translateY(-2px);
-}
-
-.game-overlay button:active {
-  transform: translateY(0);
-}
+/* Button styles moved to inline.css for theme system compatibility */
 
 .score-display {
   position: absolute;

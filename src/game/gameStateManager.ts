@@ -6,7 +6,6 @@
 import { entityState, gameState, playerLives, score, gameLevel, playerState } from '@core/state.js';
 import { resetLevelFlow } from '@game/flowManager.js';
 import { showOverlay } from '@ui/overlays/overlayManager.js';
-import { createAudioControls } from '@ui/controls/audioControls.js';
 import { resetPlayer } from '@entities/player.js';
 import { clearAllBullets } from '@entities/bullet.js';
 import { services } from '@services/ServiceProvider.js';
@@ -72,8 +71,6 @@ export function startGame(canvas: HTMLCanvasElement): void {
   resetPlayer(canvas.width, canvas.height);
   resetLevelFlow();
   showOverlay('PLAYING');
-
-  createAudioControls();
 
   services.audioService.unmuteAll();
   services.audioService.startMusic();

@@ -35,17 +35,13 @@ export function initializeCanvas(canvas: HTMLCanvasElement): void {
 
 /**
  * Set overlay dimensions to match canvas position and size
+ * NOTE: Disabled - overlays now use CSS centering for better visual design
  */
 export function setOverlayDimensions(canvas: HTMLCanvasElement, overlays: HTMLElement[]): void {
-  const canvasRect = canvas.getBoundingClientRect();
-  overlays.forEach((overlay) => {
-    if (overlay) {
-      overlay.style.width = canvasRect.width + 'px';
-      overlay.style.height = canvasRect.height + 'px';
-      overlay.style.left = canvasRect.left + 'px';
-      overlay.style.top = canvasRect.top + 'px';
-    }
-  });
+  // Overlays are now centered boxes via CSS (see inline.css)
+  // No longer forcing them to match canvas dimensions
+  // This allows for the nice bordered, centered overlay design
+  return;
 }
 
 /**

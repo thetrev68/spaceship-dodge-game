@@ -23,16 +23,16 @@ describe('canvasUtils', () => {
     expect(canvas.style.objectFit).toBe('contain');
   });
 
-  it('sets overlay dimensions to match canvas', () => {
+  it('setOverlayDimensions is disabled (overlays use CSS centering)', () => {
+    // Function is disabled to allow CSS-based centered overlay design
+    // Overlays now use position: fixed with transform: translate(-50%, -50%)
     const canvas = document.createElement('canvas');
-    Object.defineProperty(canvas, 'getBoundingClientRect', {
-      value: () => ({ width: 500, height: 400, left: 10, top: 20 }),
-    });
     const overlay = document.createElement('div');
     setOverlayDimensions(canvas, [overlay]);
-    expect(overlay.style.width).toBe('500px');
-    expect(overlay.style.height).toBe('400px');
-    expect(overlay.style.left).toBe('10px');
-    expect(overlay.style.top).toBe('20px');
+    // Function should do nothing (returns early)
+    expect(overlay.style.width).toBe('');
+    expect(overlay.style.height).toBe('');
+    expect(overlay.style.left).toBe('');
+    expect(overlay.style.top).toBe('');
   });
 });

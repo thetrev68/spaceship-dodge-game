@@ -195,17 +195,34 @@ export function drawPlayer(ctx: CanvasRenderingContext2D): void {
     const cx = player.x + player.width / 2;
     const cy = player.y + player.height / 2;
     const radius = Math.max(player.width, player.height) * PLAYER_CONSTANTS.SHIELD_RADIUS_FACTOR;
-    ctx.save();
-    if (!isMobile()) {
-      ctx.shadowColor = theme.colors.playerShield;
-      ctx.shadowBlur = HUD_CONSTANTS.SHIELD_SHADOW_BLUR;
+
+    // Flash warning in last 3 seconds (3 flashes)
+    // Timer is in frames (60 FPS), so 3 seconds = 180 frames
+    const framesRemaining = powerUps.shield.timer;
+    const flashWarningThreshold = 180; // Last 3 seconds (60 FPS * 3)
+    let shouldDraw = true;
+
+    if (framesRemaining <= flashWarningThreshold && framesRemaining > 0) {
+      // Create 3 flashes in the last 3 seconds
+      // Each flash is ~1 second (60 frames): visible for 30 frames, hidden for 30 frames
+      const flashCycleFrames = 60; // 1 second per flash cycle at 60 FPS
+      const flashPosition = framesRemaining % flashCycleFrames;
+      shouldDraw = flashPosition > 30; // Visible for first 30 frames (0.5s) of each cycle
     }
-    ctx.strokeStyle = theme.colors.playerShield;
-    ctx.lineWidth = HUD_CONSTANTS.SHIELD_LINE_WIDTH;
-    ctx.beginPath();
-    ctx.arc(cx, cy, radius, 0, Math.PI * 2);
-    ctx.stroke();
-    ctx.restore();
+
+    if (shouldDraw) {
+      ctx.save();
+      if (!isMobile()) {
+        ctx.shadowColor = theme.colors.playerShield;
+        ctx.shadowBlur = HUD_CONSTANTS.SHIELD_SHADOW_BLUR;
+      }
+      ctx.strokeStyle = theme.colors.playerShield;
+      ctx.lineWidth = HUD_CONSTANTS.SHIELD_LINE_WIDTH;
+      ctx.beginPath();
+      ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.restore();
+    }
   }
 
   ctx.strokeStyle = theme.colors.player;

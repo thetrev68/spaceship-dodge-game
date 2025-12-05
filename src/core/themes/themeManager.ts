@@ -43,6 +43,7 @@ import { createReactive } from '@core/reactive';
 import type { ReactiveValue } from '@core/reactive';
 import { log, debug } from '@core/logger';
 import { announcer } from '@ui/accessibility/announcer';
+import { updatePerfHudTheme } from '@ui/hud/perfHUD';
 import type { Theme, ThemeId } from '@types';
 import {
   DEFAULT_THEME,
@@ -305,6 +306,9 @@ export function applyUITheme(): void {
     button.style.backgroundColor = 'var(--button-background)';
     button.style.color = 'var(--button-text)';
   });
+
+  // Update performance HUD theme colors
+  updatePerfHudTheme();
 
   // Log theme application for debugging
   debug('ui', `Applied ${theme.name} theme to UI elements`);

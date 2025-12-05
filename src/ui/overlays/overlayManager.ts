@@ -11,6 +11,7 @@ import { clearAllBullets } from '@entities/bullet.js';
 import { getPlatformText } from '@ui/settings/settingsManager.js';
 import { getById, isHTMLElement } from '@utils/dom.js';
 import { services } from '@services/ServiceProvider.js';
+import { formatNumber } from '@utils/formatNumber.js';
 
 const focusableSelector = [
   'a[href]',
@@ -145,10 +146,10 @@ export function showOverlay(state: OverlayState, scoreValue = 0, levelValue = 0)
       services.audioService.stopMusic();
       const finalScoreDisplay = getById<HTMLElement>('finalScore');
       if (finalScoreDisplay) {
-        finalScoreDisplay.textContent = `Final Score: ${scoreValue} (Level ${levelValue + 1})`;
+        finalScoreDisplay.textContent = `Final Score: ${formatNumber(scoreValue)} (Level ${levelValue + 1})`;
       }
       announce(
-        `Game over. Final score ${scoreValue}, level ${levelValue + 1}. Press Enter to play again or open settings.`
+        `Game over. Final score ${formatNumber(scoreValue)}, level ${levelValue + 1}. Press Enter to play again or open settings.`
       );
       show(getById<HTMLElement>('gameOverOverlay'));
       break;
@@ -162,9 +163,9 @@ export function showOverlay(state: OverlayState, scoreValue = 0, levelValue = 0)
 
       if (levelUpMessage) levelUpMessage.textContent = `LEVEL ${levelValue + 1}`;
       if (currentLevelInfo) currentLevelInfo.textContent = 'Get Ready!';
-      if (currentScoreInfo) currentScoreInfo.textContent = `Score: ${scoreValue}`;
+      if (currentScoreInfo) currentScoreInfo.textContent = `Score: ${formatNumber(scoreValue)}`;
       announce(
-        `Level ${levelValue + 1} ready. Current score ${scoreValue}. Press Enter or Continue to resume.`
+        `Level ${levelValue + 1} ready. Current score ${formatNumber(scoreValue)}. Press Enter or Continue to resume.`
       );
       show(getById<HTMLElement>('levelTransitionOverlay'));
       break;

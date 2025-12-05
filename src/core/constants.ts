@@ -73,7 +73,7 @@ export const POWERUP_CONFIG: ReadonlyConfig<PowerUpConfigShape> = {
     DURATION: 10000, // 10 seconds
   },
   shield: {
-    DURATION: 5000, // 5 seconds
+    DURATION: 10000, // 10 seconds (matching doubleBlaster)
   },
   SPAWN_INTERVAL: 10000, // 10 seconds
 };

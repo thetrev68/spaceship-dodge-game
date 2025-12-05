@@ -15,6 +15,7 @@ import {
   type PowerupExpiredEvent,
 } from '@core/events/GameEvents.js';
 import { getCurrentTheme } from '@core/themes';
+import { formatNumber } from '@utils/formatNumber.js';
 
 type ScorePopup = { text: string; x: number; y: number; opacity: number; color: string };
 
@@ -36,13 +37,18 @@ export function initializeScorePopups(): void {
 
   eventBus.on<AsteroidDestroyedEvent>(GameEvent.ASTEROID_DESTROYED, (data) => {
     const theme = getCurrentTheme();
-    addScorePopup(`+${data.score}`, data.position.x, data.position.y, theme.colors.scorePopup);
+    addScorePopup(
+      `+${formatNumber(data.score)}`,
+      data.position.x,
+      data.position.y,
+      theme.colors.scorePopup
+    );
   });
 
   eventBus.on<BonusAwardedEvent>(GameEvent.BONUS_AWARDED, (data) => {
     const theme = getCurrentTheme();
     addScorePopup(
-      `+${data.bonusAmount} (${data.bonusType})`,
+      `+${formatNumber(data.bonusAmount)} (${data.bonusType})`,
       data.position.x,
       data.position.y,
       theme.colors.bonusPopup

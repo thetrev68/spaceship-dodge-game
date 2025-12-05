@@ -26,7 +26,7 @@ export function setupStarfield(canvas: HTMLCanvasElement): void {
     canvas.height = window.innerHeight;
     canvas.style.width = '100vw';
     canvas.style.height = '100vh';
-    canvas.style.objectFit = 'cover';
+    canvas.style.objectFit = 'contain'; // Match game canvas for proper alignment
   }
 
   resize();
