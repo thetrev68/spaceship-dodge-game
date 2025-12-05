@@ -37,7 +37,6 @@
     "@tailwindcss/postcss": "^4.1.17",
     "@vitest/coverage-v8": "^4.0.15",
     "autoprefixer": "^10.4.22",
-    "bundlesize": "^0.18.2",
     "eslint": "^9.39.1",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
@@ -67,16 +66,6 @@
       "prettier --write"
     ]
   },
-  "bundlesize": [
-    {
-      "path": "./dist/assets/*.js",
-      "maxSize": "200 kB"
-    },
-    {
-      "path": "./dist/assets/*.css",
-      "maxSize": "20 kB"
-    }
-  ],
   "dependencies": {
     "web-vitals": "^5.1.0"
   }

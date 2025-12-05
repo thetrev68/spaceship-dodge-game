@@ -40,15 +40,95 @@ const DEFAULT_SETTINGS: _GameSettings = {
 };
 
 let currentSettings: _GameSettings = { ...DEFAULT_SETTINGS };
+let storageAvailable = true;
+
+/**
+ * Validates settings object for type safety
+ * @internal
+ */
+function validateSettings(settings: Partial<_GameSettings>): Partial<_GameSettings> {
+  const validated: Partial<_GameSettings> = {};
+
+  if (
+    typeof settings.backgroundMusicVolume === 'number' &&
+    settings.backgroundMusicVolume >= 0 &&
+    settings.backgroundMusicVolume <= 1
+  ) {
+    validated.backgroundMusicVolume = settings.backgroundMusicVolume;
+  }
+
+  if (
+    typeof settings.soundEffectsVolume === 'number' &&
+    settings.soundEffectsVolume >= 0 &&
+    settings.soundEffectsVolume <= 1
+  ) {
+    validated.soundEffectsVolume = settings.soundEffectsVolume;
+  }
+
+  if (typeof settings.isMuted === 'boolean') {
+    validated.isMuted = settings.isMuted;
+  }
+
+  if (typeof settings.showTutorial === 'boolean') {
+    validated.showTutorial = settings.showTutorial;
+  }
+
+  if (typeof settings.vibrationEnabled === 'boolean') {
+    validated.vibrationEnabled = settings.vibrationEnabled;
+  }
+
+  if (typeof settings.platformSpecificText === 'boolean') {
+    validated.platformSpecificText = settings.platformSpecificText;
+  }
+
+  if (typeof settings.version === 'string') {
+    validated.version = settings.version;
+  }
+
+  return validated;
+}
+
+/**
+ * Checks localStorage quota availability
+ * @internal
+ */
+function checkStorageQuota(): boolean {
+  try {
+    const testKey = '__storage_quota_test__';
+    const testData = 'x'.repeat(1024); // 1KB test
+    localStorage.setItem(testKey, testData);
+    localStorage.removeItem(testKey);
+    return true;
+  } catch {
+    warn('settings', 'localStorage quota check failed - using in-memory settings only');
+    return false;
+  }
+}
 
 function loadSettings(): _GameSettings {
   try {
-    const savedSettings =
-      typeof localStorage !== 'undefined' ? localStorage.getItem(SETTINGS_KEY) : null;
+    if (typeof localStorage === 'undefined') {
+      debug('settings', 'localStorage not available, using defaults');
+      currentSettings = { ...DEFAULT_SETTINGS };
+      storageAvailable = false;
+      return currentSettings;
+    }
+
+    // Check storage quota on first load
+    if (!checkStorageQuota()) {
+      debug('settings', 'localStorage quota exceeded, using in-memory settings');
+      currentSettings = { ...DEFAULT_SETTINGS };
+      storageAvailable = false;
+      return currentSettings;
+    }
+
+    const savedSettings = localStorage.getItem(SETTINGS_KEY);
     if (savedSettings) {
       const parsed = JSON.parse(savedSettings) as Partial<_GameSettings>;
-      currentSettings = { ...DEFAULT_SETTINGS, ...parsed };
-      debug('settings', 'Settings loaded from storage', currentSettings);
+      // Runtime type validation for security
+      const validated = validateSettings(parsed);
+      currentSettings = { ...DEFAULT_SETTINGS, ...validated };
+      debug('settings', 'Settings loaded and validated from storage', currentSettings);
     } else {
       debug('settings', 'No saved settings found, using defaults');
       currentSettings = { ...DEFAULT_SETTINGS };
@@ -56,6 +136,7 @@ function loadSettings(): _GameSettings {
   } catch (error) {
     warn('settings', 'Failed to load settings:', error);
     currentSettings = { ...DEFAULT_SETTINGS };
+    storageAvailable = false;
   }
 
   return currentSettings;
@@ -63,12 +144,19 @@ function loadSettings(): _GameSettings {
 
 function saveSettings(): void {
   try {
-    if (typeof localStorage !== 'undefined') {
+    if (typeof localStorage !== 'undefined' && storageAvailable) {
       localStorage.setItem(SETTINGS_KEY, JSON.stringify(currentSettings));
       debug('settings', 'Settings saved to storage', currentSettings);
+    } else if (!storageAvailable) {
+      debug('settings', 'localStorage not available, settings only saved in memory');
     }
   } catch (error) {
     warn('settings', 'Failed to save settings:', error);
+    // If save fails, disable future save attempts
+    if (error instanceof Error && error.name === 'QuotaExceededError') {
+      warn('settings', 'localStorage quota exceeded - disabling persistent storage');
+      storageAvailable = false;
+    }
   }
 }
 

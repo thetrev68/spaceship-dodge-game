@@ -12,11 +12,13 @@ export const BULLET_CONFIG: ReadonlyConfig<{
   RADIUS: number;
   FIRE_RATE: number;
   FIRE_COOLDOWN_MS: number;
+  MAX_BULLETS: number;
 }> = {
   SPEED: 10,
   RADIUS: 3,
   FIRE_RATE: 100, // milliseconds
   FIRE_COOLDOWN_MS: 150,
+  MAX_BULLETS: 500, // DoS prevention: hard cap on bullet count
 };
 
 export const ASTEROID_CONFIG: ReadonlyConfig<{
@@ -36,6 +38,8 @@ export const ASTEROID_CONFIG: ReadonlyConfig<{
   FRAGMENT_SPEED_MULTIPLIER: number;
   FRAGMENTS_MIN: number;
   FRAGMENTS_MAX: number;
+  MAX_ASTEROIDS_DESKTOP: number;
+  MAX_ASTEROIDS_MOBILE: number;
 }> = {
   LEVEL_SIZES: [35, 22, 12],
   SCORE_VALUES: [20, 50, 100],
@@ -53,6 +57,8 @@ export const ASTEROID_CONFIG: ReadonlyConfig<{
   FRAGMENT_SPEED_MULTIPLIER: 0.3,
   FRAGMENTS_MIN: 2,
   FRAGMENTS_MAX: 3,
+  MAX_ASTEROIDS_DESKTOP: 100, // DoS prevention: hard cap on asteroid count
+  MAX_ASTEROIDS_MOBILE: 50, // Lower cap for mobile performance
 };
 
 /**

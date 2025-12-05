@@ -17,7 +17,6 @@ const obstacleMinSpeed = ASTEROID_CONFIG.BASE_MIN_SPEED;
 let nextAsteroidId = 1;
 const fragmentTracker: Record<number, number> = {};
 const obstacleMaxSpeed = ASTEROID_CONFIG.BASE_MAX_SPEED;
-const MOBILE_OBSTACLE_CAP = 14;
 
 // Initialize object pool
 const obstaclePool = new ObjectPool<Asteroid>(() => ({
@@ -83,7 +82,15 @@ function createObstacle(
   initialDx = 0,
   initialDy = 0,
   parentId: number | null = null
-): Asteroid {
+): Asteroid | null {
+  // DoS prevention: enforce hard cap on asteroid count
+  const maxAsteroids = isMobile()
+    ? ASTEROID_CONFIG.MAX_ASTEROIDS_MOBILE
+    : ASTEROID_CONFIG.MAX_ASTEROIDS_DESKTOP;
+  if (obstacles.length >= maxAsteroids) {
+    return null;
+  }
+
   const radius = ASTEROID_CONFIG.LEVEL_SIZES[levelIndex] ?? 0;
   const scoreValue = ASTEROID_CONFIG.SCORE_VALUES[levelIndex] ?? 0;
   const basePoints = randomInt(ASTEROID_CONFIG.SHAPE_POINTS_MIN, ASTEROID_CONFIG.SHAPE_POINTS_MAX);
@@ -233,10 +240,15 @@ export function updateObstacles(
     }
   }
 
+  // DoS prevention: check asteroid cap before spawning
+  const maxAsteroids = isMobile()
+    ? ASTEROID_CONFIG.MAX_ASTEROIDS_MOBILE
+    : ASTEROID_CONFIG.MAX_ASTEROIDS_DESKTOP;
+
   if (
     allowSpawning &&
     now - lastSpawnTimeRef.value > spawnInterval &&
-    (!isMobile() || obstacles.length < MOBILE_OBSTACLE_CAP)
+    obstacles.length < maxAsteroids
   ) {
     const spawnRadius = ASTEROID_CONFIG.LEVEL_SIZES[0] ?? 0;
     createObstacle(Math.random() * (canvasWidth - spawnRadius * 2), -spawnRadius * 2, 0);

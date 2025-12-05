@@ -132,6 +132,7 @@ export function clearAllBullets(): void {
  * - Sets initial position and upward velocity
  * - Plays fire sound effect (throttled to prevent audio spam)
  * - Only fires during PLAYING game state
+ * - Enforces MAX_BULLETS cap to prevent DoS attacks
  *
  * ## Sound Throttling
  * - **Desktop:** Max 1 sound per 30ms (prevents overlap)
@@ -141,6 +142,11 @@ export function clearAllBullets(): void {
  * ## Object Pooling
  * Uses `bulletPool` to reuse bullet objects instead of creating new ones.
  * Dramatically reduces GC pressure during high fire rates (5-10 bullets/second).
+ *
+ * ## DoS Prevention
+ * - Hard cap of MAX_BULLETS (500) prevents memory exhaustion
+ * - Silently discards bullets beyond cap (no error thrown)
+ * - Prevents attack via holding fire button continuously
  *
  * @param x - Horizontal spawn position (typically player center X)
  * @param y - Vertical spawn position (typically player top Y)
@@ -159,10 +165,14 @@ export function clearAllBullets(): void {
  * ```
  *
  * @see BULLET_CONFIG.SPEED - Bullet velocity (-8 pixels/frame)
+ * @see BULLET_CONFIG.MAX_BULLETS - Maximum bullet count (500)
  * @see bulletPool - Object pool for bullet reuse
  */
 export function fireBullet(x: number, y: number): void {
   if (gameState.value !== 'PLAYING') return;
+
+  // DoS prevention: enforce hard cap on bullet count
+  if (bullets.length >= BULLET_CONFIG.MAX_BULLETS) return;
 
   const bullet = acquireBullet(x, y);
   bullets.push(bullet);
