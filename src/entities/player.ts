@@ -266,9 +266,9 @@ export function drawPlayer(ctx: CanvasRenderingContext2D): void {
   const flameRadius = engineBottomWidth;
 
   if (!isMobile()) {
-    // High-quality gradient glow for desktop
+    // High-quality gradient glow for desktop with pulse animation
     const gradient = ctx.createRadialGradient(flameX, flameY, 0, flameX, flameY, flameRadius * 3);
-    gradient.addColorStop(0, theme.colors.playerEngine);
+    gradient.addColorStop(0, `rgba(0, 255, 255, ${0.6 * pulse})`);
     gradient.addColorStop(1, 'rgba(0, 255, 255, 0)');
 
     ctx.fillStyle = gradient;
@@ -285,8 +285,8 @@ export function drawPlayer(ctx: CanvasRenderingContext2D): void {
     ctx.fill();
   }
 
-  // Core flame shape (simple solid color for mobile)
-  ctx.fillStyle = theme.colors.playerEngine;
+  // Core flame shape with pulse animation
+  ctx.fillStyle = `rgba(0, 255, 255, ${0.7 * pulse})`;
   ctx.beginPath();
   ctx.moveTo(flameX - flameRadius * 0.6, engineBottomY);
   ctx.lineTo(flameX + flameRadius * 0.6, engineBottomY);
