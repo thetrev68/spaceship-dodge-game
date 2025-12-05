@@ -21,6 +21,9 @@ import { showSettings, hideSettings } from '@ui/settings/settingsUI.js';
 import { getById } from '@utils/dom.js';
 import { showOverlay, setOverlayDimensions, quitGame } from '@ui/overlays/overlayManager.js';
 import { services } from '@services/ServiceProvider.js';
+import { analytics } from '@utils/analytics.js';
+import { initializeKeyboardHelp } from '@ui/accessibility/keyboardHelp.js';
+import { announcer } from '@ui/accessibility/announcer.js';
 
 let audioUnlockAttempted = false;
 
@@ -34,6 +37,7 @@ function handleFirstTouch(): void {
     .then(() => {
       debug('audio', 'Audio unlocked from raw touch event');
       services.audioService.unmuteAll();
+      analytics.trackInteraction('audio-unlock-attempted');
     })
     .catch((err: unknown) => {
       warn('audio', 'Final audio unlock failed:', err);
@@ -175,6 +179,13 @@ function wireOverlayControls(canvas: HTMLCanvasElement): void {
 async function main() {
   debug('game', 'Spaceship Dodge starting...');
 
+  // Track app initialization
+  analytics.trackEvent({
+    category: 'performance',
+    action: 'app-initialized',
+    value: Date.now(),
+  });
+
   initializeSettings();
 
   const canvasSetup: CanvasSetup | null = initializeCanvas();
@@ -189,6 +200,14 @@ async function main() {
   wireOverlayControls(canvas);
 
   await initializeAudio();
+
+  // Initialize accessibility features
+  initializeKeyboardHelp();
+
+  // Welcome announcement
+  announcer.announce(
+    'Spaceship Dodge game loaded. Press ? for keyboard shortcuts, or click Start to begin.'
+  );
 
   debug('game', 'Initialization complete');
 

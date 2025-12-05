@@ -74,7 +74,7 @@ const colors: Record<string, string> = {
   perf: '#e91e63',
 };
 
-const log = (
+const _log = (
   level: number,
   category: _LogCategory | string,
   message: string,
@@ -112,19 +112,19 @@ function getTimestamp(): string {
 }
 
 export function debug(category: _LogCategory | string, message: string, ...args: unknown[]): void {
-  log(LogLevel.DEBUG, category, message, ...args);
+  _log(LogLevel.DEBUG, category, message, ...args);
 }
 
 export function info(category: _LogCategory | string, message: string, ...args: unknown[]): void {
-  log(LogLevel.INFO, category, message, ...args);
+  _log(LogLevel.INFO, category, message, ...args);
 }
 
 export function warn(category: _LogCategory | string, message: string, ...args: unknown[]): void {
-  log(LogLevel.WARN, category, message, ...args);
+  _log(LogLevel.WARN, category, message, ...args);
 }
 
 export function error(category: _LogCategory | string, message: string, ...args: unknown[]): void {
-  log(LogLevel.ERROR, category, message, ...args);
+  _log(LogLevel.ERROR, category, message, ...args);
 }
 
 export const logger = {
@@ -164,6 +164,14 @@ export const logger = {
     return new Timer(category, label);
   },
   LogLevel,
+};
+
+// Export log object for general use
+export const log = {
+  debug: (message: string, ...args: unknown[]) => debug('general', message, ...args),
+  info: (message: string, ...args: unknown[]) => info('general', message, ...args),
+  warn: (message: string, ...args: unknown[]) => warn('general', message, ...args),
+  error: (message: string, ...args: unknown[]) => error('general', message, ...args),
 };
 
 function setupProduction(): void {

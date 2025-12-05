@@ -63,6 +63,7 @@ import { showOverlay } from '@ui/overlays/overlayManager.js';
 import { isMobile } from '@utils/platform.js';
 import { updatePerfHud } from '@ui/hud/perfHUD.js';
 import { services } from '@services/ServiceProvider.js';
+import { performanceBudget } from '@utils/performanceBudget.js';
 
 // Frame timing state
 let lastFrameTime = 0;
@@ -249,6 +250,10 @@ function gameLoop(canvas: HTMLCanvasElement, timestamp = 0): void {
   const frameEnd = performance.now();
 
   // ===== PERFORMANCE MONITORING =====
+  // Track frame time for performance budget
+  const frameDuration = frameEnd - frameStart;
+  performanceBudget.recordFrame(frameDuration);
+
   // Sample FPS every 500ms for performance HUD (first frame always reports for visibility in tests/dev)
   perfFrameCounter += 1;
   const perfWindowMs = frameEnd - perfSampleStart;

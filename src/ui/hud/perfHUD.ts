@@ -3,6 +3,8 @@
  * Lightweight performance HUD for FPS and timing metrics.
  */
 
+import { performanceBudget } from '@utils/performanceBudget.js';
+
 let hudElement: HTMLDivElement | null = null;
 let enabled = false;
 let lastRenderedText = '';
@@ -58,7 +60,13 @@ export function updatePerfHud({
 }): void {
   if (!enabled) return;
   const el = ensureHudElement();
-  const text = `FPS ${fps.toFixed(0)} | frame ${frameMs.toFixed(1)}ms | logic ${logicMs.toFixed(1)}ms`;
+  const stats = performanceBudget.getStats();
+  const budget = performanceBudget.isWithinBudget();
+
+  // Color indicator based on performance budget
+  const budgetIndicator = budget.withinTarget ? '🟢' : budget.withinMax ? '🟡' : '🔴';
+
+  const text = `${budgetIndicator} FPS ${fps.toFixed(0)} | frame ${frameMs.toFixed(1)}ms | logic ${logicMs.toFixed(1)}ms | avg ${stats.avgFrameTime.toFixed(1)}ms`;
   if (text === lastRenderedText) return;
   lastRenderedText = text;
   el.textContent = text;

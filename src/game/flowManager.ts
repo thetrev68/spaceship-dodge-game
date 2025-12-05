@@ -10,6 +10,9 @@ import { clearAllBullets } from '@entities/bullet.js';
 import { services } from '@services/ServiceProvider.js';
 import { eventBus } from '@core/events/EventBus.js';
 import { GameEvent, type LevelUpEvent } from '@core/events/GameEvents.js';
+import { analytics } from '@utils/analytics.js';
+import { score } from '@core/state.js';
+import { announcer } from '@ui/accessibility/announcer.js';
 
 let pendingLevelUp = false;
 let levelClearTime: number | null = null;
@@ -54,6 +57,11 @@ export function updateLevelFlow(onLevelUpCallback: () => void): void {
 
       services.audioService.playSound('levelup');
       services.audioService.stopMusic();
+
+      analytics.trackGameplay('level-completed', `level-${gameLevel.value}`, score.value);
+      announcer.announce(`Level ${gameLevel.value} reached! Score: ${score.value}`, {
+        priority: 'assertive',
+      });
 
       eventBus.emit(GameEvent.LEVEL_TRANSITION_START, undefined);
       eventBus.emit<LevelUpEvent>(GameEvent.LEVEL_UP, {

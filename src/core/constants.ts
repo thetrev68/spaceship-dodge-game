@@ -87,3 +87,5 @@ export const LEVEL_CONFIG: ReadonlyConfig<LevelConfig> = {
   DIFFICULTY_SCALE_THRESHOLD: 5,
   LOGARITHMIC_SCALE_START: 5,
 };
+
+export { DEV_CONFIG } from './gameConstants.js';

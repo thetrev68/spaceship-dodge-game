@@ -106,3 +106,8 @@ export const GAME_STATE_CONSTANTS: ReadonlyConfig<{
   INITIAL_LEVEL: 0,
   PLAYER_RESET_Y_OFFSET: 50,
 };
+
+export const DEV_CONFIG = {
+  DEBUG_MODE: false, // Enable runtime assertions and profiling
+  SHOW_PERFORMANCE_METRICS: false, // Show performance HUD
+} as const;
