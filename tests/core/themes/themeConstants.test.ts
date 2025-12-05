@@ -95,6 +95,33 @@ describe('Theme Constants', () => {
         expect(color.includes('#f5f5f0') || color.includes('rgba(245, 245, 240')).toBe(true);
       });
     });
+
+    it('should have complete UI color palette', () => {
+      const uiColors = MONOCHROME_THEME.uiColors;
+      expect(uiColors).toHaveProperty('overlayBackground');
+      expect(uiColors).toHaveProperty('overlayText');
+      expect(uiColors).toHaveProperty('overlayTitle');
+      expect(uiColors).toHaveProperty('buttonBackground');
+      expect(uiColors).toHaveProperty('buttonText');
+      expect(uiColors).toHaveProperty('buttonHover');
+      expect(uiColors).toHaveProperty('buttonFocus');
+      expect(uiColors).toHaveProperty('settingsButtonBackground');
+      expect(uiColors).toHaveProperty('settingsButtonText');
+    });
+
+    it('should have completely transparent overlay background (invisible)', () => {
+      const uiColors = MONOCHROME_THEME.uiColors;
+      expect(uiColors.overlayBackground).toBe('transparent');
+    });
+
+    it('should have all buttons consistent with translucent background and white text', () => {
+      const uiColors = MONOCHROME_THEME.uiColors;
+      // All buttons now use the same styling
+      expect(uiColors.buttonBackground).toBe('rgba(0, 0, 0, 0.6)');
+      expect(uiColors.buttonText).toBe('#ffffff');
+      expect(uiColors.settingsButtonBackground).toBe('rgba(0, 0, 0, 0.6)');
+      expect(uiColors.settingsButtonText).toBe('#ffffff');
+    });
   });
 
   describe('THEME_REGISTRY', () => {

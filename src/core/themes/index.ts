@@ -18,12 +18,5 @@ export {
   getAvailableThemes,
   initializeThemeSystem,
   watchTheme,
+  applyUITheme,
 } from './themeManager';
-
-export {
-  DEFAULT_THEME,
-  MONOCHROME_THEME,
-  THEME_REGISTRY,
-  VALID_THEME_IDS,
-  THEME_STORAGE_KEY,
-} from './themeConstants';

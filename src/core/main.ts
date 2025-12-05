@@ -24,7 +24,8 @@ import { services } from '@services/ServiceProvider.js';
 import { analytics } from '@utils/analytics.js';
 import { initializeKeyboardHelp } from '@ui/accessibility/keyboardHelp.js';
 import { announcer } from '@ui/accessibility/announcer.js';
-import { initializeThemeSystem } from '@core/themes';
+import { initializeThemeSystem, applyUITheme, watchTheme } from '@core/themes';
+import { registerDevTools } from '@utils/devTools.js';
 
 let audioUnlockAttempted = false;
 
@@ -189,6 +190,13 @@ async function main() {
 
   // Initialize theme system before rendering
   initializeThemeSystem();
+  applyUITheme();
+
+  // Apply UI theme when theme changes
+  watchTheme(applyUITheme);
+
+  // Expose dev helpers when debugging locally
+  registerDevTools();
 
   initializeSettings();
 

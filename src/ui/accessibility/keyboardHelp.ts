@@ -47,7 +47,7 @@ export function initializeKeyboardHelp(): void {
   log.debug('Keyboard help initialized (press ? to view)');
 }
 
-export function toggleKeyboardHelp(): void {
+function toggleKeyboardHelp(): void {
   const overlay = document.getElementById('keyboard-help-overlay') as HTMLDivElement | null;
 
   if (!overlay) {
@@ -57,7 +57,7 @@ export function toggleKeyboardHelp(): void {
   }
 }
 
-export function showKeyboardHelp(): void {
+function showKeyboardHelp(): void {
   let overlay = document.getElementById('keyboard-help-overlay') as HTMLDivElement | null;
 
   if (!overlay) {
@@ -74,7 +74,7 @@ export function showKeyboardHelp(): void {
   log.debug('Keyboard help displayed');
 }
 
-export function hideKeyboardHelp(): void {
+function hideKeyboardHelp(): void {
   const overlay = document.getElementById('keyboard-help-overlay') as HTMLDivElement | null;
   if (!overlay) return;
 

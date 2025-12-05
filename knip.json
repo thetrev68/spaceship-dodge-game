@@ -3,5 +3,5 @@
   "entry": ["src/core/main.ts", "index.html"],
   "project": ["src/**/*.ts"],
   "ignore": ["node_modules/**", "dist/**", "styles/**", "src/game/flowManager.js"],
-  "ignoreBinaries": ["tailwindcss"]
+  "ignoreBinaries": ["tailwindcss", "bundlesize"]
 }

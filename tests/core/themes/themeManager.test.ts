@@ -17,6 +17,7 @@ import {
   getAvailableThemes,
   initializeThemeSystem,
   watchTheme,
+  applyUITheme,
 } from '@core/themes';
 import {
   DEFAULT_THEME,
@@ -263,6 +264,77 @@ describe('Theme Manager', () => {
       initializeThemeSystem();
       const theme = getCurrentTheme();
       expect(theme.id).toBe('monochrome');
+    });
+  });
+
+  describe('applyUITheme()', () => {
+    it('should set CSS variables for UI theme colors', () => {
+      // Mock document.documentElement
+      const mockRoot = {
+        style: {
+          setProperty: vi.fn(),
+        },
+      };
+
+      // Mock document.querySelectorAll
+      const mockQuerySelectorAll = vi.fn().mockReturnValue([]);
+
+      // Mock document
+      const originalDocument = window.document;
+      Object.defineProperty(window, 'document', {
+        value: {
+          documentElement: mockRoot,
+          querySelectorAll: mockQuerySelectorAll,
+        },
+        writable: true,
+      });
+
+      // Call the function directly
+      applyUITheme();
+
+      // Verify CSS variables were set
+      const { uiColors } = DEFAULT_THEME;
+
+      expect(mockRoot.style.setProperty).toHaveBeenCalledWith(
+        '--overlay-background',
+        uiColors.overlayBackground
+      );
+      expect(mockRoot.style.setProperty).toHaveBeenCalledWith(
+        '--overlay-text',
+        uiColors.overlayText
+      );
+      expect(mockRoot.style.setProperty).toHaveBeenCalledWith(
+        '--overlay-title',
+        uiColors.overlayTitle
+      );
+      expect(mockRoot.style.setProperty).toHaveBeenCalledWith(
+        '--button-background',
+        uiColors.buttonBackground
+      );
+      expect(mockRoot.style.setProperty).toHaveBeenCalledWith('--button-text', uiColors.buttonText);
+      expect(mockRoot.style.setProperty).toHaveBeenCalledWith(
+        '--button-hover',
+        uiColors.buttonHover
+      );
+      expect(mockRoot.style.setProperty).toHaveBeenCalledWith(
+        '--button-focus',
+        uiColors.buttonFocus
+      );
+      expect(mockRoot.style.setProperty).toHaveBeenCalledWith(
+        '--settings-button-bg',
+        uiColors.settingsButtonBackground
+      );
+      expect(mockRoot.style.setProperty).toHaveBeenCalledWith(
+        '--settings-button-text',
+        uiColors.settingsButtonText
+      );
+      expect(mockRoot.style.setProperty).toHaveBeenCalledTimes(9);
+
+      // Restore original document
+      Object.defineProperty(window, 'document', {
+        value: originalDocument,
+        writable: true,
+      });
     });
   });
 });

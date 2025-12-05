@@ -29,7 +29,7 @@ const DEFAULT_CONFIG: PerformanceBudgetConfig = {
   windowSize: 60,
 };
 
-export class PerformanceBudget {
+class PerformanceBudget {
   private frameTimes: number[] = [];
   private config: PerformanceBudgetConfig;
   private violationCount = 0;

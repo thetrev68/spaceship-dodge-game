@@ -40,6 +40,7 @@
  */
 
 import { createReactive } from '@core/reactive';
+import type { ReactiveValue } from '@core/reactive';
 import { log } from '@core/logger';
 import { announcer } from '@ui/accessibility/announcer';
 import type { Theme, ThemeId } from '@types';
@@ -58,7 +59,7 @@ import {
  *
  * @internal
  */
-const currentTheme = createReactive<Theme>(DEFAULT_THEME);
+const currentTheme: ReactiveValue<Theme> = createReactive<Theme>(DEFAULT_THEME);
 
 /**
  * Validates a theme ID against the whitelist.
@@ -249,4 +250,62 @@ export function initializeThemeSystem(): void {
  */
 export function watchTheme(callback: () => void): () => void {
   return currentTheme.watch(callback);
+}
+
+/**
+ * Applies the current theme to UI elements.
+ *
+ * Updates overlay and button styles to match the current theme's UI color palette.
+ * Should be called when theme changes or on initialization.
+ *
+ * @example
+ * ```typescript
+ * // Apply theme to UI elements
+ * applyUITheme();
+ *
+ * // Or automatically apply when theme changes
+ * watchTheme(applyUITheme);
+ * ```
+ */
+export function applyUITheme(): void {
+  const theme = getCurrentTheme();
+  const uiColors = theme.uiColors;
+  const root = document.documentElement;
+
+  // Set CSS variables for theme colors - simplified approach
+  root.style.setProperty('--overlay-background', uiColors.overlayBackground);
+  root.style.setProperty('--overlay-text', uiColors.overlayText);
+  root.style.setProperty('--overlay-title', uiColors.overlayTitle);
+
+  // Set button CSS variables - simplified
+  root.style.setProperty('--button-background', uiColors.buttonBackground);
+  root.style.setProperty('--button-text', uiColors.buttonText);
+  root.style.setProperty('--button-hover', uiColors.buttonHover);
+  root.style.setProperty('--button-focus', uiColors.buttonFocus);
+
+  // Set settings button specific colors
+  root.style.setProperty('--settings-button-bg', uiColors.settingsButtonBackground);
+  root.style.setProperty('--settings-button-text', uiColors.settingsButtonText);
+
+  // Apply overlay background colors - transparent for starfield
+  document.querySelectorAll<HTMLElement>('.game-overlay').forEach((overlay) => {
+    overlay.style.backgroundColor = 'var(--overlay-background)';
+    overlay.style.color = 'var(--overlay-text)';
+
+    // Apply title styling - remove blue glow as requested
+    const title = overlay.querySelector<HTMLElement>('h1');
+    if (title) {
+      title.style.color = 'var(--overlay-title)';
+      title.style.textShadow = 'none'; // Remove any glow effects
+    }
+  });
+
+  // Apply button styles - all buttons now use same styling
+  document.querySelectorAll<HTMLElement>('.game-button').forEach((button) => {
+    button.style.backgroundColor = 'var(--button-background)';
+    button.style.color = 'var(--button-text)';
+  });
+
+  // Log theme application for debugging
+  log.debug('ui', `Applied ${theme.name} theme to UI elements`);
 }

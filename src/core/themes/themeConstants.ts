@@ -7,7 +7,41 @@
  * @module themeConstants
  */
 
-import type { Theme, ThemeId } from '@types';
+import type { Theme, ThemeId, UIColorPalette } from '@types';
+
+const DEFAULT_UI_COLORS: UIColorPalette = {
+  // Overlay colors - transparent for starfield visibility
+  overlayBackground: 'rgba(0, 0, 0, 0.8)',
+  overlayText: '#ffffff',
+  overlayTitle: '#00ffff',
+
+  // Button colors - simplified approach
+  buttonBackground: 'rgba(0, 0, 0, 0.6)',
+  buttonText: '#ffffff',
+  buttonHover: 'rgba(0, 0, 0, 0.7)',
+  buttonFocus: '#00ffff',
+
+  // Settings button specific - white with black text
+  settingsButtonBackground: '#ffffff',
+  settingsButtonText: '#000000',
+};
+
+const MONOCHROME_UI_COLORS: UIColorPalette = {
+  // Overlay colors - COMPLETELY transparent (invisible) as requested
+  overlayBackground: 'transparent', // 100% transparent - completely see-through
+  overlayText: '#f5f5f0',
+  overlayTitle: '#f5f5f0', // No blue glow, just off-white
+
+  // Button colors - ALL buttons now consistent (translucent with white text)
+  buttonBackground: 'rgba(0, 0, 0, 0.6)',
+  buttonText: '#ffffff',
+  buttonHover: 'rgba(0, 0, 0, 0.7)',
+  buttonFocus: '#f5f5f0',
+
+  // Settings button - NOW MATCHES other buttons (translucent with white text)
+  settingsButtonBackground: 'rgba(0, 0, 0, 0.6)',
+  settingsButtonText: '#ffffff',
+};
 
 /**
  * Default "Space Explorer" theme with classic arcade aesthetics.
@@ -41,6 +75,7 @@ export const DEFAULT_THEME: Theme = {
     powerupShield: '#0ff',
     powerupBlaster: '#f9d71c',
   },
+  uiColors: DEFAULT_UI_COLORS,
   fonts: {
     family: '"Inter", sans-serif',
     hudSize: '24px',
@@ -79,6 +114,7 @@ export const MONOCHROME_THEME: Theme = {
     powerupShield: '#f5f5f0',
     powerupBlaster: '#f5f5f0',
   },
+  uiColors: MONOCHROME_UI_COLORS,
   fonts: {
     family: '"Inter", sans-serif',
     hudSize: '24px',
