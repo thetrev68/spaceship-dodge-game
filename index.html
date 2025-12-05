@@ -7,6 +7,20 @@
       http-equiv="Content-Security-Policy"
       content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; media-src 'self'; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none'; frame-ancestors 'none';"
     />
+    <script>
+      // Relax CSP in development so Vite's HMR websocket and source maps don't trigger console warnings
+      if (typeof import.meta !== 'undefined' && import.meta.env?.DEV) {
+        const csp = document.querySelector('meta[http-equiv="Content-Security-Policy"]');
+        if (csp) {
+          const content = csp.getAttribute('content') ?? '';
+          const updated = content
+            .replace(/connect-src[^;]*;/, "connect-src 'self' ws://localhost:* http://localhost:* data: blob:;")
+            .replace(/frame-ancestors[^;]*;/, '')
+            .replace(/default-src[^;]*;/, "default-src 'self' data: blob:;");
+          csp.setAttribute('content', updated);
+        }
+      }
+    </script>
     <title>Spaceship Dodge</title>
     <link rel="icon" href="data:;base64,iVBORw0KGgo=" />
     <link rel="stylesheet" href="styles/main-tailwind.css" />
