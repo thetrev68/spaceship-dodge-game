@@ -7,7 +7,7 @@
   "includeVersion": true,
   "readme": "README.md",
   "exclude": ["**/node_modules/**", "**/*.test.ts", "**/*.spec.ts", "**/vite-env.d.ts"],
-  "excludeInternal": false,
+  "excludeInternal": true,
   "excludePrivate": true,
   "excludeProtected": false,
   "categorizeByGroup": true,
@@ -25,6 +25,6 @@
   "validation": {
     "notExported": true,
     "invalidLink": true,
-    "notDocumented": false
+    "notDocumented": true
   }
 }
