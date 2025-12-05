@@ -97,6 +97,40 @@ Recent updates focus on performance, stability, and code quality.
 - Rotating asteroids with angular momentum
 - Shields, rapid fire, score multipliers
 - Enemy ships with pathfinding AI
+
+## 🎨 Theme System
+
+The game now features a flexible theme system with multiple visual styles:
+
+### Available Themes
+
+- **Space Explorer** (Default): Classic neon space aesthetic with glowing effects
+- **Monochrome**: Minimalist off-white design for reduced visual complexity
+
+### Theme Switching
+
+1. Open Settings menu (⚙️ icon)
+2. Navigate to "Theme" section
+3. Select desired theme
+4. Changes apply immediately and persist across sessions
+
+### Customization
+
+The theme system supports:
+
+- Color palette customization
+- Font configuration
+- Future asset-based themes (sprites, animations)
+
+### Technical Details
+
+- Zero performance impact on gameplay
+- Persistent theme preferences
+- Accessible theme selection UI
+- Extensible architecture for future themes
+
+See [Theme System Documentation](docs/architecture/decisions/ADR-006-theme-system.md) for architecture details.
+
 - Explosive chain reactions
 
 ### Visual Polish
@@ -190,6 +224,7 @@ All PRs run:
 PRs to main also run:
 
 - ✅ Lighthouse performance audit
+- [ADR-006: Theme System Architecture](docs/architecture/decisions/ADR-006-theme-system.md) - Centralized theme management and extensibility design
 
 See [CI status](.github/workflows/ci.yml)
 
