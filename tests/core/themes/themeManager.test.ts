@@ -336,5 +336,23 @@ describe('Theme Manager', () => {
         writable: true,
       });
     });
+
+    it('styles overlays and buttons in the DOM', () => {
+      const overlay = document.createElement('div');
+      overlay.className = 'game-overlay';
+      const title = document.createElement('h1');
+      overlay.appendChild(title);
+      const button = document.createElement('button');
+      button.className = 'game-button';
+
+      document.body.append(overlay, button);
+
+      applyUITheme();
+
+      expect(overlay.style.backgroundColor).toBe('var(--overlay-background)');
+      expect(overlay.style.color).toBe('var(--overlay-text)');
+      expect(title.style.color).toBe('var(--overlay-title)');
+      expect(button.style.backgroundColor).toBe('var(--button-background)');
+    });
   });
 });
