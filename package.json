@@ -20,28 +20,61 @@
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
     "test:repeat": "vitest run --repeat 3",
+    "test:ci": "vitest run --coverage --repeat=2",
     "test:ui": "vitest --ui",
+    "test:watch": "vitest",
+    "validate": "npm run typecheck && npm run lint && npm run test:ci",
+    "prepare": "husky",
+    "clean": "rimraf dist coverage .vitest/ node_modules/.vite",
+    "reinstall": "npm run clean && npm install",
     "knip": "knip",
     "docs": "npx typedoc --entryPointStrategy expand src --out docs/api"
   },
   "devDependencies": {
+    "@commitlint/cli": "^19.6.1",
+    "@commitlint/config-conventional": "^19.6.0",
     "@eslint/js": "^9.39.1",
     "@tailwindcss/postcss": "^4.1.17",
     "@vitest/coverage-v8": "^4.0.15",
     "autoprefixer": "^10.4.22",
+    "bundlesize": "^0.18.2",
     "eslint": "^9.39.1",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
     "gh-pages": "^6.3.0",
+    "husky": "^9.1.7",
     "jsdom": "^24.1.3",
     "knip": "^5.70.2",
+    "lint-staged": "^15.2.11",
     "postcss": "^8.4.47",
     "prettier": "^3.7.4",
+    "rimraf": "^6.0.1",
+    "serve": "^14.2.4",
     "tailwindcss": "^4.1.17",
     "typedoc": "^0.28.15",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.24.0",
     "vite": "^7.2.4",
-    "vitest": "^4.0.15"
-  }
+    "vitest": "^4.0.15",
+    "wait-on": "^8.0.1"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --fix",
+      "vitest related --run --reporter=verbose"
+    ],
+    "*.{ts,tsx,json,md}": [
+      "prettier --write"
+    ]
+  },
+  "bundlesize": [
+    {
+      "path": "./dist/assets/*.js",
+      "maxSize": "200 kB"
+    },
+    {
+      "path": "./dist/assets/*.css",
+      "maxSize": "20 kB"
+    }
+  ]
 }

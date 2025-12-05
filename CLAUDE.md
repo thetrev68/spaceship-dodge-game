@@ -68,7 +68,28 @@ ESLint is configured for TypeScript with typescript-eslint. Knip helps identify 
 ### Testing
 
 ```bash
-npm run test        # Run tests with Vitest
+npm run test              # Run tests with Vitest
+npm run test:run          # Run tests once (no watch)
+npm run test:coverage     # Run tests with coverage report
+npm run test:repeat       # Run tests 3x to detect flakes
+npm run test:ci           # Coverage + 2x repeat (for CI)
+npm run test:ui           # Run tests with UI
+npm run test:watch        # Run tests in watch mode
+```
+
+### Quality Validation
+
+```bash
+npm run validate    # Run all quality checks (typecheck + lint + test:ci)
+```
+
+This is the recommended command to run before pushing or opening a PR.
+
+### Maintenance
+
+```bash
+npm run clean       # Clean build artifacts and caches
+npm run reinstall   # Clean install (clean + npm install)
 ```
 
 ### Generate Documentation
@@ -504,6 +525,102 @@ DEV_CONFIG: {
   SHOW_PERFORMANCE_METRICS: true;
 }
 ```
+
+## CI/CD & Automation
+
+### GitHub Actions Workflows
+
+The project uses automated CI/CD pipelines for quality enforcement and deployment:
+
+#### CI Workflow (`.github/workflows/ci.yml`)
+
+Runs on all pushes to main/develop and all pull requests:
+
+- **Type checking** - Validates TypeScript compilation
+- **Linting** - Enforces code style with ESLint
+- **Format checking** - Validates Prettier formatting
+- **Test suite** - Runs full test suite with coverage (85/85/80/85 thresholds)
+- **Codecov upload** - Tracks code coverage over time
+- **Build verification** - Ensures production build succeeds
+- **Bundle size check** - Monitors bundle size (200 kB JS, 20 kB CSS limits)
+
+All checks must pass before merging.
+
+#### Deploy Workflow (`.github/workflows/deploy.yml`)
+
+Runs on push to main branch:
+
+- Builds production assets
+- Deploys to GitHub Pages automatically
+- Uses official GitHub Pages deployment action
+- Proper permissions and concurrency control
+
+#### Performance Workflow (`.github/workflows/performance.yml`)
+
+Runs on pull requests to main:
+
+- Lighthouse CI with performance budgets
+- Monitors Time to Interactive (< 3000ms target)
+- Monitors First Contentful Paint (< 1000ms target)
+- Catches performance regressions before merge
+
+### Pre-commit Hooks
+
+Husky + lint-staged provides local quality gates:
+
+```bash
+# Automatically runs on git commit
+- Auto-fixes ESLint issues
+- Runs tests for changed files only
+- Formats code with Prettier
+```
+
+**Configuration**:
+
+- `.husky/pre-commit` - Main pre-commit hook
+- `.husky/commit-msg` - Validates conventional commit format
+- `package.json` lint-staged config
+
+Bypass with `--no-verify` (not recommended).
+
+### Dependabot
+
+Automated dependency management:
+
+- **Weekly schedule** - Runs Mondays at 9 AM
+- **Grouped updates** - Separate PRs for dev vs production dependencies
+- **Auto-merge** - Patch/minor updates auto-merge after CI passes
+- **Conventional commits** - Uses `chore(deps):` prefix
+
+**Configuration**: `.github/dependabot.yml`
+
+### Quality Badges
+
+README displays real-time status:
+
+- CI build status
+- Code coverage percentage (Codecov)
+- TypeScript version
+- Code style (Prettier)
+- Test framework (Vitest)
+- License
+
+### npm Scripts for CI/CD
+
+```bash
+npm run validate     # Complete quality check (typecheck + lint + test:ci)
+npm run test:ci      # Coverage + 2x repeat for flake detection
+npm run clean        # Clean build artifacts
+npm run reinstall    # Full dependency reinstall
+```
+
+### Workflow Best Practices
+
+1. **Always run `npm run validate` before pushing**
+2. **Let pre-commit hooks run** - They catch issues early
+3. **Check CI status** - Don't merge if CI is failing
+4. **Review Lighthouse reports** - Watch for performance regressions
+5. **Update dependencies weekly** - Review Dependabot PRs promptly
 
 ## Known Technical Debt
 

@@ -37,6 +37,8 @@ export default defineConfig({
         'src/input/**', // Sprint 3: Input handling
         'src/effects/**', // Non-critical visual effects
         'src/types/**', // Type definitions only
+        'src/utils/errors.ts', // Error handling utilities - low priority
+        'src/utils/validation.ts', // Validation utilities - low priority
         '.claude/**', // Documentation
         'build/**', // Build artifacts
       ],

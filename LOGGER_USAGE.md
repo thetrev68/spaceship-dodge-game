@@ -192,6 +192,7 @@ error('ui', 'Canvas not found');
    ```
 
 5. **Disable verbose categories in production**:
+
    ```typescript
    logger.setCategory('render', false);
    logger.setCategory('input', false);
@@ -258,7 +259,7 @@ export function initializeCanvas(): HTMLCanvasElement {
 
   info('ui', 'Canvas initialized successfully', {
     width: canvas.width,
-    height: canvas.height
+    height: canvas.height,
   });
 
   return canvas;

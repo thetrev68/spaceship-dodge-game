@@ -27,7 +27,7 @@ Welcome to the Spaceship Dodge Game development team! This guide will help you u
 
 ### First Time Setup
 
-```bash
+````bash
 # Clone repository
 git clone https://github.com/thetrev68/spaceship-dodge-game.git
 cd spaceship-dodge-game
@@ -176,7 +176,7 @@ Install these extensions:
   "typescript.tsdk": "node_modules/typescript/lib",
   "typescript.enablePromptUseWorkspaceTsdk": true
 }
-```
+````
 
 ### TypeScript Configuration
 
@@ -220,7 +220,7 @@ Types: `feat`, `fix`, `refactor`, `docs`, `test`, `chore`
 
 Example:
 
-```text
+````text
 feat: Add shield powerup with visual glow effect
 
 - Implements 5-second invulnerability on pickup
@@ -282,7 +282,7 @@ import { ASTEROID_CONFIG } from '@core/constants';
 
 // 4. Relative imports (avoid when possible)
 import { helper } from './utils';
-```
+````
 
 Use path aliases from `tsconfig.json`:
 
