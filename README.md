@@ -186,6 +186,9 @@ All PRs run:
 - ✅ Full test suite with coverage
 - ✅ Build verification
 - ✅ Bundle size check
+
+PRs to main also run:
+
 - ✅ Lighthouse performance audit
 
 See [CI status](.github/workflows/ci.yml)
