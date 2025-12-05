@@ -163,6 +163,13 @@ export const logger = {
   timer(label: string, category = 'perf'): Timer {
     return new Timer(category, label);
   },
+  createLogger(category: string) {
+    return _createLogger(category);
+  },
+  /** @internal - exposed for tests and advanced scenarios */
+  __log(level: number, category: _LogCategory | string, message: string, ...args: unknown[]) {
+    _log(level, category, message, ...args);
+  },
   LogLevel,
 };
 

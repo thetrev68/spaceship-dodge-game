@@ -31,4 +31,30 @@ describe('EventBus', () => {
     expect(() => eventBus.emit('safe:event', 'data')).not.toThrow();
     expect(good).toHaveBeenCalledWith('data');
   });
+
+  it('removes handlers via off() and ignores missing listeners', () => {
+    const handler = vi.fn();
+    const fallback = vi.fn();
+    const other = vi.fn();
+
+    // no handlers registered for this event
+    eventBus.off('missing:event', handler);
+
+    const unsubscribe = eventBus.on('off:test', handler);
+    eventBus.on('off:test', fallback);
+    eventBus.on('off:test', other);
+
+    unsubscribe();
+    unsubscribe(); // no-op second call exercises missing handler branch
+
+    eventBus.off('off:test', vi.fn()); // handler array exists but target not found
+
+    eventBus.off('off:test', handler);
+    eventBus.off('off:test', other);
+    eventBus.emit('off:test', 99);
+
+    expect(handler).not.toHaveBeenCalled();
+    expect(other).not.toHaveBeenCalled();
+    expect(fallback).toHaveBeenCalledWith(99);
+  });
 });
