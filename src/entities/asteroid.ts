@@ -310,7 +310,7 @@ export function drawObstacles(ctx: CanvasRenderingContext2D): void {
  * Result of destroying an asteroid, including fragment bonus information.
  * @internal
  */
-export type DestroyOutcome = {
+type DestroyOutcome = {
   /** Whether fragment completion bonus was awarded */
   bonusAwarded: boolean;
   /** Bonus points amount (100 pts for fragment completion) */

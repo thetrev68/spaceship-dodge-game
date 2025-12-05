@@ -6,7 +6,7 @@ import { warn } from '@core/logger.js';
  * Prevents direct array manipulation from external modules
  * @internal
  */
-export class EntityState {
+class EntityState {
   private _bullets: Bullet[] = [];
   private _obstacles: Asteroid[] = [];
 
