@@ -159,7 +159,7 @@ function updateBullets() {
 - Memory overhead (~8.5KB for pools)
   - _Mitigation:_ Negligible compared to total game assets (~2MB)
 - Must remember to release objects back to pool
-  - _Mitigation:_ 
+  - _Mitigation:_
 - Pool size must be tuned per entity type
   - _Mitigation:_ Pools report usage stats for tuning
 

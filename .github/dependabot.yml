@@ -1,31 +1,31 @@
 version: 2
 updates:
-  - package-ecosystem: "npm"
-    directory: "/"
+  - package-ecosystem: 'npm'
+    directory: '/'
     schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "09:00"
+      interval: 'weekly'
+      day: 'monday'
+      time: '09:00'
     open-pull-requests-limit: 5
     assignees:
-      - "thetrev68"
+      - 'thetrev68'
     labels:
-      - "dependencies"
-      - "automated"
+      - 'dependencies'
+      - 'automated'
     commit-message:
-      prefix: "chore"
-      include: "scope"
+      prefix: 'chore'
+      include: 'scope'
     groups:
       development-dependencies:
-        dependency-type: "development"
+        dependency-type: 'development'
         patterns:
-          - "@types/*"
-          - "@typescript-eslint/*"
-          - "@vitest/*"
-          - "vitest"
-          - "eslint*"
-          - "prettier"
-          - "typedoc"
-          - "knip"
+          - '@types/*'
+          - '@typescript-eslint/*'
+          - '@vitest/*'
+          - 'vitest'
+          - 'eslint*'
+          - 'prettier'
+          - 'typedoc'
+          - 'knip'
       production-dependencies:
-        dependency-type: "production"
+        dependency-type: 'production'

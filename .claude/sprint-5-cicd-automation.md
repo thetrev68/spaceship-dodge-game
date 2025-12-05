@@ -88,6 +88,7 @@ jobs:
 ```
 
 **Key Features**:
+
 - ✅ Runs on push to main/develop and all PRs
 - ✅ Caches npm dependencies for speed
 - ✅ Runs type checking, linting, tests, and build
@@ -114,7 +115,7 @@ permissions:
   id-token: write
 
 concurrency:
-  group: "pages"
+  group: 'pages'
   cancel-in-progress: false
 
 jobs:
@@ -158,6 +159,7 @@ jobs:
 ```
 
 **Key Features**:
+
 - ✅ Triggers on push to main or manual dispatch
 - ✅ Uses official GitHub Pages deployment action
 - ✅ Proper permissions for Pages deployment
@@ -264,6 +266,7 @@ jobs:
 ### 2.1 Install Husky and lint-staged
 
 **Commands**:
+
 ```bash
 npm install -D husky lint-staged
 npx husky init
@@ -283,6 +286,7 @@ npx lint-staged
 ```
 
 **Make executable** (Git Bash/Linux/Mac):
+
 ```bash
 chmod +x .husky/pre-commit
 ```
@@ -294,18 +298,14 @@ chmod +x .husky/pre-commit
 ```json
 {
   "lint-staged": {
-    "*.{ts,tsx}": [
-      "eslint --fix",
-      "vitest related --run --reporter=verbose"
-    ],
-    "*.{ts,tsx,json,md}": [
-      "prettier --write"
-    ]
+    "*.{ts,tsx}": ["eslint --fix", "vitest related --run --reporter=verbose"],
+    "*.{ts,tsx,json,md}": ["prettier --write"]
   }
 }
 ```
 
 **Key Features**:
+
 - ✅ Auto-fixes ESLint issues on staged TypeScript files
 - ✅ Runs tests related to changed files
 - ✅ Auto-formats with Prettier
@@ -314,6 +314,7 @@ chmod +x .husky/pre-commit
 ### 2.4 Add Commit Message Linting (Optional)
 
 **Install commitlint**:
+
 ```bash
 npm install -D @commitlint/cli @commitlint/config-conventional
 ```
@@ -327,19 +328,7 @@ npm install -D @commitlint/cli @commitlint/config-conventional
     "type-enum": [
       2,
       "always",
-      [
-        "feat",
-        "fix",
-        "docs",
-        "style",
-        "refactor",
-        "perf",
-        "test",
-        "build",
-        "ci",
-        "chore",
-        "revert"
-      ]
+      ["feat", "fix", "docs", "style", "refactor", "perf", "test", "build", "ci", "chore", "revert"]
     ]
   }
 }
@@ -355,6 +344,7 @@ npx --no -- commitlint --edit $1
 ```
 
 **Enforces conventional commits**:
+
 - `feat: add new powerup type`
 - `fix: resolve collision detection bug`
 - `docs: update DEVELOPER_GUIDE.md`
@@ -372,35 +362,36 @@ npx --no -- commitlint --edit $1
 ```yaml
 version: 2
 updates:
-  - package-ecosystem: "npm"
-    directory: "/"
+  - package-ecosystem: 'npm'
+    directory: '/'
     schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "09:00"
+      interval: 'weekly'
+      day: 'monday'
+      time: '09:00'
     open-pull-requests-limit: 5
     assignees:
-      - "thetrev68"
+      - 'thetrev68'
     labels:
-      - "dependencies"
-      - "automated"
+      - 'dependencies'
+      - 'automated'
     commit-message:
-      prefix: "chore"
-      include: "scope"
+      prefix: 'chore'
+      include: 'scope'
     groups:
       development-dependencies:
-        dependency-type: "development"
+        dependency-type: 'development'
         patterns:
-          - "@types/*"
-          - "@typescript-eslint/*"
-          - "vitest"
-          - "eslint"
-          - "prettier"
+          - '@types/*'
+          - '@typescript-eslint/*'
+          - 'vitest'
+          - 'eslint'
+          - 'prettier'
       production-dependencies:
-        dependency-type: "production"
+        dependency-type: 'production'
 ```
 
 **Key Features**:
+
 - ✅ Weekly updates (Mondays at 9 AM)
 - ✅ Groups related dependencies (dev vs prod)
 - ✅ Auto-assigns to maintainer
@@ -432,7 +423,7 @@ jobs:
         id: metadata
         uses: dependabot/fetch-metadata@v2
         with:
-          github-token: "${{ secrets.GITHUB_TOKEN }}"
+          github-token: '${{ secrets.GITHUB_TOKEN }}'
 
       - name: Enable auto-merge for Dependabot PRs
         if: steps.metadata.outputs.update-type == 'version-update:semver-patch' || steps.metadata.outputs.update-type == 'version-update:semver-minor'
@@ -443,6 +434,7 @@ jobs:
 ```
 
 **Only auto-merges**:
+
 - Patch updates (1.2.3 → 1.2.4)
 - Minor updates (1.2.3 → 1.3.0)
 - After CI passes ✅
@@ -478,6 +470,7 @@ jobs:
 ```
 
 **Install**:
+
 ```bash
 npm install -D bundlesize
 ```
@@ -500,6 +493,7 @@ npm install -D bundlesize
 ```
 
 **Badges show**:
+
 - ✅ CI/CD status
 - ✅ Code coverage percentage
 - ✅ TypeScript version
@@ -551,6 +545,7 @@ npm install -D bundlesize
 ```
 
 **New scripts**:
+
 - `test:ci` - Runs coverage + flake detection for CI
 - `validate` - One command to check everything
 - `prepare` - Auto-sets up Husky on install
@@ -571,17 +566,19 @@ npm install -D rimraf gh-pages
 
 Add section on **Local Development Workflow**:
 
-```markdown
+````markdown
 ## Local Development Workflow
 
 ### Before Committing
 
 Our pre-commit hooks will automatically:
+
 - Fix ESLint issues
 - Run tests for changed files
 - Format code with Prettier
 
 If hooks fail:
+
 1. Review the errors
 2. Fix any failing tests
 3. Commit again
@@ -589,11 +586,14 @@ If hooks fail:
 ### Manual Quality Checks
 
 Run full validation suite:
+
 ```bash
 npm run validate
 ```
+````
 
 This runs:
+
 - TypeScript type checking
 - ESLint linting
 - Full test suite with coverage
@@ -618,7 +618,8 @@ We use [Conventional Commits](https://www.conventionalcommits.org/):
 4. Open PR on GitHub
 5. Wait for CI to pass ✅
 6. Request review
-```
+
+````
 
 ### 6.2 Update README.md
 
@@ -638,7 +639,7 @@ Add **Development** section:
 git clone https://github.com/thetrev68/spaceship-dodge-game.git
 cd spaceship-dodge-game
 npm install
-```
+````
 
 ### Development Server
 
@@ -660,11 +661,13 @@ npm run test        # Tests only
 ### Pre-commit Hooks
 
 Husky runs automatically on `git commit`:
+
 - Fixes ESLint issues
 - Runs related tests
 - Formats with Prettier
 
 To bypass (not recommended):
+
 ```bash
 git commit --no-verify
 ```
@@ -672,6 +675,7 @@ git commit --no-verify
 ### Continuous Integration
 
 All PRs run:
+
 - ✅ Type checking
 - ✅ Linting
 - ✅ Full test suite with coverage
@@ -679,7 +683,8 @@ All PRs run:
 - ✅ Bundle size check
 
 See [CI status](.github/workflows/ci.yml)
-```
+
+````
 
 ### 6.3 Update CLAUDE.md
 
@@ -729,7 +734,7 @@ README displays:
 - Code style
 
 See [README.md](./README.md) for current status
-```
+````
 
 ---
 
@@ -759,6 +764,7 @@ npm run validate
 ```
 
 Should run:
+
 1. TypeScript type checking ✅
 2. ESLint ✅
 3. Full test suite with coverage ✅
@@ -777,6 +783,7 @@ Should run:
 ## Validation Checklist
 
 ### GitHub Actions ✅
+
 - [ ] `.github/workflows/ci.yml` created and working
 - [ ] `.github/workflows/deploy.yml` created and working
 - [ ] `.github/workflows/performance.yml` created (optional)
@@ -785,6 +792,7 @@ Should run:
 - [ ] GitHub Pages deployment successful
 
 ### Pre-commit Hooks ✅
+
 - [ ] Husky installed and initialized
 - [ ] `.husky/pre-commit` created and executable
 - [ ] lint-staged configured in package.json
@@ -793,12 +801,14 @@ Should run:
 - [ ] commitlint configured (optional)
 
 ### Dependency Management ✅
+
 - [ ] `.github/dependabot.yml` created
 - [ ] Dependabot creating PRs weekly
 - [ ] Auto-merge workflow configured (optional)
 - [ ] Dependencies grouped properly
 
 ### Code Quality ✅
+
 - [ ] Codecov account set up and token added
 - [ ] Coverage badge in README
 - [ ] CI status badge in README
@@ -806,12 +816,14 @@ Should run:
 - [ ] bundlesize configured (optional)
 
 ### Documentation ✅
+
 - [ ] CONTRIBUTING.md updated with workflow
 - [ ] README.md updated with development section
 - [ ] CLAUDE.md updated with CI/CD section
 - [ ] All documentation accurate and complete
 
 ### npm Scripts ✅
+
 - [ ] `npm run validate` works
 - [ ] `npm run test:ci` works
 - [ ] `npm run format` works
@@ -853,6 +865,7 @@ CLAUDE.md                             # UPDATE - CI/CD section
 ### Issue: Pre-commit hook not running
 
 **Solution**:
+
 ```bash
 # Re-initialize Husky
 npx husky init
@@ -867,6 +880,7 @@ git config core.hooksPath
 ### Issue: CI failing on Windows line endings
 
 **Solution**: Already handled by `.gitattributes`:
+
 ```
 * text=auto eol=lf
 *.ts text eol=lf
@@ -877,6 +891,7 @@ git config core.hooksPath
 ### Issue: Codecov upload failing
 
 **Solution**:
+
 1. Verify `CODECOV_TOKEN` in GitHub Secrets
 2. Check repository is enabled on codecov.io
 3. Verify `coverage/lcov.info` exists after test run
@@ -884,6 +899,7 @@ git config core.hooksPath
 ### Issue: GitHub Pages 404 after deploy
 
 **Solution**:
+
 1. Check `vite.config.ts` has correct `base` path
 2. Verify `dist/` folder structure
 3. Check GitHub Pages settings (Settings → Pages)
@@ -910,12 +926,14 @@ After Sprint 5 completion:
 **Estimated Time**: 1-2 weeks part-time
 
 ### Week 1: Core Automation
+
 - Day 1-2: GitHub Actions CI/Deploy workflows
 - Day 3: Pre-commit hooks setup
 - Day 4: Codecov integration
 - Day 5: Testing and validation
 
 ### Week 2: Polish & Documentation
+
 - Day 1: Dependabot setup
 - Day 2: Performance workflow (optional)
 - Day 3: Documentation updates
@@ -927,12 +945,14 @@ After Sprint 5 completion:
 ## Next Steps After Sprint 5
 
 With CI/CD complete, you'll have:
+
 - Professional automation infrastructure
 - Quality gates enforced automatically
 - Streamlined deployment process
 - Real-time quality metrics
 
 **Optional Sprint 6 topics**:
+
 - Storybook for UI components
 - Web Vitals monitoring
 - Advanced accessibility testing
