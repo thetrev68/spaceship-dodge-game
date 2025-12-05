@@ -224,7 +224,6 @@ All PRs run:
 PRs to main also run:
 
 - ✅ Lighthouse performance audit
-- [ADR-006: Theme System Architecture](docs/architecture/decisions/ADR-006-theme-system.md) - Centralized theme management and extensibility design
 
 See [CI status](.github/workflows/ci.yml)
 
@@ -261,6 +260,7 @@ Key architectural decisions are documented in `docs/architecture/decisions/`:
 - [ADR-003: Object Pooling](./docs/architecture/decisions/ADR-003-object-pooling.md) - Memory management strategy for high-frequency objects
 - [ADR-004: Fixed Timestep Game Loop](./docs/architecture/decisions/ADR-004-fixed-timestep-game-loop.md) - Deterministic physics with accumulator pattern
 - [ADR-005: TypeScript Strict Mode](./docs/architecture/decisions/ADR-005-typescript-strict-mode.md) - Type safety configuration
+- [ADR-006: Theme System Architecture](docs/architecture/decisions/ADR-006-theme-system.md) - Centralized theme management and extensibility design
 
 ### Additional Resources
 

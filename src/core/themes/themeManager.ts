@@ -41,7 +41,7 @@
 
 import { createReactive } from '@core/reactive';
 import type { ReactiveValue } from '@core/reactive';
-import { log } from '@core/logger';
+import { log, debug } from '@core/logger';
 import { announcer } from '@ui/accessibility/announcer';
 import type { Theme, ThemeId } from '@types';
 import {
@@ -307,5 +307,5 @@ export function applyUITheme(): void {
   });
 
   // Log theme application for debugging
-  log.debug('ui', `Applied ${theme.name} theme to UI elements`);
+  debug('ui', `Applied ${theme.name} theme to UI elements`);
 }
