@@ -80,14 +80,19 @@ export class GameMetrics {
    * End current session
    */
   public endSession(finalScore: number, finalLevel: number): void {
-    if (!this.currentSession) return;
+    if (!this.currentSession || !this.currentSession.startTime) return;
 
     const session: GameSession = {
-      ...(this.currentSession as GameSession),
+      sessionId: this.currentSession.sessionId!,
+      startTime: this.currentSession.startTime,
       endTime: Date.now(),
       finalScore,
       finalLevel,
-      survivalTime: Math.floor((Date.now() - this.currentSession.startTime!) / 1000),
+      totalHits: this.currentSession.totalHits || 0,
+      totalKills: this.currentSession.totalKills || 0,
+      powerupsCollected: this.currentSession.powerupsCollected || 0,
+      bulletsFired: this.currentSession.bulletsFired || 0,
+      survivalTime: Math.floor((Date.now() - this.currentSession.startTime) / 1000),
       accuracy: this.calculateAccuracy(),
     };
 
