@@ -419,7 +419,7 @@ Detailed gameplay metrics tracking for performance analysis and game balance:
 
 - **Session Tracking** ([src/utils/gameMetrics.ts](src/utils/gameMetrics.ts))
   - Records all gameplay sessions with unique IDs
-  - Tracks bullets fired, asteroids destroyed, powerups collected
+  - Tracks bullets fired, asteroids destroyed, power-ups collected
   - Calculates shooting accuracy percentage
   - Survival time and final scores
   - Average statistics across sessions
