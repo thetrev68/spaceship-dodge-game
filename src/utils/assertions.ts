@@ -2,8 +2,10 @@ import { log } from '@core/logger';
 import { DEV_CONFIG } from '@core/constants';
 
 /**
- * Development assertions
- * Only active in debug mode for performance
+ * Development-only runtime assertions.
+ *
+ * These helpers gate on `DEV_CONFIG.DEBUG_MODE` to avoid production overhead
+ * while still providing strong guardrails during development and testing.
  */
 
 /**

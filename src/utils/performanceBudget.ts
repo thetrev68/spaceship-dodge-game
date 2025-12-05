@@ -15,12 +15,15 @@ import { DEV_CONFIG } from '@core/constants';
  */
 
 /**
- * @internal
+ * Configuration for performance budget tracking.
  */
-interface PerformanceBudgetConfig {
-  targetFrameTime: number; // ms (16.67ms = 60 FPS)
-  maxFrameTime: number; // ms (33.33ms = 30 FPS)
-  windowSize: number; // Number of frames to average
+export interface PerformanceBudgetConfig {
+  /** Target frame time in milliseconds (e.g., 16.67ms for 60 FPS). */
+  targetFrameTime: number;
+  /** Maximum acceptable frame time in milliseconds (e.g., 33.33ms for 30 FPS). */
+  maxFrameTime: number;
+  /** Number of frames to include in the rolling window. */
+  windowSize: number;
 }
 
 const DEFAULT_CONFIG: PerformanceBudgetConfig = {
@@ -29,7 +32,40 @@ const DEFAULT_CONFIG: PerformanceBudgetConfig = {
   windowSize: 60,
 };
 
-class PerformanceBudget {
+/**
+ * Snapshot describing whether frame timing is within configured targets.
+ */
+export interface PerformanceBudgetStatus {
+  /** True when the rolling average meets the target frame time. */
+  withinTarget: boolean;
+  /** True when the rolling average is under the max allowable frame time. */
+  withinMax: boolean;
+  /** Rolling average frame time (ms). */
+  avgFrameTime: number;
+  /** Rolling average frames per second. */
+  avgFPS: number;
+}
+
+/**
+ * Aggregated frame timing statistics.
+ */
+export interface PerformanceBudgetStats {
+  /** Rolling average frame time (ms). */
+  avgFrameTime: number;
+  /** Minimum frame time observed in the window (ms). */
+  minFrameTime: number;
+  /** Maximum frame time observed in the window (ms). */
+  maxFrameTime: number;
+  /** Rolling average frames per second. */
+  avgFPS: number;
+  /** Total number of budget violations observed. */
+  violations: number;
+}
+
+/**
+ * Tracks frame timing against target budgets using a sliding window.
+ */
+export class PerformanceBudget {
   private frameTimes: number[] = [];
   private config: PerformanceBudgetConfig;
   private violationCount = 0;
@@ -40,8 +76,9 @@ class PerformanceBudget {
   }
 
   /**
-   * Record a frame's duration
-   * @param duration - Frame time in milliseconds
+   * Record a single frame duration in milliseconds.
+   *
+   * Maintains a sliding window and checks budgets in dev mode.
    */
   recordFrame(duration: number): void {
     this.frameTimes.push(duration);
@@ -57,9 +94,7 @@ class PerformanceBudget {
     }
   }
 
-  /**
-   * Check if frame time exceeds budget
-   */
+  /** Check if a frame time exceeds configured budgets and log warnings. */
   private checkBudget(frameTime: number): void {
     if (frameTime > this.config.maxFrameTime) {
       this.violationCount++;
@@ -79,32 +114,21 @@ class PerformanceBudget {
     }
   }
 
-  /**
-   * Get average frame time over the window
-   */
+  /** Get average frame time over the sliding window. */
   public getAverageFrameTime(): number {
     if (this.frameTimes.length === 0) return 0;
     const sum = this.frameTimes.reduce((a, b) => a + b, 0);
     return sum / this.frameTimes.length;
   }
 
-  /**
-   * Get current FPS based on average frame time
-   */
+  /** Get current FPS derived from the average frame time. */
   public getAverageFPS(): number {
     const avgFrameTime = this.getAverageFrameTime();
     return avgFrameTime > 0 ? 1000 / avgFrameTime : 0;
   }
 
-  /**
-   * Check if performance is within budget
-   */
-  public isWithinBudget(): {
-    withinTarget: boolean;
-    withinMax: boolean;
-    avgFrameTime: number;
-    avgFPS: number;
-  } {
+  /** Determine whether current averages are within target and max budgets. */
+  public isWithinBudget(): PerformanceBudgetStatus {
     const avgFrameTime = this.getAverageFrameTime();
     return {
       withinTarget: avgFrameTime <= this.config.targetFrameTime,
@@ -114,16 +138,8 @@ class PerformanceBudget {
     };
   }
 
-  /**
-   * Get performance statistics
-   */
-  public getStats(): {
-    avgFrameTime: number;
-    minFrameTime: number;
-    maxFrameTime: number;
-    avgFPS: number;
-    violations: number;
-  } {
+  /** Get a snapshot of performance statistics. */
+  public getStats(): PerformanceBudgetStats {
     if (this.frameTimes.length === 0) {
       return {
         avgFrameTime: this.getAverageFrameTime(),
@@ -143,9 +159,7 @@ class PerformanceBudget {
     };
   }
 
-  /**
-   * Reset all tracking data
-   */
+  /** Reset all tracked frame times and violations. */
   public reset(): void {
     this.frameTimes = [];
     this.violationCount = 0;
@@ -153,5 +167,7 @@ class PerformanceBudget {
   }
 }
 
-// Singleton instance
+/**
+ * Singleton performance budget tracker for dev diagnostics.
+ */
 export const performanceBudget = new PerformanceBudget();

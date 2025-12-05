@@ -1,7 +1,16 @@
 {
   "$schema": "https://typedoc.org/schema.json",
   "entryPointStrategy": "resolve",
-  "entryPoints": ["src/core/themes/index.ts", "src/types/index.ts", "src/utils/devTools.ts"],
+  "entryPoints": [
+    "src/core/themes/index.ts",
+    "src/types/index.ts",
+    "src/utils/devTools.ts",
+    "src/utils/assertions.ts",
+    "src/utils/memoize.ts",
+    "src/utils/profiler.ts",
+    "src/utils/performanceBudget.ts",
+    "src/utils/analytics.ts"
+  ],
   "out": "docs/api",
   "name": "Spaceship Dodge Game API",
   "includeVersion": true,
