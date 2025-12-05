@@ -225,76 +225,137 @@ export function drawPlayer(ctx: CanvasRenderingContext2D): void {
     }
   }
 
-  ctx.strokeStyle = theme.colors.player;
-  ctx.lineWidth = 2;
-
   const w = player.width;
   const h = player.height;
   const x = player.x;
   const y = player.y;
   const cx = x + w / 2;
-  const narrowFactor = PLAYER_CONSTANTS.NARROW_FACTOR; // Increase this to narrow the ship
 
-  // Main Ship Body
+  // New spaceship design inspired by space_ship_fighter icon (outline-only vector style)
+  ctx.strokeStyle = theme.colors.player;
+  ctx.lineWidth = 2;
+
+  // Main fuselage (elongated body) - outline only
   ctx.beginPath();
-  ctx.moveTo(cx, y);
-  ctx.lineTo(x + w * PLAYER_CONSTANTS.ENGINE_TOP_WIDTH_FACTOR, y + h * 0.8);
-  ctx.lineTo(cx - w * narrowFactor, y + h * PLAYER_CONSTANTS.ENGINE_Y_FACTOR);
-  ctx.lineTo(cx + w * narrowFactor, y + h * PLAYER_CONSTANTS.ENGINE_Y_FACTOR);
-  ctx.lineTo(x + w * 0.8, y + h * 0.8);
+  ctx.moveTo(cx, y); // Nose tip
+  ctx.lineTo(x + w * 0.25, y + h * 0.35); // Left side upper
+  ctx.lineTo(x + w * 0.25, y + h * 0.7); // Left side lower
+  ctx.lineTo(x + w * 0.35, y + h * 0.85); // Left inner engine mount
+  ctx.lineTo(x + w * 0.45, y + h * 0.75); // Left inner wing
+  ctx.lineTo(x + w * 0.55, y + h * 0.75); // Right inner wing
+  ctx.lineTo(x + w * 0.65, y + h * 0.85); // Right inner engine mount
+  ctx.lineTo(x + w * 0.75, y + h * 0.7); // Right side lower
+  ctx.lineTo(x + w * 0.75, y + h * 0.35); // Right side upper
   ctx.closePath();
   ctx.stroke();
 
-  // Engine Block
-  const engineTopWidth = w * PLAYER_CONSTANTS.ENGINE_TOP_WIDTH_FACTOR;
-  const engineBottomWidth = w * PLAYER_CONSTANTS.ENGINE_BOTTOM_WIDTH_FACTOR;
-  const engineHeight = h * PLAYER_CONSTANTS.ENGINE_HEIGHT_FACTOR;
-  const engineY = y + h * PLAYER_CONSTANTS.ENGINE_Y_FACTOR;
-  const engineBottomY = engineY + engineHeight;
-  const engineTopLeftX = cx - engineTopWidth / 2;
-  const engineTopRightX = cx + engineTopWidth / 2;
-  const engineBottomLeftX = cx - engineBottomWidth / 2;
-  const engineBottomRightX = cx + engineBottomWidth / 2;
-
+  // Wings (wider outer sections with flat tips) - outline only
+  // Left wing
   ctx.beginPath();
-  ctx.moveTo(engineTopLeftX, engineY);
-  ctx.lineTo(engineTopRightX, engineY);
-  ctx.lineTo(engineBottomRightX, engineBottomY);
-  ctx.lineTo(engineBottomLeftX, engineBottomY);
+  ctx.moveTo(x + w * 0.25, y + h * 0.5);
+  ctx.lineTo(x + w * 0.05, y + h * 0.6); // Flatter angle
+  ctx.lineTo(x + w * 0.05, y + h * 0.72); // Flat outer edge
+  ctx.lineTo(x + w * 0.25, y + h * 0.7);
   ctx.closePath();
   ctx.stroke();
 
-  // Exhaust Detail Lines
+  // Right wing
   ctx.beginPath();
-  ctx.moveTo(cx, engineY + engineHeight * 0.2);
-  ctx.lineTo(cx, engineY + engineHeight * 0.8);
-  ctx.moveTo(cx - engineBottomWidth * 0.8, engineY + engineHeight * 0.3);
-  ctx.lineTo(cx - engineBottomWidth * 0.8, engineY + engineHeight * 0.7);
-  ctx.moveTo(cx + engineBottomWidth * 0.8, engineY + engineHeight * 0.3);
-  ctx.lineTo(cx + engineBottomWidth * 0.8, engineY + engineHeight * 0.7);
+  ctx.moveTo(x + w * 0.75, y + h * 0.5);
+  ctx.lineTo(x + w * 0.95, y + h * 0.6); // Flatter angle
+  ctx.lineTo(x + w * 0.95, y + h * 0.72); // Flat outer edge
+  ctx.lineTo(x + w * 0.75, y + h * 0.7);
+  ctx.closePath();
   ctx.stroke();
 
-  // Pulsing thruster flame
-  const time = performance.now() / PLAYER_CONSTANTS.PULSE_SPEED_DIVISOR; // pulse speed
+  // Cockpit window (glowing outline)
+  ctx.beginPath();
+  ctx.ellipse(cx, y + h * 0.25, w * 0.15, h * 0.12, 0, 0, Math.PI * 2);
+  ctx.stroke();
+
+  // Engine exhausts (twin engines) - outline only
+  const engineY = y + h * 0.85;
+  const leftEngineX = x + w * 0.35;
+  const rightEngineX = x + w * 0.65;
+  const engineWidth = w * 0.08;
+  const engineHeight = h * 0.15;
+
+  // Left engine outline
+  ctx.strokeRect(leftEngineX - engineWidth / 2, engineY, engineWidth, engineHeight);
+
+  // Right engine outline
+  ctx.strokeRect(rightEngineX - engineWidth / 2, engineY, engineWidth, engineHeight);
+
+  // Detail lines on fuselage
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(cx - w * 0.1, y + h * 0.4);
+  ctx.lineTo(cx - w * 0.1, y + h * 0.6);
+  ctx.moveTo(cx + w * 0.1, y + h * 0.4);
+  ctx.lineTo(cx + w * 0.1, y + h * 0.6);
+  ctx.stroke();
+
+  // Additional detail: engine vents
+  ctx.beginPath();
+  ctx.moveTo(leftEngineX - engineWidth * 0.3, engineY + engineHeight * 0.3);
+  ctx.lineTo(leftEngineX - engineWidth * 0.3, engineY + engineHeight * 0.7);
+  ctx.moveTo(leftEngineX + engineWidth * 0.3, engineY + engineHeight * 0.3);
+  ctx.lineTo(leftEngineX + engineWidth * 0.3, engineY + engineHeight * 0.7);
+  ctx.moveTo(rightEngineX - engineWidth * 0.3, engineY + engineHeight * 0.3);
+  ctx.lineTo(rightEngineX - engineWidth * 0.3, engineY + engineHeight * 0.7);
+  ctx.moveTo(rightEngineX + engineWidth * 0.3, engineY + engineHeight * 0.3);
+  ctx.lineTo(rightEngineX + engineWidth * 0.3, engineY + engineHeight * 0.7);
+  ctx.stroke();
+
+  // Pulsing thruster flames (twin flames)
+  const time = performance.now() / PLAYER_CONSTANTS.PULSE_SPEED_DIVISOR;
   const pulse = (Math.sin(time) + 1) / 2; // 0 to 1
 
-  const flameX = cx;
-  const flameY = engineBottomY + 5;
-  const flameRadius = engineBottomWidth;
+  const flameY = engineY + engineHeight;
+  const flameRadius = engineWidth;
 
+  // Left thruster
   if (!isMobile()) {
-    // High-quality gradient glow for desktop with pulse animation
-    const gradient = ctx.createRadialGradient(flameX, flameY, 0, flameX, flameY, flameRadius * 3);
-    gradient.addColorStop(0, `rgba(0, 255, 255, ${0.6 * pulse})`);
-    gradient.addColorStop(1, 'rgba(0, 255, 255, 0)');
-
-    ctx.fillStyle = gradient;
+    const gradientL = ctx.createRadialGradient(
+      leftEngineX,
+      flameY,
+      0,
+      leftEngineX,
+      flameY,
+      flameRadius * 3
+    );
+    gradientL.addColorStop(0, `rgba(0, 255, 255, ${0.6 * pulse})`);
+    gradientL.addColorStop(1, 'rgba(0, 255, 255, 0)');
+    ctx.fillStyle = gradientL;
     ctx.beginPath();
     ctx.ellipse(
-      flameX,
+      leftEngineX,
       flameY + flameRadius,
-      flameRadius * 1.5,
-      flameRadius * 3,
+      flameRadius * 1.2,
+      flameRadius * 2.5,
+      0,
+      0,
+      Math.PI * 2
+    );
+    ctx.fill();
+
+    const gradientR = ctx.createRadialGradient(
+      rightEngineX,
+      flameY,
+      0,
+      rightEngineX,
+      flameY,
+      flameRadius * 3
+    );
+    gradientR.addColorStop(0, `rgba(0, 255, 255, ${0.6 * pulse})`);
+    gradientR.addColorStop(1, 'rgba(0, 255, 255, 0)');
+    ctx.fillStyle = gradientR;
+    ctx.beginPath();
+    ctx.ellipse(
+      rightEngineX,
+      flameY + flameRadius,
+      flameRadius * 1.2,
+      flameRadius * 2.5,
       0,
       0,
       Math.PI * 2
@@ -302,12 +363,21 @@ export function drawPlayer(ctx: CanvasRenderingContext2D): void {
     ctx.fill();
   }
 
-  // Core flame shape with pulse animation
+  // Core flame shapes with pulse animation
   ctx.fillStyle = `rgba(0, 255, 255, ${0.7 * pulse})`;
+  // Left flame
   ctx.beginPath();
-  ctx.moveTo(flameX - flameRadius * 0.6, engineBottomY);
-  ctx.lineTo(flameX + flameRadius * 0.6, engineBottomY);
-  ctx.lineTo(flameX, engineBottomY + flameRadius * 3);
+  ctx.moveTo(leftEngineX - flameRadius * 0.5, flameY);
+  ctx.lineTo(leftEngineX + flameRadius * 0.5, flameY);
+  ctx.lineTo(leftEngineX, flameY + flameRadius * 2.5);
+  ctx.closePath();
+  ctx.fill();
+
+  // Right flame
+  ctx.beginPath();
+  ctx.moveTo(rightEngineX - flameRadius * 0.5, flameY);
+  ctx.lineTo(rightEngineX + flameRadius * 0.5, flameY);
+  ctx.lineTo(rightEngineX, flameY + flameRadius * 2.5);
   ctx.closePath();
   ctx.fill();
 }

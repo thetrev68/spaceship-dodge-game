@@ -2,6 +2,10 @@ import { vi } from 'vitest';
 
 // Mock canvas globally - simplified approach
 HTMLCanvasElement.prototype.getContext = vi.fn(() => {
+  const mockGradient = {
+    addColorStop: vi.fn(),
+  };
+
   const mockContext: Partial<CanvasRenderingContext2D> = {
     fillRect: vi.fn(),
     clearRect: vi.fn(),
@@ -9,6 +13,7 @@ HTMLCanvasElement.prototype.getContext = vi.fn(() => {
     beginPath: vi.fn(),
     closePath: vi.fn(),
     arc: vi.fn(),
+    ellipse: vi.fn(),
     fill: vi.fn(),
     stroke: vi.fn(),
     moveTo: vi.fn(),
@@ -19,6 +24,7 @@ HTMLCanvasElement.prototype.getContext = vi.fn(() => {
     rotate: vi.fn(),
     scale: vi.fn(),
     fillText: vi.fn(),
+    createRadialGradient: vi.fn(() => mockGradient),
     font: '',
     textAlign: 'left',
   };
