@@ -38,6 +38,7 @@ describe('init module branches', () => {
       removeAttribute: vi.fn(),
       classList: { add: vi.fn(), remove: vi.fn() },
       querySelector: vi.fn(() => null),
+      focus: vi.fn(),
       textContent: '',
     };
     vi.doMock('@utils/dom.js', () => ({
