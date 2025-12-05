@@ -197,10 +197,13 @@ describe('Theme Manager', () => {
 
     it('should not call callback when theme does not change', () => {
       const callback = vi.fn();
-      watchTheme(callback);
+      const unwatch = watchTheme(callback);
 
       // No theme change, callback should not be called
       expect(callback).not.toHaveBeenCalled();
+
+      // Clean up
+      unwatch();
     });
 
     it('should allow multiple watchers', () => {
@@ -269,25 +272,8 @@ describe('Theme Manager', () => {
 
   describe('applyUITheme()', () => {
     it('should set CSS variables for UI theme colors', () => {
-      // Mock document.documentElement
-      const mockRoot = {
-        style: {
-          setProperty: vi.fn(),
-        },
-      };
-
-      // Mock document.querySelectorAll
-      const mockQuerySelectorAll = vi.fn().mockReturnValue([]);
-
-      // Mock document
-      const originalDocument = window.document;
-      Object.defineProperty(window, 'document', {
-        value: {
-          documentElement: mockRoot,
-          querySelectorAll: mockQuerySelectorAll,
-        },
-        writable: true,
-      });
+      const setPropertySpy = vi.spyOn(document.documentElement.style, 'setProperty');
+      vi.spyOn(document, 'querySelectorAll').mockReturnValue([] as unknown as NodeListOf<Element>);
 
       // Call the function directly
       applyUITheme();
@@ -295,46 +281,25 @@ describe('Theme Manager', () => {
       // Verify CSS variables were set
       const { uiColors } = DEFAULT_THEME;
 
-      expect(mockRoot.style.setProperty).toHaveBeenCalledWith(
+      expect(setPropertySpy).toHaveBeenCalledWith(
         '--overlay-background',
         uiColors.overlayBackground
       );
-      expect(mockRoot.style.setProperty).toHaveBeenCalledWith(
-        '--overlay-text',
-        uiColors.overlayText
-      );
-      expect(mockRoot.style.setProperty).toHaveBeenCalledWith(
-        '--overlay-title',
-        uiColors.overlayTitle
-      );
-      expect(mockRoot.style.setProperty).toHaveBeenCalledWith(
-        '--button-background',
-        uiColors.buttonBackground
-      );
-      expect(mockRoot.style.setProperty).toHaveBeenCalledWith('--button-text', uiColors.buttonText);
-      expect(mockRoot.style.setProperty).toHaveBeenCalledWith(
-        '--button-hover',
-        uiColors.buttonHover
-      );
-      expect(mockRoot.style.setProperty).toHaveBeenCalledWith(
-        '--button-focus',
-        uiColors.buttonFocus
-      );
-      expect(mockRoot.style.setProperty).toHaveBeenCalledWith(
+      expect(setPropertySpy).toHaveBeenCalledWith('--overlay-text', uiColors.overlayText);
+      expect(setPropertySpy).toHaveBeenCalledWith('--overlay-title', uiColors.overlayTitle);
+      expect(setPropertySpy).toHaveBeenCalledWith('--button-background', uiColors.buttonBackground);
+      expect(setPropertySpy).toHaveBeenCalledWith('--button-text', uiColors.buttonText);
+      expect(setPropertySpy).toHaveBeenCalledWith('--button-hover', uiColors.buttonHover);
+      expect(setPropertySpy).toHaveBeenCalledWith('--button-focus', uiColors.buttonFocus);
+      expect(setPropertySpy).toHaveBeenCalledWith(
         '--settings-button-bg',
         uiColors.settingsButtonBackground
       );
-      expect(mockRoot.style.setProperty).toHaveBeenCalledWith(
+      expect(setPropertySpy).toHaveBeenCalledWith(
         '--settings-button-text',
         uiColors.settingsButtonText
       );
-      expect(mockRoot.style.setProperty).toHaveBeenCalledTimes(9);
-
-      // Restore original document
-      Object.defineProperty(window, 'document', {
-        value: originalDocument,
-        writable: true,
-      });
+      expect(setPropertySpy).toHaveBeenCalledTimes(9);
     });
 
     it('styles overlays and buttons in the DOM', () => {

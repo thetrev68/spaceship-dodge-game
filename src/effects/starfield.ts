@@ -49,6 +49,10 @@ export function setupStarfield(canvas: HTMLCanvasElement): void {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     // Batch drawing for performance
+    // PERF: Theme is retrieved on every frame. If this becomes a bottleneck,
+    // consider caching with theme watcher:
+    // let cachedStarfieldColor = getCurrentTheme().colors.starfield;
+    // watchTheme((theme) => { cachedStarfieldColor = theme.colors.starfield; });
     const theme = getCurrentTheme();
     ctx.fillStyle = theme.colors.starfield;
     ctx.beginPath();

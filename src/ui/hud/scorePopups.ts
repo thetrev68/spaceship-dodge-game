@@ -25,7 +25,7 @@ const scorePopupPool = new ObjectPool<ScorePopup>(() => ({
   x: 0,
   y: 0,
   opacity: HUD_CONSTANTS.GLOBAL_ALPHA,
-  color: getCurrentTheme().colors.scorePopup,
+  color: '',
 }));
 
 let subscribersRegistered = false;

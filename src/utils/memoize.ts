@@ -48,22 +48,6 @@ export function memoize<TFunc extends (...args: readonly unknown[]) => unknown>(
 }
 
 /**
- * Memoizes a function with a size-limited LRU cache.
- *
- * @param fn - The function to memoize
- * @param limit - Maximum number of cached results (must be a positive integer)
- * @returns The memoized function with LRU cache eviction
- *
- * @example
- * ```typescript
- * const fibonacci = (n: number): number => n <= 1 ? n : fibonacci(n-1) + fibonacci(n-2);
- * const memoizedFib = memoizeWithLimit(fibonacci, 50);
- *
- * console.log(memoizedFib(10)); // Computes and caches
- * console.log(memoizedFib(10)); // Returns cached result
- * ```
- */
-/**
  * Memoizes a function with an LRU cache bounded by `limit`.
  *
  * Use this when unbounded caching could grow too large or when the input space

@@ -248,5 +248,9 @@ export type Theme = {
 
 /**
  * Valid theme identifiers
+ *
+ * Note: This type should be kept in sync with THEME_REGISTRY keys in themeConstants.ts
+ * Consider using a build-time script to auto-generate this from THEME_REGISTRY keys
+ * to maintain single source of truth.
  */
 export type ThemeId = 'default' | 'monochrome';

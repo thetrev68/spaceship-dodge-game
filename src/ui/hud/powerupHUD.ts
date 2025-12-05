@@ -16,7 +16,7 @@ export function drawPowerupTimers(ctx: CanvasRenderingContext2D): void {
   const x = HUD_CONSTANTS.SCORE_X;
   const startY = HUD_CONSTANTS.POWERUP_START_Y;
   let y = startY;
-  ctx.font = '18px monospace';
+  ctx.font = `${theme.fonts.hudSize} ${theme.fonts.family}`;
   ctx.fillStyle = theme.colors.hudAccent;
 
   Object.entries(powerUps).forEach(([key, powerUp]) => {

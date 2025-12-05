@@ -10,6 +10,24 @@ import { showOverlay, setOverlayDimensions, quitGame } from '@ui/overlays/overla
 import { services } from '@services/ServiceProvider.js';
 import { startBackgroundMusic } from './audioInit.js';
 
+/**
+ * Wires up all overlay-related interactions and controls for the game.
+ *
+ * Initializes starfield on non-mobile devices, binds event handlers for
+ * start, restart, continue, quit, and settings buttons, and sets up
+ * keyboard navigation for game state transitions.
+ *
+ * @param canvas - The main game canvas element
+ * @returns void
+ *
+ * @example
+ * ```typescript
+ * const canvas = getById<HTMLCanvasElement>('gameCanvas');
+ * if (canvas) {
+ *   wireOverlayControls(canvas);
+ * }
+ * ```
+ */
 export function wireOverlayControls(canvas: HTMLCanvasElement): void {
   const startButton = getById<HTMLButtonElement>('startButton');
   const restartButton = getById<HTMLButtonElement>('restartButton');

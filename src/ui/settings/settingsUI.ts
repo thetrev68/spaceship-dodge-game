@@ -10,6 +10,7 @@ import { isMobile } from '@utils/platform.js';
 import { SETTINGS_UI, VOLUME_CONSTANTS } from '@core/uiConstants.js';
 import { getById } from '@utils/dom.js';
 import { getCurrentTheme, setTheme, getAvailableThemes } from '@core/themes';
+import type { Theme } from '@types';
 
 const focusableSelector = [
   'button',
@@ -241,7 +242,10 @@ function createSettingsUI(): HTMLElement {
   const currentTheme = getCurrentTheme();
   const availableThemes = getAvailableThemes();
 
-  availableThemes.forEach((theme) => {
+  /**
+   * Creates a theme option element for the theme selection UI.
+   */
+  function createThemeOption(theme: Theme, isCurrentTheme: boolean): HTMLElement {
     const themeOption = document.createElement('label');
     themeOption.style.display = 'flex';
     themeOption.style.alignItems = 'center';
@@ -253,7 +257,7 @@ function createSettingsUI(): HTMLElement {
     radio.type = 'radio';
     radio.name = 'theme';
     radio.value = theme.id;
-    radio.checked = theme.id === currentTheme.id;
+    radio.checked = isCurrentTheme;
     radio.style.width = '20px';
     radio.style.height = '20px';
     radio.style.marginRight = '0.75rem';
@@ -278,7 +282,12 @@ function createSettingsUI(): HTMLElement {
     themeOption.appendChild(radio);
     themeOption.appendChild(labelText);
     themeOption.appendChild(description);
-    themeGroup.appendChild(themeOption);
+
+    return themeOption;
+  }
+
+  availableThemes.forEach((theme) => {
+    themeGroup.appendChild(createThemeOption(theme, theme.id === currentTheme.id));
   });
 
   themeSection.appendChild(themeTitle);

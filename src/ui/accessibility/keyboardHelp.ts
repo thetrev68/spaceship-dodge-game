@@ -1,5 +1,6 @@
 import { log } from '@core/logger';
 import { isMobile } from '@utils/platform';
+import { getById } from '@utils/dom';
 
 /**
  * Keyboard Shortcuts Help System
@@ -48,7 +49,7 @@ export function initializeKeyboardHelp(): void {
 }
 
 function toggleKeyboardHelp(): void {
-  const overlay = document.getElementById('keyboard-help-overlay') as HTMLDivElement | null;
+  const overlay = getById<HTMLDivElement>('keyboard-help-overlay');
 
   if (!overlay) {
     showKeyboardHelp();
@@ -59,7 +60,7 @@ function toggleKeyboardHelp(): void {
 }
 
 function showKeyboardHelp(): void {
-  let overlay = document.getElementById('keyboard-help-overlay') as HTMLDivElement | null;
+  let overlay = getById<HTMLDivElement>('keyboard-help-overlay');
 
   if (!overlay) {
     overlay = createKeyboardHelpOverlay();
@@ -76,7 +77,7 @@ function showKeyboardHelp(): void {
 }
 
 function hideKeyboardHelp(): void {
-  const overlay = document.getElementById('keyboard-help-overlay') as HTMLDivElement | null;
+  const overlay = getById<HTMLDivElement>('keyboard-help-overlay');
   if (!overlay) return;
 
   overlay.classList.remove('visible');
