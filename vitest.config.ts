@@ -39,6 +39,12 @@ export default defineConfig({
         'src/types/**', // Type definitions only
         'src/utils/errors.ts', // Error handling utilities - low priority
         'src/utils/validation.ts', // Validation utilities - low priority
+        'src/utils/analytics.ts', // Internal @internal utility - optional monitoring
+        'src/utils/gameMetrics.ts', // Internal @internal utility - optional tracking
+        'src/utils/performanceBudget.ts', // Internal @internal utility - dev-only monitoring
+        'src/utils/profiler.ts', // Internal @internal utility - dev-only profiling
+        'src/utils/memoize.ts', // Internal @internal utility - optimization helper
+        'src/utils/assertions.ts', // Internal @internal utility - dev-only assertions
         '.claude/**', // Documentation
         'build/**', // Build artifacts
       ],
