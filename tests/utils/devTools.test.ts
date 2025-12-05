@@ -16,7 +16,7 @@ describe('devTools register', () => {
   it('skips registration when DEBUG_MODE is false', async () => {
     const { DEV_CONFIG } = await import('@core/gameConstants.js');
     const { registerDevTools } = await import('@utils/devTools.js');
-    DEV_CONFIG.DEBUG_MODE = false;
+    (DEV_CONFIG as { DEBUG_MODE: boolean }).DEBUG_MODE = false;
 
     registerDevTools();
 
@@ -29,7 +29,7 @@ describe('devTools register', () => {
     const { registerDevTools } = await import('@utils/devTools.js');
     const { log } = await import('@core/logger');
 
-    DEV_CONFIG.DEBUG_MODE = true;
+    (DEV_CONFIG as { DEBUG_MODE: boolean }).DEBUG_MODE = true;
     registerDevTools();
 
     // @ts-expect-error testing window augmentation
@@ -38,6 +38,6 @@ describe('devTools register', () => {
     expect(window.__sdgDevTools?.assert).toBeInstanceOf(Function);
     expect(log.info).toHaveBeenCalled();
 
-    DEV_CONFIG.DEBUG_MODE = false; // cleanup for other tests
+    (DEV_CONFIG as { DEBUG_MODE: boolean }).DEBUG_MODE = false; // cleanup for other tests
   });
 });

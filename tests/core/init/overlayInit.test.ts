@@ -1,7 +1,22 @@
 import { describe, it, beforeEach, expect, vi } from 'vitest';
 
-const buildElements = () => {
-  const els: Record<string, HTMLElement> = {
+type OverlayElements = {
+  startButton: HTMLButtonElement;
+  restartButton: HTMLButtonElement;
+  continueButton: HTMLButtonElement;
+  quitButton: HTMLButtonElement;
+  startOverlay: HTMLElement;
+  pauseOverlay: HTMLElement;
+  levelTransitionOverlay: HTMLElement;
+  starfieldCanvas: HTMLCanvasElement;
+  settingsButtonStart: HTMLButtonElement;
+  settingsButtonLevel: HTMLButtonElement;
+  settingsButtonPause: HTMLButtonElement;
+  settingsButtonGameOver: HTMLButtonElement;
+};
+
+const buildElements = (): OverlayElements => {
+  const els: OverlayElements = {
     startButton: Object.assign(document.createElement('button'), { id: 'startButton' }),
     restartButton: Object.assign(document.createElement('button'), { id: 'restartButton' }),
     continueButton: Object.assign(document.createElement('button'), { id: 'continueButton' }),
