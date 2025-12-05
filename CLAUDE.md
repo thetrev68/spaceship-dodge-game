@@ -408,7 +408,7 @@ Full WCAG 2.1 Level AA compliance with comprehensive screen reader support:
   - Skipped on mobile devices
 
 - **Screen Reader Support**
-  - `.sr-only` CSS class for screen reader only content
+  - `.sr-only` CSS class for screen-reader-only content
   - ARIA live regions in HTML
   - Proper focus management in overlays
   - Semantic HTML with ARIA attributes
