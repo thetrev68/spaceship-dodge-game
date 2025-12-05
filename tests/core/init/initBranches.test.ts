@@ -32,6 +32,23 @@ describe('init module branches', () => {
       })),
     }));
 
+    // Mock DOM elements for fatal error overlay
+    const mockOverlay = {
+      setAttribute: vi.fn(),
+      removeAttribute: vi.fn(),
+      classList: { add: vi.fn(), remove: vi.fn() },
+      querySelector: vi.fn(() => null),
+      textContent: '',
+    };
+    vi.doMock('@utils/dom.js', () => ({
+      getById: vi.fn((id: string) => {
+        if (id === 'fatalErrorOverlay' || id === 'fatalErrorMessage' || id === 'fatalErrorCode') {
+          return mockOverlay;
+        }
+        return null;
+      }),
+    }));
+
     const { initializeAudio, startBackgroundMusic } = await import('@core/init/audioInit.js');
     await initializeAudio(true);
     expect(audioService.unlock).toHaveBeenCalled();
