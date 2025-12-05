@@ -22,7 +22,7 @@ import { log } from '@core/logger';
 /**
  * @internal
  */
-export type AnalyticsEvent = {
+type AnalyticsEvent = {
   category: 'performance' | 'gameplay' | 'user-interaction';
   action: string;
   label?: string;
@@ -33,7 +33,7 @@ export type AnalyticsEvent = {
 /**
  * @internal
  */
-export class Analytics {
+class Analytics {
   private events: AnalyticsEvent[] = [];
   private sessionStart: number;
 

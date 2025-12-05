@@ -8,7 +8,7 @@
 /**
  * @internal
  */
-export type Func = (...args: readonly unknown[]) => unknown;
+type Func = (...args: readonly unknown[]) => unknown;
 
 /**
  * Memoizes a function to cache results based on arguments.

@@ -12,12 +12,12 @@ import { VOLUME_CONSTANTS, SETTINGS_CONSTANTS } from '@core/uiConstants.js';
 /**
  * @internal
  */
-export type _SettingsContext = 'start' | 'pause' | 'controls';
+type _SettingsContext = 'start' | 'pause' | 'controls';
 
 /**
  * @internal
  */
-export type _GameSettings = {
+type _GameSettings = {
   backgroundMusicVolume: number;
   soundEffectsVolume: number;
   isMuted: boolean;

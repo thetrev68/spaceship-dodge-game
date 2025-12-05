@@ -56,7 +56,7 @@ interface GameSession {
 /**
  * @internal
  */
-export class GameMetrics {
+class GameMetrics {
   private currentSession: Partial<GameSession> | null = null;
   private sessions: GameSession[] = [];
 

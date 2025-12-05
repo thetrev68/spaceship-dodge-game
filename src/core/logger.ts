@@ -19,7 +19,7 @@ type _LogCategory =
 /**
  * @internal
  */
-export type _LogLevelKey = 'DEBUG' | 'INFO' | 'WARN' | 'ERROR' | 'NONE';
+type _LogLevelKey = 'DEBUG' | 'INFO' | 'WARN' | 'ERROR' | 'NONE';
 
 const LogLevel: Record<_LogLevelKey, number> = {
   DEBUG: 0,
@@ -32,7 +32,7 @@ const LogLevel: Record<_LogLevelKey, number> = {
 /**
  * @internal
  */
-export type LoggerConfig = {
+type LoggerConfig = {
   level: number;
   enabled: boolean;
   categories: Record<string, boolean>;
@@ -186,7 +186,7 @@ function setupDevelopment(): void {
 /**
  * @internal
  */
-export class Timer {
+class Timer {
   private readonly startTime: number;
 
   constructor(

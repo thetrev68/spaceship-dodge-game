@@ -21,7 +21,7 @@ import { log } from '@core/logger';
 /**
  * @internal
  */
-export type AnnounceOptions = {
+type AnnounceOptions = {
   priority?: 'polite' | 'assertive';
   clearAfter?: number; // ms
 };
@@ -34,7 +34,7 @@ const DEFAULT_OPTIONS: AnnounceOptions = {
 /**
  * @internal
  */
-export class Announcer {
+class Announcer {
   private liveRegion: HTMLElement | null = null;
 
   constructor() {
