@@ -25,7 +25,7 @@ const scorePopupPool = new ObjectPool<ScorePopup>(() => ({
   x: 0,
   y: 0,
   opacity: HUD_CONSTANTS.GLOBAL_ALPHA,
-  color: '',
+  color: '', // Always assigned before use in addScorePopup
 }));
 
 let subscribersRegistered = false;
@@ -70,13 +70,12 @@ function addScorePopup(text: string, x: number, y: number, color?: string): void
   if (skipForMobile) return;
 
   const popup = scorePopupPool.acquire();
-  const theme = getCurrentTheme();
 
   popup.text = text;
   popup.x = x;
   popup.y = y;
   popup.opacity = HUD_CONSTANTS.GLOBAL_ALPHA;
-  popup.color = color ?? theme.colors.scorePopup;
+  popup.color = color ?? getCurrentTheme().colors.scorePopup;
 
   scorePopups.push(popup);
 }

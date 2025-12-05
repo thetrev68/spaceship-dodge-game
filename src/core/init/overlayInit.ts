@@ -10,6 +10,8 @@ import { showOverlay, setOverlayDimensions, quitGame } from '@ui/overlays/overla
 import { services } from '@services/ServiceProvider.js';
 import { startBackgroundMusic } from './audioInit.js';
 
+let keydownHandlerRegistered = false;
+
 /**
  * Wires up all overlay-related interactions and controls for the game.
  *
@@ -123,33 +125,36 @@ export function wireOverlayControls(canvas: HTMLCanvasElement): void {
   addSettingsHandler(settingsButtonPause);
   addSettingsHandler(settingsButtonGameOver);
 
-  document.addEventListener('keydown', (event: KeyboardEvent) => {
-    const isActivateKey = event.key === 'Enter' || event.key === ' ';
-    if (event.key === 'Escape') {
-      hideSettings();
-      return;
-    }
+  if (!keydownHandlerRegistered) {
+    keydownHandlerRegistered = true;
+    document.addEventListener('keydown', (event: KeyboardEvent) => {
+      const isActivateKey = event.key === 'Enter' || event.key === ' ';
+      if (event.key === 'Escape') {
+        hideSettings();
+        return;
+      }
 
-    if (!isActivateKey || gameState.value === 'PLAYING') return;
+      if (!isActivateKey || gameState.value === 'PLAYING') return;
 
-    if (gameState.value === 'START') {
-      startGameHandler(event);
-    } else if (gameState.value === 'LEVEL_TRANSITION') {
-      event.preventDefault();
-      continueGame();
-      restartGameLoop();
-    } else if (gameState.value === 'GAME_OVER') {
-      event.preventDefault();
-      startGame(canvas);
-      restartGameLoop();
-    } else if (gameState.value === 'PAUSED') {
-      event.preventDefault();
-      gameState.value = 'PLAYING';
-      showOverlay('PLAYING');
-      services.audioService.unmuteAll();
-      restartGameLoop();
-    }
-  });
+      if (gameState.value === 'START') {
+        startGameHandler(event);
+      } else if (gameState.value === 'LEVEL_TRANSITION') {
+        event.preventDefault();
+        continueGame();
+        restartGameLoop();
+      } else if (gameState.value === 'GAME_OVER') {
+        event.preventDefault();
+        startGame(canvas);
+        restartGameLoop();
+      } else if (gameState.value === 'PAUSED') {
+        event.preventDefault();
+        gameState.value = 'PLAYING';
+        showOverlay('PLAYING');
+        services.audioService.unmuteAll();
+        restartGameLoop();
+      }
+    });
+  }
 
   showOverlay('START');
 }

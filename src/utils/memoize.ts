@@ -53,10 +53,32 @@ export function memoize<TFunc extends (...args: readonly unknown[]) => unknown>(
  * Use this when unbounded caching could grow too large or when the input space
  * is wide but recent results are most valuable.
  *
+ * **Performance characteristics:**
+ * - Cache access: O(1) lookup, O(1) eviction
+ * - Serialization: O(n) where n is argument size (JSON.stringify cost)
+ *
+ * **Trade-offs:**
+ * - JSON serialization overhead vs simplicity (faster key generation than custom hash)
+ * - Memory bounded by `limit` vs cache hit rate (tune limit based on access patterns)
+ * - LRU appropriate for temporal locality; use unbounded `memoize` if all results needed
+ *
  * @param fn - Function to memoize
  * @param limit - Maximum number of cached entries (must be positive)
  * @returns A memoized function with LRU eviction
  * @typeParam TFunc - Function signature being memoized
+ *
+ * @example
+ * ```typescript
+ * const heavyCalc = (a: number, b: number) => {
+ *   // Expensive computation
+ *   return Math.pow(a, b) + Math.sqrt(a * b);
+ * };
+ * const memoizedCalc = memoizeWithLimit(heavyCalc, 50);
+ *
+ * console.log(memoizedCalc(2, 10)); // Computes and caches
+ * console.log(memoizedCalc(2, 10)); // Returns cached result
+ * // After 50 unique calls, least recently used entry evicted
+ * ```
  */
 export function memoizeWithLimit<TFunc extends (...args: readonly unknown[]) => unknown>(
   fn: TFunc,

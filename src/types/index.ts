@@ -83,7 +83,7 @@ export type Bullet = {
   /** Vertical velocity (pixels per frame). */
   dy: number;
   /** Parent player id for ownership or null. */
-  parentId: number | null;
+  parentId: Nullable<number>;
 };
 
 /** Asteroid instance definition. */
@@ -103,7 +103,7 @@ export type Asteroid = {
   /** Size level index. */
   level: number;
   /** Parent asteroid id when fragmented. */
-  parentId: number | null;
+  parentId: Nullable<number>;
   /** Score awarded on destruction. */
   scoreValue: number;
   /** Creation timestamp (ms). */
@@ -115,7 +115,7 @@ export type Asteroid = {
   /** Current scalar speed (pixels per frame). */
   speed: number;
   /** Precomputed polygon shape points. */
-  shape: Vector2[];
+  shape: ReadonlyArray<Vector2>;
 };
 
 /** User-configurable audio volumes. */
@@ -233,7 +233,7 @@ export type FontConfig = {
  */
 export type Theme = {
   /** Unique theme identifier. */
-  id: string;
+  id: ThemeId;
   /** Human-readable theme name. */
   name: string;
   /** User-facing description. */
@@ -249,8 +249,7 @@ export type Theme = {
 /**
  * Valid theme identifiers
  *
- * Note: This type should be kept in sync with THEME_REGISTRY keys in themeConstants.ts
- * Consider using a build-time script to auto-generate this from THEME_REGISTRY keys
- * to maintain single source of truth.
+ * Note: This type should be kept in sync with THEME_REGISTRY keys in themeConstants.ts.
+ * Theme.id is now typed as ThemeId to enforce compile-time validation.
  */
 export type ThemeId = 'default' | 'monochrome';
