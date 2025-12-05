@@ -2,6 +2,8 @@
 
 ## Current Issues
 
+\*_[[[[[[implemented already Dec 5]]]]]]_
+
 After analyzing the overlay system, several design issues need addressing:
 
 1. **Visual Hierarchy Lacking** - Overlays feel flat with minimal visual depth
