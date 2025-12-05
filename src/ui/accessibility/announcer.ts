@@ -83,7 +83,7 @@ export class Announcer {
     const config = { ...DEFAULT_OPTIONS, ...options };
 
     // Update live region priority
-    this.liveRegion.setAttribute('aria-live', config.priority!);
+    this.liveRegion.setAttribute('aria-live', config.priority ?? 'polite');
 
     // Set message
     this.liveRegion.textContent = message;
@@ -91,12 +91,13 @@ export class Announcer {
     log.debug('[ARIA] Announced:', message, { priority: config.priority });
 
     // Auto-clear after delay
-    if (config.clearAfter! > 0) {
+    const clearAfter = config.clearAfter ?? 1000;
+    if (clearAfter > 0) {
       setTimeout(() => {
         if (this.liveRegion) {
           this.liveRegion.textContent = '';
         }
-      }, config.clearAfter);
+      }, clearAfter);
     }
   }
 
