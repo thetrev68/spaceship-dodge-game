@@ -41,6 +41,7 @@
 
 import { createReactive } from '@core/reactive';
 import { log } from '@core/logger';
+import { announcer } from '@ui/accessibility/announcer';
 import type { Theme, ThemeId } from '@types';
 import {
   DEFAULT_THEME,
@@ -180,6 +181,7 @@ export function setTheme(themeId: string): void {
   saveThemeToStorage(themeId);
 
   log.info(`Theme changed to: ${theme.name}`);
+  announcer.announce(`Theme changed to ${theme.name}`);
 }
 
 /**
