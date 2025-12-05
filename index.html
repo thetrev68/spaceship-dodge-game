@@ -5,21 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; media-src 'self'; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none';"
+      content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; media-src 'self'; font-src 'self'; connect-src %VITE_CSP_CONNECT_SRC%; object-src 'none'; base-uri 'self'; form-action 'none';"
     />
-    <script type="module">
-      // Relax CSP in development so Vite's HMR websocket and source maps don't trigger console warnings
-      if (import.meta.env?.DEV) {
-        const csp = document.querySelector('meta[http-equiv="Content-Security-Policy"]');
-        if (csp) {
-          const content = csp.getAttribute('content') ?? '';
-          const updated = content
-            .replace(/connect-src[^;]*;/, "connect-src 'self' ws://localhost:* http://localhost:* data: blob:;")
-            .replace(/default-src[^;]*;/, "default-src 'self' data: blob:;");
-          csp.setAttribute('content', updated);
-        }
-      }
-    </script>
     <title>Spaceship Dodge</title>
     <link rel="icon" href="data:;base64,iVBORw0KGgo=" />
     <link rel="stylesheet" href="styles/main-tailwind.css" />
