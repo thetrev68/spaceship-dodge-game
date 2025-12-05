@@ -74,6 +74,12 @@ vi.mock('@utils/platform.js', () => ({
 vi.mock('@core/logger.js', () => ({
   debug: vi.fn(),
   warn: vi.fn(),
+  log: {
+    debug: vi.fn(),
+    info: vi.fn(),
+    warn: vi.fn(),
+    error: vi.fn(),
+  },
 }));
 
 vi.mock('@ui/settings/settingsManager.js', () => ({

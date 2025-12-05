@@ -1,0 +1,30 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPointStrategy": "expand",
+  "entryPoints": ["src"],
+  "out": "docs/api",
+  "name": "Spaceship Dodge Game API",
+  "includeVersion": true,
+  "readme": "README.md",
+  "exclude": ["**/node_modules/**", "**/*.test.ts", "**/*.spec.ts", "**/vite-env.d.ts"],
+  "excludeInternal": true,
+  "excludePrivate": true,
+  "excludeProtected": false,
+  "categorizeByGroup": true,
+  "sort": ["source-order"],
+  "visibilityFilters": {
+    "protected": false,
+    "private": false,
+    "inherited": true,
+    "external": false
+  },
+  "navigationLinks": {
+    "GitHub": "https://github.com/thetrev68/spaceship-dodge-game"
+  },
+  "plugin": [],
+  "validation": {
+    "notExported": true,
+    "invalidLink": true,
+    "notDocumented": true
+  }
+}

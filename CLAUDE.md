@@ -145,9 +145,12 @@ src/
 │   │   └── perfHUD.ts          # Performance metrics display
 │   ├── controls/
 │   │   └── audioControls.ts    # Volume and mute controls
-│   └── settings/
-│       ├── settingsManager.ts  # Settings persistence
-│       └── settingsUI.ts       # Settings UI components
+│   ├── settings/
+│   │   ├── settingsManager.ts  # Settings persistence
+│   │   └── settingsUI.ts       # Settings UI components
+│   └── accessibility/
+│       ├── announcer.ts        # ARIA live region announcer
+│       └── keyboardHelp.ts     # Keyboard shortcuts guide
 │
 ├── effects/        # Visual effects
 │   └── starfield.ts
@@ -156,7 +159,13 @@ src/
 │   ├── mathUtils.ts
 │   ├── canvasUtils.ts
 │   ├── dom.ts
-│   └── platform.ts
+│   ├── platform.ts
+│   ├── analytics.ts            # Web Vitals tracking
+│   ├── performanceBudget.ts    # Performance monitoring
+│   ├── gameMetrics.ts          # Game analytics
+│   ├── memoize.ts              # Memoization utilities
+│   ├── assertions.ts           # Development assertions
+│   └── profiler.ts             # Performance profiler
 │
 └── types/          # TypeScript type definitions
     └── index.ts
@@ -354,6 +363,149 @@ The project uses TypeScript throughout with:
 - **Environment**: Uses `import.meta.env.BASE_URL` for asset paths
 - **HMR**: Overlay disabled in config
 - **TypeScript**: Full TypeScript support via Vite
+
+## Advanced Features (Sprint 6)
+
+### Performance Monitoring
+
+The game includes comprehensive performance monitoring with Web Vitals tracking and real-time performance budgets:
+
+- **Web Vitals Tracking** ([src/utils/analytics.ts](src/utils/analytics.ts))
+  - Tracks Core Web Vitals: LCP, FID, CLS, FCP, TTFB
+  - Automatic logging with severity levels based on performance ratings
+  - Integration with centralized logger
+  - Session-based analytics for gameplay metrics
+
+- **Performance Budget Monitoring** ([src/utils/performanceBudget.ts](src/utils/performanceBudget.ts))
+  - Real-time frame time tracking with sliding window averaging
+  - Configurable budgets (60 FPS target = 16.67ms, 30 FPS min = 33.33ms)
+  - Automatic warnings when budgets are exceeded
+  - Integration with performance HUD for visual feedback
+
+- **Performance HUD** ([src/ui/hud/perfHUD.ts](src/ui/hud/perfHUD.ts))
+  - Real-time FPS and frame timing display
+  - Color-coded performance indicators (🟢 good, 🟡 needs improvement, 🔴 poor)
+  - Average frame time tracking
+  - Enable via `DEV_CONFIG.SHOW_PERFORMANCE_METRICS`
+
+### Accessibility Features
+
+Full WCAG 2.1 Level AA compliance with comprehensive screen reader support:
+
+- **ARIA Live Region Announcer** ([src/ui/accessibility/announcer.ts](src/ui/accessibility/announcer.ts))
+  - Screen reader announcements for all game events
+  - Polite and assertive priority levels
+  - Auto-clearing to prevent announcement duplication
+  - Game state changes (start, pause, resume, game over)
+  - Level progression announcements
+  - Player status updates (hits, lives remaining)
+
+- **Keyboard Shortcuts Guide** ([src/ui/accessibility/keyboardHelp.ts](src/ui/accessibility/keyboardHelp.ts))
+  - Press `?` to view all keyboard controls
+  - Organized by category (Movement, Actions, System)
+  - Dialog-based overlay with proper ARIA attributes
+  - Escape key to close
+  - Skipped on mobile devices
+
+- **Screen Reader Support**
+  - `.sr-only` CSS class for screen-reader-only content
+  - ARIA live regions in HTML
+  - Proper focus management in overlays
+  - Semantic HTML with ARIA attributes
+
+### Game Analytics
+
+Detailed gameplay metrics tracking for performance analysis and game balance:
+
+- **Session Tracking** ([src/utils/gameMetrics.ts](src/utils/gameMetrics.ts))
+  - Records all gameplay sessions with unique IDs
+  - Tracks bullets fired, asteroids destroyed, power-ups collected
+  - Calculates shooting accuracy percentage
+  - Survival time and final scores
+  - Average statistics across sessions
+  - Export functionality for data analysis
+
+- **Integration Points**
+  - Session start/end in [gameStateManager.ts](src/game/gameStateManager.ts)
+  - Bullet tracking in entity managers
+  - Hit detection and recording
+  - Powerup collection tracking
+
+### Development Utilities
+
+Advanced tools for development and debugging:
+
+- **Memoization** ([src/utils/memoize.ts](src/utils/memoize.ts))
+  - Generic memoization with LRU cache support
+  - Size-limited caching for expensive calculations
+  - Useful for collision detection optimization
+
+- **Assertions** ([src/utils/assertions.ts](src/utils/assertions.ts))
+  - Runtime type checking in development mode
+  - Number validation (positive, range checks)
+  - Only active when `DEV_CONFIG.DEBUG_MODE` is enabled
+  - Zero performance impact in production
+
+- **Performance Profiler** ([src/utils/profiler.ts](src/utils/profiler.ts))
+  - Start/end timing for code sections
+  - Aggregate statistics (avg, min, max, count)
+  - Development-only profiling
+  - Integrated with logger
+
+### Usage Examples
+
+**Analytics:**
+
+```typescript
+import { analytics } from '@utils/analytics';
+
+// Track custom events
+analytics.trackGameplay('level-completed', 'level-5', 12500);
+analytics.trackInteraction('audio-unlock-attempted');
+
+// Export data for analysis
+const data = analytics.exportData();
+console.log(data.summary);
+```
+
+**ARIA Announcements:**
+
+```typescript
+import { announcer } from '@ui/accessibility/announcer';
+
+// Regular announcement
+announcer.announce('Level 5 reached! Score: 12500');
+
+// Urgent announcement (interrupts screen reader)
+announcer.announceUrgent('Player hit! 2 lives remaining.');
+```
+
+**Performance Profiling:**
+
+```typescript
+import { profiler } from '@utils/profiler';
+
+profiler.start('collision-detection');
+// ... expensive collision code ...
+profiler.end('collision-detection');
+
+// View statistics
+profiler.logStats();
+```
+
+**Game Metrics:**
+
+```typescript
+import { gameMetrics } from '@utils/gameMetrics';
+
+// Session automatically tracked in gameStateManager
+gameMetrics.recordBulletFired();
+gameMetrics.recordKill();
+gameMetrics.recordPowerupCollected();
+
+// Export metrics
+const metricsJSON = gameMetrics.exportMetrics();
+```
 
 ## Common Development Patterns
 

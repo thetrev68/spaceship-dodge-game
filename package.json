@@ -28,7 +28,7 @@
     "clean": "rimraf dist coverage .vitest/ node_modules/.vite",
     "reinstall": "npm run clean && npm install",
     "knip": "knip",
-    "docs": "npx typedoc --entryPointStrategy expand src --out docs/api"
+    "docs": "npx typedoc"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.6.1",
@@ -76,5 +76,8 @@
       "path": "./dist/assets/*.css",
       "maxSize": "20 kB"
     }
-  ]
+  ],
+  "dependencies": {
+    "web-vitals": "^5.1.0"
+  }
 }

@@ -58,7 +58,9 @@ export const ASTEROID_CONFIG: ReadonlyConfig<{
 /**
  * @internal
  */
-type PowerUpConfigShape = Record<PowerUpKey, { DURATION: number }> & { SPAWN_INTERVAL: number };
+type PowerUpConfigShape = Record<PowerUpKey, { DURATION: number }> & {
+  SPAWN_INTERVAL: number;
+};
 
 export const POWERUP_CONFIG: ReadonlyConfig<PowerUpConfigShape> = {
   doubleBlaster: {
@@ -87,3 +89,5 @@ export const LEVEL_CONFIG: ReadonlyConfig<LevelConfig> = {
   DIFFICULTY_SCALE_THRESHOLD: 5,
   LOGARITHMIC_SCALE_START: 5,
 };
+
+export { DEV_CONFIG } from './gameConstants.js';

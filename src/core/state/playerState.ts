@@ -14,19 +14,48 @@ class PlayerState {
     this._powerUps = this.createDefaultPowerUps();
   }
 
+  /**
+   * Get the current player entity
+   * @returns The player object with position, velocity, and dimensions
+   */
   get player(): Player {
     return this._player;
   }
 
+  /**
+   * Update the player entity state
+   * @param player - New player object, or null to reset to defaults
+   *
+   * @example
+   * ```typescript
+   * playerState.setPlayer({ ...playerState.player, x: 100, y: 200 });
+   * playerState.setPlayer(null); // Reset to default position
+   * ```
+   */
   setPlayer(player: Player | null): void {
     const next = player ?? this.createDefaultPlayer();
     Object.assign(this._player, next);
   }
 
+  /**
+   * Get the current powerup states
+   * @returns Map of powerup types to their active state and remaining duration
+   */
   get powerUps(): PowerUpMap {
     return this._powerUps;
   }
 
+  /**
+   * Activate a powerup with specified duration
+   * @param type - Powerup type to activate ('doubleBlaster' or 'shield')
+   * @param frames - Duration in frames (60 frames = 1 second at 60 FPS)
+   *
+   * @example
+   * ```typescript
+   * // Activate shield for 5 seconds (300 frames)
+   * playerState.activatePowerup('shield', 300);
+   * ```
+   */
   activatePowerup(type: PowerUpKey, frames: number): void {
     const powerup = this._powerUps[type];
     if (!powerup) return;
@@ -34,6 +63,14 @@ class PlayerState {
     powerup.timer = Math.max(0, frames);
   }
 
+  /**
+   * Deactivate all powerups immediately
+   *
+   * @example
+   * ```typescript
+   * playerState.clearPowerups(); // Called on player death
+   * ```
+   */
   clearPowerups(): void {
     (Object.keys(this._powerUps) as PowerUpKey[]).forEach((key) => {
       this._powerUps[key].active = false;
@@ -41,6 +78,16 @@ class PlayerState {
     });
   }
 
+  /**
+   * Decrement powerup timers and deactivate expired powerups
+   * Called once per frame from game loop
+   *
+   * @example
+   * ```typescript
+   * // In game loop
+   * playerState.tickPowerups();
+   * ```
+   */
   tickPowerups(): void {
     (Object.keys(this._powerUps) as PowerUpKey[]).forEach((key) => {
       const state = this._powerUps[key];
@@ -53,6 +100,15 @@ class PlayerState {
     });
   }
 
+  /**
+   * Reset player and powerup state to defaults
+   * Called on game restart
+   *
+   * @example
+   * ```typescript
+   * playerState.reset(); // Start new game
+   * ```
+   */
   reset(): void {
     Object.assign(this._player, this.createDefaultPlayer());
     const defaults = this.createDefaultPowerUps();
