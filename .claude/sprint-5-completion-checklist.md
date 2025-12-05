@@ -282,7 +282,7 @@ git commit -m "test: valid conventional commit"
 
 ### New Files Created
 
-```
+```text
 .github/
 ├── workflows/
 │   ├── ci.yml                        ✅ Main CI pipeline
@@ -303,7 +303,7 @@ lighthouse-budget.json                ✅ Performance budgets
 
 ### Files Modified
 
-```
+```text
 package.json                          ✅ Scripts, deps, lint-staged, bundlesize
 README.md                             ✅ Badges, development section
 CONTRIBUTING.md                       ✅ Workflow documentation
