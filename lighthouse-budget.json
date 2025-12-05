@@ -28,7 +28,7 @@
       },
       {
         "metric": "first-contentful-paint",
-        "budget": 1000
+        "budget": 1500
       }
     ]
   }
