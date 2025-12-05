@@ -51,10 +51,11 @@ function toggleKeyboardHelp(): void {
   const overlay = document.getElementById('keyboard-help-overlay') as HTMLDivElement | null;
 
   if (!overlay) {
-    createKeyboardHelpOverlay();
-  } else {
-    hideKeyboardHelp();
+    showKeyboardHelp();
+    return;
   }
+
+  hideKeyboardHelp();
 }
 
 function showKeyboardHelp(): void {

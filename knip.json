@@ -2,6 +2,15 @@
   "$schema": "https://unpkg.com/knip@latest/schema.json",
   "entry": ["src/core/main.ts", "index.html"],
   "project": ["src/**/*.ts"],
-  "ignore": ["node_modules/**", "dist/**", "styles/**", "src/game/flowManager.js"],
+  "ignore": [
+    "node_modules/**",
+    "dist/**",
+    "styles/**",
+    "src/game/flowManager.js",
+    "src/utils/analytics.ts",
+    "src/utils/performanceBudget.ts",
+    "src/utils/profiler.ts",
+    "src/types/**"
+  ],
   "ignoreBinaries": ["tailwindcss", "bundlesize"]
 }
