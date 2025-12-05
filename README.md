@@ -1,6 +1,15 @@
 # 🚀 Spaceship Dodge
 
-A fast-paced arcade-style browser game where you pilot a glowing vector spaceship, dodge and shoot asteroids, and level up against rising difficulty. Built with JavaScript, Tailwind CSS, and Vite — supports mouse, keyboard, and full touch/mobile controls with layered audio effects.
+[![CI](https://github.com/thetrev68/spaceship-dodge-game/workflows/CI/badge.svg)](https://github.com/thetrev68/spaceship-dodge-game/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/thetrev68/spaceship-dodge-game/branch/main/graph/badge.svg)](https://codecov.io/gh/thetrev68/spaceship-dodge-game)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue.svg)](https://www.typescriptlang.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Code Style: Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://prettier.io/)
+[![Tested with Vitest](https://img.shields.io/badge/tested%20with-vitest-6E9F18.svg)](https://vitest.dev/)
+
+> A TypeScript-based arcade game with world-class architecture and 85%+ test coverage
+
+A fast-paced arcade-style browser game where you pilot a glowing vector spaceship, dodge and shoot asteroids, and level up against rising difficulty. Built with TypeScript, Tailwind CSS, and Vite — supports mouse, keyboard, and full touch/mobile controls with layered audio effects.
 
 **Recently refactored to a modular, domain-driven architecture with TypeScript for better scalability and maintainability.**
 
@@ -122,35 +131,74 @@ Recent updates focus on performance, stability, and code quality.
 
 ## Getting Started
 
-Prereqs: Node 20+ recommended. Install deps:
+### Prerequisites
+
+- Node.js 20+
+- npm 10+
+
+### Setup
 
 ```bash
+git clone https://github.com/thetrev68/spaceship-dodge-game.git
+cd spaceship-dodge-game
 npm install
 ```
 
-Run locally:
+### Development Server
 
 ```bash
 npm run dev
 ```
 
-Quality gates:
+Opens at `http://localhost:5173`
+
+### Quality Checks
 
 ```bash
-npm run lint
-npm run typecheck
-npm run test
+npm run validate    # Run all checks (typecheck + lint + test:ci)
+npm run typecheck   # TypeScript only
+npm run lint        # ESLint only
+npm run test        # Tests only
 npm run test:coverage   # enforces 85/85/80/85 thresholds (lines/funcs/branches/stmts)
 npm run test:repeat     # runs suites 3x to surface flakes
 ```
 
-Build:
+### Pre-commit Hooks
+
+Husky runs automatically on `git commit`:
+
+- Fixes ESLint issues
+- Runs related tests
+- Formats with Prettier
+
+To bypass (not recommended):
+
+```bash
+git commit --no-verify
+```
+
+### Continuous Integration
+
+All PRs run:
+
+- ✅ Type checking
+- ✅ Linting
+- ✅ Full test suite with coverage
+- ✅ Build verification
+- ✅ Bundle size check
+- ✅ Lighthouse performance audit
+
+See [CI status](.github/workflows/ci.yml)
+
+### Build
 
 ```bash
 npm run build
 ```
 
-Docs (JSDoc):
+### Documentation
+
+Generate TypeDoc API docs:
 
 ```bash
 npm run docs

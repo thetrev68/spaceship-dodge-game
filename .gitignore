@@ -57,6 +57,16 @@ docs/scripts/
 # Test coverage reports
 coverage/
 *.lcov
+.nyc_output/
+
+# Vitest cache
+.vitest/
 
 # AI configuration
 .claude/settings.local.json
+
+# Lighthouse CI reports
+.lighthouseci/
+
+# Husky (keep hooks, ignore install artifacts)
+!.husky/_/
