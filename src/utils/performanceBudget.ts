@@ -124,6 +124,16 @@ export class PerformanceBudget {
     avgFPS: number;
     violations: number;
   } {
+    if (this.frameTimes.length === 0) {
+      return {
+        avgFrameTime: this.getAverageFrameTime(),
+        minFrameTime: 0,
+        maxFrameTime: 0,
+        avgFPS: this.getAverageFPS(),
+        violations: this.violationCount,
+      };
+    }
+
     return {
       avgFrameTime: this.getAverageFrameTime(),
       minFrameTime: Math.min(...this.frameTimes),
