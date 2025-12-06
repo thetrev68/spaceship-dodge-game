@@ -286,11 +286,10 @@ export function drawObstacles(ctx: CanvasRenderingContext2D): void {
 
   const theme = getCurrentTheme();
 
-  // Set stroke style once for all asteroids
-  ctx.strokeStyle = theme.colors.asteroid;
-  ctx.lineWidth = 2;
-
-  ctx.beginPath();
+  // Light source direction (from top-left)
+  const lightAngle = Math.PI * 1.25; // 225 degrees (top-left)
+  const lightDx = Math.cos(lightAngle);
+  const lightDy = Math.sin(lightAngle);
 
   for (let i = 0; i < obstacles.length; i++) {
     const o = obstacles[i];
@@ -301,7 +300,7 @@ export function drawObstacles(ctx: CanvasRenderingContext2D): void {
     const sin = Math.sin(o.rotation);
     const shapeLength = o.shape.length;
 
-    // --- A. Draw Outer Shape (Outline) ---
+    // --- A. Draw Outer Shape with Variable Line Weight Based on Lighting ---
     const p0 = o.shape[0];
     if (!p0) continue;
 
@@ -309,44 +308,69 @@ export function drawObstacles(ctx: CanvasRenderingContext2D): void {
     const startX = p0.x * cos - p0.y * sin + cx;
     const startY = p0.x * sin + p0.y * cos + cy;
 
-    ctx.moveTo(startX, startY);
+    ctx.strokeStyle = theme.colors.asteroid;
 
-    for (let j = 1; j < shapeLength; j++) {
-      const p = o.shape[j];
-      if (!p) continue;
-      const px = p.x * cos - p.y * sin + cx;
-      const py = p.x * sin + p.y * cos + cy;
-      ctx.lineTo(px, py);
+    for (let j = 0; j < shapeLength; j++) {
+      const p1 = o.shape[j];
+      const p2 = o.shape[(j + 1) % shapeLength];
+      if (!p1 || !p2) continue;
+
+      // Transform both points
+      const x1 = p1.x * cos - p1.y * sin + cx;
+      const y1 = p1.x * sin + p1.y * cos + cy;
+      const x2 = p2.x * cos - p2.y * sin + cx;
+      const y2 = p2.x * sin + p2.y * cos + cy;
+
+      // Calculate edge normal (perpendicular to edge)
+      const edgeDx = x2 - x1;
+      const edgeDy = y2 - y1;
+      const edgeLen = Math.sqrt(edgeDx * edgeDx + edgeDy * edgeDy);
+
+      if (edgeLen > 0) {
+        // Normal points outward (perpendicular to edge)
+        const normalX = -edgeDy / edgeLen;
+        const normalY = edgeDx / edgeLen;
+
+        // Dot product: how much this edge faces the light
+        // 1.0 = directly facing light, -1.0 = facing away
+        const lightDot = normalX * lightDx + normalY * lightDy;
+
+        // Map to line width: facing light = thick (3.5), facing away = thin (1.0)
+        const lineWidth = 1.0 + (lightDot * 0.5 + 0.5) * 2.5;
+
+        ctx.lineWidth = lineWidth;
+        ctx.beginPath();
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2, y2);
+        ctx.stroke();
+      }
     }
-    ctx.lineTo(startX, startY); // Close the shape
 
-    // --- B. Add Internal "Cracks" (Option 1: P0 to P[mid]) ---
+    // --- B. Add Internal "Cracks" with thin lines ---
+    ctx.lineWidth = 1.0;
+    ctx.beginPath();
+
     if (shapeLength > 4) {
       const pMidIndex = Math.floor(shapeLength / 2);
       const pMid = o.shape[pMidIndex];
 
       if (pMid) {
-        // Move to P0 (startX, startY)
-        ctx.moveTo(startX, startY);
-
-        // Transform and line to PMid
+        // Transform and draw crack from P0 to PMid
         const px = pMid.x * cos - pMid.y * sin + cx;
         const py = pMid.x * sin + pMid.y * cos + cy;
+        ctx.moveTo(startX, startY);
         ctx.lineTo(px, py);
       }
     }
 
-    // --- C. Add Simple Diagonal Detail (Option 3, simplified: P1 to P[n-1]) ---
+    // --- C. Add Simple Diagonal Detail ---
     if (shapeLength > 2) {
-      const p1 = o.shape[1]; // Next point after P0
-      const pLast = o.shape[shapeLength - 1]; // Last point
+      const p1 = o.shape[1];
+      const pLast = o.shape[shapeLength - 1];
 
       if (p1 && pLast) {
-        // P1
         const x1 = p1.x * cos - p1.y * sin + cx;
         const y1 = p1.x * sin + p1.y * cos + cy;
-
-        // PLast
         const xLast = pLast.x * cos - pLast.y * sin + cx;
         const yLast = pLast.x * sin + pLast.y * cos + cy;
 
@@ -354,9 +378,9 @@ export function drawObstacles(ctx: CanvasRenderingContext2D): void {
         ctx.lineTo(xLast, yLast);
       }
     }
-  }
 
-  ctx.stroke(); // Draw all paths added above
+    ctx.stroke();
+  }
 }
 
 /**
