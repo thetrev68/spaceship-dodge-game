@@ -37,8 +37,8 @@
  */
 
 import { drawPlayer } from '@entities/player.js';
-// import { drawObstacles, drawAsteroid } from '@entities/asteroid.js';
-// import { drawBullets, drawBullet } from '@entities/bullet.js';
+import { drawObstacles } from '@entities/asteroid.js';
+import { drawBullets } from '@entities/bullet.js';
 import { drawPowerups, drawShieldPowerup, drawDoubleBlasterPowerup } from '@entities/powerup.js';
 import { drawScorePopups } from '@ui/hud/scorePopups.js';
 import { drawScore } from '@ui/hud/scoreDisplay.js';
@@ -114,7 +114,7 @@ export function renderAll(ctx: CanvasRenderingContext2D): void {
     obstacles.forEach((o) => renderers.obstacle!(ctx, o));
   } else {
     // Default renderer (asteroids)
-    obstacles.forEach((o) => drawAsteroid(ctx, o));
+    drawObstacles(ctx);
   }
 
   // Bullet rendering - use custom or default
@@ -124,7 +124,7 @@ export function renderAll(ctx: CanvasRenderingContext2D): void {
     bullets.forEach((b) => renderers.bullet!(ctx, b));
   } else {
     // Default renderer (laser bolts)
-    bullets.forEach((b) => drawBullet(ctx, b));
+    drawBullets(ctx);
   }
 
   // Powerup rendering - use custom or default

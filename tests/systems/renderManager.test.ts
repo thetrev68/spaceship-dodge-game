@@ -2,8 +2,8 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderAll } from '@systems/renderManager';
 import { gameState, playerState, entityState } from '@core/state';
 import { drawPlayer } from '@entities/player.js';
-import { drawAsteroid } from '@entities/asteroid.js';
-import { drawBullet } from '@entities/bullet.js';
+import { drawAsteroid, drawObstacles } from '@entities/asteroid.js';
+import { drawBullet, drawBullets } from '@entities/bullet.js';
 import { drawPowerups, drawShieldPowerup, drawDoubleBlasterPowerup } from '@entities/powerup.js';
 import { drawScorePopups } from '@ui/hud/scorePopups.js';
 import { drawScore } from '@ui/hud/scoreDisplay.js';
@@ -95,8 +95,8 @@ describe('renderManager', () => {
       renderAll(mockCtx);
 
       expect(drawPlayer).not.toHaveBeenCalled();
-      expect(drawAsteroid).not.toHaveBeenCalled();
-      expect(drawBullet).not.toHaveBeenCalled();
+      expect(drawObstacles).not.toHaveBeenCalled();
+      expect(drawBullets).not.toHaveBeenCalled();
       expect(drawScore).not.toHaveBeenCalled();
     });
 
@@ -105,6 +105,8 @@ describe('renderManager', () => {
       renderAll(mockCtx);
 
       expect(drawPlayer).not.toHaveBeenCalled();
+      expect(drawObstacles).not.toHaveBeenCalled();
+      expect(drawBullets).not.toHaveBeenCalled();
     });
 
     it('skips rendering when game state is GAME_OVER', () => {
@@ -112,6 +114,8 @@ describe('renderManager', () => {
       renderAll(mockCtx);
 
       expect(drawPlayer).not.toHaveBeenCalled();
+      expect(drawObstacles).not.toHaveBeenCalled();
+      expect(drawBullets).not.toHaveBeenCalled();
     });
 
     it('skips rendering when game state is LEVEL_TRANSITION', () => {
@@ -119,6 +123,8 @@ describe('renderManager', () => {
       renderAll(mockCtx);
 
       expect(drawPlayer).not.toHaveBeenCalled();
+      expect(drawObstacles).not.toHaveBeenCalled();
+      expect(drawBullets).not.toHaveBeenCalled();
     });
   });
 
@@ -130,7 +136,7 @@ describe('renderManager', () => {
       expect(drawPlayer).toHaveBeenCalledTimes(1);
     });
 
-    it('calls drawAsteroid for each obstacle', () => {
+    it('calls drawObstacles for obstacle rendering', () => {
       const mockObstacles = [
         { id: 1, x: 100, y: 100 },
         { id: 2, x: 200, y: 200 },
@@ -140,13 +146,12 @@ describe('renderManager', () => {
       vi.mocked(entityState.getMutableObstacles).mockReturnValue(mockObstacles as any);
       renderAll(mockCtx);
 
-      expect(drawAsteroid).toHaveBeenCalledTimes(3);
-      expect(drawAsteroid).toHaveBeenCalledWith(mockCtx, mockObstacles[0]);
-      expect(drawAsteroid).toHaveBeenCalledWith(mockCtx, mockObstacles[1]);
-      expect(drawAsteroid).toHaveBeenCalledWith(mockCtx, mockObstacles[2]);
+      expect(drawObstacles).toHaveBeenCalledTimes(1);
+      expect(drawObstacles).toHaveBeenCalledWith(mockCtx);
+      expect(drawAsteroid).not.toHaveBeenCalled();
     });
 
-    it('calls drawBullet for each bullet', () => {
+    it('calls drawBullets for bullet rendering', () => {
       const mockBullets = [
         { x: 100, y: 100 },
         { x: 200, y: 200 },
@@ -155,9 +160,9 @@ describe('renderManager', () => {
       vi.mocked(entityState.getMutableBullets).mockReturnValue(mockBullets as any);
       renderAll(mockCtx);
 
-      expect(drawBullet).toHaveBeenCalledTimes(2);
-      expect(drawBullet).toHaveBeenCalledWith(mockCtx, mockBullets[0]);
-      expect(drawBullet).toHaveBeenCalledWith(mockCtx, mockBullets[1]);
+      expect(drawBullets).toHaveBeenCalledTimes(1);
+      expect(drawBullets).toHaveBeenCalledWith(mockCtx);
+      expect(drawBullet).not.toHaveBeenCalled();
     });
 
     it('handles empty entity arrays', () => {
@@ -166,6 +171,8 @@ describe('renderManager', () => {
 
       renderAll(mockCtx);
 
+      expect(drawObstacles).toHaveBeenCalledTimes(1);
+      expect(drawBullets).toHaveBeenCalledTimes(1);
       expect(drawAsteroid).not.toHaveBeenCalled();
       expect(drawBullet).not.toHaveBeenCalled();
     });
@@ -249,6 +256,7 @@ describe('renderManager', () => {
       expect(customObstacleRenderer).toHaveBeenCalledTimes(2);
       expect(customObstacleRenderer).toHaveBeenCalledWith(mockCtx, mockObstacles[0]);
       expect(customObstacleRenderer).toHaveBeenCalledWith(mockCtx, mockObstacles[1]);
+      expect(drawObstacles).not.toHaveBeenCalled();
       expect(drawAsteroid).not.toHaveBeenCalled();
     });
   });
@@ -281,6 +289,7 @@ describe('renderManager', () => {
       expect(customBulletRenderer).toHaveBeenCalledWith(mockCtx, mockBullets[0]);
       expect(customBulletRenderer).toHaveBeenCalledWith(mockCtx, mockBullets[1]);
       expect(customBulletRenderer).toHaveBeenCalledWith(mockCtx, mockBullets[2]);
+      expect(drawBullets).not.toHaveBeenCalled();
       expect(drawBullet).not.toHaveBeenCalled();
     });
   });
@@ -474,9 +483,9 @@ describe('renderManager', () => {
       expect(customBlasterRenderer).toHaveBeenCalledWith(mockCtx, blasterPowerup);
 
       // No default renderers should be called
+      expect(drawObstacles).not.toHaveBeenCalled();
+      expect(drawBullets).not.toHaveBeenCalled();
       expect(drawPlayer).not.toHaveBeenCalled();
-      expect(drawAsteroid).not.toHaveBeenCalled();
-      expect(drawBullet).not.toHaveBeenCalled();
       expect(drawShieldPowerup).not.toHaveBeenCalled();
       expect(drawDoubleBlasterPowerup).not.toHaveBeenCalled();
 

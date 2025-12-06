@@ -39,7 +39,7 @@ const obstaclePool = new ObjectPool<Asteroid>(() => ({
 const obstacles = entityState.getMutableObstacles();
 
 // Add to the top of entities/asteroid.ts
-export type Debris = {
+type Debris = {
   x: number;
   y: number;
   dx: number;
