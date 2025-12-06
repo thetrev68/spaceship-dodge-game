@@ -8,6 +8,7 @@ import {
   drawStarfishPowerup,
 } from '@core/themes/renderers/underwater/powerupRenderers';
 import type { ActivePowerup } from '@types';
+import { createTestPowerup } from '../../../../helpers/gameStateFactory';
 
 // Mock dependencies
 vi.mock('@core/themes', () => ({
@@ -40,17 +41,6 @@ function createMockContext() {
     fillStyle: '',
     lineWidth: 0,
     globalAlpha: 1,
-  };
-}
-
-function createTestPowerup(overrides?: Partial<ActivePowerup>): ActivePowerup {
-  return {
-    x: 100,
-    y: 100,
-    size: 40,
-    type: 'shield',
-    dy: 2,
-    ...overrides,
   };
 }
 
@@ -115,7 +105,7 @@ describe('drawOctopusPowerup', () => {
     drawOctopusPowerup(ctx as unknown as CanvasRenderingContext2D, powerup);
 
     // Should use theme color
-    expect(ctx.strokeStyle).toContain('#');
+    expect(ctx.strokeStyle).toBe('#ff6b9d');
   });
 });
 
@@ -174,7 +164,7 @@ describe('drawStarfishPowerup', () => {
     drawStarfishPowerup(ctx as unknown as CanvasRenderingContext2D, powerup);
 
     // Should use theme color
-    expect(ctx.strokeStyle).toContain('#');
+    expect(ctx.strokeStyle).toBe('#fbbf24');
   });
 
   it('should scale with powerup size', () => {

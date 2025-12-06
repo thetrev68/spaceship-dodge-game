@@ -398,7 +398,6 @@ export function drawAsteroid(ctx: CanvasRenderingContext2D, obstacle: Asteroid):
  * @param ctx - Canvas 2D rendering context
  */
 export function drawObstacles(ctx: CanvasRenderingContext2D): void {
-  const obstacles = entityState.getMutableObstacles();
   obstacles.forEach((o) => drawAsteroid(ctx, o));
 }
 

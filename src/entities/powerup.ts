@@ -16,6 +16,7 @@ import {
   type PowerupExpiredEvent,
 } from '@core/events/GameEvents.js';
 import { getCurrentTheme } from '@core/themes';
+import { log } from '@core/logger.js';
 
 /**
  * Power-up types enumeration.
@@ -366,7 +367,7 @@ export function drawPowerups(ctx: CanvasRenderingContext2D): void {
 function activatePowerup(type: PowerUpKey): void {
   const config = POWERUP_CONFIG[type];
   if (!config) {
-    console.warn(`Unknown powerup type: ${type}`);
+    log.warn(`Unknown powerup type: ${type}`);
     return;
   }
 

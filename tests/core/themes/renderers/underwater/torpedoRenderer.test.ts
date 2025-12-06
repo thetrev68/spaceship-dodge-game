@@ -5,6 +5,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { drawTorpedo } from '@core/themes/renderers/underwater/torpedoRenderer';
 import type { Bullet } from '@types';
+import { createTestBullet } from '../../../../helpers/gameStateFactory';
 
 // Mock dependencies
 vi.mock('@core/themes', () => ({
@@ -33,17 +34,6 @@ function createMockContext() {
     fillStyle: '',
     lineWidth: 0,
     globalAlpha: 1,
-  };
-}
-
-function createTestBullet(overrides?: Partial<Bullet>): Bullet {
-  return {
-    x: 100,
-    y: 200,
-    radius: 5,
-    dy: -10,
-    parentId: null,
-    ...overrides,
   };
 }
 
@@ -133,6 +123,6 @@ describe('drawTorpedo', () => {
 
     drawTorpedo(ctx as unknown as CanvasRenderingContext2D, torpedo);
 
-    expect(ctx.fillStyle).toContain('#'); // Should have color set
+    expect(ctx.fillStyle).toContain('#ffaa00'); // Verify theme color is used
   });
 });

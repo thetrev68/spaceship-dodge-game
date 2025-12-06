@@ -23,6 +23,7 @@
 
 import { getCurrentTheme } from '@core/themes';
 import { isMobile } from '@utils/platform';
+import { OCEAN_CONSTANTS } from '@core/gameConstants';
 
 /**
  * Initializes ocean background with animated plankton particles.
@@ -65,7 +66,10 @@ export function setupOceanBackground(canvas: HTMLCanvasElement): void {
   if (!ctx) return;
 
   const theme = getCurrentTheme();
-  const planktonCount = isMobile() ? 50 : 120;
+  const mobile = isMobile();
+  const planktonCount = mobile
+    ? OCEAN_CONSTANTS.PLANKTON_COUNT_MOBILE
+    : OCEAN_CONSTANTS.PLANKTON_COUNT_DESKTOP;
 
   type Plankton = {
     x: number;
@@ -111,7 +115,7 @@ export function setupOceanBackground(canvas: HTMLCanvasElement): void {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     // Sunbeam effect from top-left
-    if (!isMobile()) {
+    if (!mobile) {
       const sunGradient = ctx.createRadialGradient(
         canvas.width * 0.2, // Sun position (top-left)
         0,
@@ -148,7 +152,7 @@ export function setupOceanBackground(canvas: HTMLCanvasElement): void {
       ctx.globalAlpha = particle.opacity;
 
       // Outer glow
-      if (!isMobile()) {
+      if (!mobile) {
         ctx.fillStyle = `${theme.colors.starfield}40`;
         ctx.beginPath();
         ctx.arc(particle.x, particle.y, particle.size * 2, 0, Math.PI * 2);
