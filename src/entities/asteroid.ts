@@ -286,8 +286,8 @@ export function drawObstacles(ctx: CanvasRenderingContext2D): void {
 
   const theme = getCurrentTheme();
 
-  // Light source direction (from top-left)
-  const lightAngle = Math.PI * 1.25; // 225 degrees (top-left)
+  // Light source direction (from top-left in screen coordinates)
+  const lightAngle = -Math.PI * 0.75; // -135 degrees (top-left, accounting for canvas Y-down)
   const lightDx = Math.cos(lightAngle);
   const lightDy = Math.sin(lightAngle);
 
@@ -327,9 +327,9 @@ export function drawObstacles(ctx: CanvasRenderingContext2D): void {
       const edgeLen = Math.sqrt(edgeDx * edgeDx + edgeDy * edgeDy);
 
       if (edgeLen > 0) {
-        // Normal points outward (perpendicular to edge)
-        const normalX = -edgeDy / edgeLen;
-        const normalY = edgeDx / edgeLen;
+        // Normal points outward (perpendicular to edge, rotated 90° CCW)
+        const normalX = edgeDy / edgeLen;
+        const normalY = -edgeDx / edgeLen;
 
         // Dot product: how much this edge faces the light
         // 1.0 = directly facing light, -1.0 = facing away
