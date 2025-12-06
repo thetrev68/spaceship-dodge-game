@@ -136,7 +136,7 @@ export const MONOCHROME_THEME: Theme = {
  * This theme provides a complete underwater aesthetic with custom renderers
  * for all game entities, transforming the space theme into an ocean adventure.
  */
-export const UNDERWATER_THEME: Theme = {
+const UNDERWATER_THEME: Theme = {
   id: 'underwater',
   name: 'Deep Ocean',
   description: 'Submarine exploration in bioluminescent depths',

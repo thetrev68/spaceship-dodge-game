@@ -4,7 +4,6 @@
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { drawTorpedo } from '@core/themes/renderers/underwater/torpedoRenderer';
-import type { Bullet } from '@types';
 import { createTestBullet } from '../../../../helpers/gameStateFactory';
 
 // Mock dependencies

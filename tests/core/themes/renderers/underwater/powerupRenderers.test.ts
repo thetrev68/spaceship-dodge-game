@@ -7,7 +7,6 @@ import {
   drawOctopusPowerup,
   drawStarfishPowerup,
 } from '@core/themes/renderers/underwater/powerupRenderers';
-import type { ActivePowerup } from '@types';
 import { createTestPowerup } from '../../../../helpers/gameStateFactory';
 
 // Mock dependencies
