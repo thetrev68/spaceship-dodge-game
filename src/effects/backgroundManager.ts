@@ -32,8 +32,13 @@
 
 import { getCurrentTheme, watchTheme } from '@core/themes';
 import { setupStarfield } from '@effects/starfield.js';
-import { setupOceanBackground } from '@core/themes/renderers/underwater';
+import {
+  getOceanBackgroundCleanup,
+  clearOceanBackgroundCleanup,
+} from '@core/themes/renderers/underwater/oceanBackground';
 import { debug } from '@core/logger.js';
+
+let watcherRegistered = false;
 
 /**
  * Initializes the background effect for the current theme.
@@ -61,6 +66,13 @@ import { debug } from '@core/logger.js';
  * ```
  */
 export function initializeBackground(canvas: HTMLCanvasElement): void {
+  // Clean up any previous background animations
+  const oceanCleanup = getOceanBackgroundCleanup();
+  if (oceanCleanup) {
+    oceanCleanup();
+    clearOceanBackgroundCleanup();
+  }
+
   const theme = getCurrentTheme();
   const themeId = theme.id;
 
@@ -80,13 +92,6 @@ export function initializeBackground(canvas: HTMLCanvasElement): void {
   if (theme.renderers?.particles) {
     debug('effects', `Using custom particle system for ${themeId}`);
     theme.renderers.particles.setup(canvas);
-    return;
-  }
-
-  // Underwater theme uses ocean background
-  if (themeId === 'underwater') {
-    debug('effects', 'Using ocean background for underwater theme');
-    setupOceanBackground(canvas);
     return;
   }
 
@@ -119,6 +124,12 @@ export function initializeBackground(canvas: HTMLCanvasElement): void {
  * ```
  */
 export function setupBackgroundWatcher(canvas: HTMLCanvasElement): void {
+  if (watcherRegistered) {
+    debug('effects', 'Background watcher already registered, skipping');
+    return;
+  }
+  watcherRegistered = true;
+
   watchTheme(() => {
     const theme = getCurrentTheme();
     debug('effects', `Theme changed to ${theme.id}, reinitializing background`);

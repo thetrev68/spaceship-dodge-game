@@ -26,6 +26,61 @@ import { isMobile } from '@utils/platform';
 import { OCEAN_CONSTANTS } from '@core/gameConstants';
 
 /**
+ * Cleanup function for ocean background resources.
+ */
+type OceanBackgroundCleanup = () => void;
+
+// Global registry for background cleanup functions
+let oceanBackgroundCleanup: OceanBackgroundCleanup | null = null;
+
+/**
+ * Background renderer wrapper for theme system integration.
+ *
+ * This function serves as a bridge between the theme system's background
+ * renderer interface and the ocean background setup function.
+ *
+ * @param ctx - Canvas 2D rendering context
+ * @param canvas - Canvas element for background rendering
+ *
+ * @example
+ * ```typescript
+ * // Used in theme definitions as renderers.background
+ * renderers: {
+ *   background: drawOceanBackground,
+ * }
+ * ```
+ */
+export function drawOceanBackground(
+  ctx: CanvasRenderingContext2D,
+  canvas: HTMLCanvasElement
+): void {
+  // Clean up any previous ocean background
+  if (oceanBackgroundCleanup) {
+    oceanBackgroundCleanup();
+    oceanBackgroundCleanup = null;
+  }
+
+  // Start new ocean background and store cleanup function
+  oceanBackgroundCleanup = setupOceanBackground(canvas);
+}
+
+/**
+ * Gets the cleanup function for ocean background.
+ * Used by backgroundManager to clean up when switching themes.
+ */
+export function getOceanBackgroundCleanup(): OceanBackgroundCleanup | null {
+  return oceanBackgroundCleanup;
+}
+
+/**
+ * Clears the ocean background cleanup function.
+ * Used by backgroundManager after calling cleanup.
+ */
+export function clearOceanBackgroundCleanup(): void {
+  oceanBackgroundCleanup = null;
+}
+
+/**
  * Initializes ocean background with animated plankton particles.
  *
  * ## Rendering Pipeline
@@ -51,19 +106,21 @@ import { OCEAN_CONSTANTS } from '@core/gameConstants';
  * - Particles redistribute on resize
  *
  * @param canvas - Canvas element for background rendering
+ * @returns Cleanup function to stop animation and remove event listeners
  *
  * @example
  * ```typescript
  * // Used by backgroundManager.ts
  * const starfieldCanvas = document.getElementById('starfieldCanvas') as HTMLCanvasElement;
- * if (theme.id === 'underwater') {
- *   setupOceanBackground(starfieldCanvas);
- * }
+ * const cleanup = setupOceanBackground(starfieldCanvas);
+ * // Call cleanup() when switching themes to prevent memory leaks
  * ```
  */
-export function setupOceanBackground(canvas: HTMLCanvasElement): void {
+export function setupOceanBackground(canvas: HTMLCanvasElement): OceanBackgroundCleanup {
   const ctx = canvas.getContext('2d');
-  if (!ctx) return;
+  if (!ctx) {
+    return () => {};
+  }
 
   const theme = getCurrentTheme();
   const mobile = isMobile();
@@ -88,7 +145,8 @@ export function setupOceanBackground(canvas: HTMLCanvasElement): void {
   }
 
   resize();
-  window.addEventListener('resize', resize);
+  const resizeHandler = resize;
+  window.addEventListener('resize', resizeHandler);
 
   // Initialize plankton particles
   for (let i = 0; i < planktonCount; i++) {
@@ -102,7 +160,9 @@ export function setupOceanBackground(canvas: HTMLCanvasElement): void {
     });
   }
 
-  function animate(): void {
+  let animationId: number;
+
+  function renderFrame(): void {
     if (!ctx) return;
 
     // Deep ocean gradient (darker blue at bottom, lighter at top with sun)
@@ -167,9 +227,20 @@ export function setupOceanBackground(canvas: HTMLCanvasElement): void {
     });
 
     ctx.globalAlpha = 1;
-
-    requestAnimationFrame(animate);
   }
 
-  animate();
+  function animate(): void {
+    renderFrame();
+    animationId = requestAnimationFrame(animate);
+  }
+
+  // Draw an initial frame immediately so gradients/particles are set up synchronously
+  renderFrame();
+  animationId = requestAnimationFrame(animate);
+
+  // Return cleanup function
+  return () => {
+    cancelAnimationFrame(animationId);
+    window.removeEventListener('resize', resizeHandler);
+  };
 }

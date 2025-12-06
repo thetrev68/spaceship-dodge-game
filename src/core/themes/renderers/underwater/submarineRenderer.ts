@@ -138,6 +138,7 @@ export function drawSubmarine(ctx: CanvasRenderingContext2D, player: Player): vo
 
   // Bubble trail (thrust replacement)
   if (!isMobile()) {
+    ctx.save();
     const bubbleCount = 5;
     const bubbleTime = performance.now() / 100;
 
@@ -146,12 +147,12 @@ export function drawSubmarine(ctx: CanvasRenderingContext2D, player: Player): vo
       const bubbleY = propY + offset;
       const bubbleSize = 2 + Math.sin(bubbleTime + i) * 1;
 
-      ctx.globalAlpha = 1 - offset / 100;
+      ctx.globalAlpha = Math.max(0, 1 - offset / 100);
       ctx.beginPath();
       ctx.arc(propX, bubbleY, bubbleSize, 0, Math.PI * 2);
       ctx.fill();
     }
-    ctx.globalAlpha = 1;
+    ctx.restore();
   }
 
   // Shield effect (if active) - same as space theme

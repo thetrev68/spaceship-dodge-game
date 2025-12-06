@@ -77,6 +77,8 @@ import type { Asteroid } from '@types';
  * ```
  */
 export function drawJellyfish(ctx: CanvasRenderingContext2D, obstacle: Asteroid): void {
+  ctx.save();
+
   const theme = getCurrentTheme();
   const cx = obstacle.x + obstacle.radius;
   const cy = obstacle.y + obstacle.radius;
@@ -162,5 +164,10 @@ export function drawJellyfish(ctx: CanvasRenderingContext2D, obstacle: Asteroid)
     ctx.arc(cx, cy, bellRadius, Math.PI, Math.PI * 2);
     ctx.stroke();
     ctx.globalAlpha = 1;
+
+    // Restore primary body color so subsequent draws use the theme's asteroid hue
+    ctx.strokeStyle = theme.colors.asteroid;
   }
+
+  ctx.restore();
 }

@@ -49,6 +49,8 @@ import type { ActivePowerup } from '@types';
  * ```
  */
 export function drawOctopusPowerup(ctx: CanvasRenderingContext2D, powerup: ActivePowerup): void {
+  ctx.save();
+
   const theme = getCurrentTheme();
   const x = powerup.x;
   const y = powerup.y;
@@ -82,6 +84,7 @@ export function drawOctopusPowerup(ctx: CanvasRenderingContext2D, powerup: Activ
 
   // 8 Tentacles (wavy arms radiating outward)
   ctx.strokeStyle = theme.colors.powerupShield;
+  ctx.fillStyle = theme.colors.powerupShield; // Ensure suction cups use shield color, not pupil black
   ctx.lineWidth = 1.5;
 
   const time = performance.now() / 500;
@@ -112,6 +115,8 @@ export function drawOctopusPowerup(ctx: CanvasRenderingContext2D, powerup: Activ
       ctx.fill();
     }
   }
+
+  ctx.restore();
 }
 
 /**
@@ -146,6 +151,8 @@ export function drawOctopusPowerup(ctx: CanvasRenderingContext2D, powerup: Activ
  * ```
  */
 export function drawStarfishPowerup(ctx: CanvasRenderingContext2D, powerup: ActivePowerup): void {
+  ctx.save();
+
   const theme = getCurrentTheme();
   const x = powerup.x;
   const y = powerup.y;
@@ -203,4 +210,6 @@ export function drawStarfishPowerup(ctx: CanvasRenderingContext2D, powerup: Acti
     ctx.arc(bumpX, bumpY, size * 0.04, 0, Math.PI * 2);
     ctx.fill();
   }
+
+  ctx.restore();
 }

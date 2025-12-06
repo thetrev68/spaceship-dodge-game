@@ -13,6 +13,7 @@ import {
   drawTorpedo,
   drawOctopusPowerup,
   drawStarfishPowerup,
+  drawOceanBackground,
 } from './renderers/underwater';
 
 import type { Theme, ThemeId, UIColorPalette } from '@types';
@@ -179,6 +180,7 @@ export const UNDERWATER_THEME: Theme = {
   },
   // CUSTOM RENDERERS
   renderers: {
+    background: drawOceanBackground,
     player: drawSubmarine,
     obstacle: drawJellyfish,
     bullet: drawTorpedo,

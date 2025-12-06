@@ -94,7 +94,7 @@ describe('drawJellyfish', () => {
 
     drawJellyfish(ctx as unknown as CanvasRenderingContext2D, jellyfish);
 
-    expect(ctx.strokeStyle).toContain('#'); // Should have color assigned
+    expect(ctx.strokeStyle).toBe('#9f7aea'); // Should use theme.colors.asteroid
   });
 
   it('should apply pulsating animation', () => {
@@ -139,9 +139,8 @@ describe('drawJellyfish', () => {
 
     drawJellyfish(ctx as unknown as CanvasRenderingContext2D, tinyJelly);
 
-    // Should have at least 4 tentacles × 4 segments = 12-16 quadratic curves
-    // (actual count depends on implementation details)
-    expect(ctx.quadraticCurveTo).toHaveBeenCalled();
+    // 4 tentacles minimum, 3 quadratic segments each (first segment uses lineTo)
+    expect(ctx.quadraticCurveTo.mock.calls.length).toBeGreaterThanOrEqual(4 * 3);
   });
 
   it('should render bioluminescent glow on desktop', async () => {

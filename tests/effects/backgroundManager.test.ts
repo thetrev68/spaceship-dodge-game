@@ -3,24 +3,36 @@
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { initializeBackground, setupBackgroundWatcher } from '@effects/backgroundManager';
 import type { Theme } from '@types';
+import { createMockCanvas } from '../helpers/mockCanvas';
+
+let initializeBackground: (canvas: HTMLCanvasElement) => void;
+let setupBackgroundWatcher: (canvas: HTMLCanvasElement) => void;
 
 // Mock dependencies using vi.hoisted for proper hoisting
-const { mockSetupStarfield, mockSetupOceanBackground, mockGetCurrentTheme, mockWatchTheme } =
-  vi.hoisted(() => ({
-    mockSetupStarfield: vi.fn(),
-    mockSetupOceanBackground: vi.fn(),
-    mockGetCurrentTheme: vi.fn(),
-    mockWatchTheme: vi.fn(),
-  }));
+const {
+  mockSetupStarfield,
+  mockBackgroundRenderer,
+  mockGetCurrentTheme,
+  mockWatchTheme,
+  mockOceanCleanup,
+  mockClearOceanCleanup,
+} = vi.hoisted(() => ({
+  mockSetupStarfield: vi.fn(),
+  mockBackgroundRenderer: vi.fn(),
+  mockGetCurrentTheme: vi.fn(),
+  mockWatchTheme: vi.fn(),
+  mockOceanCleanup: vi.fn(() => null),
+  mockClearOceanCleanup: vi.fn(),
+}));
 
-vi.mock('@effects/starfield', () => ({
+vi.mock('@effects/starfield.js', () => ({
   setupStarfield: mockSetupStarfield,
 }));
 
-vi.mock('@core/themes/renderers/underwater', () => ({
-  setupOceanBackground: mockSetupOceanBackground,
+vi.mock('@core/themes/renderers/underwater/oceanBackground', () => ({
+  getOceanBackgroundCleanup: mockOceanCleanup,
+  clearOceanBackgroundCleanup: mockClearOceanCleanup,
 }));
 
 vi.mock('@core/themes', () => ({
@@ -28,19 +40,9 @@ vi.mock('@core/themes', () => ({
   watchTheme: (callback: () => void) => mockWatchTheme(callback),
 }));
 
-vi.mock('@core/logger', () => ({
+vi.mock('@core/logger.js', () => ({
   debug: vi.fn(),
 }));
-
-function createMockCanvas(): HTMLCanvasElement {
-  return {
-    getContext: vi.fn(() => ({
-      fillRect: vi.fn(),
-    })),
-    width: 800,
-    height: 600,
-  } as unknown as HTMLCanvasElement;
-}
 
 function createMockTheme(overrides?: Partial<Theme>): Theme {
   return {
@@ -55,8 +57,10 @@ function createMockTheme(overrides?: Partial<Theme>): Theme {
 }
 
 describe('initializeBackground', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.clearAllMocks();
+    vi.resetModules();
+    ({ initializeBackground, setupBackgroundWatcher } = await import('@effects/backgroundManager'));
   });
 
   it('should use starfield for default theme', () => {
@@ -66,16 +70,22 @@ describe('initializeBackground', () => {
     initializeBackground(canvas);
 
     expect(mockSetupStarfield).toHaveBeenCalledWith(canvas);
-    expect(mockSetupOceanBackground).not.toHaveBeenCalled();
   });
 
   it('should use ocean background for underwater theme', () => {
     const canvas = createMockCanvas();
-    mockGetCurrentTheme.mockReturnValue(createMockTheme({ id: 'underwater' }));
+    mockGetCurrentTheme.mockReturnValue(
+      createMockTheme({
+        id: 'underwater',
+        renderers: {
+          background: mockBackgroundRenderer,
+        },
+      })
+    );
 
     initializeBackground(canvas);
 
-    expect(mockSetupOceanBackground).toHaveBeenCalledWith(canvas);
+    expect(mockBackgroundRenderer).toHaveBeenCalledWith(expect.anything(), canvas);
     expect(mockSetupStarfield).not.toHaveBeenCalled();
   });
 
@@ -104,7 +114,6 @@ describe('initializeBackground', () => {
     // Should have called custom renderer
     expect(customRenderer).toHaveBeenCalled();
     expect(mockSetupStarfield).not.toHaveBeenCalled();
-    expect(mockSetupOceanBackground).not.toHaveBeenCalled();
   });
 
   it('should use custom particle system if provided', () => {
@@ -152,8 +161,10 @@ describe('initializeBackground', () => {
 });
 
 describe('setupBackgroundWatcher', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.clearAllMocks();
+    vi.resetModules();
+    ({ initializeBackground, setupBackgroundWatcher } = await import('@effects/backgroundManager'));
   });
 
   it('should register theme watcher', () => {
@@ -178,11 +189,18 @@ describe('setupBackgroundWatcher', () => {
     mockGetCurrentTheme.mockReturnValue(createMockTheme({ id: 'default' }));
 
     // Simulate theme change to underwater
-    mockGetCurrentTheme.mockReturnValue(createMockTheme({ id: 'underwater' }));
+    mockGetCurrentTheme.mockReturnValue(
+      createMockTheme({
+        id: 'underwater',
+        renderers: {
+          background: mockBackgroundRenderer,
+        },
+      })
+    );
     if (watcherCallback) {
       watcherCallback();
     }
 
-    expect(mockSetupOceanBackground).toHaveBeenCalledWith(canvas);
+    expect(mockBackgroundRenderer).toHaveBeenCalledWith(expect.anything(), canvas);
   });
 });

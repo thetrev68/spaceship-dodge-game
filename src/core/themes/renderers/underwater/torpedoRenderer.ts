@@ -72,7 +72,7 @@ export function drawTorpedo(ctx: CanvasRenderingContext2D, bullet: Bullet): void
 
   // Tail fins (4 small fins)
   ctx.strokeStyle = theme.colors.bullet;
-  const finPositions = [-radius * 0.5, radius * 0.5];
+  const finPositions = [-radius, -radius * 0.5, radius * 0.5, radius];
   finPositions.forEach((offset) => {
     ctx.beginPath();
     ctx.moveTo(x + offset, y + radius * 2);

@@ -76,8 +76,13 @@ function createTestPlayer(overrides?: Partial<Player>): Player {
 }
 
 describe('drawSubmarine', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.clearAllMocks();
+
+    // Reset mocked playerState between tests to avoid cross-test contamination
+    const { playerState } = await import('@core/state/playerState');
+    playerState.powerUps.shield = { active: false, timer: 0 };
+    playerState.powerUps.doubleBlaster = { active: false, timer: 0 };
   });
 
   it('should render submarine with all components', () => {

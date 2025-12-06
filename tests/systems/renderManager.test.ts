@@ -454,7 +454,6 @@ describe('renderManager', () => {
       vi.mocked(entityState.getMutableBullets).mockReturnValue(bullets as any);
       (activePowerups as any).push(shieldPowerup, blasterPowerup);
 
-      (playerState as any).player = player;
       vi.mocked(getCurrentTheme).mockReturnValue({
         id: 'underwater',
         name: 'Underwater',
