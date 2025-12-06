@@ -26,8 +26,8 @@ export const HUD_CONSTANTS: ReadonlyConfig<HudConstants> = {
   SCORE_Y: 40,
   LEVEL_Y: 70,
   LIVES_Y: 100,
-  POWERUP_START_Y: 120,
-  POWERUP_LINE_HEIGHT: 24,
+  POWERUP_START_Y: 130, // Consistent 30px spacing from Lives
+  POWERUP_LINE_HEIGHT: 30, // Match spacing between other HUD elements
   GLOBAL_ALPHA: 1.0,
   TEXT_ALIGN: 'left',
   FILL_STYLE: 'white',

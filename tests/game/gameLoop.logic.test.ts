@@ -28,6 +28,8 @@ vi.mock('@entities/player.js', () => ({
 vi.mock('@entities/asteroid.js', () => ({
   updateObstacles: (...args: unknown[]) => updateObstacles(...args),
   resetNewAsteroidsSpawned: (...args: unknown[]) => resetNewAsteroidsSpawned(...args),
+  updateDebris: vi.fn(),
+  drawDebris: vi.fn(),
 }));
 vi.mock('@entities/bullet.js', () => ({
   updateBullets: (...args: unknown[]) => updateBullets(...args),

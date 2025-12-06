@@ -53,7 +53,12 @@
 import { gameState, lastObstacleSpawnTime, gameLevel, allowSpawning, score } from '@core/state.js';
 import { GAME_CONFIG, LEVEL_CONFIG, POWERUP_CONFIG, ASTEROID_CONFIG } from '@core/constants.js';
 import { updatePlayer } from '@entities/player.js';
-import { updateObstacles, resetNewAsteroidsSpawned } from '@entities/asteroid.js';
+import {
+  updateObstacles,
+  resetNewAsteroidsSpawned,
+  updateDebris,
+  drawDebris,
+} from '@entities/asteroid.js';
 import { updateBullets } from '@entities/bullet.js';
 import { updatePowerups, spawnPowerup } from '@entities/powerup.js';
 import { updateScorePopups } from '@ui/hud/scorePopups.js';
@@ -212,6 +217,7 @@ function gameLoop(canvas: HTMLCanvasElement, timestamp = 0): void {
       lastObstacleSpawnTime,
       allowSpawning.value
     );
+    updateDebris();
     updateBullets();
     updatePowerups(canvas.height);
     updateScorePopups();
@@ -246,6 +252,7 @@ function gameLoop(canvas: HTMLCanvasElement, timestamp = 0): void {
   if (ctx) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     renderAll(ctx);
+    drawDebris(ctx);
   }
   const frameEnd = performance.now();
 

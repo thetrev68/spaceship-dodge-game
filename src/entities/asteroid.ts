@@ -38,6 +38,18 @@ const obstaclePool = new ObjectPool<Asteroid>(() => ({
 }));
 const obstacles = entityState.getMutableObstacles();
 
+// Add to the top of entities/asteroid.ts
+export type Debris = {
+  x: number;
+  y: number;
+  dx: number;
+  dy: number;
+  size: number;
+  creationTime: number;
+};
+
+const debrisList: Debris[] = [];
+
 /**
  * Counter tracking the number of new (top-level) asteroids spawned this session.
  * Does not include fragments - only asteroids spawned from screen edges.
@@ -258,35 +270,26 @@ export function updateObstacles(
 }
 
 /**
- * Renders all asteroids to the canvas as rotated polygon shapes.
- *
- * ## Rendering Technique
- * - Batches all asteroids into a single path for performance
- * - Applies rotation transformation to each asteroid's shape
- * - Uses single stroke call for all asteroids (reduces draw calls)
- *
- * ## Performance
- * - Batched rendering: 1 stroke() call for all asteroids (vs N calls)
- * - Early exit if no asteroids (avoids unnecessary canvas operations)
- * - Manual rotation math (faster than ctx.rotate() for many objects)
- *
- * @param ctx - Canvas 2D rendering context
- *
- * @example
- * ```typescript
- * // In render loop
- * ctx.clearRect(0, 0, canvas.width, canvas.height);
- * drawStarfield(ctx);
- * drawObstacles(ctx); // Render all asteroids
- * drawPlayer(ctx);
- * ```
+ * Renders all asteroids to the canvas as rotated polygon shapes with added internal vector details.
+ * * ## Enhancements
+ * - **Internal Facets/Cracks:** Connects the first point (P0) to the halfway point (P[mid]) for internal structure.
+ * - **Diagonal Detail:** Connects P1 to the last point (P[n-1]) for added visual complexity/dimension.
+ * - **Batch Rendering:** Maintains a single ctx.stroke() call for high performance.
+ * * @param ctx - Canvas 2D rendering context
  */
 export function drawObstacles(ctx: CanvasRenderingContext2D): void {
+  // Get mutable reference to obstacles array
+  const obstacles = entityState.getMutableObstacles();
+
+  // Exit early if nothing to draw
   if (obstacles.length === 0) return;
 
   const theme = getCurrentTheme();
+
+  // Set stroke style once for all asteroids
   ctx.strokeStyle = theme.colors.asteroid;
   ctx.lineWidth = 2;
+
   ctx.beginPath();
 
   for (let i = 0; i < obstacles.length; i++) {
@@ -296,28 +299,64 @@ export function drawObstacles(ctx: CanvasRenderingContext2D): void {
     const cy = o.y + o.radius;
     const cos = Math.cos(o.rotation);
     const sin = Math.sin(o.rotation);
+    const shapeLength = o.shape.length;
 
-    // Transform first point
+    // --- A. Draw Outer Shape (Outline) ---
     const p0 = o.shape[0];
     if (!p0) continue;
+
+    // Transform P0 to get starting coordinates
     const startX = p0.x * cos - p0.y * sin + cx;
     const startY = p0.x * sin + p0.y * cos + cy;
 
     ctx.moveTo(startX, startY);
 
-    for (let j = 1; j < o.shape.length; j++) {
+    for (let j = 1; j < shapeLength; j++) {
       const p = o.shape[j];
       if (!p) continue;
       const px = p.x * cos - p.y * sin + cx;
       const py = p.x * sin + p.y * cos + cy;
       ctx.lineTo(px, py);
     }
+    ctx.lineTo(startX, startY); // Close the shape
 
-    // Close the shape
-    ctx.lineTo(startX, startY);
+    // --- B. Add Internal "Cracks" (Option 1: P0 to P[mid]) ---
+    if (shapeLength > 4) {
+      const pMidIndex = Math.floor(shapeLength / 2);
+      const pMid = o.shape[pMidIndex];
+
+      if (pMid) {
+        // Move to P0 (startX, startY)
+        ctx.moveTo(startX, startY);
+
+        // Transform and line to PMid
+        const px = pMid.x * cos - pMid.y * sin + cx;
+        const py = pMid.x * sin + pMid.y * cos + cy;
+        ctx.lineTo(px, py);
+      }
+    }
+
+    // --- C. Add Simple Diagonal Detail (Option 3, simplified: P1 to P[n-1]) ---
+    if (shapeLength > 2) {
+      const p1 = o.shape[1]; // Next point after P0
+      const pLast = o.shape[shapeLength - 1]; // Last point
+
+      if (p1 && pLast) {
+        // P1
+        const x1 = p1.x * cos - p1.y * sin + cx;
+        const y1 = p1.x * sin + p1.y * cos + cy;
+
+        // PLast
+        const xLast = pLast.x * cos - pLast.y * sin + cx;
+        const yLast = pLast.x * sin + pLast.y * cos + cy;
+
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(xLast, yLast);
+      }
+    }
   }
 
-  ctx.stroke();
+  ctx.stroke(); // Draw all paths added above
 }
 
 /**
@@ -393,10 +432,32 @@ export function destroyObstacle(obstacle: Asteroid): DestroyOutcome {
   obstaclePool.release(obstacle);
   services.audioService.playSound('break');
 
+  // --- NEW: Spawn Debris Particles ---
+  const debrisCount = isMobile() ? 5 : 10;
+  const now = Date.now();
+
+  for (let k = 0; k < debrisCount; k++) {
+    const angle = Math.random() * Math.PI * 2;
+    const speed = randomFloat(2, 5);
+    const dx = Math.cos(angle) * speed;
+    const dy = Math.sin(angle) * speed;
+
+    debrisList.push({
+      x: obstacle.x + obstacle.radius,
+      y: obstacle.y + obstacle.radius,
+      dx: dx,
+      dy: dy,
+      size: randomFloat(1, 3),
+      creationTime: now,
+    });
+  }
+  // --- END NEW: Debris Spawn ---
+
   let bonusAwarded = false;
   let bonusAmount = 0;
   let bonusPosition: { x: number; y: number } | null = null;
 
+  // ... (Existing fragment spawning logic follows)
   if (obstacle.level < ASTEROID_CONFIG.LEVEL_SIZES.length - 1) {
     const nextLevel = obstacle.level + 1;
     const fragmentsMin = isMobile() ? 1 : ASTEROID_CONFIG.FRAGMENTS_MIN;
@@ -419,6 +480,7 @@ export function destroyObstacle(obstacle: Asteroid): DestroyOutcome {
     }
   }
 
+  // ... (Existing fragment bonus logic follows)
   if (obstacle.parentId !== null && obstacle.level === ASTEROID_CONFIG.LEVEL_SIZES.length - 1) {
     const parentId = obstacle.parentId;
     const count = fragmentTracker[parentId];
@@ -436,4 +498,55 @@ export function destroyObstacle(obstacle: Asteroid): DestroyOutcome {
   }
 
   return { bonusAwarded, bonusAmount, bonusPosition };
+}
+
+/**
+ * Updates debris positions, applies damping, and handles removal after a short lifetime.
+ */
+export function updateDebris(): void {
+  const now = Date.now();
+  const maxDebrisLife = 500; // 0.5 seconds lifespan
+
+  for (let i = debrisList.length - 1; i >= 0; i--) {
+    const d = debrisList[i];
+    if (!d) continue;
+
+    // Move
+    d.x += d.dx;
+    d.y += d.dy;
+
+    // Slow down (damping/friction)
+    d.dx *= 0.95;
+    d.dy *= 0.95;
+
+    // Check life
+    if (now - d.creationTime > maxDebrisLife) {
+      debrisList.splice(i, 1); // Remove expired debris
+    }
+  }
+}
+
+/**
+ * Renders debris particles as small vector lines (batched).
+ * * @param ctx - Canvas 2D rendering context
+ */
+export function drawDebris(ctx: CanvasRenderingContext2D): void {
+  if (debrisList.length === 0) return;
+
+  const theme = getCurrentTheme();
+  ctx.strokeStyle = theme.colors.asteroid;
+  ctx.lineWidth = 1;
+
+  ctx.beginPath();
+
+  for (const d of debrisList) {
+    // Draw as a short vector line segment to show movement/trail
+    const endX = d.x + d.dx * 0.5;
+    const endY = d.y + d.dy * 0.5;
+
+    ctx.moveTo(d.x, d.y);
+    ctx.lineTo(endX, endY);
+  }
+
+  ctx.stroke();
 }

@@ -65,9 +65,10 @@ export function initializeScorePopups(): void {
     );
   });
 
-  eventBus.on<PowerupExpiredEvent>(GameEvent.POWERUP_EXPIRED, (data) => {
-    const theme = getCurrentTheme();
-    addScorePopup(`${data.type} expired`, 40, 60, theme.colors.powerupPopup);
+  // Powerup expiration is now handled silently - powerup just disappears from HUD
+  // No popup notification needed (was appearing behind HUD)
+  eventBus.on<PowerupExpiredEvent>(GameEvent.POWERUP_EXPIRED, () => {
+    // Silent expiration - powerup is removed from HUD automatically
   });
 }
 
