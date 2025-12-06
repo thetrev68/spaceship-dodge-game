@@ -1,16 +1,64 @@
 /**
- * Underwater theme renderer: Background → Ocean Gradient + Plankton
+ * @module themes/renderers/underwater/oceanBackground
+ * Underwater theme background - ocean gradient with animated plankton particles.
  *
- * Ocean background with gradient and plankton particles.
- * Replaces starfield for underwater theme.
+ * ## Visual Design
+ * - **Ocean gradient**: 3-stop linear gradient simulating depth
+ *   - Top: Lighter blue-green (#1a4d6d) - sunlight zone
+ *   - Middle: Transition zone (#0d2b3d)
+ *   - Bottom: Deep dark blue (#051320)
+ * - **Sunbeam effect**: Radial gradient from top-left (desktop only)
+ * - **Plankton**: Glowing particles with horizontal drift
+ *
+ * ## Animation System
+ * - **Particle movement**: Vertical descent + horizontal drift
+ * - **Wrap-around**: Particles reset to top when reaching bottom
+ * - **Glow effect**: Outer halo + bright core
+ *
+ * ## Performance
+ * - Desktop: 120 particles with glow
+ * - Mobile: 50 particles, no glow or sunbeam
+ * - Independent RAF loop (no game loop coupling)
  */
 
 import { getCurrentTheme } from '@core/themes';
 import { isMobile } from '@utils/platform';
 
 /**
- * Ocean background with gradient and plankton particles.
- * Replaces starfield for underwater theme.
+ * Initializes ocean background with animated plankton particles.
+ *
+ * ## Rendering Pipeline
+ * 1. **Deep ocean gradient** - 3-stop linear gradient
+ * 2. **Sunbeam** - Radial gradient from top-left (desktop only)
+ * 3. **Plankton particles** - Animated glowing dots
+ *
+ * ## Particle System
+ * - **Count**: 120 desktop, 50 mobile
+ * - **Speed**: 0.1-0.4 px/frame (vertical)
+ * - **Drift**: ±0.1 px/frame (horizontal current effect)
+ * - **Size**: 1-4px radius
+ * - **Opacity**: 0.3-0.8 (randomized)
+ *
+ * ## Animation Loop
+ * - Runs in separate `requestAnimationFrame` loop
+ * - Redraws gradient and particles every frame
+ * - Particles update position and wrap at boundaries
+ *
+ * ## Canvas Management
+ * - Handles window resize events
+ * - Canvas dimensions update automatically
+ * - Particles redistribute on resize
+ *
+ * @param canvas - Canvas element for background rendering
+ *
+ * @example
+ * ```typescript
+ * // Used by backgroundManager.ts
+ * const starfieldCanvas = document.getElementById('starfieldCanvas') as HTMLCanvasElement;
+ * if (theme.id === 'underwater') {
+ *   setupOceanBackground(starfieldCanvas);
+ * }
+ * ```
  */
 export function setupOceanBackground(canvas: HTMLCanvasElement): void {
   const ctx = canvas.getContext('2d');

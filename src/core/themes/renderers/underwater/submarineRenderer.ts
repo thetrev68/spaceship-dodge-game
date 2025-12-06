@@ -1,8 +1,28 @@
 /**
- * Underwater theme renderer: Player → Submarine
+ * @module themes/renderers/underwater/submarineRenderer
+ * Underwater theme player renderer - transforms spaceship into submarine.
  *
- * Renders player as a submarine with vector graphics.
- * Reuses player.x, player.y, player.width, player.height for positioning.
+ * ## Visual Design
+ * The submarine design includes:
+ * - **Main hull**: Elongated elliptical capsule (40% of player dimensions)
+ * - **Conning tower**: Small rectangular protrusion on top
+ * - **Periscope**: Thin vertical line extending from conning tower
+ * - **Portholes**: Three circular windows along the hull
+ * - **Propeller**: Animated cross-shaped propeller at rear (spins continuously)
+ * - **Bubble trail**: 5 ascending bubbles fading out (desktop only)
+ * - **Shield effect**: Circular glow when shield powerup is active
+ *
+ * ## Performance
+ * - Desktop: Full detail with animated propeller and bubble trail
+ * - Mobile: No bubble trail to reduce draw calls
+ * - Animation: Uses `performance.now()` for smooth, frame-independent motion
+ *
+ * ## Entity Reuse
+ * This renderer **reuses the existing Player entity data structure** without modification:
+ * - Position (x, y) determines submarine location
+ * - Dimensions (width, height) scale submarine size
+ * - Powerup state (shield.active) controls shield rendering
+ * - **Zero code duplication** - same game logic, different visuals
  */
 
 import { getCurrentTheme } from '@core/themes';
@@ -12,8 +32,56 @@ import { PLAYER_CONSTANTS } from '@core/gameConstants';
 import { playerState } from '@core/state/playerState';
 
 /**
- * Renders player as a submarine with vector graphics.
- * Reuses player.x, player.y, player.width, player.height for positioning.
+ * Renders the player entity as a detailed submarine with vector graphics.
+ *
+ * ## Rendering Details
+ * - **Hull**: Elliptical body with theme color stroke
+ * - **Conning Tower**: Rectangular structure (20% width, 30% height)
+ * - **Periscope**: Vertical line from tower to top edge
+ * - **Portholes**: 3 circular windows evenly spaced along hull
+ * - **Propeller**: Cross-shaped, rotates at 1 revolution per 400ms
+ * - **Bubbles**: 5 bubbles with size variation, fade with distance
+ * - **Shield**: Circular glow when powerup active (radius × SHIELD_RADIUS_FACTOR)
+ *
+ * ## Theme Integration
+ * Uses theme colors for consistent visual style:
+ * - `theme.colors.player` - Submarine body and details
+ * - `theme.colors.playerShield` - Shield effect color
+ *
+ * ## Performance Characteristics
+ * - Draw calls: 12-20 (depending on bubble trail and shield)
+ * - Mobile optimization: Skips bubble trail (saves 5 draw calls)
+ * - Animation overhead: Minimal (2 `performance.now()` calls)
+ *
+ * @param ctx - Canvas 2D rendering context
+ * @param player - Player entity data (position, size, powerup state)
+ *
+ * @example
+ * ```typescript
+ * // Used by renderManager.ts with strategy pattern
+ * const theme = getCurrentTheme();
+ * if (theme.renderers?.player) {
+ *   theme.renderers.player(ctx, playerState.player); // Renders submarine
+ * } else {
+ *   drawPlayer(ctx); // Renders default spaceship
+ * }
+ * ```
+ *
+ * @example
+ * ```typescript
+ * // Manual usage (testing or custom rendering)
+ * const player: Player = {
+ *   x: 100,
+ *   y: 200,
+ *   width: 40,
+ *   height: 60,
+ *   speed: 5,
+ *   dx: 0,
+ *   dy: 0,
+ *   overridePosition: null
+ * };
+ * drawSubmarine(ctx, player);
+ * ```
  */
 export function drawSubmarine(ctx: CanvasRenderingContext2D, player: Player): void {
   const theme = getCurrentTheme();

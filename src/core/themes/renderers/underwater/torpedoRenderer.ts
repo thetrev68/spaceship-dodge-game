@@ -1,14 +1,53 @@
 /**
- * Underwater theme renderer: Bullets → Torpedoes
+ * @module themes/renderers/underwater/torpedoRenderer
+ * Underwater theme bullet renderer - transforms laser bolts into torpedoes.
  *
- * Renders bullets as torpedoes with propeller and trail.
+ * ## Visual Design
+ * - **Body**: Elongated elliptical capsule (radius × 2.5 length)
+ * - **Nose cone**: Darker pointed tip for depth perception
+ * - **Tail fins**: 4 small stabilizing fins at rear
+ * - **Propeller**: Spinning cross at rear (rotates continuously)
+ * - **Bubble trail**: 3 fading bubbles behind torpedo
+ *
+ * ## Entity Reuse
+ * Uses Bullet entity data structure:
+ * - `bullet.x, bullet.y` - Position
+ * - `bullet.radius` - Scales torpedo dimensions
+ * - **Zero code duplication** - same bullet logic, different visuals
  */
 
 import { getCurrentTheme } from '@core/themes';
 import type { Bullet } from '@types';
 
 /**
- * Renders bullets as torpedoes with propeller and trail.
+ * Renders a bullet entity as an animated torpedo with propeller and bubble trail.
+ *
+ * ## Rendering Details
+ * - **Body**: Vertical ellipse (radius wide, radius × 2.5 tall)
+ * - **Nose**: Smaller ellipse with darker color (60% width, 80% of radius)
+ * - **Fins**: 4 diagonal lines at rear for stabilization
+ * - **Propeller**: Cross shape, rotates at 1 revolution per 100ms
+ * - **Bubbles**: 3 circles with decreasing opacity (25% fade per bubble)
+ *
+ * ## Animation
+ * - Propeller spins using `performance.now() / 50`
+ * - Independent of game loop for smooth rotation
+ *
+ * ## Performance
+ * - Draw calls: 7-9 (body + nose + fins + propeller + bubbles)
+ * - Animation overhead: 1 `performance.now()` call
+ *
+ * @param ctx - Canvas 2D rendering context
+ * @param bullet - Bullet entity data
+ *
+ * @example
+ * ```typescript
+ * // Used by renderManager.ts
+ * bullets.forEach(b => {
+ *   const renderer = theme.renderers?.bullet || drawBullet;
+ *   renderer(ctx, b); // Renders torpedo or laser based on theme
+ * });
+ * ```
  */
 export function drawTorpedo(ctx: CanvasRenderingContext2D, bullet: Bullet): void {
   const theme = getCurrentTheme();

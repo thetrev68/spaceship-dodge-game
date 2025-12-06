@@ -1,15 +1,52 @@
 /**
- * Underwater theme renderer: Powerups → Ocean Creatures
+ * @module themes/renderers/underwater/powerupRenderers
+ * Underwater theme powerup renderers - transforms powerups into ocean creatures.
  *
- * Renders shield powerup as an octopus and double blaster as a starfish.
+ * ## Visual Design
+ * - **Shield Powerup**: Octopus with 8 animated tentacles, eyes, and suction cups
+ * - **Blaster Powerup**: Starfish with 5 arms, pulsing animation, and texture bumps
+ *
+ * ## Entity Reuse
+ * Uses ActivePowerup entity data:
+ * - `powerup.x, powerup.y` - Position
+ * - `powerup.size` - Scales creature dimensions
+ * - `powerup.type` - Determines octopus vs starfish
+ * - **Zero code duplication** - same powerup logic, different visuals
  */
 
 import { getCurrentTheme } from '@core/themes';
-import { isMobile } from '@utils/platform';
 import type { ActivePowerup } from '@types';
 
 /**
- * Renders shield powerup as an octopus.
+ * Renders shield powerup as an octopus with animated tentacles.
+ *
+ * ## Visual Components
+ * - **Head**: Bulbous mantle (30% of size)
+ * - **Eyes**: Two white circles with black pupils
+ * - **Tentacles**: 8 wavy arms with quadratic curves
+ * - **Suction cups**: 3 small circles per tentacle
+ *
+ * ## Animation
+ * - Tentacles wave using `performance.now() / 500`
+ * - Each tentacle has phase offset for natural motion
+ *
+ * ## Performance
+ * - Draw calls: ~35 (head + eyes + 8 tentacles + 24 suction cups)
+ * - Animation overhead: 1 `performance.now()` call
+ *
+ * @param ctx - Canvas 2D rendering context
+ * @param powerup - ActivePowerup entity data
+ *
+ * @example
+ * ```typescript
+ * const shieldPowerup: ActivePowerup = {
+ *   x: 100, y: 100,
+ *   size: 40,
+ *   type: 'shield',
+ *   dy: 2
+ * };
+ * drawOctopusPowerup(ctx, shieldPowerup);
+ * ```
  */
 export function drawOctopusPowerup(ctx: CanvasRenderingContext2D, powerup: ActivePowerup): void {
   const theme = getCurrentTheme();
@@ -78,7 +115,35 @@ export function drawOctopusPowerup(ctx: CanvasRenderingContext2D, powerup: Activ
 }
 
 /**
- * Renders double blaster powerup as a starfish.
+ * Renders double blaster powerup as a starfish with pulsing animation.
+ *
+ * ## Visual Components
+ * - **Body**: 5-pointed star shape with pentagonal symmetry
+ * - **Arms**: Outer radius pulses ±10% for breathing effect
+ * - **Center**: Circular core (12% of size)
+ * - **Texture**: 5 bumps on arms for detail
+ *
+ * ## Animation
+ * - Pulsing effect using `Math.sin(performance.now() / 300)`
+ * - Creates natural breathing motion
+ *
+ * ## Performance
+ * - Draw calls: ~12 (star body + center + 5 texture bumps)
+ * - Animation overhead: 1 `performance.now()` call
+ *
+ * @param ctx - Canvas 2D rendering context
+ * @param powerup - ActivePowerup entity data
+ *
+ * @example
+ * ```typescript
+ * const blasterPowerup: ActivePowerup = {
+ *   x: 200, y: 200,
+ *   size: 40,
+ *   type: 'doubleBlaster',
+ *   dy: 2
+ * };
+ * drawStarfishPowerup(ctx, blasterPowerup);
+ * ```
  */
 export function drawStarfishPowerup(ctx: CanvasRenderingContext2D, powerup: ActivePowerup): void {
   const theme = getCurrentTheme();

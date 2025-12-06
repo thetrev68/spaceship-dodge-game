@@ -1,8 +1,26 @@
 /**
- * Underwater theme renderer: Obstacles → Jellyfish
+ * @module themes/renderers/underwater/jellyfishRenderer
+ * Underwater theme obstacle renderer - transforms asteroids into jellyfish.
  *
- * Renders obstacles as jellyfish with pulsating bells and flowing tentacles.
- * Uses obstacle.radius for size scaling, obstacle.rotation for animation phase.
+ * ## Visual Design
+ * The jellyfish design includes:
+ * - **Bell**: Pulsating semi-circular dome (animated with sine wave)
+ * - **Inner details**: 6 radial lines from center to edge
+ * - **Tentacles**: 4-N flowing tentacles (count scales with size)
+ * - **Wavy motion**: Quadratic curves create realistic undulation
+ * - **Bioluminescence**: Cyan glow on bell edge (desktop only)
+ *
+ * ## Animation System
+ * - **Pulse effect**: Bell radius varies ±10% using `Math.sin(obstacle.rotation)`
+ * - **Tentacle waves**: Each segment uses rotation + offset for flowing motion
+ * - **Size scaling**: Larger jellyfish get more tentacles (radius / 10)
+ *
+ * ## Entity Reuse
+ * Reuses Asteroid entity data without modification:
+ * - `obstacle.x, obstacle.y` - Position
+ * - `obstacle.radius` - Scales bell and tentacle size
+ * - `obstacle.rotation` - Drives animation phase (pulsing + waving)
+ * - **Zero code duplication** - same physics, different visuals
  */
 
 import { getCurrentTheme } from '@core/themes';
@@ -10,8 +28,53 @@ import { isMobile } from '@utils/platform';
 import type { Asteroid } from '@types';
 
 /**
- * Renders obstacles as jellyfish with pulsating bells and flowing tentacles.
- * Uses obstacle.radius for size scaling, obstacle.rotation for animation phase.
+ * Renders an obstacle entity as an animated jellyfish with pulsating bell and flowing tentacles.
+ *
+ * ## Rendering Pipeline
+ * 1. **Bell dome** - Translucent semi-circle with pulsating radius
+ * 2. **Inner details** - 6 radial lines for texture
+ * 3. **Tentacles** - Wavy curves with quadratic Bezier segments
+ * 4. **Bioluminescence** - Glowing cyan outline (desktop only)
+ *
+ * ## Animation Details
+ * - **Pulse cycle**: Bell grows/shrinks 10% based on rotation
+ * - **Tentacle count**: `Math.max(4, Math.floor(radius / 10))` - scales with size
+ * - **Wave motion**: Each tentacle segment uses `Math.sin(rotation + i + seg)` for phase offset
+ * - **Smooth curves**: 4 quadratic segments per tentacle create natural flow
+ *
+ * ## Theme Integration
+ * - `theme.colors.asteroid` - Jellyfish body and tentacles
+ * - `theme.colors.starfield` - Bioluminescent glow color
+ *
+ * ## Performance Characteristics
+ * - Draw calls: 8-25 (depends on jellyfish size and tentacle count)
+ * - Mobile: Skips bioluminescent glow (saves 1 draw call per jellyfish)
+ * - Complexity: O(n) where n = tentacle count (4-10 typically)
+ *
+ * @param ctx - Canvas 2D rendering context
+ * @param obstacle - Asteroid entity data (reused as jellyfish)
+ *
+ * @example
+ * ```typescript
+ * // Used by renderManager.ts with strategy pattern
+ * const obstacles = entityState.getObstacles();
+ * obstacles.forEach(o => {
+ *   const renderer = theme.renderers?.obstacle || drawAsteroid;
+ *   renderer(ctx, o); // Renders jellyfish or asteroid based on theme
+ * });
+ * ```
+ *
+ * @example
+ * ```typescript
+ * // Manual rendering (testing)
+ * const jellyfish: Asteroid = {
+ *   x: 100, y: 100,
+ *   radius: 30,
+ *   rotation: Math.PI / 4, // Animation phase
+ *   // ... other Asteroid properties
+ * };
+ * drawJellyfish(ctx, jellyfish);
+ * ```
  */
 export function drawJellyfish(ctx: CanvasRenderingContext2D, obstacle: Asteroid): void {
   const theme = getCurrentTheme();
@@ -90,10 +153,10 @@ export function drawJellyfish(ctx: CanvasRenderingContext2D, obstacle: Asteroid)
     ctx.stroke();
   }
 
-  // Bioluminescent glow on bell edge
+  // Bioluminescent glow on bell edge (uses starfield color for consistency)
   if (!isMobile()) {
     ctx.globalAlpha = 0.3;
-    ctx.strokeStyle = '#00ffff';
+    ctx.strokeStyle = theme.colors.starfield; // Reuses plankton/particle color for glow
     ctx.lineWidth = 3;
     ctx.beginPath();
     ctx.arc(cx, cy, bellRadius, Math.PI, Math.PI * 2);
