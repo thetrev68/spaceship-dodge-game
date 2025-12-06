@@ -19,7 +19,9 @@
 ## 🏗️ Architecture: Render Strategy Pattern
 
 ### Current Problem
+
 Entity rendering is **tightly coupled** to entity files:
+
 ```typescript
 // src/entities/asteroid.ts
 export function drawObstacles(ctx: CanvasRenderingContext2D): void {
@@ -42,7 +44,7 @@ type Asteroid = {
   speed: number;
   rotation: number;
   // ... NO visual data here
-}
+};
 
 // Rendering is theme-specific
 type ObstacleRenderer = (ctx: CanvasRenderingContext2D, obstacle: Asteroid) => void;
@@ -75,7 +77,7 @@ export type BackgroundRenderer = (ctx: CanvasRenderingContext2D, canvas: HTMLCan
 export type ParticleRenderer = {
   setup: (canvas: HTMLCanvasElement) => void;
   animate: () => void;
-}
+};
 
 /**
  * Complete rendering strategy for a theme.
@@ -125,12 +127,14 @@ export type Theme = {
 **Critical Design Decision**: We do NOT rename `Asteroid` → `Obstacle` or `Player` → `Vehicle`.
 
 **Rationale**:
+
 - Entity types are **implementation details** (internal to the codebase)
 - Visual representation is **presentation logic** (theme-specific)
 - Renaming creates massive git diffs and breaks existing code
 - Theme system provides semantic mapping via renderers
 
 **Mental Model**:
+
 ```
 Space Theme:    Asteroid → Renders as rocky space debris
 Underwater:     Asteroid → Renders as jellyfish
@@ -148,10 +152,10 @@ The **data structure** stays the same (position, size, velocity). Only the **pix
 ```typescript
 // renderManager.ts - Hardcoded rendering
 export function renderAll(ctx: CanvasRenderingContext2D): void {
-  drawPlayer(ctx);          // Calls player.ts:drawPlayer()
-  drawObstacles(ctx);       // Calls asteroid.ts:drawObstacles()
-  drawBullets(ctx);         // Calls bullet.ts:drawBullets()
-  drawPowerups(ctx);        // Calls powerup.ts:drawPowerups()
+  drawPlayer(ctx); // Calls player.ts:drawPlayer()
+  drawObstacles(ctx); // Calls asteroid.ts:drawObstacles()
+  drawBullets(ctx); // Calls bullet.ts:drawBullets()
+  drawPowerups(ctx); // Calls powerup.ts:drawPowerups()
 }
 ```
 
@@ -174,7 +178,7 @@ export function renderAll(ctx: CanvasRenderingContext2D): void {
   const bulletRenderer = renderers.bullet || drawDefaultBullets;
   const powerupRenderer = renderers.powerups || {
     shield: drawDefaultShield,
-    doubleBlaster: drawDefaultDoubleBlaster
+    doubleBlaster: drawDefaultDoubleBlaster,
   };
 
   // Get entity data from state
@@ -186,12 +190,11 @@ export function renderAll(ctx: CanvasRenderingContext2D): void {
   // Render using strategy pattern
   playerRenderer(ctx, player);
 
-  obstacles.forEach(obstacle => obstacleRenderer(ctx, obstacle));
-  bullets.forEach(bullet => bulletRenderer(ctx, bullet));
-  powerups.forEach(powerup => {
-    const renderer = powerup.type === 'shield'
-      ? powerupRenderer.shield
-      : powerupRenderer.doubleBlaster;
+  obstacles.forEach((obstacle) => obstacleRenderer(ctx, obstacle));
+  bullets.forEach((bullet) => bulletRenderer(ctx, bullet));
+  powerups.forEach((powerup) => {
+    const renderer =
+      powerup.type === 'shield' ? powerupRenderer.shield : powerupRenderer.doubleBlaster;
     renderer?.(ctx, powerup);
   });
 
@@ -203,6 +206,7 @@ export function renderAll(ctx: CanvasRenderingContext2D): void {
 ```
 
 **Key Benefits**:
+
 - ✅ **Zero duplication** - Game logic untouched
 - ✅ **Backward compatible** - Default renderers work for existing themes
 - ✅ **Type safe** - TypeScript enforces correct renderer signatures
@@ -260,7 +264,7 @@ export function drawSubmarine(ctx: CanvasRenderingContext2D, player: Player): vo
 
   // Propeller at rear (animated)
   const time = performance.now() / 200;
-  const propellerAngle = (time % (Math.PI * 2));
+  const propellerAngle = time % (Math.PI * 2);
   const propX = cx;
   const propY = y + h * 0.9;
 
@@ -286,7 +290,7 @@ export function drawSubmarine(ctx: CanvasRenderingContext2D, player: Player): vo
       const bubbleY = propY + offset;
       const bubbleSize = 2 + Math.sin(bubbleTime + i) * 1;
 
-      ctx.globalAlpha = 1 - (offset / 100);
+      ctx.globalAlpha = 1 - offset / 100;
       ctx.beginPath();
       ctx.arc(propX, bubbleY, bubbleSize, 0, Math.PI * 2);
       ctx.fill();
@@ -383,7 +387,7 @@ export function drawJellyfish(ctx: CanvasRenderingContext2D, obstacle: Asteroid)
         const prevT = (seg - 1) / segments;
         const prevWaveOffset = Math.sin(obstacle.rotation + i + seg - 1) * radius * 0.2;
         const cpX = baseX + (waveOffset + prevWaveOffset) / 2;
-        const cpY = baseY + tentacleLength * (t + prevT) / 2;
+        const cpY = baseY + (tentacleLength * (t + prevT)) / 2;
 
         ctx.quadraticCurveTo(cpX, cpY, segX, segY);
       }
@@ -437,7 +441,7 @@ export function drawTorpedo(ctx: CanvasRenderingContext2D, bullet: Bullet): void
   // Tail fins (4 small fins)
   ctx.strokeStyle = theme.colors.bullet;
   const finPositions = [-radius * 0.5, radius * 0.5];
-  finPositions.forEach(offset => {
+  finPositions.forEach((offset) => {
     ctx.beginPath();
     ctx.moveTo(x + offset, y + radius * 2);
     ctx.lineTo(x + offset * 1.5, y + radius * 2.8);
@@ -446,7 +450,7 @@ export function drawTorpedo(ctx: CanvasRenderingContext2D, bullet: Bullet): void
 
   // Propeller (spinning at rear)
   const propTime = performance.now() / 50;
-  const propAngle = (propTime % (Math.PI * 2));
+  const propAngle = propTime % (Math.PI * 2);
 
   ctx.save();
   ctx.translate(x, y + radius * 2.5);
@@ -462,7 +466,7 @@ export function drawTorpedo(ctx: CanvasRenderingContext2D, bullet: Bullet): void
   for (let i = 1; i <= 3; i++) {
     const bubbleY = y + radius * 2.5 + i * 5;
     const bubbleSize = radius * 0.2;
-    ctx.globalAlpha = 1 - (i * 0.25);
+    ctx.globalAlpha = 1 - i * 0.25;
     ctx.beginPath();
     ctx.arc(x, bubbleY, bubbleSize, 0, Math.PI * 2);
     ctx.fill();
@@ -689,7 +693,7 @@ export function setupOceanBackground(canvas: HTMLCanvasElement): void {
     // Draw plankton (glowing particles)
     ctx.fillStyle = theme.colors.starfield; // Reuse starfield color
 
-    plankton.forEach(particle => {
+    plankton.forEach((particle) => {
       // Update position
       particle.y += particle.speed;
       particle.x += particle.drift;
@@ -736,14 +740,16 @@ export function setupOceanBackground(canvas: HTMLCanvasElement): void {
 ### Phase 1: Refactor Existing Code (No Breaking Changes)
 
 #### Step 1.1: Extract Default Renderers
+
 **Goal**: Make current rendering functions reusable as default strategies.
 
 **Changes**:
+
 ```typescript
 // src/entities/asteroid.ts
 // BEFORE: Direct rendering in drawObstacles()
 export function drawObstacles(ctx: CanvasRenderingContext2D): void {
-  obstacles.forEach(o => {
+  obstacles.forEach((o) => {
     // ... asteroid drawing code ...
   });
 }
@@ -754,22 +760,25 @@ export function drawAsteroid(ctx: CanvasRenderingContext2D, obstacle: Asteroid):
 }
 
 export function drawObstacles(ctx: CanvasRenderingContext2D): void {
-  obstacles.forEach(o => drawAsteroid(ctx, o));
+  obstacles.forEach((o) => drawAsteroid(ctx, o));
 }
 ```
 
 **Files to refactor**:
+
 - `src/entities/player.ts` - Extract `drawPlayerDefault(ctx, player)`
 - `src/entities/asteroid.ts` - Extract `drawAsteroid(ctx, obstacle)`
 - `src/entities/bullet.ts` - Extract `drawBullet(ctx, bullet)` (already sprite-based)
 - `src/entities/powerup.ts` - Extract `drawPowerup(ctx, powerup)` per type
 
 #### Step 1.2: Update Type Definitions
+
 **File**: `src/types/index.ts`
 
 Add new types for renderers (see "Proposed Type System Extensions" above).
 
 #### Step 1.3: Update RenderManager to Use Strategy Pattern
+
 **File**: `src/systems/renderManager.ts`
 
 ```typescript
@@ -793,11 +802,11 @@ export function renderAll(ctx: CanvasRenderingContext2D): void {
 
   // Obstacle rendering
   const obstacleRenderer = renderers.obstacle || drawAsteroidDefault;
-  entityState.getObstacles().forEach(o => obstacleRenderer(ctx, o));
+  entityState.getObstacles().forEach((o) => obstacleRenderer(ctx, o));
 
   // Bullet rendering
   const bulletRenderer = renderers.bullet || drawBulletDefault;
-  entityState.getBullets().forEach(b => bulletRenderer(ctx, b));
+  entityState.getBullets().forEach((b) => bulletRenderer(ctx, b));
 
   // Powerup rendering
   const powerupRenderers = renderers.powerups || {
@@ -805,10 +814,8 @@ export function renderAll(ctx: CanvasRenderingContext2D): void {
     doubleBlaster: drawDoubleBlasterPowerup,
   };
 
-  activePowerups.forEach(p => {
-    const renderer = p.type === 'shield'
-      ? powerupRenderers.shield
-      : powerupRenderers.doubleBlaster;
+  activePowerups.forEach((p) => {
+    const renderer = p.type === 'shield' ? powerupRenderers.shield : powerupRenderers.doubleBlaster;
     if (renderer) renderer(ctx, p);
   });
 
@@ -822,6 +829,7 @@ export function renderAll(ctx: CanvasRenderingContext2D): void {
 ### Phase 2: Create Underwater Theme Renderers
 
 #### Step 2.1: Create Renderer Directory Structure
+
 ```
 src/core/themes/renderers/
 ├── underwater/
@@ -835,9 +843,11 @@ src/core/themes/renderers/
 ```
 
 #### Step 2.2: Implement Each Renderer
+
 Copy the full implementations from the "Underwater Theme Implementation" section above.
 
 #### Step 2.3: Create Underwater Theme Definition
+
 **File**: `src/core/themes/themeConstants.ts`
 
 ```typescript
@@ -856,11 +866,11 @@ export const UNDERWATER_THEME: Theme = {
 
   colors: {
     // Entity colors (bioluminescent palette)
-    player: '#00d9ff',           // Cyan submarine
+    player: '#00d9ff', // Cyan submarine
     playerEngine: 'rgba(0, 217, 255, 0.5)', // Cyan bubbles
-    playerShield: '#00ffaa',     // Aqua shield
-    bullet: '#ffaa00',           // Orange torpedo
-    asteroid: '#9f7aea',         // Purple jellyfish
+    playerShield: '#00ffaa', // Aqua shield
+    bullet: '#ffaa00', // Orange torpedo
+    asteroid: '#9f7aea', // Purple jellyfish
 
     // UI colors
     hudText: '#ffffff',
@@ -870,11 +880,11 @@ export const UNDERWATER_THEME: Theme = {
     powerupPopup: '#00d9ff',
 
     // Effects
-    starfield: '#7dd3fc',        // Light blue plankton
+    starfield: '#7dd3fc', // Light blue plankton
 
     // Powerup colors
-    powerupShield: '#ff6b9d',    // Pink octopus
-    powerupBlaster: '#fbbf24',   // Yellow starfish
+    powerupShield: '#ff6b9d', // Pink octopus
+    powerupBlaster: '#fbbf24', // Yellow starfish
   },
 
   uiColors: {
@@ -922,6 +932,7 @@ export const VALID_THEME_IDS: readonly ThemeId[] = [
 ```
 
 #### Step 2.4: Update Background System
+
 **File**: `src/core/main.ts` or new `src/effects/backgroundManager.ts`
 
 ```typescript
@@ -956,6 +967,7 @@ watchTheme(() => {
 ### Phase 3: Testing & Polish
 
 #### Step 3.1: Unit Tests
+
 **File**: `tests/core/themes/underwater/jellyfishRenderer.test.ts`
 
 ```typescript
@@ -982,8 +994,8 @@ describe('Jellyfish Renderer', () => {
 
   it('scales tentacle count based on size', () => {
     const ctx = getMockCanvas2D();
-    const smallJelly: Asteroid = { radius: 10, /* ... */ };
-    const largeJelly: Asteroid = { radius: 50, /* ... */ };
+    const smallJelly: Asteroid = { radius: 10 /* ... */ };
+    const largeJelly: Asteroid = { radius: 50 /* ... */ };
 
     drawJellyfish(ctx, smallJelly);
     const smallCallCount = ctx.quadraticCurveTo.mock.calls.length;
@@ -999,9 +1011,11 @@ describe('Jellyfish Renderer', () => {
 ```
 
 #### Step 3.2: Visual Regression Tests
+
 Create screenshot comparison tests to ensure visual consistency.
 
 #### Step 3.3: Performance Testing
+
 Benchmark rendering performance to ensure underwater theme matches or exceeds space theme FPS.
 
 ---
@@ -1010,16 +1024,16 @@ Benchmark rendering performance to ensure underwater theme matches or exceeds sp
 
 ### Estimated Changes
 
-| Category | Files Added | Files Modified | Lines Added | Lines Removed |
-|----------|-------------|----------------|-------------|---------------|
-| Type Definitions | 0 | 1 (`types/index.ts`) | ~50 | 0 |
-| Renderer Refactor | 0 | 4 (entity files) | ~100 | ~50 |
-| RenderManager | 0 | 1 (`renderManager.ts`) | ~40 | ~10 |
-| Underwater Renderers | 6 | 0 | ~600 | 0 |
-| Theme Constants | 0 | 1 (`themeConstants.ts`) | ~80 | 0 |
-| Background System | 1 | 1 (`main.ts`) | ~50 | 0 |
-| Tests | 5 | 0 | ~300 | 0 |
-| **TOTAL** | **12** | **8** | **~1220** | **~60** |
+| Category             | Files Added | Files Modified          | Lines Added | Lines Removed |
+| -------------------- | ----------- | ----------------------- | ----------- | ------------- |
+| Type Definitions     | 0           | 1 (`types/index.ts`)    | ~50         | 0             |
+| Renderer Refactor    | 0           | 4 (entity files)        | ~100        | ~50           |
+| RenderManager        | 0           | 1 (`renderManager.ts`)  | ~40         | ~10           |
+| Underwater Renderers | 6           | 0                       | ~600        | 0             |
+| Theme Constants      | 0           | 1 (`themeConstants.ts`) | ~80         | 0             |
+| Background System    | 1           | 1 (`main.ts`)           | ~50         | 0             |
+| Tests                | 5           | 0                       | ~300        | 0             |
+| **TOTAL**            | **12**      | **8**                   | **~1220**   | **~60**       |
 
 ### Code Duplication: **ZERO**
 
@@ -1036,6 +1050,7 @@ Benchmark rendering performance to ensure underwater theme matches or exceeds sp
 ## 🎨 Theme Switching Experience
 
 ### User Flow
+
 1. Player opens settings (⚙️ button)
 2. Sees "Theme" section with radio buttons:
    - ⚪ Space Explorer (Classic space arcade aesthetic)
@@ -1051,6 +1066,7 @@ Benchmark rendering performance to ensure underwater theme matches or exceeds sp
 5. Game continues seamlessly (no restart required)
 
 ### Performance Considerations
+
 - **First render after switch**: ~16ms (1 frame delay to regenerate sprites if needed)
 - **Steady-state FPS**: Same as current (60 FPS desktop, 30-45 FPS mobile)
 - **Memory footprint**: +~50KB for renderer functions (negligible)
@@ -1062,35 +1078,41 @@ Benchmark rendering performance to ensure underwater theme matches or exceeds sp
 This architecture enables **infinite themes** with minimal effort:
 
 ### Example: Cyberpunk Theme
+
 ```typescript
 export const CYBERPUNK_THEME: Theme = {
   id: 'cyberpunk',
   name: 'Neon City',
-  colors: { /* neon pinks/purples */ },
+  colors: {
+    /* neon pinks/purples */
+  },
   renderers: {
-    player: drawHovercar,        // Flying car
-    obstacle: drawDataFragment,  // Corrupt data chunks
-    bullet: drawEnergyPulse,     // Energy weapon
+    player: drawHovercar, // Flying car
+    obstacle: drawDataFragment, // Corrupt data chunks
+    bullet: drawEnergyPulse, // Energy weapon
     // ... etc
-  }
+  },
 };
 ```
 
 ### Example: Medieval Fantasy Theme
+
 ```typescript
 export const FANTASY_THEME: Theme = {
   id: 'fantasy',
   name: 'Dragon Rider',
-  colors: { /* earthy tones */ },
+  colors: {
+    /* earthy tones */
+  },
   renderers: {
-    player: drawDragon,          // Flying dragon
-    obstacle: drawBoulder,       // Floating rocks
-    bullet: drawFireball,        // Dragon breath
+    player: drawDragon, // Flying dragon
+    obstacle: drawBoulder, // Floating rocks
+    bullet: drawFireball, // Dragon breath
     powerups: {
-      shield: drawMagicShield,   // Magical barrier
+      shield: drawMagicShield, // Magical barrier
       doubleBlaster: drawTwinFlames, // Dual flame breath
-    }
-  }
+    },
+  },
 };
 ```
 
@@ -1125,6 +1147,7 @@ This design achieves **zero code duplication** through:
 ---
 
 **Ready to proceed?** Let me know if you want me to:
+
 - Create the ADR-007 document
 - Start implementing Phase 1 (refactoring existing code)
 - Make any adjustments to this design

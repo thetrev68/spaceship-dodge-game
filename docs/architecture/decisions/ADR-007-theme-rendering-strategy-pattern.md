@@ -61,10 +61,10 @@ function renderAll(ctx: CanvasRenderingContext2D) {
 
   if (theme.renderers?.obstacle) {
     // Custom renderer (e.g., jellyfish)
-    obstacles.forEach(o => theme.renderers.obstacle!(ctx, o));
+    obstacles.forEach((o) => theme.renderers.obstacle!(ctx, o));
   } else {
     // Default renderer (asteroid)
-    obstacles.forEach(o => drawAsteroid(ctx, o));
+    obstacles.forEach((o) => drawAsteroid(ctx, o));
   }
 }
 ```
@@ -72,16 +72,19 @@ function renderAll(ctx: CanvasRenderingContext2D) {
 ### Implementation Details
 
 **Type System** (`src/types/index.ts`):
+
 - `EntityRenderer<T>` - Generic renderer type
 - `ThemeRenderers` - Complete strategy set
 - `ActivePowerup` - Shared powerup type
 
 **Entity Modules** (backward compatible):
+
 - `drawAsteroid(ctx, asteroid)` - Single-entity renderer (new)
 - `drawObstacles(ctx)` - Loops and calls drawAsteroid (refactored)
 - Same pattern for bullets, powerups
 
 **Render Manager** (`src/systems/renderManager.ts`):
+
 - Checks `theme.renderers` for custom functions
 - Falls back to defaults if not provided
 - Type-safe with comprehensive JSDoc
@@ -91,6 +94,7 @@ function renderAll(ctx: CanvasRenderingContext2D) {
 ### Why Strategy Pattern over Alternatives?
 
 #### Alternative 1: Conditional Logic in Renderers ❌
+
 ```typescript
 function drawAsteroid(ctx, asteroid, theme) {
   if (theme.id === 'underwater') {
@@ -104,12 +108,14 @@ function drawAsteroid(ctx, asteroid, theme) {
 ```
 
 **Rejected because**:
+
 - Violates Open/Closed Principle (modify existing code for new themes)
 - Creates bloated functions with complex branching
 - All theme logic coupled in one place
 - Hard to test individual renderers
 
 #### Alternative 2: Separate Game Loops per Theme ❌
+
 ```typescript
 if (theme.id === 'underwater') {
   underwaterGameLoop();
@@ -119,18 +125,21 @@ if (theme.id === 'underwater') {
 ```
 
 **Rejected because**:
+
 - Duplicates all game logic (physics, collision, spawning)
 - Bug fixes must be applied to multiple loops
 - Massive codebase growth (3 themes = 3x code)
 - Testing nightmare
 
 #### Alternative 3: Inheritance Hierarchy ❌
+
 ```typescript
-class SpaceRenderer extends BaseRenderer { }
-class UnderwaterRenderer extends BaseRenderer { }
+class SpaceRenderer extends BaseRenderer {}
+class UnderwaterRenderer extends BaseRenderer {}
 ```
 
 **Rejected because**:
+
 - JavaScript/TypeScript doesn't favor deep inheritance
 - Inflexible (can't mix renderer types)
 - More boilerplate than functional approach
@@ -216,13 +225,16 @@ class UnderwaterRenderer extends BaseRenderer { }
 ## Alternatives Considered
 
 ### 1. Sprite Sheet System
+
 Replace vector graphics with image-based sprites for each theme.
 
 **Pros**:
+
 - Artists can create detailed visuals
 - Potentially higher visual fidelity
 
 **Cons**:
+
 - Large asset downloads (multiple sprite sheets)
 - Loading time on theme switch
 - Memory overhead (multiple sheets in memory)
@@ -232,13 +244,16 @@ Replace vector graphics with image-based sprites for each theme.
 **Decision**: Rejected for Phase 1, may revisit for Phase 3 (asset-based themes)
 
 ### 2. Canvas Layers
+
 Use multiple canvases, one per theme, composite them.
 
 **Pros**:
+
 - Complete visual isolation
 - Could pre-render themes
 
 **Cons**:
+
 - Memory intensive (multiple canvases)
 - Compositing performance cost
 - More complex render pipeline
@@ -247,14 +262,17 @@ Use multiple canvases, one per theme, composite them.
 **Decision**: Rejected - unnecessary complexity for pure visual changes
 
 ### 3. WebGL Shaders
+
 Use fragment shaders to transform visuals.
 
 **Pros**:
+
 - GPU-accelerated
 - Powerful visual effects
 - Could support real-time theme interpolation
 
 **Cons**:
+
 - Complete rewrite of render pipeline
 - Steeper learning curve
 - Browser compatibility concerns
@@ -265,15 +283,18 @@ Use fragment shaders to transform visuals.
 ## Related
 
 ### ADRs
+
 - [ADR-006: Theme System Architecture](./ADR-006-theme-system.md) - Color-only themes (Phase 1)
 - This ADR extends ADR-006 with rendering strategies (Phase 2)
 
 ### Documentation
+
 - [Underwater Theme Specification](../../UNDERWATER_THEME_SPEC.md) - Detailed implementation guide
 - [Phase 1 Complete](../../PHASE_1_COMPLETE.md) - Implementation summary
 - [Developer Guide - Theme System](../../DEVELOPER_GUIDE.md#theme-system)
 
 ### Code References
+
 - `src/types/index.ts` - `EntityRenderer<T>`, `ThemeRenderers` types
 - `src/systems/renderManager.ts` - Strategy pattern implementation
 - `src/entities/asteroid.ts` - `drawAsteroid()` extracted renderer
@@ -281,6 +302,7 @@ Use fragment shaders to transform visuals.
 - `src/entities/powerup.ts` - `drawShieldPowerup()`, `drawDoubleBlasterPowerup()`
 
 ### Future Work
+
 - Phase 2: Implement Underwater Theme renderers
 - Phase 3: Asset-based themes (sprite sheets, custom fonts)
 - Phase 4: Background particle systems (plankton, stars, etc.)
@@ -288,6 +310,7 @@ Use fragment shaders to transform visuals.
 ## Implementation Notes
 
 ### Code Metrics
+
 - Files Modified: 5
 - Lines Added: ~519
 - Lines Removed: ~246
@@ -295,12 +318,14 @@ Use fragment shaders to transform visuals.
 - Code Duplication: **ZERO**
 
 ### Quality Gates
+
 - ✅ TypeScript: No errors
 - ✅ Tests: 152/152 passing (94.23% coverage)
 - ✅ ESLint: No errors
 - ✅ Backward Compatible: All existing code works unchanged
 
 ### Migration Path
+
 1. ✅ **Phase 1** (Complete): Refactor to strategy pattern
 2. 🔜 **Phase 2** (Next): Implement underwater theme renderers
 3. 🔜 **Phase 3** (Future): Add background/particle system strategies
