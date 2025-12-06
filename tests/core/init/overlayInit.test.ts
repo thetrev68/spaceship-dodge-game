@@ -65,6 +65,14 @@ describe('overlayInit', () => {
   vi.mock('@core/logger.js', () => ({
     debug: (...args: unknown[]) => debugMock(...args),
     warn: (...args: unknown[]) => warnMock(...args),
+    info: vi.fn(),
+    error: vi.fn(),
+    log: {
+      debug: (...args: unknown[]) => debugMock(...args),
+      warn: (...args: unknown[]) => warnMock(...args),
+      info: vi.fn(),
+      error: vi.fn(),
+    },
   }));
   vi.mock('@utils/platform.js', () => ({
     isMobile: () => mobileFlag.value,

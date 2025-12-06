@@ -229,6 +229,85 @@ export type FontConfig = {
 };
 
 /**
+ * Rendering strategy for a single entity instance.
+ * Receives entity data and renders it to the canvas.
+ *
+ * @template T - The entity type (Player, Asteroid, Bullet, etc.)
+ */
+export type EntityRenderer<T> = (ctx: CanvasRenderingContext2D, entity: T) => void;
+
+/**
+ * Background rendering strategy for full-screen effects.
+ * Handles background rendering like starfield, ocean gradients, etc.
+ */
+export type BackgroundRenderer = (ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement) => void;
+
+/**
+ * Particle system renderer for theme-specific animated effects.
+ * Provides setup and animation loop for particle systems.
+ */
+export type ParticleRenderer = {
+  /** Initialize particle system with canvas dimensions */
+  setup: (canvas: HTMLCanvasElement) => void;
+  /** Animation loop function (called via requestAnimationFrame) */
+  animate: () => void;
+};
+
+/**
+ * Active powerup instance for rendering.
+ * Internal type used by powerup system.
+ *
+ * @internal
+ */
+export type ActivePowerup = {
+  x: number;
+  y: number;
+  size: number;
+  type: PowerUpKey | null;
+  dy: number;
+};
+
+/**
+ * Complete rendering strategy set for a theme.
+ * All fields are optional - falls back to default rendering if not provided.
+ *
+ * This enables themes to customize visual representation without duplicating
+ * game logic. Renderers receive entity data (position, size, velocity) and
+ * draw custom visuals while reusing all physics, collision, and spawning code.
+ *
+ * @example
+ * ```typescript
+ * const underwaterRenderers: ThemeRenderers = {
+ *   player: drawSubmarine,      // Render player as submarine
+ *   obstacle: drawJellyfish,    // Render asteroids as jellyfish
+ *   bullet: drawTorpedo,        // Render bullets as torpedoes
+ * };
+ * ```
+ */
+export type ThemeRenderers = {
+  /** Custom player rendering (e.g., spaceship → submarine) */
+  player?: EntityRenderer<Player>;
+
+  /** Custom obstacle rendering (e.g., asteroids → jellyfish) */
+  obstacle?: EntityRenderer<Asteroid>;
+
+  /** Custom bullet rendering (e.g., laser → torpedo) */
+  bullet?: EntityRenderer<Bullet>;
+
+  /** Custom powerup rendering by type */
+  powerups?: {
+    shield?: EntityRenderer<ActivePowerup>;
+    doubleBlaster?: EntityRenderer<ActivePowerup>;
+  };
+
+  /** Custom background rendering (e.g., starfield → ocean gradient) */
+  background?: BackgroundRenderer;
+
+  /** Custom particle system (e.g., stars → plankton) */
+  particles?: ParticleRenderer;
+};
+
+/**
  * Complete theme definition with UI support
  */
 export type Theme = {
@@ -244,6 +323,8 @@ export type Theme = {
   uiColors: UIColorPalette;
   /** Font configuration. */
   fonts: FontConfig;
+  /** Custom rendering strategies (optional - falls back to defaults) */
+  renderers?: ThemeRenderers;
 };
 
 /**
@@ -252,4 +333,4 @@ export type Theme = {
  * Note: This type should be kept in sync with THEME_REGISTRY keys in themeConstants.ts.
  * Theme.id is now typed as ThemeId to enforce compile-time validation.
  */
-export type ThemeId = 'default' | 'monochrome';
+export type ThemeId = 'default' | 'monochrome' | 'underwater';

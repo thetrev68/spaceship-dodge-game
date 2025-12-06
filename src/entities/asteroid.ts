@@ -39,7 +39,7 @@ const obstaclePool = new ObjectPool<Asteroid>(() => ({
 const obstacles = entityState.getMutableObstacles();
 
 // Add to the top of entities/asteroid.ts
-export type Debris = {
+type Debris = {
   x: number;
   y: number;
   dx: number;
@@ -270,93 +270,135 @@ export function updateObstacles(
 }
 
 /**
- * Renders all asteroids to the canvas as rotated polygon shapes with added internal vector details.
- * * ## Enhancements
- * - **Internal Facets/Cracks:** Connects the first point (P0) to the halfway point (P[mid]) for internal structure.
- * - **Diagonal Detail:** Connects P1 to the last point (P[n-1]) for added visual complexity/dimension.
- * - **Batch Rendering:** Maintains a single ctx.stroke() call for high performance.
- * * @param ctx - Canvas 2D rendering context
+ * Renders a single asteroid with directional lighting and internal details.
+ *
+ * ## Visual Features
+ * - **Variable line weight**: Edges facing the light (top-left) are drawn thicker
+ * - **Internal cracks**: Lines connecting vertices for structural detail
+ * - **Directional lighting**: Light source from top-left (-135°) affects edge thickness
+ *
+ * ## Performance
+ * - Batch rendering compatible (can be called in a loop)
+ * - Mobile optimizations via theme colors
+ *
+ * @param ctx - Canvas 2D rendering context
+ * @param obstacle - The asteroid instance to render
+ *
+ * @example
+ * ```typescript
+ * // Render single asteroid
+ * const asteroid = obstacles[0];
+ * drawAsteroid(ctx, asteroid);
+ *
+ * // Render all asteroids (typical usage)
+ * obstacles.forEach(o => drawAsteroid(ctx, o));
+ * ```
  */
-export function drawObstacles(ctx: CanvasRenderingContext2D): void {
-  // Get mutable reference to obstacles array
-  const obstacles = entityState.getMutableObstacles();
-
-  // Exit early if nothing to draw
-  if (obstacles.length === 0) return;
-
+export function drawAsteroid(ctx: CanvasRenderingContext2D, obstacle: Asteroid): void {
   const theme = getCurrentTheme();
 
-  // Set stroke style once for all asteroids
+  // Light source direction (from top-left in screen coordinates)
+  const lightAngle = -Math.PI * 0.75; // -135 degrees (top-left, accounting for canvas Y-down)
+  const lightDx = Math.cos(lightAngle);
+  const lightDy = Math.sin(lightAngle);
+
+  const o = obstacle;
+  const cx = o.x + o.radius;
+  const cy = o.y + o.radius;
+  const cos = Math.cos(o.rotation);
+  const sin = Math.sin(o.rotation);
+  const shapeLength = o.shape.length;
+
+  // --- A. Draw Outer Shape with Variable Line Weight Based on Lighting ---
+  const p0 = o.shape[0];
+  if (!p0) return;
+
+  // Transform P0 to get starting coordinates
+  const startX = p0.x * cos - p0.y * sin + cx;
+  const startY = p0.x * sin + p0.y * cos + cy;
+
   ctx.strokeStyle = theme.colors.asteroid;
-  ctx.lineWidth = 2;
 
-  ctx.beginPath();
+  for (let j = 0; j < shapeLength; j++) {
+    const p1 = o.shape[j];
+    const p2 = o.shape[(j + 1) % shapeLength];
+    if (!p1 || !p2) continue;
 
-  for (let i = 0; i < obstacles.length; i++) {
-    const o = obstacles[i];
-    if (!o) continue;
-    const cx = o.x + o.radius;
-    const cy = o.y + o.radius;
-    const cos = Math.cos(o.rotation);
-    const sin = Math.sin(o.rotation);
-    const shapeLength = o.shape.length;
+    // Transform both points
+    const x1 = p1.x * cos - p1.y * sin + cx;
+    const y1 = p1.x * sin + p1.y * cos + cy;
+    const x2 = p2.x * cos - p2.y * sin + cx;
+    const y2 = p2.x * sin + p2.y * cos + cy;
 
-    // --- A. Draw Outer Shape (Outline) ---
-    const p0 = o.shape[0];
-    if (!p0) continue;
+    // Calculate edge normal (perpendicular to edge)
+    const edgeDx = x2 - x1;
+    const edgeDy = y2 - y1;
+    const edgeLen = Math.sqrt(edgeDx * edgeDx + edgeDy * edgeDy);
 
-    // Transform P0 to get starting coordinates
-    const startX = p0.x * cos - p0.y * sin + cx;
-    const startY = p0.x * sin + p0.y * cos + cy;
+    if (edgeLen > 0) {
+      // Normal points outward (perpendicular to edge, rotated 90° CCW)
+      const normalX = edgeDy / edgeLen;
+      const normalY = -edgeDx / edgeLen;
 
-    ctx.moveTo(startX, startY);
+      // Dot product: how much this edge faces the light
+      // 1.0 = directly facing light, -1.0 = facing away
+      const lightDot = normalX * lightDx + normalY * lightDy;
 
-    for (let j = 1; j < shapeLength; j++) {
-      const p = o.shape[j];
-      if (!p) continue;
-      const px = p.x * cos - p.y * sin + cx;
-      const py = p.x * sin + p.y * cos + cy;
-      ctx.lineTo(px, py);
-    }
-    ctx.lineTo(startX, startY); // Close the shape
+      // Map to line width: facing light = thick (3.5), facing away = thin (1.0)
+      const lineWidth = 1.0 + (lightDot * 0.5 + 0.5) * 2.5;
 
-    // --- B. Add Internal "Cracks" (Option 1: P0 to P[mid]) ---
-    if (shapeLength > 4) {
-      const pMidIndex = Math.floor(shapeLength / 2);
-      const pMid = o.shape[pMidIndex];
-
-      if (pMid) {
-        // Move to P0 (startX, startY)
-        ctx.moveTo(startX, startY);
-
-        // Transform and line to PMid
-        const px = pMid.x * cos - pMid.y * sin + cx;
-        const py = pMid.x * sin + pMid.y * cos + cy;
-        ctx.lineTo(px, py);
-      }
-    }
-
-    // --- C. Add Simple Diagonal Detail (Option 3, simplified: P1 to P[n-1]) ---
-    if (shapeLength > 2) {
-      const p1 = o.shape[1]; // Next point after P0
-      const pLast = o.shape[shapeLength - 1]; // Last point
-
-      if (p1 && pLast) {
-        // P1
-        const x1 = p1.x * cos - p1.y * sin + cx;
-        const y1 = p1.x * sin + p1.y * cos + cy;
-
-        // PLast
-        const xLast = pLast.x * cos - pLast.y * sin + cx;
-        const yLast = pLast.x * sin + pLast.y * cos + cy;
-
-        ctx.moveTo(x1, y1);
-        ctx.lineTo(xLast, yLast);
-      }
+      ctx.lineWidth = lineWidth;
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.stroke();
     }
   }
 
-  ctx.stroke(); // Draw all paths added above
+  // --- B. Add Internal "Cracks" with thin lines ---
+  ctx.lineWidth = 1.0;
+  ctx.beginPath();
+
+  if (shapeLength > 4) {
+    const pMidIndex = Math.floor(shapeLength / 2);
+    const pMid = o.shape[pMidIndex];
+
+    if (pMid) {
+      // Transform and draw crack from P0 to PMid
+      const px = pMid.x * cos - pMid.y * sin + cx;
+      const py = pMid.x * sin + pMid.y * cos + cy;
+      ctx.moveTo(startX, startY);
+      ctx.lineTo(px, py);
+    }
+  }
+
+  // --- C. Add Simple Diagonal Detail ---
+  if (shapeLength > 2) {
+    const p1 = o.shape[1];
+    const pLast = o.shape[shapeLength - 1];
+
+    if (p1 && pLast) {
+      const x1 = p1.x * cos - p1.y * sin + cx;
+      const y1 = p1.x * sin + p1.y * cos + cy;
+      const xLast = pLast.x * cos - pLast.y * sin + cx;
+      const yLast = pLast.x * sin + pLast.y * cos + cy;
+
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(xLast, yLast);
+    }
+  }
+
+  ctx.stroke();
+}
+
+/**
+ * Renders all asteroids to the canvas.
+ * Calls drawAsteroid() for each obstacle in the entity state.
+ *
+ * @param ctx - Canvas 2D rendering context
+ */
+export function drawObstacles(ctx: CanvasRenderingContext2D): void {
+  obstacles.forEach((o) => drawAsteroid(ctx, o));
 }
 
 /**

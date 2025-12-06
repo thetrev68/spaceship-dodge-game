@@ -294,45 +294,44 @@ export function updateBullets(): void {
 }
 
 /**
- * Renders all bullets to the canvas using pre-rendered sprite.
+ * Renders a single bullet using the pre-rendered sprite.
  *
  * ## Rendering Technique
  * - Uses pre-rendered canvas sprite for maximum performance
- * - Single `drawImage()` call per bullet (faster than drawing shapes)
+ * - Single `drawImage()` call (faster than drawing shapes)
  * - Sprite created once and cached until theme changes
  *
  * ## Performance
  * - `drawImage()` is ~3x faster than manual shape drawing
- * - Pre-rendering eliminates repeated drawing operations
- * - Ideal for high-frequency entities (10-20 bullets on screen)
- *
- * ## Sprite Details
- * - Laser bolt shape with theme-based color
- * - Elongated diamond with bright white core
- * - Width: bulletRadius * 1.2, Height: bulletRadius * 4
+ * - Ideal for high-frequency entities
  *
  * @param ctx - Canvas 2D rendering context
+ * @param bullet - The bullet instance to render
  *
  * @example
  * ```typescript
- * // In render loop
- * function renderAll(ctx: CanvasRenderingContext2D) {
- *   ctx.clearRect(0, 0, canvas.width, canvas.height);
- *   drawStarfield(ctx);
- *   drawObstacles(ctx);
- *   drawPlayer(ctx);
- *   drawBullets(ctx); // Render laser bolts with sprite
- *   drawHUD(ctx);
- * }
+ * // Render single bullet
+ * drawBullet(ctx, bullets[0]);
+ *
+ * // Render all bullets (typical usage)
+ * bullets.forEach(b => drawBullet(ctx, b));
  * ```
  */
-export function drawBullets(ctx: CanvasRenderingContext2D): void {
+export function drawBullet(ctx: CanvasRenderingContext2D, bullet: Bullet): void {
   const sprite = ensureBulletSprite();
   const boltWidth = bulletRadius * 1.2;
   const boltHeight = bulletRadius * 4;
 
-  bullets.forEach((b) => {
-    // Center the bolt horizontally and position vertically at bullet.y
-    ctx.drawImage(sprite, b.x - boltWidth, b.y - boltHeight / 2);
-  });
+  // Center the bolt horizontally and position vertically at bullet.y
+  ctx.drawImage(sprite, bullet.x - boltWidth, bullet.y - boltHeight / 2);
+}
+
+/**
+ * Renders all bullets to the canvas using pre-rendered sprite.
+ * Calls drawBullet() for each bullet in the entity state.
+ *
+ * @param ctx - Canvas 2D rendering context
+ */
+export function drawBullets(ctx: CanvasRenderingContext2D): void {
+  bullets.forEach((b) => drawBullet(ctx, b));
 }

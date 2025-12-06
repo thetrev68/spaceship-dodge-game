@@ -1,4 +1,4 @@
-import { setupStarfield } from '@effects/starfield.js';
+import { initializeBackground, setupBackgroundWatcher } from '@effects/backgroundManager.js';
 import { setCanvas, restartGameLoop } from '@game/gameLoop.js';
 import { startGame, continueGame } from '@game/gameStateManager.js';
 import { gameState } from '@core/state.js';
@@ -15,9 +15,14 @@ let keydownHandlerRegistered = false;
 /**
  * Wires up all overlay-related interactions and controls for the game.
  *
- * Initializes starfield on non-mobile devices, binds event handlers for
+ * Initializes theme-aware background on non-mobile devices, binds event handlers for
  * start, restart, continue, quit, and settings buttons, and sets up
  * keyboard navigation for game state transitions.
+ *
+ * ## Background Initialization
+ * - Uses theme-aware background manager to switch between starfield, ocean, etc.
+ * - Sets up automatic background switching when theme changes
+ * - Skips background on mobile for performance
  *
  * @param canvas - The main game canvas element
  * @returns void
@@ -49,8 +54,10 @@ export function wireOverlayControls(canvas: HTMLCanvasElement): void {
     return;
   }
 
+  // Initialize theme-aware background (starfield, ocean, etc.)
   if (!isMobile() && starfieldCanvas) {
-    setupStarfield(starfieldCanvas);
+    initializeBackground(starfieldCanvas);
+    setupBackgroundWatcher(starfieldCanvas);
   }
 
   setOverlayDimensions(canvas);

@@ -111,3 +111,11 @@ export const DEV_CONFIG = {
   DEBUG_MODE: false, // Enable runtime assertions and profiling
   SHOW_PERFORMANCE_METRICS: false, // Show performance HUD
 } as const;
+
+export const OCEAN_CONSTANTS: ReadonlyConfig<{
+  PLANKTON_COUNT_DESKTOP: number;
+  PLANKTON_COUNT_MOBILE: number;
+}> = {
+  PLANKTON_COUNT_DESKTOP: 120,
+  PLANKTON_COUNT_MOBILE: 50,
+};

@@ -4,7 +4,7 @@
  * Adds object pooling to optimize power-up memory reuse.
  */
 
-import type { PowerUpKey } from '@types';
+import type { PowerUpKey, ActivePowerup } from '@types';
 import { playerState } from '@core/state.js';
 import { isMobile } from '@utils/platform.js';
 import { ObjectPool } from '@systems/poolManager.js';
@@ -16,17 +16,7 @@ import {
   type PowerupExpiredEvent,
 } from '@core/events/GameEvents.js';
 import { getCurrentTheme } from '@core/themes';
-
-/**
- * @internal
- */
-type ActivePowerup = {
-  x: number;
-  y: number;
-  size: number;
-  type: PowerUpKey | null;
-  dy: number;
-};
+import { log } from '@core/logger.js';
 
 /**
  * Power-up types enumeration.
@@ -244,78 +234,131 @@ export function updatePowerups(canvasHeight: number): void {
  * }
  * ```
  */
-export function drawPowerups(ctx: CanvasRenderingContext2D): void {
+/**
+ * Renders a shield powerup with glowing circle effect.
+ *
+ * @param ctx - Canvas 2D rendering context
+ * @param powerup - The shield powerup instance to render
+ */
+export function drawShieldPowerup(ctx: CanvasRenderingContext2D, powerup: ActivePowerup): void {
+  const cx = powerup.x + powerupSize / 2;
+  const cy = powerup.y + powerupSize / 2;
+  const maxRadius = powerupSize / 2;
+  const theme = getCurrentTheme();
+
   const now = performance.now();
   const time = now / 600;
   const pulse = isMobile() ? 1 : (Math.sin(time) + 1) / 2;
   const scale = isMobile() ? 1 : 0.75 + 0.5 * pulse;
 
+  ctx.save();
+  if (!isMobile()) {
+    ctx.translate(cx, cy);
+    ctx.scale(scale, scale);
+    ctx.translate(-cx, -cy);
+  }
+
+  if (isMobile()) {
+    ctx.fillStyle = theme.colors.powerupShield;
+    ctx.beginPath();
+    ctx.arc(cx, cy, maxRadius * 0.6, 0, Math.PI * 2);
+    ctx.fill();
+  } else {
+    const radius = maxRadius * (0.75 + 0.25 * pulse);
+    const gradient = ctx.createRadialGradient(cx, cy, radius * 0.1, cx, cy, radius);
+    gradient.addColorStop(0, `rgba(0, 255, 255, ${0.8 * pulse})`);
+    gradient.addColorStop(1, 'rgba(0, 255, 255, 0)');
+    ctx.fillStyle = gradient;
+    ctx.beginPath();
+    ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = theme.colors.powerupShield;
+    ctx.beginPath();
+    ctx.arc(cx, cy, radius * 0.6, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  ctx.restore();
+}
+
+/**
+ * Renders a double blaster powerup with 5-pointed star.
+ *
+ * @param ctx - Canvas 2D rendering context
+ * @param powerup - The double blaster powerup instance to render
+ */
+export function drawDoubleBlasterPowerup(
+  ctx: CanvasRenderingContext2D,
+  powerup: ActivePowerup
+): void {
+  const cx = powerup.x + powerupSize / 2;
+  const cy = powerup.y + powerupSize / 2;
+  const maxRadius = powerupSize / 2;
+  const theme = getCurrentTheme();
+
+  const now = performance.now();
+  const time = now / 600;
+  const pulse = isMobile() ? 1 : (Math.sin(time) + 1) / 2;
+  const scale = isMobile() ? 1 : 0.75 + 0.5 * pulse;
+
+  ctx.save();
+  if (!isMobile()) {
+    ctx.translate(cx, cy);
+    ctx.scale(scale, scale);
+    ctx.translate(-cx, -cy);
+  }
+
+  if (isMobile()) {
+    ctx.fillStyle = theme.colors.powerupBlaster;
+    ctx.beginPath();
+    ctx.rect(
+      powerup.x + maxRadius * 0.4,
+      powerup.y + maxRadius * 0.2,
+      maxRadius * 1.2,
+      maxRadius * 1.2
+    );
+    ctx.fill();
+  } else {
+    const spikes = 5;
+    const outerRadius = maxRadius * 0.8;
+    const innerRadius = outerRadius / 2.5;
+
+    ctx.shadowColor = theme.colors.powerupBlaster;
+    ctx.shadowBlur = 15 * pulse;
+
+    ctx.fillStyle = theme.colors.powerupBlaster;
+    ctx.beginPath();
+    for (let i = 0; i < spikes; i++) {
+      const rot = (Math.PI / 2) * 3 + (i * Math.PI * 2) / spikes;
+      const xOuter = cx + Math.cos(rot) * outerRadius;
+      const yOuter = cy + Math.sin(rot) * outerRadius;
+      ctx.lineTo(xOuter, yOuter);
+      const rotInner = rot + Math.PI / spikes;
+      const xInner = cx + Math.cos(rotInner) * innerRadius;
+      const yInner = cy + Math.sin(rotInner) * innerRadius;
+      ctx.lineTo(xInner, yInner);
+    }
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  ctx.restore();
+}
+
+/**
+ * Renders all powerups to the canvas with animated effects.
+ * Calls the appropriate renderer based on powerup type.
+ *
+ * @param ctx - Canvas 2D rendering context
+ */
+export function drawPowerups(ctx: CanvasRenderingContext2D): void {
   activePowerups.forEach((p) => {
-    const cx = p.x + powerupSize / 2;
-    const cy = p.y + powerupSize / 2;
-    const maxRadius = powerupSize / 2;
-    const theme = getCurrentTheme();
-
-    ctx.save();
-    if (!isMobile()) {
-      ctx.translate(cx, cy);
-      ctx.scale(scale, scale);
-      ctx.translate(-cx, -cy);
-    }
-
     if (p.type === POWERUP_TYPES.DOUBLE_BLASTER) {
-      if (isMobile()) {
-        ctx.fillStyle = theme.colors.powerupBlaster;
-        ctx.beginPath();
-        ctx.rect(p.x + maxRadius * 0.4, p.y + maxRadius * 0.2, maxRadius * 1.2, maxRadius * 1.2);
-        ctx.fill();
-      } else {
-        const spikes = 5;
-        const outerRadius = maxRadius * 0.8;
-        const innerRadius = outerRadius / 2.5;
-
-        ctx.shadowColor = theme.colors.powerupBlaster;
-        ctx.shadowBlur = 15 * pulse;
-
-        ctx.fillStyle = theme.colors.powerupBlaster;
-        ctx.beginPath();
-        for (let i = 0; i < spikes; i++) {
-          const rot = (Math.PI / 2) * 3 + (i * Math.PI * 2) / spikes;
-          const xOuter = cx + Math.cos(rot) * outerRadius;
-          const yOuter = cy + Math.sin(rot) * outerRadius;
-          ctx.lineTo(xOuter, yOuter);
-          const rotInner = rot + Math.PI / spikes;
-          const xInner = cx + Math.cos(rotInner) * innerRadius;
-          const yInner = cy + Math.sin(rotInner) * innerRadius;
-          ctx.lineTo(xInner, yInner);
-        }
-        ctx.closePath();
-        ctx.fill();
-      }
+      drawDoubleBlasterPowerup(ctx, p);
     } else if (p.type === POWERUP_TYPES.SHIELD) {
-      if (isMobile()) {
-        ctx.fillStyle = theme.colors.powerupShield;
-        ctx.beginPath();
-        ctx.arc(cx, cy, maxRadius * 0.6, 0, Math.PI * 2);
-        ctx.fill();
-      } else {
-        const radius = maxRadius * (0.75 + 0.25 * pulse);
-        const gradient = ctx.createRadialGradient(cx, cy, radius * 0.1, cx, cy, radius);
-        gradient.addColorStop(0, `rgba(0, 255, 255, ${0.8 * pulse})`);
-        gradient.addColorStop(1, 'rgba(0, 255, 255, 0)');
-        ctx.fillStyle = gradient;
-        ctx.beginPath();
-        ctx.arc(cx, cy, radius, 0, Math.PI * 2);
-        ctx.fill();
-
-        ctx.fillStyle = theme.colors.powerupShield;
-        ctx.beginPath();
-        ctx.arc(cx, cy, radius * 0.6, 0, Math.PI * 2);
-        ctx.fill();
-      }
+      drawShieldPowerup(ctx, p);
     }
-
-    ctx.restore();
   });
 }
 
@@ -324,7 +367,7 @@ export function drawPowerups(ctx: CanvasRenderingContext2D): void {
 function activatePowerup(type: PowerUpKey): void {
   const config = POWERUP_CONFIG[type];
   if (!config) {
-    console.warn(`Unknown powerup type: ${type}`);
+    log.warn(`Unknown powerup type: ${type}`);
     return;
   }
 
