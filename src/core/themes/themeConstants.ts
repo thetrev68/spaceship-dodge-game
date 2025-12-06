@@ -7,6 +7,14 @@
  * @module themeConstants
  */
 
+import {
+  drawSubmarine,
+  drawJellyfish,
+  drawTorpedo,
+  drawOctopusPowerup,
+  drawStarfishPowerup,
+} from './renderers/underwater';
+
 import type { Theme, ThemeId, UIColorPalette } from '@types';
 
 const DEFAULT_UI_COLORS: UIColorPalette = {
@@ -122,6 +130,66 @@ export const MONOCHROME_THEME: Theme = {
 };
 
 /**
+ * Underwater theme with submarine, jellyfish, and ocean visuals.
+ *
+ * This theme provides a complete underwater aesthetic with custom renderers
+ * for all game entities, transforming the space theme into an ocean adventure.
+ */
+export const UNDERWATER_THEME: Theme = {
+  id: 'underwater',
+  name: 'Deep Ocean',
+  description: 'Submarine exploration in bioluminescent depths',
+  colors: {
+    // Entity colors (bioluminescent palette)
+    player: '#00d9ff', // Cyan submarine
+    playerEngine: 'rgba(0, 217, 255, 0.5)', // Cyan bubbles
+    playerShield: '#00ffaa', // Aqua shield
+    bullet: '#ffaa00', // Orange torpedo
+    asteroid: '#9f7aea', // Purple jellyfish
+
+    // UI colors
+    hudText: '#ffffff',
+    hudAccent: '#00d9ff',
+    scorePopup: '#ffffff',
+    bonusPopup: '#00ffaa',
+    powerupPopup: '#00d9ff',
+
+    // Effects
+    starfield: '#7dd3fc', // Light blue plankton
+
+    // Powerup colors
+    powerupShield: '#ff6b9d', // Pink octopus
+    powerupBlaster: '#fbbf24', // Yellow starfish
+  },
+  uiColors: {
+    // Keep UI consistent across themes (or customize)
+    overlayBackground: 'rgba(13, 43, 61, 0.85)', // Dark ocean blue
+    overlayText: '#ffffff',
+    overlayTitle: '#00d9ff',
+    buttonBackground: 'rgba(0, 217, 255, 0.2)',
+    buttonText: '#ffffff',
+    buttonHover: 'rgba(0, 217, 255, 0.4)',
+    buttonFocus: '#00ffaa',
+    settingsButtonBackground: 'rgba(0, 217, 255, 0.2)',
+    settingsButtonText: '#ffffff',
+  },
+  fonts: {
+    family: '"Inter", sans-serif',
+    hudSize: '24px',
+  },
+  // CUSTOM RENDERERS
+  renderers: {
+    player: drawSubmarine,
+    obstacle: drawJellyfish,
+    bullet: drawTorpedo,
+    powerups: {
+      shield: drawOctopusPowerup,
+      doubleBlaster: drawStarfishPowerup,
+    },
+  },
+};
+
+/**
  * Registry of all available themes.
  *
  * This object maps theme IDs to their complete theme definitions.
@@ -130,6 +198,7 @@ export const MONOCHROME_THEME: Theme = {
 export const THEME_REGISTRY: Record<ThemeId, Theme> = {
   default: DEFAULT_THEME,
   monochrome: MONOCHROME_THEME,
+  underwater: UNDERWATER_THEME,
 };
 
 /**
@@ -138,7 +207,7 @@ export const THEME_REGISTRY: Record<ThemeId, Theme> = {
  * Used for validation when loading themes from localStorage
  * or user input to prevent injection attacks.
  */
-export const VALID_THEME_IDS: readonly ThemeId[] = ['default', 'monochrome'] as const;
+export const VALID_THEME_IDS: readonly ThemeId[] = ['default', 'monochrome', 'underwater'] as const;
 
 /**
  * LocalStorage key for theme preference persistence.

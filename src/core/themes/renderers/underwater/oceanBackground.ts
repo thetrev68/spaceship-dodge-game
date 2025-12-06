@@ -1,0 +1,123 @@
+/**
+ * Underwater theme renderer: Background → Ocean Gradient + Plankton
+ *
+ * Ocean background with gradient and plankton particles.
+ * Replaces starfield for underwater theme.
+ */
+
+import { getCurrentTheme } from '@core/themes';
+import { isMobile } from '@utils/platform';
+
+/**
+ * Ocean background with gradient and plankton particles.
+ * Replaces starfield for underwater theme.
+ */
+export function setupOceanBackground(canvas: HTMLCanvasElement): void {
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  const theme = getCurrentTheme();
+  const planktonCount = isMobile() ? 50 : 120;
+
+  type Plankton = {
+    x: number;
+    y: number;
+    size: number;
+    speed: number;
+    drift: number; // Horizontal drift for current effect
+    opacity: number;
+  };
+
+  const plankton: Plankton[] = [];
+
+  function resize(): void {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+
+  resize();
+  window.addEventListener('resize', resize);
+
+  // Initialize plankton particles
+  for (let i = 0; i < planktonCount; i++) {
+    plankton.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      size: Math.random() * 3 + 1,
+      speed: Math.random() * 0.3 + 0.1,
+      drift: (Math.random() - 0.5) * 0.2, // Horizontal drift
+      opacity: Math.random() * 0.5 + 0.3,
+    });
+  }
+
+  function animate(): void {
+    if (!ctx) return;
+
+    // Deep ocean gradient (darker blue at bottom, lighter at top with sun)
+    const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+    gradient.addColorStop(0, '#1a4d6d'); // Lighter blue-green at top (sunlight zone)
+    gradient.addColorStop(0.3, '#0d2b3d'); // Transition zone
+    gradient.addColorStop(1, '#051320'); // Deep dark blue at bottom
+
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Sunbeam effect from top-left
+    if (!isMobile()) {
+      const sunGradient = ctx.createRadialGradient(
+        canvas.width * 0.2, // Sun position (top-left)
+        0,
+        0,
+        canvas.width * 0.2,
+        0,
+        canvas.width * 0.8
+      );
+      sunGradient.addColorStop(0, 'rgba(255, 255, 200, 0.15)');
+      sunGradient.addColorStop(0.5, 'rgba(100, 200, 255, 0.05)');
+      sunGradient.addColorStop(1, 'transparent');
+
+      ctx.fillStyle = sunGradient;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+
+    // Draw plankton (glowing particles)
+    ctx.fillStyle = theme.colors.starfield; // Reuse starfield color
+
+    plankton.forEach((particle) => {
+      // Update position
+      particle.y += particle.speed;
+      particle.x += particle.drift;
+
+      // Wrap around
+      if (particle.y > canvas.height) {
+        particle.y = 0;
+        particle.x = Math.random() * canvas.width;
+      }
+      if (particle.x < 0) particle.x = canvas.width;
+      if (particle.x > canvas.width) particle.x = 0;
+
+      // Draw plankton with glow
+      ctx.globalAlpha = particle.opacity;
+
+      // Outer glow
+      if (!isMobile()) {
+        ctx.fillStyle = `${theme.colors.starfield}40`;
+        ctx.beginPath();
+        ctx.arc(particle.x, particle.y, particle.size * 2, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // Core
+      ctx.fillStyle = theme.colors.starfield;
+      ctx.beginPath();
+      ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+      ctx.fill();
+    });
+
+    ctx.globalAlpha = 1;
+
+    requestAnimationFrame(animate);
+  }
+
+  animate();
+}
