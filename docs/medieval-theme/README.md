@@ -20,15 +20,15 @@ Follow these phases in order:
    - Theme infrastructure and registry
    - Estimated: 30 minutes
 
-2. **[Phase 2: Dragon Renderer](./PHASE_2_DRAGON.md)**
+2. **[Phase 2: Dragon Renderer](./PHASE_2_DRAGON.md)** ✅ COMPLETE
    - Fully animated dragon player
    - Estimated: 1.5 hours
 
-3. **[Phase 3: Medieval Obstacles](./PHASE_3_OBSTACLES.md)**
+3. **[Phase 3: Medieval Obstacles](./PHASE_3_OBSTACLES.md)** ✅ COMPLETE
    - Wyverns, bats, and crystals
    - Estimated: 1.5 hours
 
-4. **[Phase 4: Fireball Renderer](./PHASE_4_FIREBALL.md)**
+4. **[Phase 4: Fireball Renderer](./PHASE_4_FIREBALL.md)** ✅ COMPLETE
    - Fireballs with particle trails
    - Estimated: 45 minutes
 
@@ -67,9 +67,9 @@ Design decisions are documented in:
 | Phase                  | Status      | Date Completed |
 | ---------------------- | ----------- | -------------- |
 | Phase 1: Setup         | ✅ Complete | 2025-12-06     |
-| Phase 2: Dragon        | 🔜 Pending  | -              |
-| Phase 3: Obstacles     | 🔜 Pending  | -              |
-| Phase 4: Fireball      | 🔜 Pending  | -              |
+| Phase 2: Dragon        | ✅ Complete | 2025-12-07     |
+| Phase 3: Obstacles     | ✅ Complete | 2025-12-07     |
+| Phase 4: Fireball      | ✅ Complete | 2025-12-07     |
 | Phase 5: Powerups      | 🔜 Pending  | -              |
 | Phase 6: Background    | 🔜 Pending  | -              |
 | Phase 7: Testing       | 🔜 Pending  | -              |
