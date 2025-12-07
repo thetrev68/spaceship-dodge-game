@@ -232,7 +232,7 @@ function drawBat(ctx: CanvasRenderingContext2D, obstacle: Asteroid): void {
  * - Arcane energy particles orbiting
  */
 function drawCrystal(ctx: CanvasRenderingContext2D, obstacle: Asteroid): void {
-  const theme = getCurrentTheme();
+  const _theme = getCurrentTheme();
   const cx = obstacle.x + obstacle.radius;
   const cy = obstacle.y + obstacle.radius;
   const radius = obstacle.radius;
