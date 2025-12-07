@@ -12,7 +12,7 @@ export { drawDragon } from './dragonRenderer';
 export { drawMedievalObstacle } from './obstacleRenderer';
 
 // Phase 4: Fireball Renderer (bullets)
-// export { drawFireball } from './fireballRenderer';
+export { drawFireball } from './fireballRenderer';
 
 // Phase 5: Powerup Renderers (rune shield, spell tome)
 // export { drawRuneShield, drawSpellTome } from './powerupRenderers';
