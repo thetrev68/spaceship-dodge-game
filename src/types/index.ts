@@ -333,4 +333,4 @@ export type Theme = {
  * Note: This type should be kept in sync with THEME_REGISTRY keys in themeConstants.ts.
  * Theme.id is now typed as ThemeId to enforce compile-time validation.
  */
-export type ThemeId = 'default' | 'monochrome' | 'underwater';
+export type ThemeId = 'default' | 'monochrome' | 'underwater' | 'medieval';
