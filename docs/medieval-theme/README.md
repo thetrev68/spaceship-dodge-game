@@ -32,7 +32,7 @@ Follow these phases in order:
    - Fireballs with particle trails
    - Estimated: 45 minutes
 
-5. **[Phase 5: Powerup Renderers](./PHASE_5_POWERUPS.md)**
+5. **[Phase 5: Powerup Renderers](./PHASE_5_POWERUPS.md)** ✅ COMPLETE
    - Rune shields and spell tomes
    - Estimated: 1 hour
 
@@ -70,7 +70,7 @@ Design decisions are documented in:
 | Phase 2: Dragon        | ✅ Complete | 2025-12-07     |
 | Phase 3: Obstacles     | ✅ Complete | 2025-12-07     |
 | Phase 4: Fireball      | ✅ Complete | 2025-12-07     |
-| Phase 5: Powerups      | 🔜 Pending  | -              |
+| Phase 5: Powerups      | ✅ Complete | 2025-12-07     |
 | Phase 6: Background    | 🔜 Pending  | -              |
 | Phase 7: Testing       | 🔜 Pending  | -              |
 | Phase 8: Documentation | 🔜 Pending  | -              |
