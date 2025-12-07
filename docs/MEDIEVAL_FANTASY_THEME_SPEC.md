@@ -1513,281 +1513,36 @@ function drawCastleSilhouette(
 
 ## 📦 Implementation Phases
 
-### Phase 1: Setup & Theme Definition (30 minutes)
-
-**Goal**: Create theme infrastructure without renderers (fallback to defaults)
-
-**Tasks**:
-
-1. Create renderer directory structure
-2. Define theme constants in `themeConstants.ts`
-3. Add theme to registry
-4. Verify theme appears in settings UI
-5. Test theme switching (should show default renderers with medieval colors)
-
-**Files Created**:
-
-```
-src/core/themes/renderers/medieval/
-├── index.ts                    // Exports all renderers
-├── dragonRenderer.ts          // Player renderer (stub)
-├── debrisRenderer.ts          // Obstacle renderer (stub)
-├── fireballRenderer.ts        // Bullet renderer (stub)
-├── powerupRenderers.ts        // Rune shield + spell tome (stub)
-└── medievalBackground.ts      // Background renderer (stub)
-```
-
-**Files Modified**:
-
-- `src/core/themes/themeConstants.ts` - Add `MEDIEVAL_THEME` definition
-
-**Success Criteria**:
-
-- ✅ Theme appears in settings dropdown
-- ✅ Theme switches successfully
-- ✅ Colors apply correctly
-- ✅ No console errors
-
----
-
-### Phase 2: Dragon Renderer (1.5 hours)
-
-**Goal**: Implement fully animated dragon with wings, tail, fire breath
-
-**Tasks**:
-
-1. Implement `drawDragon()` main function
-2. Implement component functions:
-   - `drawDragonBody()`
-   - `drawDragonHead()`
-   - `drawDragonWings()` with animation
-   - `drawDragonTail()` with sway
-   - `drawRider()`
-   - `drawFireBreath()` particles
-   - `drawMagicShield()` rune effect
-3. Test animations (wing flapping, tail sway, fire particles)
-4. Mobile optimization (reduce particle counts)
-
-**Files Modified**:
-
-- `src/core/themes/renderers/medieval/dragonRenderer.ts`
-- `src/core/themes/renderers/medieval/index.ts`
-
-**Success Criteria**:
-
-- ✅ Dragon renders with all components
-- ✅ Wing animation cycles smoothly
-- ✅ Tail sways naturally
-- ✅ Fire breath appears when moving
-- ✅ Shield effect shows magic rune
-- ✅ Performance: 60 FPS maintained
-
----
-
-### Phase 3: Castle Debris Renderer (1.5 hours)
-
-**Goal**: Implement variety-based obstacle rendering (towers, walls, barrels, stones, bricks)
-
-**Tasks**:
-
-1. Implement `drawCastleDebris()` main function with type switching
-2. Implement debris type functions:
-   - `drawTowerDebris()` - Battlements, windows, bricks
-   - `drawWallDebris()` - Broken wall fragments
-   - `drawBarrelDebris()` - Wooden barrel with bands
-   - `drawStoneDebris()` - Irregular polygon
-   - `drawBrickDebris()` - Small rectangular brick
-3. Test all size variants (ensure correct type assignment)
-4. Test rotation (debris should rotate naturally)
-
-**Files Modified**:
-
-- `src/core/themes/renderers/medieval/debrisRenderer.ts`
-- `src/core/themes/renderers/medieval/index.ts`
-
-**Success Criteria**:
-
-- ✅ All debris types render correctly
-- ✅ Size-based type assignment works
-- ✅ Rotation reveals different faces
-- ✅ Visual variety across obstacle sizes
-- ✅ Performance: No FPS drop with many obstacles
-
----
-
-### Phase 4: Fireball Renderer (45 minutes)
-
-**Goal**: Implement fireball with particle trail and smoke
-
-**Tasks**:
-
-1. Implement `drawFireball()` function
-2. Implement particle trail (5 particles, decreasing size/opacity)
-3. Implement smoke wisps (last 2 particles)
-4. Add pulsing animation to core
-5. Add radial gradient for core glow
-
-**Files Modified**:
-
-- `src/core/themes/renderers/medieval/fireballRenderer.ts`
-- `src/core/themes/renderers/medieval/index.ts`
-
-**Success Criteria**:
-
-- ✅ Fireball has glowing gradient core
-- ✅ Particle trail renders smoothly
-- ✅ Smoke effect appears at tail
-- ✅ Pulsing animation looks natural
-- ✅ Performance: No impact on bullet-heavy scenes
-
----
-
-### Phase 5: Powerup Renderers (1 hour)
-
-**Goal**: Implement rune shield and spell tome powerups
-
-**Tasks**:
-
-1. Implement `drawRuneShield()`:
-   - Rotating rune ring
-   - Central pentagram
-   - Pulsing glow
-   - Orbiting particles
-2. Implement `drawSpellTome()`:
-   - Open book pages
-   - Magical symbols
-   - Rising sparkles
-   - Bobbing animation
-3. Test both powerup pickups and active states
-
-**Files Modified**:
-
-- `src/core/themes/renderers/medieval/powerupRenderers.ts`
-- `src/core/themes/renderers/medieval/index.ts`
-
-**Success Criteria**:
-
-- ✅ Rune shield rotates smoothly
-- ✅ Pentagram renders correctly
-- ✅ Spell tome pages show symbols
-- ✅ Sparkles rise from tome
-- ✅ Both animations look magical
-- ✅ Performance: Smooth on mobile
-
----
-
-### Phase 6: Medieval Background (1 hour)
-
-**Goal**: Implement castle ruins silhouettes and floating embers
-
-**Tasks**:
-
-1. Implement `setupMedievalBackground()`:
-   - Sky gradient (purple to dark blue)
-   - Moon with glow effect
-   - Layered castle silhouettes (parallax)
-   - Floating ember particles
-2. Implement `drawCastleSilhouette()` helper
-3. Test ember flickering and rising animation
-4. Mobile optimization (reduce ember count, skip moon/castles)
-
-**Files Modified**:
-
-- `src/core/themes/renderers/medieval/medievalBackground.ts`
-- `src/core/themes/renderers/medieval/index.ts`
-- `src/core/main.ts` or `src/effects/backgroundManager.ts` (theme-aware background init)
-
-**Success Criteria**:
-
-- ✅ Sky gradient renders smoothly
-- ✅ Moon appears with glow (desktop)
-- ✅ Castle silhouettes create depth
-- ✅ Embers flicker and rise naturally
-- ✅ Performance: 60 FPS maintained
-- ✅ Mobile: Simplified background performs well
-
----
-
-### Phase 7: Integration & Testing (1 hour)
-
-**Goal**: Wire up all renderers to theme system, comprehensive testing
-
-**Tasks**:
-
-1. Update `MEDIEVAL_THEME` in `themeConstants.ts` with all renderers
-2. Test theme switching (default → medieval → underwater → back)
-3. Test all gameplay scenarios:
-   - Player movement and firing
-   - Obstacle spawning and destruction
-   - Powerup collection and effects
-   - Level progression
-   - Game over and restart
-4. Test on mobile device
-5. Performance testing (FPS, frame times)
-6. Visual QA (all animations, all entity types)
-
-**Files Modified**:
-
-- `src/core/themes/themeConstants.ts`
-
-**Testing Checklist**:
-
-- ✅ Theme switches instantly
-- ✅ All entities render correctly
-- ✅ Animations smooth and natural
-- ✅ No visual glitches or flickering
-- ✅ Performance meets targets (60 FPS desktop, 30+ FPS mobile)
-- ✅ Mobile controls work with new visuals
-- ✅ Audio plays correctly with medieval theme
-- ✅ Settings persist across sessions
-- ✅ No console errors or warnings
-
----
-
-### Phase 8: Documentation & Polish (30 minutes)
-
-**Goal**: Create ADR, update documentation, final polish
-
-**Tasks**:
-
-1. Create ADR-008: Medieval Fantasy Theme Implementation
-2. Update README with medieval theme description
-3. Update DEVELOPER_GUIDE with medieval theme examples
-4. Screenshot/GIF creation for documentation
-5. Final color tweaks based on playtesting
-6. Animation timing adjustments if needed
-
-**Files Created**:
-
-- `docs/architecture/decisions/ADR-008-medieval-fantasy-theme.md`
-
-**Files Modified**:
-
-- `README.md`
-- `docs/DEVELOPER_GUIDE.md`
-
-**Success Criteria**:
-
-- ✅ ADR documents design decisions
-- ✅ README shows medieval theme
-- ✅ Developer guide explains medieval renderer usage
-- ✅ Visual assets captured for docs
-
----
-
-## 📊 Estimated Effort
-
-| Phase                   | Tasks                        | Estimated Time  | Complexity      |
-| ----------------------- | ---------------------------- | --------------- | --------------- |
-| **Phase 1: Setup**      | Theme infrastructure         | 30 min          | Low             |
-| **Phase 2: Dragon**     | Player renderer + animations | 1.5 hours       | High            |
-| **Phase 3: Debris**     | Obstacle variety system      | 1.5 hours       | Medium          |
-| **Phase 4: Fireball**   | Bullet renderer + particles  | 45 min          | Low             |
-| **Phase 5: Powerups**   | Rune shield + spell tome     | 1 hour          | Medium          |
-| **Phase 6: Background** | Castle silhouettes + embers  | 1 hour          | Medium          |
-| **Phase 7: Testing**    | Integration + QA             | 1 hour          | Medium          |
-| **Phase 8: Docs**       | ADR + documentation          | 30 min          | Low             |
-| **TOTAL**               | **8 phases**                 | **~7.75 hours** | **Medium-High** |
+The implementation is divided into 8 sequential phases. Each phase has its own detailed guide:
+
+### Phase Overview
+
+| Phase                                                             | Description                  | Time      | Status      |
+| ----------------------------------------------------------------- | ---------------------------- | --------- | ----------- |
+| **[Phase 1: Setup](./medieval-theme/PHASE_1_SETUP.md)**           | Theme infrastructure         | 30 min    | ✅ Complete |
+| **[Phase 2: Dragon](./medieval-theme/PHASE_2_DRAGON.md)**         | Player renderer + animations | 1.5 hours | 🔜 Pending  |
+| **[Phase 3: Obstacles](./medieval-theme/PHASE_3_OBSTACLES.md)**   | Wyverns, bats, crystals      | 1.5 hours | 🔜 Pending  |
+| **[Phase 4: Fireball](./medieval-theme/PHASE_4_FIREBALL.md)**     | Bullet renderer + particles  | 45 min    | 🔜 Pending  |
+| **[Phase 5: Powerups](./medieval-theme/PHASE_5_POWERUPS.md)**     | Rune shield + spell tome     | 1 hour    | 🔜 Pending  |
+| **[Phase 6: Background](./medieval-theme/PHASE_6_BACKGROUND.md)** | Castle ruins + embers        | 1 hour    | 🔜 Pending  |
+| **[Phase 7: Testing](./medieval-theme/PHASE_7_TESTING.md)**       | Integration + QA             | 1 hour    | 🔜 Pending  |
+| **[Phase 8: Docs](./medieval-theme/PHASE_8_DOCS.md)**             | ADR + documentation          | 30 min    | 🔜 Pending  |
+
+**Total Estimated Effort**: ~7.75 hours
+
+### Getting Started
+
+1. Read the [Medieval Theme Implementation Guide](./medieval-theme/README.md)
+2. Review Phase 1 completion status
+3. Begin with Phase 2: Dragon Renderer
+4. Follow phases sequentially for best results
+
+Each phase document includes:
+
+- Specific tasks and acceptance criteria
+- Files to create/modify
+- Success checklist
+- Links to relevant spec sections
 
 ---
 
