@@ -15,7 +15,7 @@ export { drawMedievalObstacle } from './obstacleRenderer';
 export { drawFireball } from './fireballRenderer';
 
 // Phase 5: Powerup Renderers (rune shield, spell tome)
-// export { drawRuneShield, drawSpellTome } from './powerupRenderers';
+export { drawRuneShield, drawSpellTome } from './powerupRenderers';
 
 // Phase 6: Medieval Background (castle ruins, embers)
 // export { setupMedievalBackground } from './medievalBackground';

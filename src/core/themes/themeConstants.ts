@@ -16,7 +16,13 @@ import {
   drawOceanBackground,
 } from './renderers/underwater';
 
-import { drawDragon, drawMedievalObstacle, drawFireball } from './renderers/medieval';
+import {
+  drawDragon,
+  drawMedievalObstacle,
+  drawFireball,
+  drawRuneShield,
+  drawSpellTome,
+} from './renderers/medieval';
 
 import type { Theme, ThemeId, UIColorPalette } from '@types';
 
@@ -253,6 +259,10 @@ const MEDIEVAL_THEME: Theme = {
     player: drawDragon,
     obstacle: drawMedievalObstacle,
     bullet: drawFireball,
+    powerups: {
+      shield: drawRuneShield,
+      doubleBlaster: drawSpellTome,
+    },
   },
 };
 
