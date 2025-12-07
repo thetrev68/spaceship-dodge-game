@@ -6,7 +6,7 @@
  */
 
 // Phase 2: Dragon Renderer (player)
-// export { drawDragon } from './dragonRenderer';
+export { drawDragon } from './dragonRenderer';
 
 // Phase 3: Medieval Obstacles (wyvern, bat, crystal)
 // export { drawMedievalObstacle } from './obstacleRenderer';

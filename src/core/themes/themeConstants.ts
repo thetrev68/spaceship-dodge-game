@@ -16,6 +16,8 @@ import {
   drawOceanBackground,
 } from './renderers/underwater';
 
+import { drawDragon } from './renderers/medieval';
+
 import type { Theme, ThemeId, UIColorPalette } from '@types';
 
 const DEFAULT_UI_COLORS: UIColorPalette = {
@@ -246,8 +248,10 @@ const MEDIEVAL_THEME: Theme = {
     family: '"Inter", sans-serif',
     hudSize: '24px',
   },
-  // Phase 1: No custom renderers yet - will use default renderers with medieval colors
-  // Phase 2+: Will add custom renderers for dragon, obstacles, bullets, powerups, background
+  // CUSTOM RENDERERS
+  renderers: {
+    player: drawDragon,
+  },
 };
 
 /**
