@@ -9,7 +9,7 @@
 export { drawDragon } from './dragonRenderer';
 
 // Phase 3: Medieval Obstacles (wyvern, bat, crystal)
-// export { drawMedievalObstacle } from './obstacleRenderer';
+export { drawMedievalObstacle } from './obstacleRenderer';
 
 // Phase 4: Fireball Renderer (bullets)
 // export { drawFireball } from './fireballRenderer';
@@ -19,6 +19,3 @@ export { drawDragon } from './dragonRenderer';
 
 // Phase 6: Medieval Background (castle ruins, embers)
 // export { setupMedievalBackground } from './medievalBackground';
-
-// Temporary: No custom renderers yet, theme will use defaults
-export {};
