@@ -117,6 +117,25 @@
     </div>
 
     <div
+      id="deathOverlay"
+      class="game-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="deathOverlayTitle"
+      aria-describedby="deathInfo"
+      tabindex="-1"
+    >
+      <h1 id="deathOverlayTitle" class="text-4xl font-bold mb-4">DEATH</h1>
+      <p id="deathInfo" class="mb-4">You died! But you still have lives remaining.</p>
+      <p id="livesInfoDeath" class="mb-4 text-lg"></p>
+      <div class="flex gap-4">
+        <button id="continueButtonDeath" class="game-button">Continue</button>
+        <button id="quitButtonDeath" class="game-button">Quit Game</button>
+        <button id="settingsButtonDeath" class="game-button">Settings</button>
+      </div>
+    </div>
+
+    <div
       id="fatalErrorOverlay"
       class="game-overlay"
       role="alertdialog"

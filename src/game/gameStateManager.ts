@@ -40,9 +40,9 @@ export function handlePlayerHit(): void {
       level: gameLevel.value,
     });
   } else {
-    gameState.value = 'LEVEL_TRANSITION';
+    gameState.value = 'DEATH';
     resetForNextLevel();
-    showOverlay('LEVEL_TRANSITION', score.value, gameLevel.value);
+    showOverlay('DEATH', score.value, gameLevel.value);
   }
 }
 

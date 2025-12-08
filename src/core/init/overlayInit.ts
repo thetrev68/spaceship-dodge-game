@@ -39,15 +39,19 @@ export function wireOverlayControls(canvas: HTMLCanvasElement): void {
   const startButton = getById<HTMLButtonElement>('startButton');
   const restartButton = getById<HTMLButtonElement>('restartButton');
   const continueButton = getById<HTMLButtonElement>('continueButton');
+  const continueButtonDeath = getById<HTMLButtonElement>('continueButtonDeath');
   const quitButton = getById<HTMLButtonElement>('quitButton');
+  const quitButtonDeath = getById<HTMLButtonElement>('quitButtonDeath');
   const startOverlay = getById<HTMLElement>('startOverlay');
   const pauseOverlay = getById<HTMLElement>('pauseOverlay');
   const levelTransitionOverlay = getById<HTMLElement>('levelTransitionOverlay');
+  const deathOverlay = getById<HTMLElement>('deathOverlay');
   const starfieldCanvas = getById<HTMLCanvasElement>('starfieldCanvas');
   const settingsButtonStart = getById<HTMLButtonElement>('settingsButtonStart');
   const settingsButtonLevel = getById<HTMLButtonElement>('settingsButtonLevel');
   const settingsButtonPause = getById<HTMLButtonElement>('settingsButtonPause');
   const settingsButtonGameOver = getById<HTMLButtonElement>('settingsButtonGameOver');
+  const settingsButtonDeath = getById<HTMLButtonElement>('settingsButtonDeath');
 
   if (!startOverlay) {
     warn('ui', 'startOverlay not found in DOM.');
@@ -120,6 +124,16 @@ export function wireOverlayControls(canvas: HTMLCanvasElement): void {
     restartGameLoop();
   });
 
+  // Death overlay button handlers
+  continueButtonDeath?.addEventListener('click', () => {
+    continueGame();
+    restartGameLoop();
+  });
+
+  quitButtonDeath?.addEventListener('click', () => {
+    quitGame();
+  });
+
   const addSettingsHandler = (button: HTMLButtonElement | null): void => {
     button?.addEventListener('click', (event) => {
       event.preventDefault();
@@ -131,6 +145,7 @@ export function wireOverlayControls(canvas: HTMLCanvasElement): void {
   addSettingsHandler(settingsButtonLevel);
   addSettingsHandler(settingsButtonPause);
   addSettingsHandler(settingsButtonGameOver);
+  addSettingsHandler(settingsButtonDeath);
 
   if (!keydownHandlerRegistered) {
     keydownHandlerRegistered = true;
@@ -145,6 +160,10 @@ export function wireOverlayControls(canvas: HTMLCanvasElement): void {
 
       if (gameState.value === 'START') {
         startGameHandler(event);
+      } else if (gameState.value === 'DEATH') {
+        event.preventDefault();
+        continueGame();
+        restartGameLoop();
       } else if (gameState.value === 'LEVEL_TRANSITION') {
         event.preventDefault();
         continueGame();

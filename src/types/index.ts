@@ -31,7 +31,13 @@ export type Vector2 = {
 };
 
 /** All possible game state values. */
-export type GameStateValue = 'START' | 'PLAYING' | 'PAUSED' | 'GAME_OVER' | 'LEVEL_TRANSITION';
+export type GameStateValue =
+  | 'START'
+  | 'PLAYING'
+  | 'PAUSED'
+  | 'GAME_OVER'
+  | 'LEVEL_TRANSITION'
+  | 'DEATH';
 /** Overlay states mirror the game states. */
 export type OverlayState = GameStateValue;
 

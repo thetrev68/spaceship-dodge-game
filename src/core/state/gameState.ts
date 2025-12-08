@@ -15,6 +15,8 @@ import type { GameStateValue } from '@types';
  *        LEVEL_TRANSITION
  *              ↓
  *          GAME_OVER → START
+ *              ↑
+ *            DEATH
  * ```
  *
  * @see createReactive - Reactive value implementation
@@ -29,6 +31,7 @@ import type { GameStateValue } from '@types';
  * - `'START'` - Initial state, showing start overlay
  * - `'PLAYING'` - Active gameplay (updates and collisions enabled)
  * - `'PAUSED'` - Game loop paused, showing pause overlay
+ * - `'DEATH'` - Player died but has lives remaining, showing death overlay
  * - `'LEVEL_TRANSITION'` - Between levels, showing level-up overlay
  * - `'GAME_OVER'` - Player lost all lives, showing game over overlay
  *

@@ -155,6 +155,20 @@ export function showOverlay(state: OverlayState, scoreValue = 0, levelValue = 0)
       break;
     }
 
+    case 'DEATH': {
+      services.audioService.stopMusic();
+      const deathInfo = getById<HTMLElement>('deathInfo');
+      const livesInfoDeath = getById<HTMLElement>('livesInfoDeath');
+
+      if (deathInfo) deathInfo.textContent = `You died! But you still have lives remaining.`;
+      if (livesInfoDeath) livesInfoDeath.textContent = `Lives: ${playerLives.value}`;
+      announce(
+        `You died! ${playerLives.value} ${playerLives.value === 1 ? 'life' : 'lives'} remaining. Press Continue to resume or Quit to return to main menu.`
+      );
+      show(getById<HTMLElement>('deathOverlay'));
+      break;
+    }
+
     case 'LEVEL_TRANSITION': {
       services.audioService.stopMusic();
       const levelUpMessage = getById<HTMLElement>('levelUpMessage');
@@ -217,6 +231,7 @@ export function setOverlayDimensions(canvas: HTMLCanvasElement): void {
     getById<HTMLElement>('levelTransitionOverlay'),
     getById<HTMLElement>('pauseOverlay'),
     getById<HTMLElement>('fatalErrorOverlay'),
+    getById<HTMLElement>('deathOverlay'),
   ].filter(isHTMLElement);
 
   setOverlayDims(canvas, overlays);
