@@ -2,7 +2,7 @@
  * Medieval Fantasy Theme Renderers
  *
  * Exports all custom renderers for the medieval theme.
- * Phase 1: Stubs only - implementations coming in later phases.
+ * All renderers implemented and wired — Phases 2–6 complete.
  */
 
 // Phase 2: Dragon Renderer (player)

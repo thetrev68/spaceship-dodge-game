@@ -11,6 +11,13 @@ import type { ActivePowerup } from '@types';
  *
  * @param ctx - Canvas 2D context
  * @param powerup - Active powerup payload with size/position
+ * @returns void
+ *
+ * @example
+ * ```typescript
+ * const powerup = { x: 100, y: 100, size: 40 };
+ * drawRuneShield(ctx, powerup);
+ * ```
  */
 export function drawRuneShield(ctx: CanvasRenderingContext2D, powerup: ActivePowerup): void {
   const theme = getCurrentTheme();
@@ -76,6 +83,13 @@ export function drawRuneShield(ctx: CanvasRenderingContext2D, powerup: ActivePow
  *
  * @param ctx - Canvas 2D context
  * @param powerup - Active powerup payload with size/position
+ * @returns void
+ *
+ * @example
+ * ```typescript
+ * const powerup = { x: 200, y: 150, size: 50 };
+ * drawSpellTome(ctx, powerup);
+ * ```
  */
 export function drawSpellTome(ctx: CanvasRenderingContext2D, powerup: ActivePowerup): void {
   const theme = getCurrentTheme();
@@ -203,17 +217,14 @@ function drawOrbitingParticles(
     const x = centerX + Math.cos(angle) * orbitRadius;
     const y = centerY + Math.sin(angle) * orbitRadius;
 
-    // Draw particle
+    ctx.save();
     ctx.fillStyle = color;
+    ctx.shadowColor = color;
+    ctx.shadowBlur = 4;
     ctx.beginPath();
     ctx.arc(x, y, 2, 0, Math.PI * 2);
     ctx.fill();
-
-    // Add glow
-    ctx.shadowColor = color;
-    ctx.shadowBlur = 4;
-    ctx.fill();
-    ctx.shadowBlur = 0;
+    ctx.restore();
   }
 }
 

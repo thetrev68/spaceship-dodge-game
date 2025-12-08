@@ -61,7 +61,7 @@ function drawWyvern(ctx: CanvasRenderingContext2D, obstacle: Asteroid): void {
   const radius = obstacle.radius;
   const rotation = obstacle.rotation; // Animation phase
 
-  const movementAngle = Math.atan2(obstacle.speed + obstacle.dy, obstacle.dx);
+  const movementAngle = Math.atan2(obstacle.dy || 0, obstacle.dx || 0);
   const wingFlap = Math.sin(rotation * 3) * radius * 0.25; // Simple, powerful flap
   const tailSway = Math.sin(rotation * 1.5) * radius * 0.2;
 
@@ -155,7 +155,7 @@ function drawBat(ctx: CanvasRenderingContext2D, obstacle: Asteroid): void {
   const rotation = obstacle.rotation; // Animation phase
 
   // Correctly calculate movement angle using the full velocity vector
-  const movementAngle = Math.atan2(obstacle.speed + obstacle.dy, obstacle.dx);
+  const movementAngle = Math.atan2(obstacle.dy || 0, obstacle.dx || 0);
   const wingFlap = Math.sin(rotation * 5) * radius * 0.2; // Faster, more subtle flap
 
   ctx.save();

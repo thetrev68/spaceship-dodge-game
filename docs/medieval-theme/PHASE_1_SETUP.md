@@ -14,7 +14,7 @@
 
 ## Files Created
 
-```
+```text
 src/core/themes/renderers/medieval/
 ├── index.ts                    // Exports all renderers
 ├── dragonRenderer.ts          // Player renderer (Phase 2 stub)

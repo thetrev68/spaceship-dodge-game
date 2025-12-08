@@ -8,15 +8,26 @@
 import { getCurrentTheme } from '@core/themes';
 import { isMobile } from '@utils/platform';
 import type { Player } from '@types';
-import { playerState } from '@core/state/playerState';
 
 /**
  * Renders the medieval player as a dragon rider with animated wings, tail, fire breath, and shield.
  *
  * @param ctx - Canvas 2D context to draw onto
  * @param player - Player dimensions and velocity used for animation cues
+ * @param shieldActive - Whether the shield powerup is currently active
+ * @returns void
+ *
+ * @example
+ * ```typescript
+ * const player = { x: 100, y: 100, width: 40, height: 50, dy: 2 };
+ * drawDragon(ctx, player, true); // with shield active
+ * ```
  */
-export function drawDragon(ctx: CanvasRenderingContext2D, player: Player): void {
+export function drawDragon(
+  ctx: CanvasRenderingContext2D,
+  player: Player,
+  shieldActive: boolean = false
+): void {
   const theme = getCurrentTheme();
   const x = player.x;
   const y = player.y;
@@ -49,7 +60,7 @@ export function drawDragon(ctx: CanvasRenderingContext2D, player: Player): void 
   }
 
   // Shield effect
-  if (playerState.powerUps.shield.active) {
+  if (shieldActive) {
     drawMagicShield(ctx, cx, cy, Math.max(w, h) * 1.4, theme.colors.playerShield || '#a855f7');
   }
 }
@@ -196,9 +207,9 @@ function drawDragonBody(
   ctx.beginPath();
   ctx.moveTo(cx, neckY);
   ctx.bezierCurveTo(
-    cx + swayOffset * 0.2,
+    cx + swayOffset * 0.2 + w * 0.05,
     bodyMidY,
-    cx - swayOffset * 0.15,
+    cx - swayOffset * 0.15 - w * 0.03,
     tailStartY,
     cx,
     tailStartY
@@ -250,7 +261,7 @@ function drawRider(
  */
 function drawFireBreath(ctx: CanvasRenderingContext2D, x: number, y: number, color: string): void {
   ctx.save();
-  const particleCount = isMobile() ? 4 : 7;
+  const particleCount = 7;
   for (let i = 1; i <= particleCount; i++) {
     const particleY = y + i * 6;
     const particleRadius = Math.max(1, 3 - i * 0.3);

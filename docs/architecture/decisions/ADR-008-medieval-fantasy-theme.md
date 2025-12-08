@@ -390,7 +390,7 @@ Use pre-rendered sprite images instead of vector graphics.
 
 - [Medieval Fantasy Theme Specification](../../MEDIEVAL_FANTASY_THEME_SPEC.md) - Detailed implementation guide
 - [Underwater Theme Specification](../../UNDERWATER_THEME_SPEC.md) - Precedent reference
-- [Developer Guide - Theme System](../../DEVELOPER_GUIDE.md#theme-system)
+- [Developer Guide - Theme System](../../DEVELOPER_GUIDE.md#theme-system--examples)
 
 ### Code References
 

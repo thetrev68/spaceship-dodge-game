@@ -22,9 +22,10 @@ import { isMobile } from '@utils/platform';
 export function setupMedievalBackground(
   ctx: CanvasRenderingContext2D,
   canvas: HTMLCanvasElement
-): void {
+): () => void {
   const theme = getCurrentTheme();
-  const emberCount = isMobile() ? 40 : 100;
+  const mobile = isMobile();
+  const emberCount = mobile ? 40 : 100;
 
   type Ember = {
     x: number;
@@ -45,6 +46,8 @@ export function setupMedievalBackground(
 
   resize();
   window.addEventListener('resize', resize);
+
+  let rafId: number | undefined;
 
   // Initialize ember particles
   for (let i = 0; i < emberCount; i++) {
@@ -72,7 +75,7 @@ export function setupMedievalBackground(
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     // MOON (upper right corner)
-    if (!isMobile()) {
+    if (!mobile) {
       const moonX = canvas.width * 0.85;
       const moonY = canvas.height * 0.15;
       const moonRadius = 40;
@@ -99,7 +102,7 @@ export function setupMedievalBackground(
     }
 
     // CASTLE RUINS SILHOUETTES (layered parallax)
-    if (!isMobile()) {
+    if (!mobile) {
       drawCastleSilhouette(ctx, canvas.width, canvas.height, 0.9, 0.15); // Far layer
       drawCastleSilhouette(ctx, canvas.width, canvas.height, 0.8, 0.25); // Mid layer
       drawCastleSilhouette(ctx, canvas.width, canvas.height, 0.7, 0.4); // Near layer
@@ -126,7 +129,7 @@ export function setupMedievalBackground(
       const currentOpacity = ember.opacity * flicker;
 
       // Draw ember with glow
-      if (!isMobile()) {
+      if (!mobile) {
         // Outer glow
         ctx.fillStyle = `rgba(251, 146, 60, ${currentOpacity * 0.3})`;
         ctx.beginPath();
@@ -144,10 +147,17 @@ export function setupMedievalBackground(
 
     ctx.globalAlpha = 1;
 
-    requestAnimationFrame(animate);
+    rafId = requestAnimationFrame(animate);
   }
 
   animate();
+
+  return () => {
+    window.removeEventListener('resize', resize);
+    if (rafId !== undefined) {
+      cancelAnimationFrame(rafId);
+    }
+  };
 }
 
 /**

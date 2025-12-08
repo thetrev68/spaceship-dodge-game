@@ -305,7 +305,7 @@ Crystal → Smaller Crystals → Crystal Shards
 ### Code References
 
 - `src/entities/asteroid.ts` - Fragmentation logic (unchanged)
-- `src/core/themes/renderers/medieval/debrisRenderer.ts` - `getObstacleTypeBySize()` function
+- `src/core/themes/renderers/medieval/obstacleRenderer.ts` - `getObstacleTypeBySize()` function
 - `src/types/index.ts` - `Asteroid` type (unchanged)
 
 ## Implementation Notes

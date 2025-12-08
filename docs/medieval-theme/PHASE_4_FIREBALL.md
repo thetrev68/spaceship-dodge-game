@@ -29,7 +29,7 @@
 
 ## Visual Design
 
-```
+```text
       O  (core, gradient)
      o   (flame particle)
     o    (flame particle)
@@ -41,8 +41,8 @@
 ## Particle Trail Specifications
 
 - **Count**: 5 particles
-- **Size**: Decreasing (radius _ (1 - i _ 0.15))
-- **Opacity**: Decreasing (1 - i \* 0.18)
+- **Size**: Decreasing (`radius * (1 - i * 0.15)`)
+- **Opacity**: Decreasing (`1 - i * 0.18`)
 - **Colors**: Orange (#fb923c) → Yellow (#fbbf24)
 - **Smoke**: Last 2 particles in gray (#9ca3af)
 

@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { drawRuneShield, drawSpellTome } from '@core/themes/renderers/medieval/powerupRenderers';
 import {
   createMockMedievalContext,
@@ -18,6 +18,10 @@ describe('Medieval powerup renderers', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.spyOn(performance, 'now').mockReturnValue(0);
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   it('draws rune shield with rotating ring and runes', () => {

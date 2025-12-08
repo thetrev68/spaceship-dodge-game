@@ -8,7 +8,7 @@
 
 ## Tasks
 
-1. Implement `setupMedievalBackground()`:
+1. Implement `setupMedievalBackground(ctx, canvas)` (expects pre-obtained 2D context):
    - Sky gradient (purple to dark blue)
    - Moon with glow effect
    - Layered castle silhouettes (parallax)
@@ -92,9 +92,7 @@ From Medieval fantasy theme implementation guide:
  * - Floating ember particles (glowing orange)
  * - Optional moon in upper corner
  */
-export function setupMedievalBackground(canvas: HTMLCanvasElement): void {
-  const ctx = canvas.getContext('2d');
-  if (!ctx) return;
+export function setupMedievalBackground(ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement): void {
 
   const theme = getCurrentTheme();
   const emberCount = isMobile() ? 40 : 100;

@@ -963,7 +963,7 @@ Mobile devices have lower performance. Optimizations:
 
 ## Theme System & Examples
 
-The theme system relies on `THEME_REGISTRY` plus the render-strategy pattern (ADR-006/ADR-008) to swap visuals without changing gameplay code.
+The theme system relies on `THEME_REGISTRY` plus the render-strategy pattern ([ADR-006](./architecture/decisions/ADR-006-theme-system.md)/[ADR-008](./architecture/decisions/ADR-008-medieval-fantasy-theme.md)) to swap visuals without changing gameplay code. See [MEDIEVAL_FANTASY_THEME_SPEC.md](../MEDIEVAL_FANTASY_THEME_SPEC.md) for complete theme specifications.
 
 - **Switch themes**: Call `setTheme('medieval')` (persists via `THEME_STORAGE_KEY` and reapplies UI CSS variables through `applyUITheme`).
 - **Renderer wiring**: Theme renderers live under `src/core/themes/renderers/<theme>/` and are registered in `themeConstants.renderers` (player, obstacle, bullet, powerups, background).

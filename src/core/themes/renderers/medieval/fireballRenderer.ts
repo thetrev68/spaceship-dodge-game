@@ -7,6 +7,16 @@
 import { getCurrentTheme } from '@core/themes';
 import type { Bullet } from '@types';
 
+// Animation constants for fireball pulsing effect
+const FIREBALL_PULSE_FREQUENCY = 4;
+const FIREBALL_PULSE_AMPLITUDE = 0.1;
+
+// Particle trail constants
+const PARTICLE_COUNT = 5;
+const TRAIL_SPACING_MULTIPLIER = 2;
+const SIZE_DECAY_FACTOR = 0.15;
+const OPACITY_DECAY_FACTOR = 0.18;
+
 /**
  * Main entry - draws the medieval fireball bullet with gradient core and particle trail.
  *
@@ -21,7 +31,7 @@ export function drawFireball(ctx: CanvasRenderingContext2D, bullet: Bullet): voi
 
   // Animation timing for pulsing
   const time = performance.now() / 1000;
-  const pulse = Math.sin(time * 4) * 0.1 + 1; // 0.9 to 1.1
+  const pulse = Math.sin(time * FIREBALL_PULSE_FREQUENCY) * FIREBALL_PULSE_AMPLITUDE + 1; // 0.9 to 1.1
 
   // Draw particle trail first (behind core)
   drawParticleTrail(ctx, x, y, radius);
@@ -81,13 +91,13 @@ function drawParticleTrail(
   y: number,
   baseRadius: number
 ): void {
-  const particleCount = 5;
-  const trailSpacing = baseRadius * 2; // Space between particles
+  const particleCount = PARTICLE_COUNT;
+  const trailSpacing = baseRadius * TRAIL_SPACING_MULTIPLIER;
 
   for (let i = 0; i < particleCount; i++) {
     const particleY = y + (i + 1) * trailSpacing; // Trail below the core
-    const size = baseRadius * (1 - i * 0.15); // Decreasing size
-    const opacity = Math.max(0, 1 - i * 0.18); // Decreasing opacity
+    const size = baseRadius * (1 - i * SIZE_DECAY_FACTOR);
+    const opacity = Math.max(0, 1 - i * OPACITY_DECAY_FACTOR);
 
     // Determine color based on position
     let color: string;

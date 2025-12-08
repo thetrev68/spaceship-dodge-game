@@ -36,6 +36,8 @@ export function createMockMedievalContext(): CanvasRenderingContext2D & {
     fill: vi.fn(),
     stroke: vi.fn(),
     fillRect: vi.fn(),
+    strokeRect: vi.fn(),
+    clearRect: vi.fn(),
     translate: vi.fn(),
     rotate: vi.fn(),
     createRadialGradient: vi.fn(() => radialGradient),
@@ -88,7 +90,7 @@ export function createTestAsteroid(overrides: Partial<Asteroid> = {}): Asteroid 
     level: 1,
     parentId: null,
     scoreValue: 100,
-    creationTime: Date.now(),
+    creationTime: 1000000000, // Fixed timestamp for test determinism
     rotation: 0,
     rotationSpeed: 0.01,
     speed: 2,

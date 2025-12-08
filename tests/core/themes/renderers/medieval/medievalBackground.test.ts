@@ -70,5 +70,9 @@ describe('setupMedievalBackground', () => {
 
     // No moon glow or castle layers when mobile
     expect(ctx.createRadialGradient).not.toHaveBeenCalled();
+
+    // Castle silhouette should also be skipped on mobile
+    // Check that fillRect calls are reduced (no castle towers)
+    expect(ctx.fillRect).toHaveBeenCalledTimes(1); // Only sky background, no castle layers
   });
 });

@@ -19,7 +19,7 @@ Create a top-down view of a dragon rider with:
 
 ## Visual Description (Bird's-Eye View)
 
-```
+```text
         /‾\  (head, triangular)
        | o | (rider on back)
   <---[===]---> (body with extended wings)
@@ -106,7 +106,7 @@ export function drawDragon(ctx: CanvasRenderingContext2D, player: Player): void 
   drawRider(ctx, cx, cy - h * 0.15, w * 0.25, theme.colors.player);
 
   // 6. FIRE BREATH (streams downward behind dragon, when moving)
-  if (!isMobile() && Math.abs(player.vy || 0) > 0.5) {
+  if (!isMobile() && Math.abs(player.dy || 0) > 0.5) {
     drawFireBreath(ctx, cx, cy + h * 0.35, theme.colors.playerEngine);
   }
 

@@ -40,7 +40,6 @@ describe('drawDragon', () => {
   });
 
   afterEach(() => {
-    vi.restoreAllMocks();
     playerState.clearPowerups();
   });
 
