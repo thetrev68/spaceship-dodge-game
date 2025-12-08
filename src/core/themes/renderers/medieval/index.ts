@@ -18,4 +18,4 @@ export { drawFireball } from './fireballRenderer';
 export { drawRuneShield, drawSpellTome } from './powerupRenderers';
 
 // Phase 6: Medieval Background (castle ruins, embers)
-// export { setupMedievalBackground } from './medievalBackground';
+export { setupMedievalBackground } from './medievalBackground';

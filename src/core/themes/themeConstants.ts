@@ -22,6 +22,7 @@ import {
   drawFireball,
   drawRuneShield,
   drawSpellTome,
+  setupMedievalBackground,
 } from './renderers/medieval';
 
 import type { Theme, ThemeId, UIColorPalette } from '@types';
@@ -256,6 +257,7 @@ const MEDIEVAL_THEME: Theme = {
   },
   // CUSTOM RENDERERS
   renderers: {
+    background: setupMedievalBackground,
     player: drawDragon,
     obstacle: drawMedievalObstacle,
     bullet: drawFireball,
