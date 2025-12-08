@@ -150,7 +150,7 @@ export function setupMedievalBackground(
     rafId = requestAnimationFrame(animate);
   }
 
-  animate();
+  rafId = requestAnimationFrame(animate);
 
   return () => {
     window.removeEventListener('resize', resize);

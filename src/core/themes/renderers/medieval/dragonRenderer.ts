@@ -6,6 +6,7 @@
  * Features animated wings, swaying tail, and rider silhouette.
  */
 import { getCurrentTheme } from '@core/themes';
+import { playerState } from '@core/state/playerState';
 import { isMobile } from '@utils/platform';
 import type { Player } from '@types';
 
@@ -26,7 +27,7 @@ import type { Player } from '@types';
 export function drawDragon(
   ctx: CanvasRenderingContext2D,
   player: Player,
-  shieldActive: boolean = false
+  shieldActive: boolean = playerState.powerUps.shield.active
 ): void {
   const theme = getCurrentTheme();
   const x = player.x;
@@ -260,6 +261,7 @@ function drawRider(
  * @param color - Primary fire color
  */
 function drawFireBreath(ctx: CanvasRenderingContext2D, x: number, y: number, color: string): void {
+  const originalAlpha = ctx.globalAlpha;
   ctx.save();
   const particleCount = 7;
   for (let i = 1; i <= particleCount; i++) {
@@ -275,6 +277,7 @@ function drawFireBreath(ctx: CanvasRenderingContext2D, x: number, y: number, col
     ctx.arc(x, particleY, particleRadius, 0, Math.PI * 2);
     ctx.fill();
   }
+  ctx.globalAlpha = originalAlpha;
   ctx.restore();
 }
 
@@ -299,6 +302,7 @@ function drawMagicShield(
   const pulse = Math.sin(time * 2) * 0.1 + 1;
 
   ctx.save();
+  const originalGlobalAlpha = ctx.globalAlpha; // Save original globalAlpha
   ctx.translate(cx, cy);
   ctx.rotate(rotation);
 
@@ -322,6 +326,6 @@ function drawMagicShield(
   ctx.closePath();
   ctx.stroke();
 
+  ctx.globalAlpha = originalGlobalAlpha; // Restore original globalAlpha
   ctx.restore();
-  ctx.globalAlpha = 1;
 }

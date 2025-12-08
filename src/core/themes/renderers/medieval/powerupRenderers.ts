@@ -76,6 +76,9 @@ export function drawRuneShield(ctx: CanvasRenderingContext2D, powerup: ActivePow
 
   // Draw orbiting particles
   drawOrbitingParticles(ctx, x, y, radius * 1.2, time, theme.colors.powerupShield);
+
+  // Reset shadow blur
+  ctx.shadowBlur = 0;
 }
 
 /**

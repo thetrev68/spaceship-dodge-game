@@ -19,10 +19,14 @@ export function createMockMedievalContext(): CanvasRenderingContext2D & {
     __fillHistory: unknown[];
     __strokeHistory: unknown[];
     __gradientStops: Array<[number, string]>;
+    __globalAlpha: number;
+    __shadowBlur: number;
   } = {
     __fillHistory: [],
     __strokeHistory: [],
     __gradientStops: gradientStops,
+    __globalAlpha: 1,
+    __shadowBlur: 0,
     save: vi.fn(),
     restore: vi.fn(),
     beginPath: vi.fn(),
@@ -49,8 +53,6 @@ export function createMockMedievalContext(): CanvasRenderingContext2D & {
     lineWidth: 0,
     lineCap: 'butt',
     lineJoin: 'miter',
-    globalAlpha: 1,
-    shadowBlur: 0,
   };
 
   Object.defineProperty(ctx, 'fillStyle', {
@@ -68,6 +70,24 @@ export function createMockMedievalContext(): CanvasRenderingContext2D & {
     },
     set(value) {
       ctx.__strokeHistory.push(value);
+    },
+  });
+
+  Object.defineProperty(ctx, 'globalAlpha', {
+    get() {
+      return ctx.__globalAlpha;
+    },
+    set(value) {
+      ctx.__globalAlpha = value;
+    },
+  });
+
+  Object.defineProperty(ctx, 'shadowBlur', {
+    get() {
+      return ctx.__shadowBlur;
+    },
+    set(value) {
+      ctx.__shadowBlur = value;
     },
   });
 

@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { setupMedievalBackground } from '@core/themes/renderers/medieval/medievalBackground';
 import { createMockCanvas } from '../../../../helpers/mockCanvas';
 import { createMockMedievalContext } from '../../../../helpers/medievalTestUtils';
+import { isMobile } from '@utils/platform';
 
 vi.mock('@core/themes', () => ({
   getCurrentTheme: vi.fn(() => ({
@@ -27,8 +28,7 @@ describe('setupMedievalBackground', () => {
     globalThis.requestAnimationFrame = originalRaf;
   });
 
-  it('draws gradient sky, moon, castles, and embers on desktop', async () => {
-    const { isMobile } = await import('@utils/platform');
+  it('draws gradient sky, moon, castles, and embers on desktop', () => {
     vi.mocked(isMobile).mockReturnValue(false);
 
     const canvas = createMockCanvas();
@@ -52,8 +52,7 @@ describe('setupMedievalBackground', () => {
     expect(ctx.arc).toHaveBeenCalled(); // embers and moon
   });
 
-  it('skips moon and castle layers on mobile', async () => {
-    const { isMobile } = await import('@utils/platform');
+  it('skips moon and castle layers on mobile', () => {
     vi.mocked(isMobile).mockReturnValue(true);
 
     const canvas = createMockCanvas();
