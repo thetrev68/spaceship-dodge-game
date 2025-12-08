@@ -215,6 +215,13 @@ const UNDERWATER_THEME: Theme = {
       doubleBlaster: drawStarfishPowerup,
     },
   },
+  // THEME-SPECIFIC AUDIO
+  audio: {
+    bgMusic: 'sounds/underwater-bg-music.mp3',
+    fireSound: 'sounds/underwater-fire.mp3',
+    breakSound: 'sounds/underwater-break.mp3',
+    // gameover and levelup can use defaults
+  },
 };
 
 /**
@@ -265,6 +272,13 @@ const MEDIEVAL_THEME: Theme = {
       shield: drawRuneShield,
       doubleBlaster: drawSpellTome,
     },
+  },
+  // THEME-SPECIFIC AUDIO
+  audio: {
+    bgMusic: 'sounds/medieval-bg-music.mp3',
+    fireSound: 'sounds/medieval-fire.mp3',
+    breakSound: 'sounds/medieval-break.mp3',
+    // gameover and levelup can use defaults
   },
 };
 

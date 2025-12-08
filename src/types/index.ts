@@ -137,6 +137,20 @@ export type SoundKey = 'bgm' | 'fire' | 'break' | 'gameover' | 'levelup';
 /** Map of audio elements keyed by sound id. */
 export type SoundMap = Record<SoundKey, HTMLAudioElement | null>;
 
+/** Theme-specific audio configuration */
+export type ThemeAudioConfig = {
+  /** Background music file path */
+  bgMusic?: string;
+  /** Fire/attack sound file path */
+  fireSound?: string;
+  /** Break/destruction sound file path */
+  breakSound?: string;
+  /** Game over sound file path */
+  gameoverSound?: string;
+  /** Level up sound file path */
+  levelupSound?: string;
+};
+
 /** Difficulty scaling configuration. */
 export type LevelConfig = {
   /** Base spawn interval for desktop (ms). */
@@ -333,6 +347,8 @@ export type Theme = {
   fonts: FontConfig;
   /** Custom rendering strategies (optional - falls back to defaults) */
   renderers?: ThemeRenderers;
+  /** Theme-specific audio configuration (optional - falls back to defaults) */
+  audio?: ThemeAudioConfig;
 };
 
 /**

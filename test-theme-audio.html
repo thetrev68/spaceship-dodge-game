@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Theme Audio Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .theme-section {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .theme-title {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+        .audio-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        button:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+        }
+        .status {
+            margin-top: 10px;
+            padding: 8px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎵 Theme Audio Test</h1>
+
+    <div class="theme-section">
+        <div class="theme-title">🌊 Underwater Theme</div>
+        <div class="audio-controls">
+            <button onclick="playUnderwaterFire()">Play Torpedo Fire Sound</button>
+            <button onclick="playUnderwaterBreak()">Play Jellyfish Break Sound</button>
+            <button onclick="playUnderwaterMusic()">Play Underwater Background Music</button>
+            <button onclick="stopUnderwaterMusic()">Stop Underwater Music</button>
+        </div>
+        <div class="status" id="underwater-status">Ready to test underwater audio</div>
+    </div>
+
+    <div class="theme-section">
+        <div class="theme-title">🐉 Medieval Fantasy Theme</div>
+        <div class="audio-controls">
+            <button onclick="playMedievalFire()">Play Fireball Sound</button>
+            <button onclick="playMedievalBreak()">Play Obstacle Break Sound</button>
+            <button onclick="playMedievalMusic()">Play Medieval Background Music</button>
+            <button onclick="stopMedievalMusic()">Stop Medieval Music</button>
+        </div>
+        <div class="status" id="medieval-status">Ready to test medieval audio</div>
+    </div>
+
+    <div class="theme-section">
+        <div class="theme-title">🚀 Default Theme (Original)</div>
+        <div class="audio-controls">
+            <button onclick="playDefaultFire()">Play Default Fire Sound</button>
+            <button onclick="playDefaultBreak()">Play Default Break Sound</button>
+            <button onclick="playDefaultMusic()">Play Default Background Music</button>
+            <button onclick="stopDefaultMusic()">Stop Default Music</button>
+        </div>
+        <div class="status" id="default-status">Ready to test default audio</div>
+    </div>
+
+    <script>
+        // Audio elements
+        // Paths point into /public/sounds so the file works when opened directly (file://) or via dev server.
+        const underwaterFire = new Audio('public/sounds/underwater-fire.mp3');
+        const underwaterBreak = new Audio('public/sounds/underwater-break.mp3');
+        const underwaterMusic = new Audio('public/sounds/underwater-bg-music.mp3');
+        underwaterMusic.loop = true;
+
+        const medievalFire = new Audio('public/sounds/medieval-fire.mp3');
+        const medievalBreak = new Audio('public/sounds/medieval-break.mp3');
+        const medievalMusic = new Audio('public/sounds/medieval-bg-music.mp3');
+        medievalMusic.loop = true;
+
+        const defaultFire = new Audio('public/sounds/fire.mp3');
+        const defaultBreak = new Audio('public/sounds/break.mp3');
+        const defaultMusic = new Audio('public/sounds/bg-music.mp3');
+        defaultMusic.loop = true;
+
+        // Underwater theme functions
+        function playUnderwaterFire() {
+            underwaterFire.currentTime = 0;
+            underwaterFire.play()
+                .then(() => updateStatus('underwater-status', 'Torpedo fire sound played successfully!'))
+                .catch(error => updateStatus('underwater-status', `Error playing torpedo sound: ${error.message}`));
+        }
+
+        function playUnderwaterBreak() {
+            underwaterBreak.currentTime = 0;
+            underwaterBreak.play()
+                .then(() => updateStatus('underwater-status', 'Jellyfish break sound played successfully!'))
+                .catch(error => updateStatus('underwater-status', `Error playing jellyfish sound: ${error.message}`));
+        }
+
+        function playUnderwaterMusic() {
+            underwaterMusic.currentTime = 0;
+            underwaterMusic.play()
+                .then(() => updateStatus('underwater-status', 'Underwater music playing...'))
+                .catch(error => updateStatus('underwater-status', `Error playing underwater music: ${error.message}`));
+        }
+
+        function stopUnderwaterMusic() {
+            underwaterMusic.pause();
+            underwaterMusic.currentTime = 0;
+            updateStatus('underwater-status', 'Underwater music stopped');
+        }
+
+        // Medieval theme functions
+        function playMedievalFire() {
+            medievalFire.currentTime = 0;
+            medievalFire.play()
+                .then(() => updateStatus('medieval-status', 'Fireball sound played successfully!'))
+                .catch(error => updateStatus('medieval-status', `Error playing fireball sound: ${error.message}`));
+        }
+
+        function playMedievalBreak() {
+            medievalBreak.currentTime = 0;
+            medievalBreak.play()
+                .then(() => updateStatus('medieval-status', 'Obstacle break sound played successfully!'))
+                .catch(error => updateStatus('medieval-status', `Error playing obstacle sound: ${error.message}`));
+        }
+
+        function playMedievalMusic() {
+            medievalMusic.currentTime = 0;
+            medievalMusic.play()
+                .then(() => updateStatus('medieval-status', 'Medieval music playing...'))
+                .catch(error => updateStatus('medieval-status', `Error playing medieval music: ${error.message}`));
+        }
+
+        function stopMedievalMusic() {
+            medievalMusic.pause();
+            medievalMusic.currentTime = 0;
+            updateStatus('medieval-status', 'Medieval music stopped');
+        }
+
+        // Default theme functions
+        function playDefaultFire() {
+            defaultFire.currentTime = 0;
+            defaultFire.play()
+                .then(() => updateStatus('default-status', 'Default fire sound played successfully!'))
+                .catch(error => updateStatus('default-status', `Error playing default fire sound: ${error.message}`));
+        }
+
+        function playDefaultBreak() {
+            defaultBreak.currentTime = 0;
+            defaultBreak.play()
+                .then(() => updateStatus('default-status', 'Default break sound played successfully!'))
+                .catch(error => updateStatus('default-status', `Error playing default break sound: ${error.message}`));
+        }
+
+        function playDefaultMusic() {
+            defaultMusic.currentTime = 0;
+            defaultMusic.play()
+                .then(() => updateStatus('default-status', 'Default music playing...'))
+                .catch(error => updateStatus('default-status', `Error playing default music: ${error.message}`));
+        }
+
+        function stopDefaultMusic() {
+            defaultMusic.pause();
+            defaultMusic.currentTime = 0;
+            updateStatus('default-status', 'Default music stopped');
+        }
+
+        // Helper function
+        function updateStatus(elementId, message) {
+            document.getElementById(elementId).textContent = message;
+            console.log(message);
+        }
+
+        // Initialize
+        console.log('Theme Audio Test initialized');
+        console.log('Underwater theme audio files:', {
+            fire: 'sounds/underwater-fire.mp3',
+            break: 'sounds/underwater-break.mp3',
+            music: 'sounds/underwater-bg-music.mp3'
+        });
+        console.log('Medieval theme audio files:', {
+            fire: 'sounds/medieval-fire.mp3',
+            break: 'sounds/medieval-break.mp3',
+            music: 'sounds/medieval-bg-music.mp3'
+        });
+    </script>
+</body>
+</html>

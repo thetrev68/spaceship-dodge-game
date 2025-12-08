@@ -44,6 +44,7 @@ import type { ReactiveValue } from '@core/reactive';
 import { log, debug } from '@core/logger';
 import { announcer } from '@ui/accessibility/announcer';
 import { updatePerfHudTheme } from '@ui/hud/perfHUD';
+import { handleThemeChange } from '@systems/soundManager';
 import type { Theme, ThemeId } from '@types';
 import {
   DEFAULT_THEME,
@@ -184,6 +185,9 @@ export function setTheme(themeId: string): void {
 
   log.info(`Theme changed to: ${theme.name}`);
   announcer.announce(`Theme changed to ${theme.name}`);
+
+  // Handle audio theme changes
+  handleThemeChange();
 }
 
 /**

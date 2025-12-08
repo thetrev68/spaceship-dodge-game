@@ -1,7 +1,8 @@
-import type { SoundKey, SoundMap, Volumes } from '@types';
+import type { SoundKey, SoundMap, Volumes, Theme } from '@types';
 import { debug, info, warn, error } from '@core/logger.js';
 import { validateAudioVolume } from '@utils/validation.js';
 import { VOLUME_CONSTANTS } from '@core/uiConstants.js';
+import { getCurrentTheme } from '@core/themes/themeManager.js';
 
 const envBaseUrl =
   typeof import.meta !== 'undefined' && typeof import.meta.env?.BASE_URL === 'string'
@@ -30,6 +31,9 @@ const sounds: SoundMap = {
   levelup: new Audio(`${BASE_URL}sounds/levelup.mp3`),
 };
 
+// Theme-specific sound overrides
+const currentThemeAudio: Record<string, HTMLAudioElement> = {};
+
 Object.entries(sounds).forEach(([key, audio]) => {
   if (key === 'bgm' || !(audio instanceof HTMLAudioElement)) return;
   audio.volume = currentVolume;
@@ -39,6 +43,36 @@ Object.entries(sounds).forEach(([key, audio]) => {
   });
   audio.load();
 });
+
+/**
+ * Loads theme-specific audio files
+ */
+export function loadThemeAudio(theme: Theme): void {
+  if (!theme.audio) return;
+
+  // Clear existing theme audio
+  Object.values(currentThemeAudio).forEach((audio) => {
+    audio.pause();
+    audio.remove();
+  });
+
+  // Load new theme audio
+  if (theme.audio.fireSound) {
+    currentThemeAudio.fire = new Audio(`${BASE_URL}${theme.audio.fireSound}`);
+    currentThemeAudio.fire.volume = currentVolume;
+    currentThemeAudio.fire.muted = isMuted;
+    currentThemeAudio.fire.load();
+  }
+
+  if (theme.audio.breakSound) {
+    currentThemeAudio.break = new Audio(`${BASE_URL}${theme.audio.breakSound}`);
+    currentThemeAudio.break.volume = currentVolume;
+    currentThemeAudio.break.muted = isMuted;
+    currentThemeAudio.break.load();
+  }
+
+  debug('audio', 'Theme audio loaded', { themeId: theme.id });
+}
 
 export function forceAudioUnlock(): Promise<void> {
   return new Promise((resolve) => {
@@ -92,9 +126,12 @@ export function startMusic(): void {
     return;
   }
 
+  const theme = getCurrentTheme();
+  const bgmPath = theme.audio?.bgMusic || 'sounds/bg-music.mp3';
+
   if (!sounds.bgm) {
     debug('audio', 'Creating bgm audio element');
-    sounds.bgm = new Audio(`${BASE_URL}sounds/bg-music.mp3`);
+    sounds.bgm = new Audio(`${BASE_URL}${bgmPath}`);
     sounds.bgm.loop = true;
     sounds.bgm.volume = currentVolume;
     sounds.bgm.muted = isMuted;
@@ -102,6 +139,12 @@ export function startMusic(): void {
 
   const bgm = sounds.bgm;
   if (!bgm) return;
+
+  // Update BGM if theme changed
+  if (bgm.src !== `${BASE_URL}${bgmPath}`) {
+    bgm.src = `${BASE_URL}${bgmPath}`;
+    bgm.load();
+  }
 
   bgm.currentTime = 0;
   bgm.volume = volumes.backgroundMusic;
@@ -172,7 +215,9 @@ export function setSoundEffectsVolume(val: number): void {
 }
 
 export function playSound(name: SoundKey): void {
-  const base = sounds[name];
+  // Check for theme-specific sound first
+  const themeAudio = currentThemeAudio[name];
+  const base = themeAudio || sounds[name];
   if (!isAudioUnlocked || isMuted || !base) return;
 
   const sfx = base.cloneNode(true) as HTMLAudioElement;
@@ -187,4 +232,17 @@ export function playSound(name: SoundKey): void {
     .catch((err: unknown) => {
       error('audio', `playSound(${name}) failed:`, err);
     });
+}
+
+/**
+ * Handles theme change by loading theme-specific audio
+ */
+export function handleThemeChange(): void {
+  const theme = getCurrentTheme();
+  loadThemeAudio(theme);
+
+  // Restart music with new theme
+  if (!isMuted && isAudioUnlocked) {
+    startMusic();
+  }
 }
