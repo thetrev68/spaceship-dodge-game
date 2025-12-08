@@ -62,3 +62,17 @@ This plan documents how to wire the newly generated audio assets into the game. 
 - Per-key volume trim table for fine balance.
 - Fade/ducking for overlapping SFX (if needed).
 - Optional alternate powerup sounds per powerup type.
+
+## Completion Log
+
+- Types/manager/theme audio updated to new filenames/variants; base defaults use space assets.
+- Theme configs now map medieval/underwater audio (bgm/fire/break variants/gameover/levelup/player_hit/powerup_collect/ui_click).
+- Sound manager handles variant-aware break selection and new events.
+- Event wiring:
+  - player hit → `player_hit`
+  - powerup pickup → `powerup_collect`
+  - UI buttons in overlays/settings → `ui_click`
+  - level up → existing `levelup` hook
+  - gameover → on death
+  - break variants → size/type mapping for space/underwater/medieval obstacles
+- Test harness updated to audition break variants per theme.
