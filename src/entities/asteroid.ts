@@ -4,7 +4,7 @@
  * Adds object pooling to optimize asteroid memory reuse.
  */
 
-import type { Asteroid, Vector2 } from '@types';
+import type { Asteroid, BreakVariant, Vector2 } from '@types';
 import { GAME_CONFIG, ASTEROID_CONFIG, MOBILE_CONFIG } from '@core/constants.js';
 
 import { entityState } from '@core/state.js';
@@ -86,6 +86,26 @@ function generateAsteroidShape(radius: number, numPoints: number): Vector2[] {
     });
   }
   return points;
+}
+
+/**
+ * Resolve break sound variant based on theme and obstacle size/type.
+ */
+function resolveBreakVariant(obstacle: Asteroid): BreakVariant {
+  const theme = getCurrentTheme();
+
+  // Medieval obstacles map to creature types by size
+  if (theme.id === 'medieval') {
+    const r = obstacle.radius;
+    if (r >= 30) return 'wyvern';
+    if (r >= 15) return 'bat';
+    return 'crystal';
+  }
+
+  // Underwater/Space: size tiers by level (0=small,1=medium, else large)
+  if (obstacle.level <= 0) return 'small';
+  if (obstacle.level === 1) return 'medium';
+  return 'large';
 }
 
 function createObstacle(
@@ -472,7 +492,7 @@ export function destroyObstacle(obstacle: Asteroid): DestroyOutcome {
   }
 
   obstaclePool.release(obstacle);
-  services.audioService.playSound('break');
+  services.audioService.playSound('break', { variant: resolveBreakVariant(obstacle) });
 
   // --- NEW: Spawn Debris Particles ---
   const debrisCount = isMobile() ? 5 : 10;

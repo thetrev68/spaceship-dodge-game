@@ -12,7 +12,7 @@ export interface IAudioService {
    * Plays a sound effect by name
    * @param name - Sound identifier (e.g., 'fire', 'break')
    */
-  playSound(name: string): void;
+  playSound(name: import('@types').SoundKey, options?: import('@types').SoundPlayOptions): void;
 
   /**
    * Starts background music loop

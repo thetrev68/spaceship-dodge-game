@@ -19,7 +19,7 @@ const powerUps = playerState.powerUps;
 
 export function handlePlayerHit(): void {
   playerLives.value -= 1;
-  services.audioService.playSound('gameover');
+  services.audioService.playSound('player_hit');
   analytics.trackGameplay('player-hit', undefined, playerLives.value);
   gameMetrics.recordHit();
 
@@ -30,6 +30,7 @@ export function handlePlayerHit(): void {
 
   if (playerLives.value <= 0) {
     gameState.value = 'GAME_OVER';
+    services.audioService.playSound('gameover');
     services.audioService.stopMusic();
     showOverlay('GAME_OVER', score.value, gameLevel.value);
     analytics.trackGameplay('game-over', `level-${gameLevel.value}`, score.value);

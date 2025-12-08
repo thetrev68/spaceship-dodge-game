@@ -133,9 +133,29 @@ export type Volumes = {
 };
 
 /** Available sound asset identifiers. */
-export type SoundKey = 'bgm' | 'fire' | 'break' | 'gameover' | 'levelup';
+export type SoundKey =
+  | 'bgm'
+  | 'fire'
+  | 'break'
+  | 'gameover'
+  | 'levelup'
+  | 'player_hit'
+  | 'powerup_collect'
+  | 'ui_click';
 /** Map of audio elements keyed by sound id. */
 export type SoundMap = Record<SoundKey, HTMLAudioElement | null>;
+
+/** Variants for break sounds (size/type). */
+export type BreakVariant = 'small' | 'medium' | 'large' | 'wyvern' | 'bat' | 'crystal';
+
+/** Playback options for sound effects. */
+export type SoundPlayOptions = {
+  /** Variant hint for break sounds. */
+  variant?: BreakVariant;
+};
+
+/** Theme-specific break variants */
+export type ThemeBreakAudioConfig = Partial<Record<BreakVariant | 'default', string>>;
 
 /** Theme-specific audio configuration */
 export type ThemeAudioConfig = {
@@ -145,10 +165,18 @@ export type ThemeAudioConfig = {
   fireSound?: string;
   /** Break/destruction sound file path */
   breakSound?: string;
+  /** Break/destruction variant file paths */
+  breakVariants?: ThemeBreakAudioConfig;
   /** Game over sound file path */
   gameoverSound?: string;
   /** Level up sound file path */
   levelupSound?: string;
+  /** Player hit/damage sound */
+  playerHitSound?: string;
+  /** Powerup collection sound */
+  powerupCollectSound?: string;
+  /** UI click/press sound */
+  uiClickSound?: string;
 };
 
 /** Difficulty scaling configuration. */

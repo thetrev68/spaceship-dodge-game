@@ -1,4 +1,4 @@
-import type { SoundKey, SoundMap, Volumes, Theme } from '@types';
+import type { BreakVariant, SoundKey, SoundMap, SoundPlayOptions, Theme, Volumes } from '@types';
 import { debug, info, warn, error } from '@core/logger.js';
 import { validateAudioVolume } from '@utils/validation.js';
 import { VOLUME_CONSTANTS } from '@core/uiConstants.js';
@@ -13,6 +13,23 @@ debug('audio', 'soundManager BASE_URL', BASE_URL);
 
 const SILENT_MP3 = `${BASE_URL}sounds/silence.mp3`;
 
+const DEFAULT_SOUND_PATHS: Record<SoundKey, string> = {
+  bgm: 'sounds/space-bgm.mp3',
+  fire: 'sounds/space-fire.mp3',
+  break: 'sounds/space-break-medium.mp3',
+  gameover: 'sounds/space-gameover.mp3',
+  levelup: 'sounds/space-levelup.mp3',
+  player_hit: 'sounds/space-player_hit.mp3',
+  powerup_collect: 'sounds/space-powerup_collect.mp3',
+  ui_click: 'sounds/space-ui_click.mp3',
+};
+
+const DEFAULT_BREAK_VARIANTS: Partial<Record<BreakVariant, string>> = {
+  small: 'sounds/space-break-small.mp3',
+  medium: 'sounds/space-break-medium.mp3',
+  large: 'sounds/space-break-large.mp3',
+};
+
 const volumes: Volumes = {
   backgroundMusic: VOLUME_CONSTANTS.DEFAULT_BACKGROUND_MUSIC,
   soundEffects: VOLUME_CONSTANTS.DEFAULT_SOUND_EFFECTS,
@@ -25,50 +42,88 @@ let isAudioUnlocked = false;
 
 const sounds: SoundMap = {
   bgm: null,
-  fire: new Audio(`${BASE_URL}sounds/fire.mp3`),
-  break: new Audio(`${BASE_URL}sounds/break.mp3`),
-  gameover: new Audio(`${BASE_URL}sounds/gameover.mp3`),
-  levelup: new Audio(`${BASE_URL}sounds/levelup.mp3`),
+  fire: null,
+  break: null,
+  gameover: null,
+  levelup: null,
+  player_hit: null,
+  powerup_collect: null,
+  ui_click: null,
 };
 
 // Theme-specific sound overrides
-const currentThemeAudio: Record<string, HTMLAudioElement> = {};
+const currentThemeAudio: Partial<Record<SoundKey, HTMLAudioElement>> = {};
+const currentThemeBreakVariants: Partial<Record<BreakVariant, HTMLAudioElement>> = {};
+const baseBreakVariants: Partial<Record<BreakVariant, HTMLAudioElement>> = {};
 
-Object.entries(sounds).forEach(([key, audio]) => {
-  if (key === 'bgm' || !(audio instanceof HTMLAudioElement)) return;
+function createAudio(path: string): HTMLAudioElement {
+  const audio = new Audio(`${BASE_URL}${path}`);
   audio.volume = currentVolume;
   audio.muted = isMuted;
   audio.addEventListener('loadeddata', () => {
-    debug('audio', 'Audio loaded:', key);
+    debug('audio', 'Audio loaded:', path);
   });
   audio.load();
-});
+  return audio;
+}
+
+function initBaseSounds(): void {
+  (Object.keys(DEFAULT_SOUND_PATHS) as SoundKey[]).forEach((key) => {
+    if (key === 'bgm') return;
+    const path = DEFAULT_SOUND_PATHS[key];
+    sounds[key] = createAudio(path);
+  });
+
+  Object.entries(DEFAULT_BREAK_VARIANTS).forEach(([variant, path]) => {
+    baseBreakVariants[variant as BreakVariant] = createAudio(path);
+  });
+}
+
+initBaseSounds();
 
 /**
  * Loads theme-specific audio files
  */
 export function loadThemeAudio(theme: Theme): void {
-  if (!theme.audio) return;
+  if (!theme.audio) {
+    // Clear overrides if theme has none
+    Object.values(currentThemeAudio).forEach((audio) => {
+      audio.pause();
+      audio.remove();
+    });
+    Object.values(currentThemeBreakVariants).forEach((audio) => {
+      audio.pause();
+      audio.remove();
+    });
+    return;
+  }
 
   // Clear existing theme audio
   Object.values(currentThemeAudio).forEach((audio) => {
     audio.pause();
     audio.remove();
   });
+  Object.values(currentThemeBreakVariants).forEach((audio) => {
+    audio.pause();
+    audio.remove();
+  });
 
-  // Load new theme audio
-  if (theme.audio.fireSound) {
-    currentThemeAudio.fire = new Audio(`${BASE_URL}${theme.audio.fireSound}`);
-    currentThemeAudio.fire.volume = currentVolume;
-    currentThemeAudio.fire.muted = isMuted;
-    currentThemeAudio.fire.load();
-  }
+  const { audio } = theme;
+  if (audio.fireSound) currentThemeAudio.fire = createAudio(audio.fireSound);
+  if (audio.breakSound) currentThemeAudio.break = createAudio(audio.breakSound);
+  if (audio.gameoverSound) currentThemeAudio.gameover = createAudio(audio.gameoverSound);
+  if (audio.levelupSound) currentThemeAudio.levelup = createAudio(audio.levelupSound);
+  if (audio.playerHitSound) currentThemeAudio.player_hit = createAudio(audio.playerHitSound);
+  if (audio.powerupCollectSound)
+    currentThemeAudio.powerup_collect = createAudio(audio.powerupCollectSound);
+  if (audio.uiClickSound) currentThemeAudio.ui_click = createAudio(audio.uiClickSound);
 
-  if (theme.audio.breakSound) {
-    currentThemeAudio.break = new Audio(`${BASE_URL}${theme.audio.breakSound}`);
-    currentThemeAudio.break.volume = currentVolume;
-    currentThemeAudio.break.muted = isMuted;
-    currentThemeAudio.break.load();
+  if (audio.breakVariants) {
+    Object.entries(audio.breakVariants).forEach(([variant, path]) => {
+      if (!path) return;
+      const audioEl = createAudio(path);
+      currentThemeBreakVariants[variant as BreakVariant] = audioEl;
+    });
   }
 
   debug('audio', 'Theme audio loaded', { themeId: theme.id });
@@ -127,7 +182,7 @@ export function startMusic(): void {
   }
 
   const theme = getCurrentTheme();
-  const bgmPath = theme.audio?.bgMusic || 'sounds/bg-music.mp3';
+  const bgmPath = theme.audio?.bgMusic || DEFAULT_SOUND_PATHS.bgm;
 
   if (!sounds.bgm) {
     debug('audio', 'Creating bgm audio element');
@@ -195,6 +250,24 @@ function applyVolumeAndMute(): void {
     }
     audio.muted = isMuted;
   });
+
+  Object.values(baseBreakVariants).forEach((audio) => {
+    if (!audio) return;
+    audio.volume = isMuted ? 0 : volumes.soundEffects;
+    audio.muted = isMuted;
+  });
+
+  Object.values(currentThemeAudio).forEach((audio) => {
+    if (!audio) return;
+    audio.volume = isMuted ? 0 : volumes.soundEffects;
+    audio.muted = isMuted;
+  });
+
+  Object.values(currentThemeBreakVariants).forEach((audio) => {
+    if (!audio) return;
+    audio.volume = isMuted ? 0 : volumes.soundEffects;
+    audio.muted = isMuted;
+  });
 }
 
 export function setBackgroundMusicVolume(val: number): void {
@@ -214,10 +287,28 @@ export function setSoundEffectsVolume(val: number): void {
   if (!isMuted) applyVolumeAndMute();
 }
 
-export function playSound(name: SoundKey): void {
+function resolveBreakAudio(variant?: BreakVariant): HTMLAudioElement | undefined {
+  if (variant) {
+    return (
+      currentThemeBreakVariants[variant] ||
+      baseBreakVariants[variant] ||
+      currentThemeAudio.break ||
+      sounds.break ||
+      undefined
+    );
+  }
+  return currentThemeAudio.break || sounds.break || undefined;
+}
+
+export function playSound(name: SoundKey, options?: SoundPlayOptions): void {
   // Check for theme-specific sound first
-  const themeAudio = currentThemeAudio[name];
-  const base = themeAudio || sounds[name];
+  let base: HTMLAudioElement | null | undefined;
+  if (name === 'break') {
+    base = resolveBreakAudio(options?.variant);
+  } else {
+    base = currentThemeAudio[name] || sounds[name];
+  }
+
   if (!isAudioUnlocked || isMuted || !base) return;
 
   const sfx = base.cloneNode(true) as HTMLAudioElement;

@@ -217,10 +217,19 @@ const UNDERWATER_THEME: Theme = {
   },
   // THEME-SPECIFIC AUDIO
   audio: {
-    bgMusic: 'sounds/underwater-bg-music.mp3',
+    bgMusic: 'sounds/underwater-bgm.mp3',
     fireSound: 'sounds/underwater-fire.mp3',
-    breakSound: 'sounds/underwater-break.mp3',
-    // gameover and levelup can use defaults
+    breakSound: 'sounds/underwater-break-medium.mp3',
+    breakVariants: {
+      small: 'sounds/underwater-break-small.mp3',
+      medium: 'sounds/underwater-break-medium.mp3',
+      large: 'sounds/underwater-break-large.mp3',
+    },
+    gameoverSound: 'sounds/underwater-gameover.mp3',
+    levelupSound: 'sounds/underwater-levelup.mp3',
+    playerHitSound: 'sounds/underwater-player_hit.mp3',
+    powerupCollectSound: 'sounds/underwater-powerup_collect.mp3',
+    uiClickSound: 'sounds/underwater-ui_click.mp3',
   },
 };
 
@@ -275,10 +284,19 @@ const MEDIEVAL_THEME: Theme = {
   },
   // THEME-SPECIFIC AUDIO
   audio: {
-    bgMusic: 'sounds/medieval-bg-music.mp3',
+    bgMusic: 'sounds/medieval-bgm.mp3',
     fireSound: 'sounds/medieval-fire.mp3',
-    breakSound: 'sounds/medieval-break.mp3',
-    // gameover and levelup can use defaults
+    breakSound: 'sounds/medieval-break-bat.mp3',
+    breakVariants: {
+      wyvern: 'sounds/medieval-break-wyvern.mp3',
+      bat: 'sounds/medieval-break-bat.mp3',
+      crystal: 'sounds/medieval-break-crystal.mp3',
+    },
+    gameoverSound: 'sounds/medieval-gameover.mp3',
+    levelupSound: 'sounds/medieval-levelup.mp3',
+    playerHitSound: 'sounds/medieval-player_hit.mp3',
+    powerupCollectSound: 'sounds/medieval-powerup_collect.mp3',
+    uiClickSound: 'sounds/medieval-ui_click.mp3',
   },
 };
 

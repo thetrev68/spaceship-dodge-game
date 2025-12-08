@@ -1,7 +1,7 @@
 import type { IAudioService } from './interfaces/IAudioService.js';
 import type { ICollisionService } from './interfaces/ICollisionService.js';
 import type { IPoolService } from './interfaces/IPoolService.js';
-import type { Asteroid, Bullet } from '@types';
+import type { Asteroid, Bullet, SoundKey, SoundPlayOptions } from '@types';
 import { debug } from '@core/logger.js';
 import * as soundManager from '@systems/soundManager.js';
 import { checkCollisions, resetCollisionState } from '@systems/collisionHandler.js';
@@ -12,8 +12,12 @@ class AudioServiceAdapter implements IAudioService {
     return soundManager.forceAudioUnlock();
   }
 
-  playSound(name: string): void {
-    soundManager.playSound(name as never);
+  playSound(name: SoundKey, options?: SoundPlayOptions): void {
+    if (options) {
+      soundManager.playSound(name, options);
+    } else {
+      soundManager.playSound(name);
+    }
   }
 
   startMusic(): void {

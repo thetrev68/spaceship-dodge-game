@@ -17,6 +17,7 @@ import {
 } from '@core/events/GameEvents.js';
 import { getCurrentTheme } from '@core/themes';
 import { log } from '@core/logger.js';
+import { services } from '@services/ServiceProvider.js';
 
 /**
  * Power-up types enumeration.
@@ -174,6 +175,7 @@ export function updatePowerups(canvasHeight: number): void {
 
       if (collided && p.type) {
         activatePowerup(p.type);
+        services.audioService.playSound('powerup_collect');
         eventBus.emit<PowerupCollectedEvent>(GameEvent.POWERUP_COLLECTED, {
           type: p.type,
           duration: POWERUP_CONFIG[p.type]?.DURATION ?? 0,

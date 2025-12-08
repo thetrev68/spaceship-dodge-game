@@ -68,6 +68,12 @@ export function wireOverlayControls(canvas: HTMLCanvasElement): void {
 
   const startEvent: 'touchstart' | 'click' = 'ontouchstart' in window ? 'touchstart' : 'click';
 
+  const playClick = (): void => {
+    if (typeof services.audioService.playSound === 'function') {
+      services.audioService.playSound('ui_click');
+    }
+  };
+
   const startGameHandler = (event: Event): void => {
     event.preventDefault();
     if (gameState.value !== 'START') return;
@@ -80,6 +86,7 @@ export function wireOverlayControls(canvas: HTMLCanvasElement): void {
   };
 
   startButton?.addEventListener(startEvent, startGameHandler, { passive: false });
+  startButton?.addEventListener('click', playClick);
 
   if (isMobile()) {
     pauseOverlay?.addEventListener(
@@ -109,33 +116,39 @@ export function wireOverlayControls(canvas: HTMLCanvasElement): void {
     );
   } else {
     continueButton?.addEventListener('click', () => {
+      playClick();
       continueGame();
       restartGameLoop();
     });
 
     quitButton?.addEventListener('click', () => {
+      playClick();
       quitGame();
     });
   }
 
   restartButton?.addEventListener('click', () => {
+    playClick();
     startGame(canvas);
     restartGameLoop();
   });
 
   // Death overlay button handlers
   continueButtonDeath?.addEventListener('click', () => {
+    playClick();
     continueGame();
     restartGameLoop();
   });
 
   quitButtonDeath?.addEventListener('click', () => {
+    playClick();
     quitGame();
   });
 
   const addSettingsHandler = (button: HTMLButtonElement | null): void => {
     button?.addEventListener('click', (event) => {
       event.preventDefault();
+      playClick();
       showSettings();
     });
   };
