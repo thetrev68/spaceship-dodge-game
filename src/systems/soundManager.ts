@@ -84,7 +84,7 @@ initBaseSounds();
 /**
  * Loads theme-specific audio files
  */
-export function loadThemeAudio(theme: Theme): void {
+function loadThemeAudio(theme: Theme): void {
   if (!theme.audio) {
     // Clear overrides if theme has none
     Object.values(currentThemeAudio).forEach((audio) => {

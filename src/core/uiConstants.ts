@@ -58,26 +58,6 @@ export const SETTINGS_UI: ReadonlyConfig<{
   BUTTON_BORDER_RADIUS: '50%',
 };
 
-export const AUDIO_CONTROLS: ReadonlyConfig<{
-  Z_INDEX: number;
-  POSITION_TOP: string;
-  POSITION_RIGHT: string;
-  GAP: string;
-  BUTTON_FONT_SIZE: string;
-  BUTTON_SIZE: string;
-  SLIDER_WIDTH: string;
-  BUTTON_MARGIN_LEFT: string;
-}> = {
-  Z_INDEX: 20,
-  POSITION_TOP: '20px',
-  POSITION_RIGHT: '20px',
-  GAP: '10px',
-  BUTTON_FONT_SIZE: '1.2rem',
-  BUTTON_SIZE: '40px',
-  SLIDER_WIDTH: '120px',
-  BUTTON_MARGIN_LEFT: '5px',
-};
-
 export const VOLUME_CONSTANTS: ReadonlyConfig<{
   DEFAULT_BACKGROUND_MUSIC: number;
   DEFAULT_SOUND_EFFECTS: number;
