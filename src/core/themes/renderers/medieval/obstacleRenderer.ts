@@ -148,11 +148,11 @@ function drawBat(ctx: CanvasRenderingContext2D, obstacle: Asteroid): void {
   ctx.translate(cx, cy);
   ctx.rotate(movementAngle + Math.PI / 2); // Orient sprite to movement direction
 
-  const bodyColor = '#333333';
-  const wingColor = '#222222';
+  const bodyColor = '#000000'; // Near black for better visibility
+  const wingColor = '#0a0a0a'; // Very dark gray, almost black
   const eyeColor = '#DC2626';
 
-  ctx.strokeStyle = '#111111';
+  ctx.strokeStyle = '#000000'; // Black outline for maximum contrast
   ctx.lineWidth = Math.max(1, radius * 0.05);
   ctx.lineCap = 'round';
   ctx.lineJoin = 'round';
@@ -245,7 +245,7 @@ function drawCrystal(ctx: CanvasRenderingContext2D, obstacle: Asteroid): void {
   ctx.translate(cx, cy);
   ctx.rotate(rotation * 0.5); // Slow rotation
 
-  const crystalColor = '#8b5cf6'; // Purple magic
+  const crystalColor = '#ea580c'; // Orange magic - distinguish from purple shield
 
   // Outer glow
   if (!isMobile()) {
