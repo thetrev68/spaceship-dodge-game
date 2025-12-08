@@ -184,6 +184,8 @@ Phase 2 will add support for asset-based themes with:
 - Animated elements
 - Loading states
 
+```text
+
 ├── game/ # Game loop, state machine, level progression
 │ ├── gameLoop.ts # Main game loop (RAF)
 │ ├── gameStateManager.ts # State transitions
@@ -336,7 +338,7 @@ LEVEL_TRANSITION
 ↓
 GAME_OVER → START
 
-````
+```
 
 ### Audio System Architecture
 
@@ -531,6 +533,7 @@ Advanced tools for development and debugging:
 
 ```typescript
 import { analytics } from '@utils/analytics';
+import { log } from '@core/logger';
 
 // Track custom events
 analytics.trackGameplay('level-completed', 'level-5', 12500);
@@ -538,8 +541,8 @@ analytics.trackInteraction('audio-unlock-attempted');
 
 // Export data for analysis
 const data = analytics.exportData();
-console.log(data.summary);
-````
+log.info(data.summary);
+```
 
 **ARIA Announcements:**
 

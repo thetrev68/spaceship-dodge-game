@@ -16,6 +16,15 @@ import {
   drawOceanBackground,
 } from './renderers/underwater';
 
+import {
+  drawDragon,
+  drawMedievalObstacle,
+  drawFireball,
+  drawRuneShield,
+  drawSpellTome,
+  setupMedievalBackground,
+} from './renderers/medieval';
+
 import type { Theme, ThemeId, UIColorPalette } from '@types';
 
 const DEFAULT_UI_COLORS: UIColorPalette = {
@@ -130,6 +139,23 @@ export const MONOCHROME_THEME: Theme = {
   },
 };
 
+const MEDIEVAL_UI_COLORS: UIColorPalette = {
+  // Overlay colors - dark medieval aesthetic
+  overlayBackground: 'rgba(31, 27, 75, 0.85)', // Dark purple-blue
+  overlayText: '#fef3c7', // Warm cream
+  overlayTitle: '#d97706', // Amber
+
+  // Button colors
+  buttonBackground: 'rgba(217, 119, 6, 0.2)', // Translucent amber
+  buttonText: '#ffffff',
+  buttonHover: 'rgba(217, 119, 6, 0.4)',
+  buttonFocus: '#a855f7', // Purple
+
+  // Settings button
+  settingsButtonBackground: 'rgba(217, 119, 6, 0.2)',
+  settingsButtonText: '#ffffff',
+};
+
 /**
  * Underwater theme with submarine, jellyfish, and ocean visuals.
  *
@@ -192,6 +218,57 @@ const UNDERWATER_THEME: Theme = {
 };
 
 /**
+ * Medieval Fantasy theme with dragon rider, wyverns, and magical elements.
+ *
+ * This theme provides a medieval fantasy aesthetic with custom renderers planned
+ * for dragon rider (player), wyverns/bats/crystals (obstacles), fireballs (bullets),
+ * and magical powerups. Phase 1: Colors only, renderers coming in later phases.
+ */
+const MEDIEVAL_THEME: Theme = {
+  id: 'medieval',
+  name: 'Dragon Rider',
+  description: 'Navigate hostile skies, dodging cursed wyverns and magical defenses',
+  colors: {
+    // Entity colors (earthy medieval tones)
+    player: '#d97706', // Amber/orange dragon
+    playerEngine: 'rgba(239, 68, 68, 0.6)', // Red fire breath
+    playerShield: '#a855f7', // Purple magical shield
+    bullet: '#ef4444', // Red fireball
+    asteroid: '#78716c', // Gray stone/creature base
+
+    // UI colors
+    hudText: '#fef3c7', // Warm cream text
+    hudAccent: '#d97706', // Amber accents
+    scorePopup: '#fbbf24', // Gold score text
+    bonusPopup: '#a855f7', // Purple bonus
+    powerupPopup: '#10b981', // Green powerup text
+
+    // Effects
+    starfield: '#fbbf24', // Golden embers
+
+    // Powerup colors
+    powerupShield: '#8b5cf6', // Purple magic rune
+    powerupBlaster: '#10b981', // Green spell tome
+  },
+  uiColors: MEDIEVAL_UI_COLORS,
+  fonts: {
+    family: '"Inter", sans-serif',
+    hudSize: '24px',
+  },
+  // CUSTOM RENDERERS
+  renderers: {
+    background: setupMedievalBackground,
+    player: drawDragon,
+    obstacle: drawMedievalObstacle,
+    bullet: drawFireball,
+    powerups: {
+      shield: drawRuneShield,
+      doubleBlaster: drawSpellTome,
+    },
+  },
+};
+
+/**
  * Registry of all available themes.
  *
  * This object maps theme IDs to their complete theme definitions.
@@ -201,6 +278,7 @@ export const THEME_REGISTRY: Record<ThemeId, Theme> = {
   default: DEFAULT_THEME,
   monochrome: MONOCHROME_THEME,
   underwater: UNDERWATER_THEME,
+  medieval: MEDIEVAL_THEME,
 };
 
 /**
@@ -209,7 +287,12 @@ export const THEME_REGISTRY: Record<ThemeId, Theme> = {
  * Used for validation when loading themes from localStorage
  * or user input to prevent injection attacks.
  */
-export const VALID_THEME_IDS: readonly ThemeId[] = ['default', 'monochrome', 'underwater'] as const;
+export const VALID_THEME_IDS: readonly ThemeId[] = [
+  'default',
+  'monochrome',
+  'underwater',
+  'medieval',
+] as const;
 
 /**
  * LocalStorage key for theme preference persistence.

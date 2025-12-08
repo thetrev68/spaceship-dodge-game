@@ -128,11 +128,15 @@ describe('Theme Constants', () => {
     it('should contain all registered themes', () => {
       expect(THEME_REGISTRY).toHaveProperty('default');
       expect(THEME_REGISTRY).toHaveProperty('monochrome');
+      expect(THEME_REGISTRY).toHaveProperty('underwater');
+      expect(THEME_REGISTRY).toHaveProperty('medieval');
     });
 
     it('should map theme IDs to theme objects', () => {
       expect(THEME_REGISTRY.default).toEqual(DEFAULT_THEME);
       expect(THEME_REGISTRY.monochrome).toEqual(MONOCHROME_THEME);
+      expect(THEME_REGISTRY.underwater.id).toBe('underwater');
+      expect(THEME_REGISTRY.medieval.id).toBe('medieval');
     });
 
     it('should have consistent theme structure', () => {
@@ -150,6 +154,8 @@ describe('Theme Constants', () => {
     it('should contain all valid theme IDs', () => {
       expect(VALID_THEME_IDS).toContain('default');
       expect(VALID_THEME_IDS).toContain('monochrome');
+      expect(VALID_THEME_IDS).toContain('underwater');
+      expect(VALID_THEME_IDS).toContain('medieval');
     });
 
     it('should be a readonly array', () => {
@@ -217,6 +223,7 @@ describe('Theme Constants', () => {
       const monochromeColors = Object.keys(MONOCHROME_THEME.colors);
 
       expect(defaultColors).toEqual(monochromeColors);
+      expect(defaultColors).toEqual(Object.keys(THEME_REGISTRY.medieval.colors));
     });
 
     it('should have consistent font structure between themes', () => {
@@ -224,6 +231,27 @@ describe('Theme Constants', () => {
       const monochromeFontKeys = Object.keys(MONOCHROME_THEME.fonts);
 
       expect(defaultFontKeys).toEqual(monochromeFontKeys);
+      expect(defaultFontKeys).toEqual(Object.keys(THEME_REGISTRY.medieval.fonts));
+    });
+  });
+
+  describe('MEDIEVAL_THEME', () => {
+    it('should expose all medieval renderers', () => {
+      const medievalTheme = THEME_REGISTRY.medieval;
+
+      expect(medievalTheme.renderers?.background).toBeDefined();
+      expect(medievalTheme.renderers?.player).toBeDefined();
+      expect(medievalTheme.renderers?.obstacle).toBeDefined();
+      expect(medievalTheme.renderers?.bullet).toBeDefined();
+      expect(medievalTheme.renderers?.powerups?.shield).toBeDefined();
+      expect(medievalTheme.renderers?.powerups?.doubleBlaster).toBeDefined();
+    });
+
+    it('should keep UI palette aligned with defaults', () => {
+      const medievalUIKeys = Object.keys(THEME_REGISTRY.medieval.uiColors);
+      const defaultUIKeys = Object.keys(DEFAULT_THEME.uiColors);
+
+      expect(medievalUIKeys).toEqual(defaultUIKeys);
     });
   });
 });

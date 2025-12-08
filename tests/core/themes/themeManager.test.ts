@@ -126,6 +126,10 @@ describe('Theme Manager', () => {
       const theme = getCurrentTheme();
       expect(theme).toEqual(MONOCHROME_THEME);
       expect(theme.id).toBe('monochrome');
+
+      setTheme('medieval');
+      const medieval = getCurrentTheme();
+      expect(medieval.id).toBe('medieval');
     });
 
     it('should persist theme preference to localStorage', () => {
@@ -154,6 +158,10 @@ describe('Theme Manager', () => {
       setTheme('default');
       theme = getCurrentTheme();
       expect(theme.id).toBe('default');
+
+      setTheme('medieval');
+      theme = getCurrentTheme();
+      expect(theme.id).toBe('medieval');
     });
   });
 
@@ -169,6 +177,8 @@ describe('Theme Manager', () => {
       const themeIds = themes.map((t) => t.id);
       expect(themeIds).toContain('default');
       expect(themeIds).toContain('monochrome');
+      expect(themeIds).toContain('underwater');
+      expect(themeIds).toContain('medieval');
     });
 
     it('should return themes with complete structure', () => {

@@ -11,7 +11,7 @@
 
 A fast-paced arcade-style browser game where you pilot a glowing vector spaceship, dodge and shoot asteroids, and level up against rising difficulty. Built with TypeScript, Tailwind CSS, and Vite — supports mouse, keyboard, and full touch/mobile controls with layered audio effects.
 
-**Recently refactored to a modular, domain-driven architecture with TypeScript for better scalability and maintainability.**
+**Recently refactored to a modular, domain-driven architecture with TypeScript for better scalability and maintainability, including a full medieval fantasy visual theme.**
 
 ---
 
@@ -106,10 +106,11 @@ The game now features a flexible theme system with multiple visual styles:
 
 - **Space Explorer** (Default): Classic neon space aesthetic with glowing effects
 - **Monochrome**: Minimalist off-white design for reduced visual complexity
+- **Medieval Fantasy (Dragon Rider)**: Asset-based dragon rider experience with wyverns, giant bats, arcane crystals, fireball bullets, rune shield and spell tome powerups, and castle-ruins/ember background
 
 ### Theme Switching
 
-1. Open Settings menu (⚙️ icon)
+1. Open Settings menu (🎛️ icon)
 2. Navigate to "Theme" section
 3. Select desired theme
 4. Changes apply immediately and persist across sessions
@@ -120,7 +121,7 @@ The theme system supports:
 
 - Color palette customization
 - Font configuration
-- Future asset-based themes (sprites, animations)
+- Asset-based renderers per entity (player, obstacle, bullet, powerups, background)
 
 ### Technical Details
 
@@ -130,6 +131,7 @@ The theme system supports:
 - Extensible architecture for future themes
 
 See [Theme System Documentation](docs/architecture/decisions/ADR-006-theme-system.md) for architecture details.
+See [ADR-008 Medieval Fantasy Theme](docs/architecture/decisions/ADR-008-medieval-fantasy-theme.md) for the medieval renderer decisions and trade-offs.
 
 - Explosive chain reactions
 
