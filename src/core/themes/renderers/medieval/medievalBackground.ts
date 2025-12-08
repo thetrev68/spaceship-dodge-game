@@ -15,6 +15,9 @@ import { isMobile } from '@utils/platform';
  * - Layered castle silhouettes (parallax effect)
  * - Floating ember particles (glowing orange)
  * - Optional moon in upper corner
+ *
+ * @param ctx - Canvas 2D context
+ * @param canvas - Target canvas element
  */
 export function setupMedievalBackground(
   ctx: CanvasRenderingContext2D,
@@ -148,7 +151,7 @@ export function setupMedievalBackground(
 }
 
 /**
- * Draws a layered castle silhouette
+ * Draws a layered castle silhouette.
  *
  * @param ctx - Canvas context
  * @param width - Canvas width

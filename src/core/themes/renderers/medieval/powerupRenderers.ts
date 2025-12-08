@@ -6,7 +6,12 @@
 import { getCurrentTheme } from '@core/themes';
 import type { ActivePowerup } from '@types';
 
-/** Draw the rune shield powerup (rotating magical circle with pentagram) */
+/**
+ * Draw the rune shield powerup (rotating magical circle with pentagram).
+ *
+ * @param ctx - Canvas 2D context
+ * @param powerup - Active powerup payload with size/position
+ */
 export function drawRuneShield(ctx: CanvasRenderingContext2D, powerup: ActivePowerup): void {
   const theme = getCurrentTheme();
   const x = powerup.x;
@@ -66,7 +71,12 @@ export function drawRuneShield(ctx: CanvasRenderingContext2D, powerup: ActivePow
   drawOrbitingParticles(ctx, x, y, radius * 1.2, time, theme.colors.powerupShield);
 }
 
-/** Draw the spell tome powerup (floating open book with sparkles) */
+/**
+ * Draw the spell tome powerup (floating open book with sparkles).
+ *
+ * @param ctx - Canvas 2D context
+ * @param powerup - Active powerup payload with size/position
+ */
 export function drawSpellTome(ctx: CanvasRenderingContext2D, powerup: ActivePowerup): void {
   const theme = getCurrentTheme();
   const x = powerup.x;
@@ -136,7 +146,15 @@ export function drawSpellTome(ctx: CanvasRenderingContext2D, powerup: ActivePowe
   drawRisingSparkles(ctx, x, y + bob, size, time, theme.colors.powerupBlaster);
 }
 
-/** Draw a pentagram (5-pointed star) */
+/**
+ * Draw a pentagram (5-pointed star).
+ *
+ * @param ctx - Canvas 2D context
+ * @param x - Center X coordinate
+ * @param y - Center Y coordinate
+ * @param radius - Outer radius
+ * @param color - Stroke color
+ */
 function drawPentagram(
   ctx: CanvasRenderingContext2D,
   x: number,
@@ -160,7 +178,16 @@ function drawPentagram(
   ctx.stroke();
 }
 
-/** Draw orbiting particles around the rune shield */
+/**
+ * Draw orbiting particles around the rune shield.
+ *
+ * @param ctx - Canvas 2D context
+ * @param centerX - Orbit center X
+ * @param centerY - Orbit center Y
+ * @param orbitRadius - Orbit radius
+ * @param time - Animation time
+ * @param color - Particle color
+ */
 function drawOrbitingParticles(
   ctx: CanvasRenderingContext2D,
   centerX: number,
@@ -190,7 +217,16 @@ function drawOrbitingParticles(
   }
 }
 
-/** Draw rising sparkles from the spell tome */
+/**
+ * Draw rising sparkles from the spell tome.
+ *
+ * @param ctx - Canvas 2D context
+ * @param bookX - Book center X
+ * @param bookY - Book center Y
+ * @param bookSize - Book size for scaling
+ * @param time - Animation time
+ * @param color - Sparkle color
+ */
 function drawRisingSparkles(
   ctx: CanvasRenderingContext2D,
   bookX: number,

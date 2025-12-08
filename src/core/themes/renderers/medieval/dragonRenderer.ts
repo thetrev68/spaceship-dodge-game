@@ -10,7 +10,12 @@ import { isMobile } from '@utils/platform';
 import type { Player } from '@types';
 import { playerState } from '@core/state/playerState';
 
-/** Main entry - draw the dragon player */
+/**
+ * Renders the medieval player as a dragon rider with animated wings, tail, fire breath, and shield.
+ *
+ * @param ctx - Canvas 2D context to draw onto
+ * @param player - Player dimensions and velocity used for animation cues
+ */
 export function drawDragon(ctx: CanvasRenderingContext2D, player: Player): void {
   const theme = getCurrentTheme();
   const x = player.x;
@@ -49,7 +54,16 @@ export function drawDragon(ctx: CanvasRenderingContext2D, player: Player): void 
   }
 }
 
-/** Dragon head: Angular arrowhead pointing upward */
+/**
+ * Draws the dragon head and neck as an angular arrow pointing upward.
+ *
+ * @param ctx - Canvas 2D context
+ * @param cx - Center X coordinate
+ * @param cy - Center Y coordinate
+ * @param w - Body width
+ * @param h - Body height
+ * @param color - Stroke color to use
+ */
 function drawDragonHead(
   ctx: CanvasRenderingContext2D,
   cx: number,
@@ -72,7 +86,16 @@ function drawDragonHead(
   ctx.stroke();
 }
 
-/** Dragon tail: Wavy center line tapering to a point */
+/**
+ * Draws a wavy dragon tail that follows the body and tapers to a point.
+ *
+ * @param ctx - Canvas 2D context
+ * @param cx - Center X coordinate
+ * @param cy - Center Y coordinate
+ * @param bodyHeight - Total body height for scaling
+ * @param swayOffset - Horizontal offset used for sway animation
+ * @param color - Stroke color to use
+ */
 function drawDragonTail(
   ctx: CanvasRenderingContext2D,
   cx: number,
@@ -99,7 +122,17 @@ function drawDragonTail(
   ctx.stroke();
 }
 
-/** Dragon wings: Angular bat-wing style with animation */
+/**
+ * Draws angular bat-like wings using a few straight segments for a heraldic look.
+ *
+ * @param ctx - Canvas 2D context
+ * @param cx - Center X coordinate
+ * @param cy - Center Y coordinate
+ * @param bodyWidth - Body width for wing span scaling
+ * @param bodyHeight - Body height for vertical scaling
+ * @param extension - Animation-driven wing extension factor
+ * @param color - Stroke color to use
+ */
 function drawDragonWings(
   ctx: CanvasRenderingContext2D,
   cx: number,
@@ -134,7 +167,17 @@ function drawDragonWings(
   ctx.stroke();
 }
 
-/** Dragon body: Vertical spine connecting head to tail */
+/**
+ * Draws the body spine that connects head to tail with a gentle curve.
+ *
+ * @param ctx - Canvas 2D context
+ * @param cx - Center X coordinate
+ * @param cy - Center Y coordinate
+ * @param w - Body width
+ * @param h - Body height
+ * @param swayOffset - Horizontal sway offset for subtle motion
+ * @param color - Stroke color to use
+ */
 function drawDragonBody(
   ctx: CanvasRenderingContext2D,
   cx: number,
@@ -163,7 +206,16 @@ function drawDragonBody(
   ctx.stroke();
 }
 
-/** Rider silhouette at wing junction */
+/**
+ * Draws the rider silhouette at the wing junction for readability.
+ *
+ * @param ctx - Canvas 2D context
+ * @param cx - Center X coordinate
+ * @param cy - Center Y coordinate
+ * @param w - Body width
+ * @param h - Body height
+ * @param color - Stroke color to use
+ */
 function drawRider(
   ctx: CanvasRenderingContext2D,
   cx: number,
@@ -188,7 +240,14 @@ function drawRider(
   ctx.stroke();
 }
 
-/** Fire breath particle trail */
+/**
+ * Draws a short fire-breath particle trail behind the dragon.
+ *
+ * @param ctx - Canvas 2D context
+ * @param x - X coordinate of emission
+ * @param y - Y coordinate of emission
+ * @param color - Primary fire color
+ */
 function drawFireBreath(ctx: CanvasRenderingContext2D, x: number, y: number, color: string): void {
   ctx.save();
   const particleCount = isMobile() ? 4 : 7;
@@ -208,7 +267,15 @@ function drawFireBreath(ctx: CanvasRenderingContext2D, x: number, y: number, col
   ctx.restore();
 }
 
-/** Magic shield (rotating pentagram) */
+/**
+ * Draws a magical rotating shield around the dragon using a pentagram.
+ *
+ * @param ctx - Canvas 2D context
+ * @param cx - Center X coordinate
+ * @param cy - Center Y coordinate
+ * @param radius - Shield radius
+ * @param color - Shield stroke color
+ */
 function drawMagicShield(
   ctx: CanvasRenderingContext2D,
   cx: number,

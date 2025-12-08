@@ -13,7 +13,8 @@ Welcome to the Spaceship Dodge Game development team! This guide will help you u
 7. [Debugging Techniques](#debugging-techniques)
 8. [Common Development Tasks](#common-development-tasks)
 9. [Performance Optimization](#performance-optimization)
-10. [Common Pitfalls](#common-pitfalls)
+10. [Theme System & Examples](#theme-system--examples)
+11. [Common Pitfalls](#common-pitfalls)
 
 ---
 
@@ -957,6 +958,18 @@ Mobile devices have lower performance. Optimizations:
 - **Simpler asteroid shapes** (5 points vs 11)
 - **No starfield** (background rendering disabled)
 - **FPS capping** (30 FPS on low-end devices)
+
+---
+
+## Theme System & Examples
+
+The theme system relies on `THEME_REGISTRY` plus the render-strategy pattern (ADR-006/ADR-008) to swap visuals without changing gameplay code.
+
+- **Switch themes**: Call `setTheme('medieval')` (persists via `THEME_STORAGE_KEY` and reapplies UI CSS variables through `applyUITheme`).
+- **Renderer wiring**: Theme renderers live under `src/core/themes/renderers/<theme>/` and are registered in `themeConstants.renderers` (player, obstacle, bullet, powerups, background).
+- **Medieval stack**: `drawDragon`, `drawMedievalObstacle`, `drawFireball`, `drawRuneShield`, `drawSpellTome`, and `setupMedievalBackground` provide full asset-based coverage (dragon rider, wyverns/bats/crystals, fireballs, magical powerups, castle ruins + embers).
+- **Mobile considerations**: Medieval renderers gate heavier glows/particles behind `isMobile()`—maintain that pattern for new effects.
+- **Authoring new themes**: Add palettes + fonts to `themeConstants`, implement renderers matching the `ThemeRenderers` contract, export them from `renderers/<theme>/index.ts`, and register the id in `VALID_THEME_IDS`/`THEME_REGISTRY`.
 
 ---
 

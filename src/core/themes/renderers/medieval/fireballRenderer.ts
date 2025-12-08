@@ -7,7 +7,12 @@
 import { getCurrentTheme } from '@core/themes';
 import type { Bullet } from '@types';
 
-/** Main entry - draw the fireball bullet */
+/**
+ * Main entry - draws the medieval fireball bullet with gradient core and particle trail.
+ *
+ * @param ctx - Canvas 2D context
+ * @param bullet - Bullet data containing position and radius
+ */
 export function drawFireball(ctx: CanvasRenderingContext2D, bullet: Bullet): void {
   const theme = getCurrentTheme();
   const x = bullet.x;
@@ -25,7 +30,15 @@ export function drawFireball(ctx: CanvasRenderingContext2D, bullet: Bullet): voi
   drawFireballCore(ctx, x, y, radius * pulse, theme.colors.bullet);
 }
 
-/** Draw the glowing gradient core of the fireball */
+/**
+ * Draw the glowing gradient core of the fireball.
+ *
+ * @param ctx - Canvas 2D context
+ * @param x - Center X
+ * @param y - Center Y
+ * @param radius - Core radius
+ * @param color - Base bullet color
+ */
 function drawFireballCore(
   ctx: CanvasRenderingContext2D,
   x: number,
@@ -54,7 +67,14 @@ function drawFireballCore(
   ctx.shadowBlur = 0; // Reset shadow
 }
 
-/** Draw the particle trail with flame and smoke effects */
+/**
+ * Draw the particle trail with flame and smoke effects.
+ *
+ * @param ctx - Canvas 2D context
+ * @param x - Center X for the core
+ * @param y - Center Y for the core
+ * @param baseRadius - Radius used to scale trail particles
+ */
 function drawParticleTrail(
   ctx: CanvasRenderingContext2D,
   x: number,
@@ -91,7 +111,13 @@ function drawParticleTrail(
   ctx.globalAlpha = 1; // Reset alpha
 }
 
-/** Interpolate between two hex colors */
+/**
+ * Interpolate between two hex colors.
+ *
+ * @param color1 - Start color
+ * @param color2 - End color
+ * @param t - Interpolation factor 0-1
+ */
 function interpolateColor(color1: string, color2: string, t: number): string {
   // Parse hex colors
   const c1 = parseInt(color1.slice(1), 16);

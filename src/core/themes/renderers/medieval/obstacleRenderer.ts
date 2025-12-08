@@ -15,14 +15,23 @@ import type { Asteroid } from '@types';
 /** Main obstacle type enum */
 type MedievalObstacleType = 'wyvern' | 'bat' | 'crystal';
 
-/** Get obstacle type based on size */
+/**
+ * Resolves medieval obstacle type by radius for consistent visual variety.
+ *
+ * @param radius - Obstacle radius in pixels
+ */
 function getObstacleTypeBySize(radius: number): MedievalObstacleType {
   if (radius >= 30) return 'wyvern'; // Large obstacles
   if (radius >= 15) return 'bat'; // Medium obstacles
   return 'crystal'; // Small obstacles
 }
 
-/** Main entry - draw medieval obstacles with type-based variety */
+/**
+ * Main entry point for medieval obstacles; routes to wyvern, bat, or crystal renderers.
+ *
+ * @param ctx - Canvas 2D context
+ * @param obstacle - Asteroid data used for position, size, and animation
+ */
 export function drawMedievalObstacle(ctx: CanvasRenderingContext2D, obstacle: Asteroid): void {
   const type = getObstacleTypeBySize(obstacle.radius);
 
@@ -42,6 +51,9 @@ export function drawMedievalObstacle(ctx: CanvasRenderingContext2D, obstacle: As
 /**
  * Draws a classic vector-art style wyvern from a top-down view.
  * This version features a strong silhouette, seamless body, and powerful wing flaps.
+ *
+ * @param ctx - Canvas 2D context
+ * @param obstacle - Asteroid payload describing wyvern size and movement
  */
 function drawWyvern(ctx: CanvasRenderingContext2D, obstacle: Asteroid): void {
   const cx = obstacle.x + obstacle.radius;
@@ -130,9 +142,11 @@ function drawWyvern(ctx: CanvasRenderingContext2D, obstacle: Asteroid): void {
 }
 
 /**
- * Draws a giant bat from top-down view.
+ * Draws a giant bat from top-down view with forward-facing glow.
  * Correctly orients to the true movement vector.
- * Features a forward-facing glow instead of eyes to maintain perspective.
+ *
+ * @param ctx - Canvas 2D context
+ * @param obstacle - Asteroid payload describing bat size and velocity
  */
 function drawBat(ctx: CanvasRenderingContext2D, obstacle: Asteroid): void {
   const cx = obstacle.x + obstacle.radius;
@@ -222,14 +236,10 @@ function drawBat(ctx: CanvasRenderingContext2D, obstacle: Asteroid): void {
 }
 
 /**
- * Draws magical crystal from top-down view
+ * Draws magical crystal from top-down view with pulsing glow and orbiting particles.
  *
- * Features:
- * - Geometric hexagonal shape
- * - Pulsing glow effect
- * - Rotating animation
- * - Bright glowing core
- * - Arcane energy particles orbiting
+ * @param ctx - Canvas 2D context
+ * @param obstacle - Asteroid payload describing crystal size and rotation
  */
 function drawCrystal(ctx: CanvasRenderingContext2D, obstacle: Asteroid): void {
   const _theme = getCurrentTheme();
