@@ -1,4 +1,4 @@
-# 🚀 Spaceship Dodge
+# 🎮 Multi-Theme Arcade Dodge
 
 [![CI](https://github.com/thetrev68/spaceship-dodge-game/workflows/CI/badge.svg)](https://github.com/thetrev68/spaceship-dodge-game/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/thetrev68/spaceship-dodge-game/branch/main/graph/badge.svg)](https://codecov.io/gh/thetrev68/spaceship-dodge-game)
@@ -7,106 +7,53 @@
 [![Code Style: Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://prettier.io/)
 [![Tested with Vitest](https://img.shields.io/badge/tested%20with-vitest-6E9F18.svg)](https://vitest.dev/)
 
-> A TypeScript-based arcade game with world-class architecture and 85%+ test coverage
+> A TypeScript-based multi-theme arcade game with world-class architecture and 85%+ test coverage
 
-A fast-paced arcade-style browser game where you pilot a glowing vector spaceship, dodge and shoot asteroids, and level up against rising difficulty. Built with TypeScript, Tailwind CSS, and Vite — supports mouse, keyboard, and full touch/mobile controls with layered audio effects.
-
-**Recently refactored to a modular, domain-driven architecture with TypeScript for better scalability and maintainability, including a full medieval fantasy visual theme.**
+A fast-paced arcade-style browser game featuring three distinct visual themes: Space Explorer, Medieval Fantasy Dragon Rider, and Underwater Adventure. Pilot your vessel through treacherous environments, dodge obstacles, and level up against rising difficulty. Built with TypeScript, Tailwind CSS, and Vite — supports mouse, keyboard, and full touch/mobile controls with layered audio effects.
 
 ---
 
-## Features
+## 🌟 Features
 
-- **Vector-style spaceship** with animated thruster glow
-- **Asteroids of multiple sizes** that break into fragments, with score bonuses
-- **Dynamic difficulty scaling** — smoother asteroid speeds and spawn rates per level
-- **Floating score popups** on hits and bonuses
-- **Full audio management**:
-  - Background music
-  - Laser/break/levelup/gameover effects
-  - Volume slider & mute/unmute toggle
-- **3-lives system** with overlay transitions and continue support
-- **Mobile support**:
-  - Tap/drag to move and shoot
-  - Pause on release
-  - Touch resume and floating button support
-- **Desktop support**:
-  - Mouse, WASD, arrows, spacebar
-  - Right-click or `P` to pause/resume
-- **Responsive canvas** with fullscreen scaling
-- **Level-up every ~15 seconds** with obstacle-clear gating
-- **Mobile performance optimizations** — FPS capping, capped spawns
-- **Quit confirmation** when exiting during pause
+- **Three Complete Visual Themes**: Space, Medieval Fantasy, and Underwater
+- **Dynamic Difficulty Scaling**: Smoother obstacle speeds and spawn rates per level
+- **Floating Score Popups**: Visual feedback on hits and bonuses
+- **Full Audio Management**: Background music, effects, volume controls
+- **3-Lives System**: Overlay transitions and continue support
+- **Cross-Platform Support**: Mouse, keyboard, WASD, arrows, spacebar, and full touch controls
+- **Responsive Canvas**: Fullscreen scaling for any device
+- **Level Progression**: Advance every ~15 seconds with obstacle-clear gating
+- **Performance Optimized**: FPS capping, capped spawns for smooth gameplay
 
 ---
-
-## Architecture & File Structure
-
-The codebase follows a modular, domain-driven structure. Path aliases (e.g., `@core`, `@game`) are used for cleaner imports.
-
-```text
-src/
-├── core/           # Application bootstrap, global state, configuration
-├── game/           # Game loop, state machine, level progression
-├── entities/       # Game objects (player, asteroids, bullets, powerups)
-├── systems/        # Cross-cutting concerns (collision, rendering, audio)
-├── input/          # Input handling (desktop, mobile)
-├── ui/             # User interface components
-│   ├── overlays/   # Game overlays (start, pause, level transition)
-│   ├── hud/        # Heads-up display (score, lives)
-│   └── controls/   # UI controls (audio)
-├── effects/        # Visual effects (starfield)
-└── utils/          # Pure utility functions (math, canvas, platform)
-```
-
-### Key Modules
-
-- **Core**: `main.ts` (entry), `state.ts` (global state), `constants.ts` (config), `logger.ts`
-- **Game**: `gameLoop.ts` (loop), `gameStateManager.ts` (state machine), `flowManager.ts`
-- **Systems**: `collisionHandler.ts` (spatial grid), `renderManager.ts`, `soundManager.ts`
-- **Entities**: `player.ts`, `asteroid.ts`, `bullet.ts`, `powerup.ts`
-
----
-
-## Technical Improvements (v1.1.0+)
-
-Recent updates focus on performance, stability, and code quality.
-
-- **Modular Architecture**: Domain-specific modules (Entities, Systems, UI, etc.).
-- **Spatial Partitioning**: Spatial grid for O(n) collision detection with many objects.
-- **DOM Helpers**: Typed helpers for safer overlay/input handling.
-- **TypeScript Migration**: Core, systems, entities, and UI/input layers now typed end-to-end.
-- **Tailwind CSS v4**: Upgraded for smaller builds and better performance.
-- **Constants Centralization**: All magic numbers in `core/constants.ts` for easy tuning.
-- **Bug Fixes**: Safer audio unlocking, collision array mutations, and overlay focus handling.
-
----
-
-## Known Issues
-
-- Level-up waits until all fragments are cleared (intended but sometimes feels delayed).
-- If game is paused at exact collision frame, rare scoring overlap occurs.
-- Background music requires user interaction to start (browser policy) — handled via silent unlock, but may still be silent initially on some devices.
-
----
-
-## Future Enhancements
-
-### Gameplay
-
-- Rotating asteroids with angular momentum
-- Shields, rapid fire, score multipliers
-- Enemy ships with pathfinding AI
 
 ## 🎨 Theme System
 
-The game now features a flexible theme system with multiple visual styles:
+The game features a flexible theme system with three distinct visual experiences:
 
-### Available Themes
+### 🚀 Space Explorer (Default)
 
-- **Space Explorer** (Default): Classic neon space aesthetic with glowing effects
-- **Monochrome**: Minimalist off-white design for reduced visual complexity
-- **Medieval Fantasy (Dragon Rider)**: Asset-based dragon rider experience with wyverns, giant bats, arcane crystals, fireball bullets, rune shield and spell tome powerups, and castle-ruins/ember background
+- Glowing vector spaceship with animated thruster effects
+- Asteroids of multiple sizes that break into fragments
+- Neon space aesthetic with starfield background
+- Classic sci-fi sound effects
+
+### 🏰 Medieval Fantasy Dragon Rider
+
+- Dragon rider vessel with wyvern obstacles
+- Giant bats and arcane crystals as hazards
+- Fireball bullets and magical powerups
+- Castle ruins and ember background
+- Rune shield and spell tome powerups
+- Epic fantasy sound effects
+
+### 🌊 Underwater Adventure
+
+- Submarine vessel navigating ocean depths
+- Jellyfish and coral obstacles
+- Torpedo projectiles and treasure powerups
+- Bubble effects and underwater ambiance
+- Oceanic sound effects and music
 
 ### Theme Switching
 
@@ -117,55 +64,68 @@ The game now features a flexible theme system with multiple visual styles:
 
 ### Customization
 
-The theme system supports:
-
-- Color palette customization
-- Font configuration
-- Asset-based renderers per entity (player, obstacle, bullet, powerups, background)
-
-### Technical Details
-
+- Color palette customization per theme
+- Font configuration options
+- Asset-based renderers for all game entities
 - Zero performance impact on gameplay
-- Persistent theme preferences
-- Accessible theme selection UI
-- Extensible architecture for future themes
 
-See [Theme System Documentation](docs/architecture/decisions/ADR-006-theme-system.md) for architecture details.
-See [ADR-008 Medieval Fantasy Theme](docs/architecture/decisions/ADR-008-medieval-fantasy-theme.md) for the medieval renderer decisions and trade-offs.
+---
 
+## 🏗️ Architecture & File Structure
+
+The codebase follows a modular, domain-driven structure with path aliases for cleaner imports:
+
+```text
+src/
+├── core/           # Application bootstrap, global state, configuration
+├── game/           # Game loop, state machine, level progression
+├── entities/       # Game objects (player, obstacles, projectiles, powerups)
+├── systems/        # Cross-cutting concerns (collision, rendering, audio)
+├── input/          # Input handling (desktop, mobile)
+├── ui/             # User interface components
+│   ├── overlays/   # Game overlays (start, pause, level transition)
+│   ├── hud/        # Heads-up display (score, lives)
+│   └── controls/   # UI controls (audio, settings)
+├── effects/        # Visual effects (starfield, particles)
+├── themes/         # Theme system and renderers
+└── utils/          # Pure utility functions
+```
+
+### Key Technical Features
+
+- **Spatial Partitioning**: Spatial grid for O(n) collision detection
+- **Object Pooling**: Memory management for high-frequency objects
+- **Fixed Timestep Game Loop**: Deterministic physics with accumulator pattern
+- **Modular Architecture**: Domain-specific modules (Entities, Systems, UI, etc.)
+- **TypeScript Strict Mode**: End-to-end type safety
+- **Tailwind CSS v4**: Optimized styling with smaller builds
+
+---
+
+## 🎮 Gameplay
+
+### Controls
+
+- **Desktop**: Mouse movement, WASD/arrows, spacebar to shoot, P to pause
+- **Mobile**: Tap/drag to move and shoot, touch controls
+- **Universal**: Right-click or P key to pause/resume
+
+### Obstacles & Powerups
+
+- Multiple obstacle sizes with fragmentation
+- Score bonuses for smaller fragments
+- Themed powerups (shields, rapid fire, score multipliers)
 - Explosive chain reactions
 
-### Visual Polish
+### Progression
 
-- Starfield and depth scrolling (expanded beyond `@effects/starfield.ts`)
-- Particle thrust trails
-- Screen shake on hit/death
-
-### Audio
-
-- Layered dynamic music based on level/intensity
-- Per-sound sliders in audio menu
-- Voiceovers: "Level Up!", "Shield Activated", etc.
-
-### Technical
-
-- FPS display toggle (dev mode)
-- Accessibility: remappable keys, visual assist modes
-- Performance reporting/logging tools
+- Level-up every ~15 seconds
+- Increasing difficulty with each level
+- Visual and audio feedback for milestones
 
 ---
 
-## Status
-
-> ✅ Complete core game loop  
-> ✅ Mobile + desktop support  
-> ✅ Modular architecture (v1.1.0)  
-> ✅ Spatial grid collision detection  
-> ✅ Ready for feature expansion
-
----
-
-## Getting Started
+## 🚀 Getting Started
 
 ### Prerequisites
 
@@ -195,39 +155,9 @@ npm run validate    # Run all checks (typecheck + lint + test:ci)
 npm run typecheck   # TypeScript only
 npm run lint        # ESLint only
 npm run test        # Tests only
-npm run test:coverage   # enforces 85/85/80/85 thresholds (lines/funcs/branches/stmts)
-npm run test:repeat     # runs suites 3x to surface flakes
+npm run test:coverage   # Enforces 85/85/80/85 thresholds
+npm run test:repeat     # Runs suites 3x to surface flakes
 ```
-
-### Pre-commit Hooks
-
-Husky runs automatically on `git commit`:
-
-- Fixes ESLint issues
-- Runs related tests
-- Formats with Prettier
-
-To bypass (not recommended):
-
-```bash
-git commit --no-verify
-```
-
-### Continuous Integration
-
-All PRs run:
-
-- ✅ Type checking
-- ✅ Linting
-- ✅ Full test suite with coverage
-- ✅ Build verification
-- ✅ Bundle size check
-
-PRs to main also run:
-
-- ✅ Lighthouse performance audit
-
-See [CI status](.github/workflows/ci.yml)
 
 ### Build
 
@@ -235,60 +165,50 @@ See [CI status](.github/workflows/ci.yml)
 npm run build
 ```
 
-### Documentation
-
-Generate TypeDoc API docs:
-
-```bash
-npm run docs
-```
-
 ---
 
-## Documentation
+## 📚 Documentation
 
 ### Start Here
 
-**New developers:** Begin with the [Developer Guide](./docs/DEVELOPER_GUIDE.md) for comprehensive onboarding covering architecture, workflows, testing, and common tasks.
+- **Developers**: [Developer Guide](./docs/DEVELOPER_GUIDE.md)
+- **Designers**: [Game Design Document](./docs/GAME_DESIGN.md)
 
-**Game designers:** See the [Game Design Document](./docs/GAME_DESIGN.md) for mechanics, difficulty tuning, and feature roadmap.
+### Architecture Decision Records
 
-### Architecture Decision Records (ADRs)
-
-Key architectural decisions are documented in `docs/architecture/decisions/`:
-
-- [ADR-001: Custom Reactive State](./docs/architecture/decisions/ADR-001-custom-reactive-state.md) - Why custom reactive system over MobX/Zustand
-- [ADR-002: Spatial Grid Collision](./docs/architecture/decisions/ADR-002-spatial-grid-collision.md) - Spatial grid vs quadtree for O(n) collision detection
-- [ADR-003: Object Pooling](./docs/architecture/decisions/ADR-003-object-pooling.md) - Memory management strategy for high-frequency objects
-- [ADR-004: Fixed Timestep Game Loop](./docs/architecture/decisions/ADR-004-fixed-timestep-game-loop.md) - Deterministic physics with accumulator pattern
-- [ADR-005: TypeScript Strict Mode](./docs/architecture/decisions/ADR-005-typescript-strict-mode.md) - Type safety configuration
-- [ADR-006: Theme System Architecture](docs/architecture/decisions/ADR-006-theme-system.md) - Centralized theme management and extensibility design
+- [ADR-001: Custom Reactive State](docs/architecture/decisions/ADR-001-custom-reactive-state.md)
+- [ADR-002: Spatial Grid Collision](docs/architecture/decisions/ADR-002-spatial-grid-collision.md)
+- [ADR-003: Object Pooling](docs/architecture/decisions/ADR-003-object-pooling.md)
+- [ADR-004: Fixed Timestep Game Loop](docs/architecture/decisions/ADR-004-fixed-timestep-game-loop.md)
+- [ADR-005: TypeScript Strict Mode](docs/architecture/decisions/ADR-005-typescript-strict-mode.md)
+- [ADR-006: Theme System Architecture](docs/architecture/decisions/ADR-006-theme-system.md)
+- [ADR-008: Medieval Fantasy Theme](docs/architecture/decisions/ADR-008-medieval-fantasy-theme.md)
 
 ### Additional Resources
 
 - [LOGGER_USAGE.md](./LOGGER_USAGE.md) - Centralized logging API
-- [CONTRIBUTING.md](./CONTRIBUTING.md) - Contribution guidelines and standards
-
-### API Documentation
-
-Generate TypeDoc API docs:
-
-```bash
-npm run docs
-```
-
-Output available in `docs/api/` after generation.
+- [CONTRIBUTING.md](./CONTRIBUTING.md) - Contribution guidelines
 
 ---
 
-## Contributing
+## 🤝 Contributing
 
 Pull requests welcome! See [CONTRIBUTING.md](./CONTRIBUTING.md) for setup, coding standards, and testing expectations.
 
 ---
 
-## GitHub Repository
+## 📦 GitHub Repository
 
 [https://github.com/thetrev68/spaceship-dodge-game](https://github.com/thetrev68/spaceship-dodge-game)
 
-Pull requests welcome!
+---
+
+## ✅ Status
+
+> ✅ Complete core game loop
+> ✅ Three visual themes (Space, Medieval, Underwater)
+> ✅ Mobile + desktop support
+> ✅ Modular architecture
+> ✅ Spatial grid collision detection
+> ✅ 85%+ test coverage
+> ✅ Ready for feature expansion
