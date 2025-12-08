@@ -92,8 +92,10 @@ From Medieval fantasy theme implementation guide:
  * - Floating ember particles (glowing orange)
  * - Optional moon in upper corner
  */
-export function setupMedievalBackground(ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement): void {
-
+export function setupMedievalBackground(
+  ctx: CanvasRenderingContext2D,
+  canvas: HTMLCanvasElement
+): void {
   const theme = getCurrentTheme();
   const emberCount = isMobile() ? 40 : 100;
 
