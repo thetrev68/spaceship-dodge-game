@@ -12,7 +12,6 @@ import { isMobile } from '@utils/platform';
  *
  * Features:
  * - Gradient sky (purple dusk to dark blue night)
- * - Layered castle silhouettes (parallax effect)
  * - Floating ember particles (glowing orange)
  * - Optional moon in upper corner
  *
@@ -101,13 +100,6 @@ export function setupMedievalBackground(
       ctx.fill();
     }
 
-    // CASTLE RUINS SILHOUETTES (layered parallax)
-    if (!mobile) {
-      drawCastleSilhouette(ctx, canvas.width, canvas.height, 0.9, 0.15); // Far layer
-      drawCastleSilhouette(ctx, canvas.width, canvas.height, 0.8, 0.25); // Mid layer
-      drawCastleSilhouette(ctx, canvas.width, canvas.height, 0.7, 0.4); // Near layer
-    }
-
     // FLOATING EMBERS
     const time = performance.now() / 1000;
 
@@ -158,71 +150,4 @@ export function setupMedievalBackground(
       cancelAnimationFrame(rafId);
     }
   };
-}
-
-/**
- * Draws a layered castle silhouette.
- *
- * @param ctx - Canvas context
- * @param width - Canvas width
- * @param height - Canvas height
- * @param yPosition - Vertical position (0-1, where 1 is bottom)
- * @param opacity - Silhouette opacity
- */
-function drawCastleSilhouette(
-  ctx: CanvasRenderingContext2D,
-  width: number,
-  height: number,
-  yPosition: number,
-  opacity: number
-): void {
-  const baseY = height * yPosition;
-  const baseHeight = height * 0.3;
-
-  ctx.fillStyle = `rgba(30, 27, 75, ${opacity})`; // Dark purple-blue
-  ctx.beginPath();
-
-  // Castle outline (simplified towers and walls)
-  ctx.moveTo(0, baseY);
-
-  // Left tower
-  ctx.lineTo(width * 0.1, baseY);
-  ctx.lineTo(width * 0.1, baseY - baseHeight * 0.6);
-  ctx.lineTo(width * 0.12, baseY - baseHeight * 0.6);
-  ctx.lineTo(width * 0.12, baseY - baseHeight * 0.7);
-  ctx.lineTo(width * 0.11, baseY - baseHeight * 0.7);
-  ctx.lineTo(width * 0.11, baseY - baseHeight * 0.8);
-  ctx.lineTo(width * 0.13, baseY - baseHeight * 0.8);
-  ctx.lineTo(width * 0.13, baseY - baseHeight * 0.7);
-  ctx.lineTo(width * 0.12, baseY - baseHeight * 0.7);
-  ctx.lineTo(width * 0.15, baseY - baseHeight * 0.6);
-  ctx.lineTo(width * 0.15, baseY);
-
-  // Wall section
-  ctx.lineTo(width * 0.3, baseY);
-  ctx.lineTo(width * 0.3, baseY - baseHeight * 0.4);
-
-  // Central keep
-  ctx.lineTo(width * 0.35, baseY - baseHeight * 0.4);
-  ctx.lineTo(width * 0.35, baseY - baseHeight);
-  ctx.lineTo(width * 0.45, baseY - baseHeight);
-  ctx.lineTo(width * 0.45, baseY - baseHeight * 0.4);
-
-  // Right wall
-  ctx.lineTo(width * 0.7, baseY - baseHeight * 0.4);
-  ctx.lineTo(width * 0.7, baseY);
-
-  // Right tower
-  ctx.lineTo(width * 0.85, baseY);
-  ctx.lineTo(width * 0.85, baseY - baseHeight * 0.5);
-  ctx.lineTo(width * 0.9, baseY - baseHeight * 0.5);
-  ctx.lineTo(width * 0.9, baseY);
-
-  // Bottom edge
-  ctx.lineTo(width, baseY);
-  ctx.lineTo(width, height);
-  ctx.lineTo(0, height);
-  ctx.closePath();
-
-  ctx.fill();
 }
