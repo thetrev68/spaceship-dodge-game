@@ -45,7 +45,6 @@ export function wireOverlayControls(canvas: HTMLCanvasElement): void {
   const startOverlay = getById<HTMLElement>('startOverlay');
   const pauseOverlay = getById<HTMLElement>('pauseOverlay');
   const levelTransitionOverlay = getById<HTMLElement>('levelTransitionOverlay');
-  const deathOverlay = getById<HTMLElement>('deathOverlay');
   const starfieldCanvas = getById<HTMLCanvasElement>('starfieldCanvas');
   const settingsButtonStart = getById<HTMLButtonElement>('settingsButtonStart');
   const settingsButtonLevel = getById<HTMLButtonElement>('settingsButtonLevel');
