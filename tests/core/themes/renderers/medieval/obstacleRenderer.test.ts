@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, type MockInstance } from 'vitest';
 import { drawMedievalObstacle } from '@core/themes/renderers/medieval/obstacleRenderer';
 import type { Asteroid } from '@types';
 import {
@@ -58,13 +58,15 @@ describe('drawMedievalObstacle', () => {
 
     vi.mocked(isMobile).mockReturnValue(false);
     drawMedievalObstacle(desktopCtx, crystal);
-    const desktopArcCount = desktopCtx.arc.mock.calls.length;
+    const desktopArcMock = desktopCtx.arc as unknown as MockInstance;
+    const desktopArcCount = desktopArcMock.mock.calls.length;
     expect(desktopCtx.globalAlpha).toBe(1);
 
     vi.mocked(isMobile).mockReturnValue(true);
     const mobileCtx = createMockMedievalContext();
     drawMedievalObstacle(mobileCtx, crystal);
-    const mobileArcCount = mobileCtx.arc.mock.calls.length;
+    const mobileArcMock = mobileCtx.arc as unknown as MockInstance;
+    const mobileArcCount = mobileArcMock.mock.calls.length;
 
     // Desktop path draws extra orbiting particles
     expect(desktopArcCount).toBeGreaterThan(mobileArcCount);

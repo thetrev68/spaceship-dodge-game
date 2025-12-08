@@ -42,8 +42,9 @@ describe('setupMedievalBackground', () => {
 
     // First animation frame scheduled
     expect(raf).toHaveBeenCalledTimes(1);
-    const animate = raf.mock.calls[0][0] as FrameRequestCallback;
-    animate(0);
+    const animate = raf.mock.calls.at(0)?.[0] as FrameRequestCallback | undefined;
+    expect(animate).toBeDefined();
+    animate?.(0);
 
     expect(ctx.createLinearGradient).toHaveBeenCalled(); // sky gradient
     expect(ctx.createRadialGradient).toHaveBeenCalled(); // moon glow
@@ -63,8 +64,9 @@ describe('setupMedievalBackground', () => {
     globalThis.requestAnimationFrame = raf as unknown as typeof requestAnimationFrame;
 
     setupMedievalBackground(ctx, canvas);
-    const animate = raf.mock.calls[0][0] as FrameRequestCallback;
-    animate(0);
+    const animate = raf.mock.calls.at(0)?.[0] as FrameRequestCallback | undefined;
+    expect(animate).toBeDefined();
+    animate?.(0);
 
     // No moon glow or castle layers when mobile
     expect(ctx.createRadialGradient).not.toHaveBeenCalled();

@@ -296,7 +296,9 @@ export type ThemeRenderers = {
 
   /** Custom powerup rendering by type */
   powerups?: {
+    /** Override renderer for shield powerup (e.g., rune circle) */
     shield?: EntityRenderer<ActivePowerup>;
+    /** Override renderer for double blaster powerup (e.g., spell tome) */
     doubleBlaster?: EntityRenderer<ActivePowerup>;
   };
 
