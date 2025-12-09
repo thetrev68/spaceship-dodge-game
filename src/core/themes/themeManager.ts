@@ -268,18 +268,11 @@ export function watchTheme(callback: () => void): () => void {
  * Applies theme-specific player dimension adjustments.
  *
  * Modifies player size based on the current theme (e.g., larger dragon for medieval theme).
- * Should be called when theme changes or on initialization.
+ * Called automatically when theme changes or on initialization.
  *
- * @example
- * ```typescript
- * // Apply theme-specific player dimensions
- * applyThemePlayerDimensions();
- *
- * // Or automatically apply when theme changes
- * watchTheme(applyThemePlayerDimensions);
- * ```
+ * @internal
  */
-export function applyThemePlayerDimensions(): void {
+function applyThemePlayerDimensions(): void {
   const theme = getCurrentTheme();
   const player = playerState.player;
 
