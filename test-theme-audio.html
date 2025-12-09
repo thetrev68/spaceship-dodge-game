@@ -70,6 +70,11 @@
         <button onclick="playUnderwaterBreak('small')">Break Jellyfish (Small)</button>
         <button onclick="playUnderwaterBreak('medium')">Break Jellyfish (Medium)</button>
         <button onclick="playUnderwaterBreak('large')">Break Jellyfish (Large)</button>
+        <button onclick="playUnderwaterPlayerHit()">Player Hit</button>
+        <button onclick="playUnderwaterPowerup()">Powerup Collect</button>
+        <button onclick="playUnderwaterLevelup()">Level Up</button>
+        <button onclick="playUnderwaterGameover()">Game Over</button>
+        <button onclick="playUnderwaterUiClick()">UI Click</button>
         <button onclick="playUnderwaterMusic()">Play Underwater BGM</button>
         <button onclick="stopUnderwaterMusic()">Stop Underwater BGM</button>
       </div>
@@ -83,6 +88,11 @@
         <button onclick="playMedievalBreak('wyvern')">Break Wyvern</button>
         <button onclick="playMedievalBreak('bat')">Break Bat</button>
         <button onclick="playMedievalBreak('crystal')">Break Crystal</button>
+        <button onclick="playMedievalPlayerHit()">Player Hit</button>
+        <button onclick="playMedievalPowerup()">Powerup Collect</button>
+        <button onclick="playMedievalLevelup()">Level Up</button>
+        <button onclick="playMedievalGameover()">Game Over</button>
+        <button onclick="playMedievalUiClick()">UI Click</button>
         <button onclick="playMedievalMusic()">Play Medieval BGM</button>
         <button onclick="stopMedievalMusic()">Stop Medieval BGM</button>
       </div>
@@ -96,6 +106,11 @@
         <button onclick="playDefaultBreak('small')">Break Asteroid (Small)</button>
         <button onclick="playDefaultBreak('medium')">Break Asteroid (Medium)</button>
         <button onclick="playDefaultBreak('large')">Break Asteroid (Large)</button>
+        <button onclick="playDefaultPlayerHit()">Player Hit</button>
+        <button onclick="playDefaultPowerup()">Powerup Collect</button>
+        <button onclick="playDefaultLevelup()">Level Up</button>
+        <button onclick="playDefaultGameover()">Game Over</button>
+        <button onclick="playDefaultUiClick()">UI Click</button>
         <button onclick="playDefaultMusic()">Play Space BGM</button>
         <button onclick="stopDefaultMusic()">Stop Space BGM</button>
       </div>
@@ -108,6 +123,11 @@
       const underwaterBreakSmall = new Audio('public/sounds/underwater-break-small.mp3');
       const underwaterBreakMedium = new Audio('public/sounds/underwater-break-medium.mp3');
       const underwaterBreakLarge = new Audio('public/sounds/underwater-break-large.mp3');
+      const underwaterPlayerHit = new Audio('public/sounds/underwater-player_hit.mp3');
+      const underwaterPowerup = new Audio('public/sounds/underwater-powerup_collect.mp3');
+      const underwaterLevelup = new Audio('public/sounds/underwater-levelup.mp3');
+      const underwaterGameover = new Audio('public/sounds/underwater-gameover.mp3');
+      const underwaterUiClick = new Audio('public/sounds/underwater-ui_click.mp3');
       const underwaterMusic = new Audio('public/sounds/underwater-bgm.mp3');
       underwaterMusic.loop = true;
 
@@ -115,6 +135,11 @@
       const medievalBreakWyvern = new Audio('public/sounds/medieval-break-wyvern.mp3');
       const medievalBreakBat = new Audio('public/sounds/medieval-break-bat.mp3');
       const medievalBreakCrystal = new Audio('public/sounds/medieval-break-crystal.mp3');
+      const medievalPlayerHit = new Audio('public/sounds/medieval-player_hit.mp3');
+      const medievalPowerup = new Audio('public/sounds/medieval-powerup_collect.mp3');
+      const medievalLevelup = new Audio('public/sounds/medieval-levelup.mp3');
+      const medievalGameover = new Audio('public/sounds/medieval-gameover.mp3');
+      const medievalUiClick = new Audio('public/sounds/medieval-ui_click.mp3');
       const medievalMusic = new Audio('public/sounds/medieval-bgm.mp3');
       medievalMusic.loop = true;
 
@@ -122,6 +147,11 @@
       const defaultBreakSmall = new Audio('public/sounds/space-break-small.mp3');
       const defaultBreakMedium = new Audio('public/sounds/space-break-medium.mp3');
       const defaultBreakLarge = new Audio('public/sounds/space-break-large.mp3');
+      const defaultPlayerHit = new Audio('public/sounds/space-player_hit.mp3');
+      const defaultPowerup = new Audio('public/sounds/space-powerup_collect.mp3');
+      const defaultLevelup = new Audio('public/sounds/space-levelup.mp3');
+      const defaultGameover = new Audio('public/sounds/space-gameover.mp3');
+      const defaultUiClick = new Audio('public/sounds/space-ui_click.mp3');
       const defaultMusic = new Audio('public/sounds/space-bgm.mp3');
       defaultMusic.loop = true;
 
@@ -151,6 +181,56 @@
           )
           .catch((error) =>
             updateStatus('underwater-status', `Error playing jellyfish sound: ${error.message}`)
+          );
+      }
+
+      function playUnderwaterPlayerHit() {
+        underwaterPlayerHit.currentTime = 0;
+        underwaterPlayerHit
+          .play()
+          .then(() => updateStatus('underwater-status', 'Underwater player hit sound played!'))
+          .catch((error) =>
+            updateStatus('underwater-status', `Error playing player hit sound: ${error.message}`)
+          );
+      }
+
+      function playUnderwaterPowerup() {
+        underwaterPowerup.currentTime = 0;
+        underwaterPowerup
+          .play()
+          .then(() => updateStatus('underwater-status', 'Underwater powerup sound played!'))
+          .catch((error) =>
+            updateStatus('underwater-status', `Error playing powerup sound: ${error.message}`)
+          );
+      }
+
+      function playUnderwaterLevelup() {
+        underwaterLevelup.currentTime = 0;
+        underwaterLevelup
+          .play()
+          .then(() => updateStatus('underwater-status', 'Underwater level up sound played!'))
+          .catch((error) =>
+            updateStatus('underwater-status', `Error playing level up sound: ${error.message}`)
+          );
+      }
+
+      function playUnderwaterGameover() {
+        underwaterGameover.currentTime = 0;
+        underwaterGameover
+          .play()
+          .then(() => updateStatus('underwater-status', 'Underwater game over sound played!'))
+          .catch((error) =>
+            updateStatus('underwater-status', `Error playing game over sound: ${error.message}`)
+          );
+      }
+
+      function playUnderwaterUiClick() {
+        underwaterUiClick.currentTime = 0;
+        underwaterUiClick
+          .play()
+          .then(() => updateStatus('underwater-status', 'Underwater UI click sound played!'))
+          .catch((error) =>
+            updateStatus('underwater-status', `Error playing UI click sound: ${error.message}`)
           );
       }
 
@@ -213,6 +293,56 @@
         updateStatus('medieval-status', 'Medieval music stopped');
       }
 
+      function playMedievalPlayerHit() {
+        medievalPlayerHit.currentTime = 0;
+        medievalPlayerHit
+          .play()
+          .then(() => updateStatus('medieval-status', 'Medieval player hit sound played!'))
+          .catch((error) =>
+            updateStatus('medieval-status', `Error playing player hit sound: ${error.message}`)
+          );
+      }
+
+      function playMedievalPowerup() {
+        medievalPowerup.currentTime = 0;
+        medievalPowerup
+          .play()
+          .then(() => updateStatus('medieval-status', 'Medieval powerup sound played!'))
+          .catch((error) =>
+            updateStatus('medieval-status', `Error playing powerup sound: ${error.message}`)
+          );
+      }
+
+      function playMedievalLevelup() {
+        medievalLevelup.currentTime = 0;
+        medievalLevelup
+          .play()
+          .then(() => updateStatus('medieval-status', 'Medieval level up sound played!'))
+          .catch((error) =>
+            updateStatus('medieval-status', `Error playing level up sound: ${error.message}`)
+          );
+      }
+
+      function playMedievalGameover() {
+        medievalGameover.currentTime = 0;
+        medievalGameover
+          .play()
+          .then(() => updateStatus('medieval-status', 'Medieval game over sound played!'))
+          .catch((error) =>
+            updateStatus('medieval-status', `Error playing game over sound: ${error.message}`)
+          );
+      }
+
+      function playMedievalUiClick() {
+        medievalUiClick.currentTime = 0;
+        medievalUiClick
+          .play()
+          .then(() => updateStatus('medieval-status', 'Medieval UI click sound played!'))
+          .catch((error) =>
+            updateStatus('medieval-status', `Error playing UI click sound: ${error.message}`)
+          );
+      }
+
       // Default theme functions
       function playDefaultFire() {
         defaultFire.currentTime = 0;
@@ -250,6 +380,56 @@
         defaultMusic.pause();
         defaultMusic.currentTime = 0;
         updateStatus('default-status', 'Space music stopped');
+      }
+
+      function playDefaultPlayerHit() {
+        defaultPlayerHit.currentTime = 0;
+        defaultPlayerHit
+          .play()
+          .then(() => updateStatus('default-status', 'Space player hit sound played!'))
+          .catch((error) =>
+            updateStatus('default-status', `Error playing player hit sound: ${error.message}`)
+          );
+      }
+
+      function playDefaultPowerup() {
+        defaultPowerup.currentTime = 0;
+        defaultPowerup
+          .play()
+          .then(() => updateStatus('default-status', 'Space powerup sound played!'))
+          .catch((error) =>
+            updateStatus('default-status', `Error playing powerup sound: ${error.message}`)
+          );
+      }
+
+      function playDefaultLevelup() {
+        defaultLevelup.currentTime = 0;
+        defaultLevelup
+          .play()
+          .then(() => updateStatus('default-status', 'Space level up sound played!'))
+          .catch((error) =>
+            updateStatus('default-status', `Error playing level up sound: ${error.message}`)
+          );
+      }
+
+      function playDefaultGameover() {
+        defaultGameover.currentTime = 0;
+        defaultGameover
+          .play()
+          .then(() => updateStatus('default-status', 'Space game over sound played!'))
+          .catch((error) =>
+            updateStatus('default-status', `Error playing game over sound: ${error.message}`)
+          );
+      }
+
+      function playDefaultUiClick() {
+        defaultUiClick.currentTime = 0;
+        defaultUiClick
+          .play()
+          .then(() => updateStatus('default-status', 'Space UI click sound played!'))
+          .catch((error) =>
+            updateStatus('default-status', `Error playing UI click sound: ${error.message}`)
+          );
       }
 
       // Helper function
