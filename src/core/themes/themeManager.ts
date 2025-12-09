@@ -45,6 +45,7 @@ import { log, debug } from '@core/logger';
 import { announcer } from '@ui/accessibility/announcer';
 import { updatePerfHudTheme } from '@ui/hud/perfHUD';
 import { handleThemeChange } from '@systems/soundManager';
+import { playerState } from '@core/state/playerState';
 import type { Theme, ThemeId } from '@types';
 import {
   DEFAULT_THEME,
@@ -186,6 +187,9 @@ export function setTheme(themeId: string): void {
   log.info(`Theme changed to: ${theme.name}`);
   announcer.announce(`Theme changed to ${theme.name}`);
 
+  // Apply theme-specific player dimensions
+  applyThemePlayerDimensions();
+
   // Handle audio theme changes
   handleThemeChange();
 }
@@ -231,6 +235,9 @@ export function initializeThemeSystem(): void {
   const theme = loadThemeFromStorage();
   currentTheme.value = theme;
 
+  // Apply theme-specific player dimensions on initialization
+  applyThemePlayerDimensions();
+
   log.info(`Theme system initialized with theme: ${theme.name}`);
 }
 
@@ -255,6 +262,37 @@ export function initializeThemeSystem(): void {
  */
 export function watchTheme(callback: () => void): () => void {
   return currentTheme.watch(callback);
+}
+
+/**
+ * Applies theme-specific player dimension adjustments.
+ *
+ * Modifies player size based on the current theme (e.g., larger dragon for medieval theme).
+ * Should be called when theme changes or on initialization.
+ *
+ * @example
+ * ```typescript
+ * // Apply theme-specific player dimensions
+ * applyThemePlayerDimensions();
+ *
+ * // Or automatically apply when theme changes
+ * watchTheme(applyThemePlayerDimensions);
+ * ```
+ */
+export function applyThemePlayerDimensions(): void {
+  const theme = getCurrentTheme();
+  const player = playerState.player;
+
+  // Reset to default dimensions first
+  player.width = 30;
+  player.height = 45;
+
+  // Apply theme-specific adjustments
+  if (theme.id === 'medieval') {
+    // Increase dragon size by 50% for better visibility and presence
+    player.width = Math.round(30 * 1.5); // 45
+    player.height = Math.round(45 * 1.5); // 67
+  }
 }
 
 /**

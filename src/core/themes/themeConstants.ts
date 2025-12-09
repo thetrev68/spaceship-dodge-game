@@ -245,10 +245,10 @@ const MEDIEVAL_THEME: Theme = {
   name: 'Dragon Rider',
   description: 'Navigate hostile skies, dodging cursed wyverns and magical defenses',
   colors: {
-    // Entity colors (earthy medieval tones)
-    player: '#d97706', // Amber/orange dragon
-    playerEngine: 'rgba(239, 68, 68, 0.6)', // Red fire breath
-    playerShield: '#a855f7', // Purple magical shield
+    // Entity colors (earthy medieval tones - adjusted for dawn theme contrast)
+    player: '#8b4513', // Darker brown dragon for better contrast
+    playerEngine: 'rgba(251, 140, 0, 0.8)', // Brighter orange fire breath
+    playerShield: '#4f46e5', // Deeper indigo shield for contrast
     bullet: '#ef4444', // Red fireball
     asteroid: '#78716c', // Gray stone/creature base
 

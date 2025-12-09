@@ -4,16 +4,15 @@
  * Phase 6: Castle ruins silhouettes and floating ember particles
  * Implements setupMedievalBackground() and drawCastleSilhouette()
  */
-import { getCurrentTheme } from '@core/themes';
 import { isMobile } from '@utils/platform';
 
 /**
  * Medieval fantasy background with castle ruins and floating embers
  *
  * Features:
- * - Gradient sky (purple dusk to dark blue night)
- * - Floating ember particles (glowing orange)
- * - Optional moon in upper corner
+ * - Gradient sky (golden dawn to royal blue/purple)
+ * - Floating ember particles (glowing golden)
+ * - Optional sun glow in upper corner
  *
  * @param ctx - Canvas 2D context
  * @param canvas - Target canvas element
@@ -22,7 +21,6 @@ export function setupMedievalBackground(
   ctx: CanvasRenderingContext2D,
   canvas: HTMLCanvasElement
 ): () => void {
-  const theme = getCurrentTheme();
   const mobile = isMobile();
   const emberCount = mobile ? 40 : 100;
 
@@ -64,39 +62,33 @@ export function setupMedievalBackground(
   function animate(): void {
     if (!ctx) return;
 
-    // SKY GRADIENT (dusk/night)
+    // SKY GRADIENT (dawn/day - golden dawn to royal blue/purple)
     const skyGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-    skyGradient.addColorStop(0, '#4c1d95'); // Deep purple at top
-    skyGradient.addColorStop(0.4, '#1e1b4b'); // Dark indigo middle
-    skyGradient.addColorStop(1, '#0f172a'); // Near-black at bottom
+    skyGradient.addColorStop(0, '#fbbf24'); // Warm golden dawn at top
+    skyGradient.addColorStop(0.4, '#3b82f6'); // Rich royal blue middle
+    skyGradient.addColorStop(1, '#7c3aed'); // Deep regal purple at bottom
 
     ctx.fillStyle = skyGradient;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // MOON (upper right corner)
+    // SUN GLOW (upper right corner - subtle dawn sun)
     if (!mobile) {
-      const moonX = canvas.width * 0.85;
-      const moonY = canvas.height * 0.15;
-      const moonRadius = 40;
+      const sunX = canvas.width * 0.85;
+      const sunY = canvas.height * 0.15;
+      const sunRadius = 30;
 
-      // Moon glow
-      const moonGlow = ctx.createRadialGradient(moonX, moonY, 0, moonX, moonY, moonRadius * 3);
-      moonGlow.addColorStop(0, 'rgba(250, 250, 210, 0.1)');
-      moonGlow.addColorStop(1, 'transparent');
-      ctx.fillStyle = moonGlow;
-      ctx.fillRect(moonX - moonRadius * 3, moonY - moonRadius * 3, moonRadius * 6, moonRadius * 6);
+      // Sun glow (warm golden dawn light)
+      const sunGlow = ctx.createRadialGradient(sunX, sunY, 0, sunX, sunY, sunRadius * 4);
+      sunGlow.addColorStop(0, 'rgba(251, 191, 36, 0.2)'); // Warm golden center
+      sunGlow.addColorStop(0.7, 'rgba(251, 191, 36, 0.05)');
+      sunGlow.addColorStop(1, 'transparent');
+      ctx.fillStyle = sunGlow;
+      ctx.fillRect(sunX - sunRadius * 4, sunY - sunRadius * 4, sunRadius * 8, sunRadius * 8);
 
-      // Moon body
-      ctx.fillStyle = '#fafad2';
+      // Subtle sun core (small golden circle)
+      ctx.fillStyle = 'rgba(251, 191, 36, 0.3)';
       ctx.beginPath();
-      ctx.arc(moonX, moonY, moonRadius, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Moon craters (darker circles)
-      ctx.fillStyle = 'rgba(100, 100, 80, 0.3)';
-      ctx.beginPath();
-      ctx.arc(moonX - 10, moonY - 5, 8, 0, Math.PI * 2);
-      ctx.arc(moonX + 5, moonY + 8, 6, 0, Math.PI * 2);
+      ctx.arc(sunX, sunY, sunRadius * 0.6, 0, Math.PI * 2);
       ctx.fill();
     }
 
@@ -122,15 +114,15 @@ export function setupMedievalBackground(
 
       // Draw ember with glow
       if (!mobile) {
-        // Outer glow
-        ctx.fillStyle = `rgba(251, 146, 60, ${currentOpacity * 0.3})`;
+        // Outer glow (golden dawn embers)
+        ctx.fillStyle = `rgba(251, 191, 36, ${currentOpacity * 0.3})`; // Golden glow
         ctx.beginPath();
         ctx.arc(ember.x, ember.y, ember.size * 3, 0, Math.PI * 2);
         ctx.fill();
       }
 
-      // Core ember
-      ctx.fillStyle = theme.colors.starfield; // Gold/orange
+      // Core ember (golden for dawn theme)
+      ctx.fillStyle = '#fbbf24'; // Golden dawn color
       ctx.globalAlpha = currentOpacity;
       ctx.beginPath();
       ctx.arc(ember.x, ember.y, ember.size, 0, Math.PI * 2);
