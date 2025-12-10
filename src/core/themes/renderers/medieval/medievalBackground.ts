@@ -22,8 +22,8 @@ export function setupMedievalBackground(
   canvas: HTMLCanvasElement
 ): () => void {
   const mobile = isMobile();
-  // Only create embers on desktop for performance
-  const emberCount = mobile ? 0 : 100;
+  // Reduced embers on mobile for performance
+  const emberCount = mobile ? 50 : 100;
 
   type Ember = {
     x: number;
