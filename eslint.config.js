@@ -88,6 +88,7 @@ export default [
       'node_modules/**',
       'build/**',
       'dist/**',
+      'dev-dist/**',
       'coverage/**',
       'styles/**',
       '*.config.js',
