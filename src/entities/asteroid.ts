@@ -95,11 +95,12 @@ function resolveBreakVariant(obstacle: Asteroid): BreakVariant {
   const theme = getCurrentTheme();
 
   // Medieval obstacles map to creature types by size
+  // Maps to breakVariants: small=bat, medium=crystal, large=wyvern
   if (theme.id === 'medieval') {
     const r = obstacle.radius;
-    if (r >= 30) return 'wyvern';
-    if (r >= 15) return 'bat';
-    return 'crystal';
+    if (r >= 30) return 'large'; // Wyverns for large obstacles
+    if (r >= 15) return 'medium'; // Crystals for medium obstacles
+    return 'small'; // Bats for small obstacles
   }
 
   // Underwater/Space: size tiers by level (0=small,1=medium, else large)

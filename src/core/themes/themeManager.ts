@@ -238,6 +238,9 @@ export function initializeThemeSystem(): void {
   // Apply theme-specific player dimensions on initialization
   applyThemePlayerDimensions();
 
+  // Load theme-specific audio on initialization
+  handleThemeChange();
+
   log.info(`Theme system initialized with theme: ${theme.name}`);
 }
 

@@ -288,9 +288,9 @@ const MEDIEVAL_THEME: Theme = {
     fireSound: 'sounds/medieval-fire.mp3',
     breakSound: 'sounds/medieval-break-bat.mp3',
     breakVariants: {
-      wyvern: 'sounds/medieval-break-wyvern.mp3',
-      bat: 'sounds/medieval-break-bat.mp3',
-      crystal: 'sounds/medieval-break-crystal.mp3',
+      small: 'sounds/medieval-break-bat.mp3', // Bats for small asteroids
+      medium: 'sounds/medieval-break-crystal.mp3', // Crystals for medium asteroids
+      large: 'sounds/medieval-break-wyvern.ogg', // Wyverns for large asteroids
     },
     gameoverSound: 'sounds/medieval-gameover.mp3',
     levelupSound: 'sounds/medieval-levelup.mp3',

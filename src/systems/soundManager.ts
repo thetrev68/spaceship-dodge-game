@@ -88,29 +88,48 @@ initBaseSounds();
 function loadThemeAudio(theme: Theme): void {
   if (!theme.audio) {
     // Clear overrides if theme has none
-    Object.values(currentThemeAudio).forEach((audio) => {
-      audio.pause();
-      audio.remove();
+    Object.keys(currentThemeAudio).forEach((key) => {
+      const audio = currentThemeAudio[key as SoundKey];
+      if (audio) {
+        audio.pause();
+        audio.remove();
+      }
+      delete currentThemeAudio[key as SoundKey];
     });
-    Object.values(currentThemeBreakVariants).forEach((audio) => {
-      audio.pause();
-      audio.remove();
+    Object.keys(currentThemeBreakVariants).forEach((key) => {
+      const audio = currentThemeBreakVariants[key as BreakVariant];
+      if (audio) {
+        audio.pause();
+        audio.remove();
+      }
+      delete currentThemeBreakVariants[key as BreakVariant];
     });
     return;
   }
 
   // Clear existing theme audio
-  Object.values(currentThemeAudio).forEach((audio) => {
-    audio.pause();
-    audio.remove();
+  Object.keys(currentThemeAudio).forEach((key) => {
+    const audio = currentThemeAudio[key as SoundKey];
+    if (audio) {
+      audio.pause();
+      audio.remove();
+    }
+    delete currentThemeAudio[key as SoundKey];
   });
-  Object.values(currentThemeBreakVariants).forEach((audio) => {
-    audio.pause();
-    audio.remove();
+  Object.keys(currentThemeBreakVariants).forEach((key) => {
+    const audio = currentThemeBreakVariants[key as BreakVariant];
+    if (audio) {
+      audio.pause();
+      audio.remove();
+    }
+    delete currentThemeBreakVariants[key as BreakVariant];
   });
 
   const { audio } = theme;
-  if (audio.fireSound) currentThemeAudio.fire = createAudio(audio.fireSound);
+  if (audio.fireSound) {
+    debug('audio', 'Loading fire sound', { path: audio.fireSound });
+    currentThemeAudio.fire = createAudio(audio.fireSound);
+  }
   if (audio.breakSound) currentThemeAudio.break = createAudio(audio.breakSound);
   if (audio.gameoverSound) currentThemeAudio.gameover = createAudio(audio.gameoverSound);
   if (audio.levelupSound) currentThemeAudio.levelup = createAudio(audio.levelupSound);
@@ -120,14 +139,20 @@ function loadThemeAudio(theme: Theme): void {
   if (audio.uiClickSound) currentThemeAudio.ui_click = createAudio(audio.uiClickSound);
 
   if (audio.breakVariants) {
+    debug('audio', 'Loading break variants', { variants: Object.keys(audio.breakVariants) });
     Object.entries(audio.breakVariants).forEach(([variant, path]) => {
       if (!path) return;
+      debug('audio', 'Loading break variant', { variant, path });
       const audioEl = createAudio(path);
       currentThemeBreakVariants[variant as BreakVariant] = audioEl;
     });
   }
 
-  debug('audio', 'Theme audio loaded', { themeId: theme.id });
+  debug('audio', 'Theme audio loaded', {
+    themeId: theme.id,
+    loadedSounds: Object.keys(currentThemeAudio),
+    loadedVariants: Object.keys(currentThemeBreakVariants),
+  });
 }
 
 export function forceAudioUnlock(): Promise<void> {
@@ -323,6 +348,17 @@ export function playSound(name: SoundKey, options?: SoundPlayOptions): void {
     base = currentThemeAudio[name] || sounds[name];
   }
 
+  // Debug logging to see what audio is being resolved
+  const isThemeAudio =
+    name === 'break'
+      ? !!(options?.variant ? currentThemeBreakVariants[options.variant] : currentThemeAudio.break)
+      : !!currentThemeAudio[name];
+  debug('audio', `playSound(${name})`, {
+    variant: options?.variant,
+    isThemeAudio,
+    hasSrc: !!base?.src,
+  });
+
   if (!isAudioUnlocked) {
     debug('audio', `playSound(${name}) blocked: audio not unlocked`);
     return;
@@ -343,7 +379,7 @@ export function playSound(name: SoundKey, options?: SoundPlayOptions): void {
   sfx
     .play()
     .then(() => {
-      debug('audio', `playSound(${name}) triggered`);
+      debug('audio', `playSound(${name}) triggered`, { src: base?.src });
     })
     .catch((err: unknown) => {
       error('audio', `playSound(${name}) failed:`, err);
@@ -355,6 +391,7 @@ export function playSound(name: SoundKey, options?: SoundPlayOptions): void {
  */
 export function handleThemeChange(): void {
   const theme = getCurrentTheme();
+  debug('audio', 'handleThemeChange called', { themeId: theme.id, hasAudio: !!theme.audio });
   loadThemeAudio(theme);
 
   // Restart music with new theme

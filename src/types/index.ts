@@ -146,7 +146,7 @@ export type SoundKey =
 export type SoundMap = Record<SoundKey, HTMLAudioElement | null>;
 
 /** Variants for break sounds (size/type). */
-export type BreakVariant = 'small' | 'medium' | 'large' | 'wyvern' | 'bat' | 'crystal';
+export type BreakVariant = 'small' | 'medium' | 'large';
 
 /** Playback options for sound effects. */
 export type SoundPlayOptions = {

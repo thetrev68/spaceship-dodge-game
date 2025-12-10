@@ -212,3 +212,11 @@ Pull requests welcome! See [CONTRIBUTING.md](./CONTRIBUTING.md) for setup, codin
 > ✅ Spatial grid collision detection
 > ✅ 85%+ test coverage
 > ✅ Ready for feature expansion
+
+## Credits
+
+> Space theme background Music by <a href="https://pixabay.com/users/serhii_kliets-36514165/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=318508">Serhii Kliets</a> from <a href="https://pixabay.com//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=318508">Pixabay</a>
+
+> Medieval theme background Music by <a href="https://pixabay.com/users/amaksi-28332361/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=115518">Aleksey Voronin</a> from <a href="https://pixabay.com/music//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=115518">Pixabay</a>
+
+> Underwater theme background Music by <a href="https://pixabay.com/users/lnplusmusic-47631836/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=371125">Andrii Poradovskyi</a> from <a href="https://pixabay.com//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=371125">Pixabay</a>
