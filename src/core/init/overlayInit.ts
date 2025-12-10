@@ -91,6 +91,20 @@ export function wireOverlayControls(canvas: HTMLCanvasElement): void {
     pauseOverlay?.addEventListener(
       'touchstart',
       (event: TouchEvent) => {
+        // Allow buttons and interactive elements to work normally
+        const target = event.target;
+        if (target instanceof HTMLElement) {
+          const isInteractive =
+            target.tagName === 'BUTTON' ||
+            target.closest('button') ||
+            target.tagName === 'INPUT' ||
+            target.closest('input');
+          if (isInteractive) {
+            debug('game', 'Touch on interactive element - not resuming');
+            return;
+          }
+        }
+
         event.preventDefault();
         if (gameState.value !== 'PAUSED') return;
         debug('game', 'Resuming game from overlay touch');
@@ -113,6 +127,12 @@ export function wireOverlayControls(canvas: HTMLCanvasElement): void {
       },
       { passive: false }
     );
+
+    // Mobile quit button handler
+    quitButton?.addEventListener('click', () => {
+      playClick();
+      quitGame();
+    });
   } else {
     continueButton?.addEventListener('click', () => {
       playClick();

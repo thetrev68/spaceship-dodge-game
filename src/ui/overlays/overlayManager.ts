@@ -123,7 +123,8 @@ export function showOverlay(state: OverlayState, scoreValue = 0, levelValue = 0)
   const mobile = isMobile();
   if (startButton) startButton.style.display = 'block';
   if (continueButton) continueButton.style.display = mobile ? 'none' : 'block';
-  if (quitButton) quitButton.style.display = mobile ? 'none' : 'block';
+  // Show quit button on all platforms
+  if (quitButton) quitButton.style.display = 'block';
   if (tapToContinueMobile) tapToContinueMobile.style.display = mobile ? 'block' : 'none';
 
   const desktopControlHint = getById<HTMLElement>('desktopControlHint');
