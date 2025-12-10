@@ -232,11 +232,15 @@ export function unmuteAll(): void {
   debug('audio', 'unmuteAll called');
   isMuted = false;
   applyVolumeAndMute();
-  startMusic();
+  // Don't auto-start music - let game state control when music plays
 }
 
 export function isAudioMuted(): boolean {
   return isMuted;
+}
+
+export function getAudioStatus(): { isUnlocked: boolean; isMuted: boolean } {
+  return { isUnlocked: isAudioUnlocked, isMuted };
 }
 
 function applyVolumeAndMute(): void {
@@ -309,7 +313,18 @@ export function playSound(name: SoundKey, options?: SoundPlayOptions): void {
     base = currentThemeAudio[name] || sounds[name];
   }
 
-  if (!isAudioUnlocked || isMuted || !base) return;
+  if (!isAudioUnlocked) {
+    debug('audio', `playSound(${name}) blocked: audio not unlocked`);
+    return;
+  }
+  if (isMuted) {
+    debug('audio', `playSound(${name}) blocked: audio is muted`);
+    return;
+  }
+  if (!base) {
+    warn('audio', `playSound(${name}) blocked: audio element not found`);
+    return;
+  }
 
   const sfx = base.cloneNode(true) as HTMLAudioElement;
   sfx.volume = volumes.soundEffects;
