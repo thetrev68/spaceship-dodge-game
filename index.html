@@ -3,15 +3,21 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <!-- CSP: Relaxed in development for HMR, strict in production -->
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; media-src 'self'; font-src 'self'; connect-src %VITE_CSP_CONNECT_SRC%; object-src 'none'; base-uri 'self'; form-action 'none';"
+      content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; media-src 'self'; font-src 'self'; connect-src 'self' ws: http: https: data: blob:; object-src 'none'; base-uri 'self'; form-action 'none';"
     />
+    <meta name="description" content="An arcade-style space shooter game. Dodge and shoot incoming asteroids!" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Spaceship Dodge" />
     <title>Spaceship Dodge</title>
-    <link rel="icon" type="image/x-icon" href="/space_ship_fighter.ico" />
-    <link rel="icon" type="image/png" href="/space_ship_fighter.png" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
     <link rel="icon" type="image/svg+xml" href="/space_ship_fighter.svg" />
-    <link rel="apple-touch-icon" href="/space_ship_fighter.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon-180x180.png" />
     <link rel="stylesheet" href="styles/main-tailwind.css" />
     <link rel="stylesheet" href="styles/inline.css" />
   </head>

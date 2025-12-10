@@ -1,6 +1,6 @@
 import { defineConfig } from 'vite';
-import fs from 'fs';
 import path from 'path';
+import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
   resolve: {
@@ -17,6 +17,82 @@ export default defineConfig({
       '@types': path.resolve(__dirname, './src/types'),
     },
   },
+  plugins: [
+    VitePWA({
+      registerType: 'autoUpdate',
+      includeAssets: ['space_ship_fighter.ico', 'space_ship_fighter.png', 'space_ship_fighter.svg', 'sounds/*.mp3'],
+      manifest: {
+        name: 'Spaceship Dodge',
+        short_name: 'Spaceship',
+        description: 'An arcade-style space shooter game. Dodge and shoot incoming asteroids!',
+        theme_color: '#000000',
+        background_color: '#000000',
+        display: 'standalone',
+        orientation: 'any',
+        scope: '/spaceship-dodge-game/',
+        start_url: '/spaceship-dodge-game/',
+        icons: [
+          {
+            src: 'pwa-64x64.png',
+            sizes: '64x64',
+            type: 'image/png'
+          },
+          {
+            src: 'pwa-192x192.png',
+            sizes: '192x192',
+            type: 'image/png'
+          },
+          {
+            src: 'pwa-512x512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'any'
+          },
+          {
+            src: 'maskable-icon-512x512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'maskable'
+          }
+        ]
+      },
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,mp3}'],
+        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB to accommodate audio files
+        runtimeCaching: [
+          {
+            urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'google-fonts-cache',
+              expiration: {
+                maxEntries: 10,
+                maxAgeSeconds: 60 * 60 * 24 * 365 // 365 days
+              },
+              cacheableResponse: {
+                statuses: [0, 200]
+              }
+            }
+          },
+          {
+            urlPattern: /\.mp3$/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'audio-cache',
+              expiration: {
+                maxEntries: 20,
+                maxAgeSeconds: 60 * 60 * 24 * 30 // 30 days
+              }
+            }
+          }
+        ]
+      },
+      devOptions: {
+        enabled: true,
+        type: 'module'
+      }
+    })
+  ],
   server: {
     host: true,
     port: 5173,

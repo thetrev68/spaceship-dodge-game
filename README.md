@@ -3,6 +3,7 @@
 [![CI](https://github.com/thetrev68/spaceship-dodge-game/workflows/CI/badge.svg)](https://github.com/thetrev68/spaceship-dodge-game/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/thetrev68/spaceship-dodge-game/branch/main/graph/badge.svg)](https://codecov.io/gh/thetrev68/spaceship-dodge-game)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue.svg)](https://www.typescriptlang.org/)
+[![PWA](https://img.shields.io/badge/PWA-enabled-5A0FC8.svg)](https://web.dev/progressive-web-apps/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Code Style: Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://prettier.io/)
 [![Tested with Vitest](https://img.shields.io/badge/tested%20with-vitest-6E9F18.svg)](https://vitest.dev/)
@@ -16,6 +17,7 @@ A fast-paced arcade-style browser game featuring three distinct visual themes: S
 ## 🌟 Features
 
 - **Three Complete Visual Themes**: Space, Medieval Fantasy, and Underwater
+- **Progressive Web App (PWA)**: Install and play offline on any device
 - **Dynamic Difficulty Scaling**: Smoother obstacle speeds and spawn rates per level
 - **Floating Score Popups**: Visual feedback on hits and bonuses
 - **Full Audio Management**: Background music, effects, volume controls
