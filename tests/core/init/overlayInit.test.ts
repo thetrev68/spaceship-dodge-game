@@ -175,7 +175,8 @@ describe('overlayInit', () => {
     const els = buildElements();
     wireOverlayControls(document.createElement('canvas'));
 
-    expect(setupStarfieldMock).not.toHaveBeenCalled();
+    // Background now initializes on mobile (with 0 particles for performance)
+    expect(setupStarfieldMock).toHaveBeenCalledWith(els.starfieldCanvas);
 
     gameState.value = 'PAUSED';
     const pauseEvent = new Event('touchstart', { bubbles: true, cancelable: true });

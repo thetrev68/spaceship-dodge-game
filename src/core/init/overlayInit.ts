@@ -15,14 +15,14 @@ let keydownHandlerRegistered = false;
 /**
  * Wires up all overlay-related interactions and controls for the game.
  *
- * Initializes theme-aware background on non-mobile devices, binds event handlers for
+ * Initializes theme-aware background on all devices, binds event handlers for
  * start, restart, continue, quit, and settings buttons, and sets up
  * keyboard navigation for game state transitions.
  *
  * ## Background Initialization
  * - Uses theme-aware background manager to switch between starfield, ocean, etc.
  * - Sets up automatic background switching when theme changes
- * - Skips background on mobile for performance
+ * - Mobile optimization (particle reduction, effect skipping) handled by theme renderers
  *
  * @param canvas - The main game canvas element
  * @returns void
@@ -58,7 +58,8 @@ export function wireOverlayControls(canvas: HTMLCanvasElement): void {
   }
 
   // Initialize theme-aware background (starfield, ocean, etc.)
-  if (!isMobile() && starfieldCanvas) {
+  // Mobile optimization is handled by individual theme renderers
+  if (starfieldCanvas) {
     initializeBackground(starfieldCanvas);
     setupBackgroundWatcher(starfieldCanvas);
   }

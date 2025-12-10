@@ -11,11 +11,13 @@ type Star = { x: number; y: number; size: number; speed: number };
 
 /**
  * Sets up the starfield effect on the given canvas.
+ * Mobile devices skip particles for performance.
  */
 export function setupStarfield(canvas: HTMLCanvasElement): void {
   const ctx = canvas.getContext('2d');
   if (!ctx) return;
-  const starCount = isMobile() ? 40 : 100; // Reduced count for mobile
+  const mobile = isMobile();
+  const starCount = mobile ? 0 : 100; // No particles on mobile for performance
   const stars: Star[] = [];
 
   /**
