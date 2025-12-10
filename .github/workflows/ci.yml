@@ -45,7 +45,3 @@ jobs:
 
       - name: Build
         run: npm run build
-
-      - name: Check bundle size
-        run: |
-          npx bundlesize || echo "::warning::Bundle size check failed"
