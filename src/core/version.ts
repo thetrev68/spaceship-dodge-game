@@ -11,6 +11,8 @@
  * Format: MAJOR.MINOR.PATCH (semantic versioning)
  *
  * Keep in sync with package.json version
+ *
+ * @public - Exported for external use (see VERSIONING.md)
  */
 export const APP_VERSION = '1.0.0';
 

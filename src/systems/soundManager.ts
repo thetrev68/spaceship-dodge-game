@@ -274,6 +274,11 @@ export function isAudioMuted(): boolean {
   return isMuted;
 }
 
+/**
+ * Get current audio system status
+ * @public - Part of public API for debugging/testing
+ * @returns Audio unlock and mute status
+ */
 export function getAudioStatus(): { isUnlocked: boolean; isMuted: boolean } {
   return { isUnlocked: isAudioUnlocked, isMuted };
 }
