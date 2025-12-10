@@ -20,6 +20,7 @@ import { initializeKeyboardHelp } from '@ui/accessibility/keyboardHelp.js';
 import { announcer } from '@ui/accessibility/announcer.js';
 import { initializeThemeSystem, applyUITheme, watchTheme } from '@core/themes';
 import { registerDevTools } from '@utils/devTools.js';
+import { logVersion, VERSION_STRING } from '@core/version.js';
 
 let audioUnlockAttempted = false;
 
@@ -48,6 +49,15 @@ document.addEventListener('click', handleFirstTouch, { passive: true });
 
 async function main() {
   debug('game', 'Spaceship Dodge starting...');
+
+  // Log version to console
+  logVersion();
+
+  // Display version in UI
+  const versionElement = document.getElementById('versionInfo');
+  if (versionElement) {
+    versionElement.textContent = VERSION_STRING;
+  }
 
   // Track app initialization
   analytics.trackEvent({
