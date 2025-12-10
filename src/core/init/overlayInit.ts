@@ -8,7 +8,6 @@ import { showSettings, hideSettings } from '@ui/settings/settingsUI.js';
 import { getById } from '@utils/dom.js';
 import { showOverlay, setOverlayDimensions, quitGame } from '@ui/overlays/overlayManager.js';
 import { services } from '@services/ServiceProvider.js';
-import { startBackgroundMusic } from './audioInit.js';
 
 let keydownHandlerRegistered = false;
 
@@ -80,8 +79,7 @@ export function wireOverlayControls(canvas: HTMLCanvasElement): void {
     if (gameState.value !== 'START') return;
 
     debug('game', 'Starting game from overlay');
-    // Don't force unmute - respect user's mute preference
-    startBackgroundMusic();
+    // startGame() -> showOverlay('PLAYING') handles music start
     startGame(canvas);
     restartGameLoop();
   };

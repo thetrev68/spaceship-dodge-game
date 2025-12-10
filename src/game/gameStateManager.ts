@@ -71,10 +71,7 @@ export function startGame(canvas: HTMLCanvasElement): void {
 
   resetPlayer(canvas.width, canvas.height);
   resetLevelFlow();
-  showOverlay('PLAYING');
-
-  // Don't force unmute - respect user's mute preference
-  services.audioService.startMusic();
+  showOverlay('PLAYING'); // This calls startMusic() internally
 
   const canvasContext = canvas.getContext('2d');
   if (canvasContext) {
@@ -90,7 +87,6 @@ export function startGame(canvas: HTMLCanvasElement): void {
 export function continueGame(): void {
   gameState.value = 'PLAYING';
   resetLevelFlow();
-  showOverlay('PLAYING');
-  services.audioService.startMusic();
+  showOverlay('PLAYING'); // This calls startMusic() internally
   eventBus.emit(GameEvent.GAME_RESUMED, undefined);
 }

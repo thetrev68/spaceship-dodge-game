@@ -214,8 +214,7 @@ describe('core/main', () => {
     getByIdElements.startButton!.dispatchEvent(
       new Event('touchstart', { bubbles: true, cancelable: true })
     );
-    // unmuteAll is no longer called - respects user's mute preference
-    expect(startBackgroundMusicMock).toHaveBeenCalled();
+    // startGame() -> showOverlay('PLAYING') handles music start
     expect(startGameMock).toHaveBeenCalled();
     expect(restartGameLoopMock).toHaveBeenCalled();
 

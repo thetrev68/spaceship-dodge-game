@@ -39,6 +39,7 @@ let currentVolume = VOLUME_CONSTANTS.DEFAULT_SOUND_EFFECTS;
 
 let isMuted = false;
 let isAudioUnlocked = false;
+let isMusicPlaying = false;
 
 const sounds: SoundMap = {
   bgm: null,
@@ -181,6 +182,12 @@ export function startMusic(): void {
     return;
   }
 
+  // Prevent race conditions from multiple rapid calls
+  if (isMusicPlaying) {
+    debug('audio', 'startMusic blocked: already playing');
+    return;
+  }
+
   const theme = getCurrentTheme();
   const bgmPath = theme.audio?.bgMusic || DEFAULT_SOUND_PATHS.bgm;
 
@@ -205,6 +212,7 @@ export function startMusic(): void {
   bgm.volume = volumes.backgroundMusic;
   bgm.muted = isMuted;
 
+  isMusicPlaying = true;
   bgm
     .play()
     .then(() => {
@@ -212,6 +220,7 @@ export function startMusic(): void {
     })
     .catch((err: unknown) => {
       error('audio', 'startMusic failed:', err);
+      isMusicPlaying = false;
     });
 }
 
@@ -220,6 +229,7 @@ export function stopMusic(): void {
   if (!bgm) return;
   bgm.pause();
   bgm.currentTime = 0;
+  isMusicPlaying = false;
 }
 
 export function muteAll(): void {
