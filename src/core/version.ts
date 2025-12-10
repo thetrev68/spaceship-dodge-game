@@ -14,7 +14,7 @@
  *
  * @public - Exported for external use (see VERSIONING.md)
  */
-export const APP_VERSION = '1.0.2';
+export const APP_VERSION = '1.0.3';
 
 /**
  * Full version string for display
