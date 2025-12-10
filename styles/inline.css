@@ -60,7 +60,7 @@ body {
   /* Centered box with max dimensions */
   max-width: min(600px, 90vw);
   min-width: 400px;
-  padding: 3rem 2rem;
+  padding: 2rem 2rem; /* Reduced from 3rem to accommodate version info */
 
   background-color: var(--overlay-background, rgba(0, 0, 0, 0.9));
   color: var(--overlay-text, white);
@@ -85,7 +85,16 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 1rem;
+  gap: 0.75rem; /* Reduced from 1rem to accommodate version info */
+}
+
+/* Desktop: Reduce heading and paragraph spacing to fit version info */
+.game-overlay h1 {
+  margin-bottom: 0.5rem;
+}
+
+.game-overlay p {
+  margin-bottom: 0.5rem;
 }
 
 /* Mobile responsive */
