@@ -22,7 +22,8 @@ export function setupMedievalBackground(
   canvas: HTMLCanvasElement
 ): () => void {
   const mobile = isMobile();
-  const emberCount = mobile ? 40 : 100;
+  // Only create embers on desktop for performance
+  const emberCount = mobile ? 0 : 100;
 
   type Ember = {
     x: number;
@@ -46,7 +47,7 @@ export function setupMedievalBackground(
 
   let rafId: number | undefined;
 
-  // Initialize ember particles
+  // Initialize ember particles (desktop only)
   for (let i = 0; i < emberCount; i++) {
     embers.push({
       x: Math.random() * canvas.width,
