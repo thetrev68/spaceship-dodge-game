@@ -176,9 +176,7 @@
         audio.currentTime = 0;
         audio
           .play()
-          .then(() =>
-            updateStatus('underwater-status', `Jellyfish break (${size}) sound played!`)
-          )
+          .then(() => updateStatus('underwater-status', `Jellyfish break (${size}) sound played!`))
           .catch((error) =>
             updateStatus('underwater-status', `Error playing jellyfish sound: ${error.message}`)
           );
@@ -356,11 +354,17 @@
 
       function playDefaultBreak(size) {
         const audio =
-          size === 'small' ? defaultBreakSmall : size === 'large' ? defaultBreakLarge : defaultBreakMedium;
+          size === 'small'
+            ? defaultBreakSmall
+            : size === 'large'
+              ? defaultBreakLarge
+              : defaultBreakMedium;
         audio.currentTime = 0;
         audio
           .play()
-          .then(() => updateStatus('default-status', `Space break (${size}) sound played successfully!`))
+          .then(() =>
+            updateStatus('default-status', `Space break (${size}) sound played successfully!`)
+          )
           .catch((error) =>
             updateStatus('default-status', `Error playing default break sound: ${error.message}`)
           );

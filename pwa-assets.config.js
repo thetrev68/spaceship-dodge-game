@@ -5,12 +5,12 @@ export default defineConfig({
     ...minimal2023Preset,
     maskable: {
       sizes: [512],
-      padding: 0.1
+      padding: 0.1,
     },
     apple: {
       sizes: [180],
-      padding: 0
-    }
+      padding: 0,
+    },
   },
-  images: ['public/space_ship_fighter.png']
+  images: ['public/space_ship_fighter.png'],
 });

@@ -20,7 +20,12 @@ export default defineConfig({
   plugins: [
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['space_ship_fighter.ico', 'space_ship_fighter.png', 'space_ship_fighter.svg', 'sounds/*.mp3'],
+      includeAssets: [
+        'space_ship_fighter.ico',
+        'space_ship_fighter.png',
+        'space_ship_fighter.svg',
+        'sounds/*.mp3',
+      ],
       manifest: {
         name: 'Spaceship Dodge',
         short_name: 'Spaceship',
@@ -35,26 +40,26 @@ export default defineConfig({
           {
             src: 'pwa-64x64.png',
             sizes: '64x64',
-            type: 'image/png'
+            type: 'image/png',
           },
           {
             src: 'pwa-192x192.png',
             sizes: '192x192',
-            type: 'image/png'
+            type: 'image/png',
           },
           {
             src: 'pwa-512x512.png',
             sizes: '512x512',
             type: 'image/png',
-            purpose: 'any'
+            purpose: 'any',
           },
           {
             src: 'maskable-icon-512x512.png',
             sizes: '512x512',
             type: 'image/png',
-            purpose: 'maskable'
-          }
-        ]
+            purpose: 'maskable',
+          },
+        ],
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,mp3}'],
@@ -67,12 +72,12 @@ export default defineConfig({
               cacheName: 'google-fonts-cache',
               expiration: {
                 maxEntries: 10,
-                maxAgeSeconds: 60 * 60 * 24 * 365 // 365 days
+                maxAgeSeconds: 60 * 60 * 24 * 365, // 365 days
               },
               cacheableResponse: {
-                statuses: [0, 200]
-              }
-            }
+                statuses: [0, 200],
+              },
+            },
           },
           {
             urlPattern: /\.mp3$/,
@@ -81,17 +86,17 @@ export default defineConfig({
               cacheName: 'audio-cache',
               expiration: {
                 maxEntries: 20,
-                maxAgeSeconds: 60 * 60 * 24 * 30 // 30 days
-              }
-            }
-          }
-        ]
+                maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
+              },
+            },
+          },
+        ],
       },
       devOptions: {
         enabled: true,
-        type: 'module'
-      }
-    })
+        type: 'module',
+      },
+    }),
   ],
   server: {
     host: true,
