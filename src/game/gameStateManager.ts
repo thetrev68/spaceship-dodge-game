@@ -8,6 +8,7 @@ import { resetLevelFlow } from '@game/flowManager.js';
 import { showOverlay } from '@ui/overlays/overlayManager.js';
 import { resetPlayer } from '@entities/player.js';
 import { clearAllBullets } from '@entities/bullet.js';
+import { resetNewAsteroidsSpawned } from '@entities/asteroid.js';
 import { services } from '@services/ServiceProvider.js';
 import { eventBus } from '@core/events/EventBus.js';
 import { GameEvent, type PlayerDiedEvent } from '@core/events/GameEvents.js';
@@ -70,6 +71,7 @@ export function startGame(canvas: HTMLCanvasElement): void {
 
   clearAllBullets();
   entityState.clearObstacles();
+  resetNewAsteroidsSpawned(); // Reset asteroid spawn counter for new game
 
   resetPlayer(canvas.width, canvas.height);
   resetLevelFlow();
