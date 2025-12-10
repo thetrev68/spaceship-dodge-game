@@ -28,7 +28,8 @@
     "clean": "rimraf dist coverage .vitest/ node_modules/.vite",
     "reinstall": "npm run clean && npm install",
     "knip": "knip",
-    "docs": "npx typedoc"
+    "docs": "npx typedoc",
+    "version": "node scripts/sync-version.js && git add src/core/version.ts"
   },
   "devDependencies": {
     "@commitlint/cli": "^20.2.0",
