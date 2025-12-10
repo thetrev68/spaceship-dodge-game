@@ -19,16 +19,13 @@ const powerUps = playerState.powerUps;
 
 export function handlePlayerHit(): void {
   playerLives.value -= 1;
-  services.audioService.playSound('player_hit');
   analytics.trackGameplay('player-hit', undefined, playerLives.value);
   gameMetrics.recordHit();
 
   const livesRemaining = playerLives.value;
-  announcer.announceUrgent(
-    `Player hit! ${livesRemaining} ${livesRemaining === 1 ? 'life' : 'lives'} remaining.`
-  );
 
   if (playerLives.value <= 0) {
+    // Game over - only play game over sound, not player hit sound
     gameState.value = 'GAME_OVER';
     services.audioService.playSound('gameover');
     services.audioService.stopMusic();
@@ -41,6 +38,11 @@ export function handlePlayerHit(): void {
       level: gameLevel.value,
     });
   } else {
+    // Player still has lives - play hit sound and continue
+    services.audioService.playSound('player_hit');
+    announcer.announceUrgent(
+      `Player hit! ${livesRemaining} ${livesRemaining === 1 ? 'life' : 'lives'} remaining.`
+    );
     gameState.value = 'DEATH';
     resetForNextLevel();
     showOverlay('DEATH', score.value, gameLevel.value);
