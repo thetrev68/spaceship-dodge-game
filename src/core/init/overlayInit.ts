@@ -80,7 +80,7 @@ export function wireOverlayControls(canvas: HTMLCanvasElement): void {
     if (gameState.value !== 'START') return;
 
     debug('game', 'Starting game from overlay');
-    services.audioService.unmuteAll();
+    // Don't force unmute - respect user's mute preference
     startBackgroundMusic();
     startGame(canvas);
     restartGameLoop();
@@ -98,7 +98,7 @@ export function wireOverlayControls(canvas: HTMLCanvasElement): void {
         debug('game', 'Resuming game from overlay touch');
         gameState.value = 'PLAYING';
         showOverlay('PLAYING');
-        services.audioService.unmuteAll();
+        // Don't force unmute - respect user's mute preference
         restartGameLoop();
       },
       { passive: false }
@@ -189,7 +189,7 @@ export function wireOverlayControls(canvas: HTMLCanvasElement): void {
         event.preventDefault();
         gameState.value = 'PLAYING';
         showOverlay('PLAYING');
-        services.audioService.unmuteAll();
+        // Don't force unmute - respect user's mute preference
         restartGameLoop();
       }
     });

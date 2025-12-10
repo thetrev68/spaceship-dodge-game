@@ -150,7 +150,7 @@ describe('overlayInit', () => {
 
     els.startButton.dispatchEvent(new Event('touchstart', { bubbles: true, cancelable: true }));
     els.startButton.dispatchEvent(new Event('click', { bubbles: true, cancelable: true }));
-    expect(unmuteMock).toHaveBeenCalled();
+    // unmuteAll is no longer called - respects user's mute preference
     expect(startBackgroundMusicMock).toHaveBeenCalled();
     expect(startGameMock).toHaveBeenCalled();
     expect(restartGameLoopMock).toHaveBeenCalled();

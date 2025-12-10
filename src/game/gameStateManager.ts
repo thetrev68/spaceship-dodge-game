@@ -73,7 +73,7 @@ export function startGame(canvas: HTMLCanvasElement): void {
   resetLevelFlow();
   showOverlay('PLAYING');
 
-  services.audioService.unmuteAll();
+  // Don't force unmute - respect user's mute preference
   services.audioService.startMusic();
 
   const canvasContext = canvas.getContext('2d');
