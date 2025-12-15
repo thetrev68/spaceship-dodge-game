@@ -52,7 +52,7 @@
     "rimraf": "^6.0.1",
     "serve": "^14.2.4",
     "sharp": "^0.34.5",
-    "tailwindcss": "^4.1.17",
+    "tailwindcss": "^4.1.18",
     "typedoc": "^0.28.15",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.49.0",
