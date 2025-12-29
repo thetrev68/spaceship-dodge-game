@@ -44,7 +44,7 @@
     "eslint-plugin-prettier": "^5.5.4",
     "gh-pages": "^6.3.0",
     "husky": "^9.1.7",
-    "jsdom": "^27.3.0",
+    "jsdom": "^27.4.0",
     "knip": "^5.78.0",
     "lint-staged": "^16.2.7",
     "postcss": "^8.4.47",
